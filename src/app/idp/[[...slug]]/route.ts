@@ -47,11 +47,12 @@ async function handle(req: NextRequest): Promise<Response> {
   try {
     return await handleInner(req);
   } catch (err) {
-    const e = err as Error;
-    // TEMP DEBUG: surface the runtime error to diagnose the Vercel 500.
-    return new Response(`IDP_ERROR ${e?.name}: ${e?.message}\n${e?.stack}`, {
+    // Log server-side (Vercel function logs); never leak internals to clients.
+    // A common cause in production is missing required env — see docs/DEPLOYMENT.md.
+    console.error("[idp] request failed", err);
+    return new Response(JSON.stringify({ error: "identity_provider_unavailable" }), {
       status: 500,
-      headers: { "content-type": "text/plain" },
+      headers: { "content-type": "application/json" },
     });
   }
 }
