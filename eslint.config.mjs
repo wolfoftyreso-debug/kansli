@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // BRITT's adapter is intentionally CommonJS (BRITT runs on CJS + node:sqlite);
+    // it ships to the BRITT repo and is linted there, not by the Next config.
+    "integrations/britt/pixdrift-oidc.js",
   ]),
 ]);
 

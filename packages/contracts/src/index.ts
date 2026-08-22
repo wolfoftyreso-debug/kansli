@@ -383,6 +383,12 @@ export const TokenOrgContext = z
     name: z.string().min(1),
     roles: z.array(z.string()),
     permissions: z.array(Permission),
+    /**
+     * Subscription entitlement for the active organisation, distinct from
+     * authorisation (permissions) and identity (subject). Resource servers such
+     * as TORA read this as `tier` to decide how much a signed-in user may see.
+     */
+    tier: z.string().default("free"),
   })
   .loose();
 export type TokenOrgContext = z.infer<typeof TokenOrgContext>;
@@ -423,8 +429,17 @@ export const AccessTokenClaims = z
     aud: z.union([z.string(), z.array(z.string())]),
     exp: z.number(),
     iat: z.number(),
+    /** Space-delimited granted authorisation scopes (verb:noun). OAuth-standard. */
     scope: z.string().default(""),
+    /**
+     * The active organisation as an opaque tenant id (its GlobalRef string).
+     * Standard-named `tenant` so resource servers that expect a plain tenant
+     * claim (e.g. TORA) work without translation; `org` carries the same value.
+     */
+    tenant: z.string().nullable().default(null),
     org: z.string().nullable().default(null),
+    /** Subscription entitlement for the active org (deny-by-default `free`). */
+    tier: z.string().default("free"),
     roles: z.array(z.string()).default([]),
     permissions: z.array(Permission).default([]),
   })

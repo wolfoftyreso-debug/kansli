@@ -52,6 +52,22 @@ async function main(): Promise<void> {
       audiences: envList("RITA_AUDIENCES", ["rita-api"]),
       name: "RITA",
     },
+    {
+      // Public SPA client: PKCE only, no client secret (clientSecretHash omitted).
+      clientId: process.env.TORA_CLIENT_ID ?? "tora-web",
+      redirectUris: envList("TORA_REDIRECT_URIS", ["http://127.0.0.1:8080/opportunity"]),
+      postLogoutRedirectUris: envList("TORA_POST_LOGOUT_URIS", ["http://127.0.0.1:8080/opportunity"]),
+      audiences: envList("TORA_AUDIENCES", ["tora-opportunity"]),
+      name: "TORA",
+    },
+    {
+      clientId: process.env.BRITT_CLIENT_ID ?? "britt-web",
+      clientSecretHash: sha256Base64ForSecret(process.env.BRITT_CLIENT_SECRET ?? "britt-dev-secret"),
+      redirectUris: envList("BRITT_REDIRECT_URIS", ["http://127.0.0.1:3000/auth/pixdrift/callback"]),
+      postLogoutRedirectUris: envList("BRITT_POST_LOGOUT_URIS", ["http://127.0.0.1:3000/"]),
+      audiences: envList("BRITT_AUDIENCES", ["britt-api"]),
+      name: "BRITT",
+    },
   ];
 
   const { store } = await seededStore();

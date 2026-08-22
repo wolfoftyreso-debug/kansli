@@ -130,15 +130,24 @@ Regeln: token bär `org` som `GlobalRef`; varje system håller en mappning
 
 ## 5. Stabiliseringschecklista
 
-**Byggt och testat (27 automatiska tester):**
+**Byggt och testat (32 automatiska tester):**
 - [x] Pixdrift IdP: OIDC discovery, JWKS, Authorization Code + PKCE (S256),
-      userinfo, RP-logout, ES256-signering, SSO mellan klienter.
+      userinfo, RP-logout, ES256-signering, SSO mellan klienter, **publika +
+      konfidentiella klienter**.
 - [x] `@pixdrift/contracts`, `@pixdrift/auth-core` (scrypt + bcrypt-migrering),
       `@pixdrift/auth-client` (OIDC-klient + JWKS-verifierare).
+- [x] **Token-claim-alignment:** IdP emitterar `tenant` + `scope` (beviljade) +
+      `tier` vid sidan om `org`/`roles`/`permissions`; entitlement/tier i
+      identitetsmodellen (org-nivå).
 - [x] kansli som referensklient (E2E i webbläsare).
 - [x] ALVA-adapter: nolldependency ES256/JWKS-verifierare (test mot riktig IdP).
 - [x] RITA-adapter + in-repo-patch (typecheck/lint/158 unit-tester i RITA:s egen
       toolchain).
+- [x] **TORA:** publik klient (`tora-web`) + audience (`tora-opportunity`)
+      registrerade; token-kontraktet bevisat mot TORA:s exakta `verify.ts` +
+      `principal.ts` (`tier=enterprise`, `opportunity:read` m.fl.).
+- [x] **BRITT-adapter:** nolldependency CJS OIDC-BFF (WebCrypto ES256/JWKS + PKCE),
+      testad mot riktig IdP.
 
 **Att låsa för stabil drift:**
 - [ ] **Paketdistribution:** publicera `@pixdrift/*` till privat register
@@ -149,17 +158,12 @@ Regeln: token bär `org` som `GlobalRef`; varje system håller en mappning
 - [ ] **Nyckelhantering:** IdP:ns signeringsnyckel i KMS (ALVA-`nyckelvalv`).
 - [ ] **Org-mappning:** vem äger `pixdrift:org ↔ lokalt org-id` och hur den
       distribueras (IdP-katalog eller per-system-tabell).
-- [ ] **Token-claim-alignment (surfaced av TORA):** resursservrar konsumerar
-      olika vokabulär. TORA verifierar via `jose`/JWKS och kräver `sub`,
-      **`tenant`** (sträng), **`tier`** (`free|pro|professional|enterprise`,
-      deny-by-default) och **`scope`/`scp`** (`opportunity:read`,
-      `profile:*`, `watchlist:*`). IdP bör emittera standard `tenant` + `scope`
-      (beviljade) + `tier` *vid sidan om* `org`/`roles`/`permissions`, och
-      identitetsmodellen få ett **entitlement/tier**-begrepp (abonnemang, skilt
-      från scope och subject).
-- [ ] **Publika klienter:** TORA är en publik SPA-klient (PKCE, ingen hemlighet)
-      — stöds redan av IdP (hemlighet krävs bara när `clientSecretHash` finns).
-      Registrera `tora-web` (public) + audience `tora-opportunity`.
+- [x] **Token-claim-alignment (surfaced av TORA):** KLART — IdP emitterar `sub`,
+      `tenant` (org-`GlobalRef`), `tier` (deny-by-default) och `scope`/`scp`
+      (beviljade `verb:noun`) vid sidan om `org`/`roles`/`permissions`.
+      Entitlement/tier finns nu i identitetsmodellen (org-nivå).
+- [x] **Publika klienter:** KLART — IdP stöder publika klienter (PKCE, ingen
+      hemlighet). `tora-web` + audience `tora-opportunity` registrerade.
 - [ ] **BankID:** direkt RP-integration (självhostat) som ytterligare
       inloggningsmetod, om det krävs.
 - [ ] **Landa adaptrarna:** RITA/BRITT-PR:er kräver skrivåtkomst. **ALVA avvaktar
@@ -178,5 +182,5 @@ Regeln: token bär `org` som `GlobalRef`; varje system håller en mappning
 | `wolfoftyreso-debug/kansli` | Nav + plattformspaket + IdP | Byggt (denna kodbas) |
 | `wolfoftyreso-debug/alva` | Verkstad | **Avvaktar tills vidare** (adapter byggd + testad, patch vilande) |
 | `wolfoftyreso-debug/RITA` | Ekonomi | In-repo-patch byggd + typecheckad; klar att landa |
-| `wolfoftyreso-debug/BRITT` | Drift/overlay | Kartlagt; adapter klar att byggas (samma väg som RITA) |
-| `wolfoftyreso-debug/TORA` | Offentlig marknad/anbud | Kartlagt; **OIDC-native** — mestadels konfiguration + token-claim-alignment (`tenant`/`tier`/`scope`) |
+| `wolfoftyreso-debug/BRITT` | Drift/overlay | **Adapter byggd + testad** (nolldependency CJS OIDC-BFF); wiring-README klar; in-repo-patch återstår |
+| `wolfoftyreso-debug/TORA` | Offentlig marknad/anbud | **OIDC-native, inkopplad via konfig**; token-kontrakt bevisat (test). Peka klient+tjänst mot IdP |

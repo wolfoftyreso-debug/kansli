@@ -70,6 +70,12 @@ importers:
         specifier: workspace:*
         version: link:../../packages/identity
 
+  integrations/britt:
+    devDependencies:
+      '@pixdrift/identity':
+        specifier: workspace:*
+        version: link:../../packages/identity
+
   integrations/rita:
     dependencies:
       '@fastify/cookie':
@@ -88,6 +94,18 @@ importers:
       '@pixdrift/identity':
         specifier: workspace:*
         version: link:../../packages/identity
+
+  integrations/tora:
+    devDependencies:
+      '@pixdrift/auth-client':
+        specifier: workspace:*
+        version: link:../../packages/auth-client
+      '@pixdrift/identity':
+        specifier: workspace:*
+        version: link:../../packages/identity
+      jose:
+        specifier: ^6.0.11
+        version: 6.2.10
 
   packages/auth-client:
     dependencies:

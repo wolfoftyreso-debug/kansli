@@ -18,11 +18,17 @@ export interface AccessTokenInput {
 export async function signAccessToken(config: IdentityConfig, input: AccessTokenInput): Promise<string> {
   const iat = nowSeconds();
   const ttl = config.accessTokenTtl ?? DEFAULTS.accessTokenTtl;
+  const permissions = input.org?.permissions ?? [];
   return new SignJWT({
-    scope: input.scope,
+    // `scope` (OAuth-standard) carries the granted authorisation scopes so a
+    // resource server can read them from the conventional claim; `permissions`
+    // keeps the array form for the family's own adapters.
+    scope: permissions.join(" "),
+    tenant: input.org?.ref ?? null,
     org: input.org?.ref ?? null,
+    tier: input.org?.tier ?? "free",
     roles: input.org?.roles ?? [],
-    permissions: input.org?.permissions ?? [],
+    permissions,
   })
     .setProtectedHeader({ alg: config.signingKey.alg, kid: config.signingKey.kid, typ: "at+jwt" })
     .setIssuer(config.issuer)

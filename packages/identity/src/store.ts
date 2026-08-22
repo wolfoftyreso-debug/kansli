@@ -32,6 +32,8 @@ export interface StoredOrg {
   name: string;
   country: string;
   isDemo: boolean;
+  /** Subscription entitlement (free|pro|professional|enterprise), emitted as `tier`. */
+  tier: string;
   legalEntities: StoredLegalEntity[];
 }
 
@@ -147,13 +149,28 @@ export const SEED_ROLES: StoredRole[] = [
       "arende:write",
       "invoice:read",
       "invoice:approve",
+      // TORA (offentlig marknad) scopes.
+      "opportunity:read",
+      "profile:read",
+      "profile:write",
+      "watchlist:read",
+      "watchlist:write",
     ],
   },
   {
     key: "orgMember",
     label: "Medarbetare",
     scope: "organization",
-    permissions: ["scan:read", "finding:read", "document:read", "arende:read", "invoice:read"],
+    permissions: [
+      "scan:read",
+      "finding:read",
+      "document:read",
+      "arende:read",
+      "invoice:read",
+      "opportunity:read",
+      "profile:read",
+      "watchlist:read",
+    ],
   },
   {
     key: "platformSupport",
@@ -182,6 +199,7 @@ export async function seededStore(): Promise<SeedResult> {
     name: "Exempelbolaget AB",
     country: "SE",
     isDemo: true,
+    tier: "enterprise",
     legalEntities: [
       {
         id: "le-exempelbolaget",
@@ -209,6 +227,7 @@ export async function seededStore(): Promise<SeedResult> {
     name: "Nordvik Verkstad AB",
     country: "SE",
     isDemo: true,
+    tier: "pro",
     legalEntities: [
       { id: "le-nordvik", name: "Nordvik Verkstad AB", registrationNumber: "5569999999", country: "SE" },
     ],

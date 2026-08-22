@@ -55,6 +55,7 @@ export async function orgContext(
     name: org.name,
     roles: membership.roleKeys,
     permissions: [...permissions].sort(),
+    tier: org.tier,
   };
 }
 
