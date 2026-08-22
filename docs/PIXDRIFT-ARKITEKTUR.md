@@ -150,7 +150,8 @@ Regeln: token bär `org` som `GlobalRef`; varje system håller en mappning
       distribueras (IdP-katalog eller per-system-tabell).
 - [ ] **BankID:** direkt RP-integration (självhostat) som ytterligare
       inloggningsmetod, om det krävs.
-- [ ] **Landa adaptrarna:** ALVA/RITA/BRITT-PR:er kräver skrivåtkomst.
+- [ ] **Landa adaptrarna:** RITA/BRITT-PR:er kräver skrivåtkomst. **ALVA avvaktar
+      tills vidare** (patchen är vilande, inte bortkastad).
 
 **Nästa fas (event-/handoff-planet):**
 - [ ] Frys händelsenamn + `ContractEnvelope`-payloads per system.
@@ -163,6 +164,6 @@ Regeln: token bär `org` som `GlobalRef`; varje system håller en mappning
 | Repo | Roll | Inkopplingsstatus |
 | --- | --- | --- |
 | `wolfoftyreso-debug/kansli` | Nav + plattformspaket + IdP | Byggt (denna kodbas) |
-| `wolfoftyreso-debug/alva` | Verkstad | Adapter byggd + testad; patch klar att landa |
+| `wolfoftyreso-debug/alva` | Verkstad | **Avvaktar tills vidare** (adapter byggd + testad, patch vilande) |
 | `wolfoftyreso-debug/RITA` | Ekonomi | In-repo-patch byggd + typecheckad; klar att landa |
 | `wolfoftyreso-debug/BRITT` | Drift/overlay | Kartlagt; adapter klar att byggas (samma väg som RITA) |
