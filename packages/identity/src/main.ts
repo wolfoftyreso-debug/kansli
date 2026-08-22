@@ -78,17 +78,51 @@ async function main(): Promise<void> {
     },
   ];
 
-  const { store } = await seededStore();
-  const signingKey = await generateSigningKey();
+  const app = process.env.DATABASE_URL
+    ? await bootPostgres()
+    : await bootInMemory();
 
-  const app = await createIdentityServer({
-    issuer,
-    store,
-    signingKey,
-    clients,
-    sessionSecret,
-    cookieSecure: process.env.COOKIE_SECURE === "true",
-  });
+  async function bootInMemory() {
+    const { store } = await seededStore();
+    const signingKey = await generateSigningKey();
+    return createIdentityServer({
+      issuer,
+      store,
+      signingKey,
+      clients,
+      sessionSecret,
+      cookieSecure: process.env.COOKIE_SECURE === "true",
+    });
+  }
+
+  async function bootPostgres() {
+    const { PgStore } = await import("./pg/store.ts");
+    const { pgBootstrap } = await import("./pg/bootstrap.ts");
+    // Owner-side bootstrap (schema/grants/seed/key/clients) is opt-in; in prod
+    // migrations run separately as the owner. When an owner URL is given we
+    // ensure the registry reflects the configured clients.
+    if (process.env.PIXDRIFT_DB_OWNER_URL) {
+      await pgBootstrap({
+        ownerUrl: process.env.PIXDRIFT_DB_OWNER_URL,
+        appRole: process.env.PIXDRIFT_DB_APP_ROLE ?? "pixdrift_app",
+        clients,
+        seedDemo: process.env.PIXDRIFT_SEED_DEMO !== "false",
+      });
+    }
+    const store = new PgStore(process.env.DATABASE_URL as string);
+    const registered = await store.loadClients();
+    const signingKey = await store.loadActiveSigningKey();
+    const additionalPublicJwks = await store.otherPublicJwks(signingKey.kid);
+    return createIdentityServer({
+      issuer,
+      store,
+      signingKey,
+      additionalPublicJwks,
+      clients: registered.length > 0 ? registered : clients,
+      sessionSecret,
+      cookieSecure: process.env.COOKIE_SECURE === "true",
+    });
+  }
 
   await app.listen({ port, host });
   console.log(`[pixdrift-identity] issuer ${issuer} lyssnar på http://${host}:${port}`);

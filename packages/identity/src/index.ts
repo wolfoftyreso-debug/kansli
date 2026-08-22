@@ -13,3 +13,6 @@ export {
 } from "./store.ts";
 export { DEFAULTS, type IdentityConfig, type OidcClient } from "./config.ts";
 export { sha256Base64ForSecret } from "./secret.ts";
+export { PgStore } from "./pg/store.ts";
+export { pgBootstrap, type BootstrapOptions } from "./pg/bootstrap.ts";
+export { SCHEMA_SQL, grantsSql } from "./pg/schema.ts";

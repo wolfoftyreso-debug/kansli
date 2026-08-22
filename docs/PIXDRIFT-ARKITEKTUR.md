@@ -131,7 +131,7 @@ Regeln: token bär `org` som `GlobalRef`; varje system håller en mappning
 
 ## 5. Stabiliseringschecklista
 
-**Byggt och testat (34 automatiska tester, 8 sviter):**
+**Byggt och testat (37 automatiska tester, 9 sviter — inkl. Postgres):**
 - [x] Pixdrift IdP: OIDC discovery, JWKS, Authorization Code + PKCE (S256),
       userinfo, RP-logout, ES256-signering, SSO mellan klienter, **publika +
       konfidentiella klienter**.
@@ -152,26 +152,35 @@ Regeln: token bär `org` som `GlobalRef`; varje system håller en mappning
 - [x] **IRMA-adapter:** jose-OIDC (ESM) BFF för personal-inloggning, testad mot
       riktig IdP. Magic Links för externa mottagare förblir interna i IRMA.
 
+- [x] **Varaktig IdP:** PostgreSQL-lager (owner/app), DB-baserat klientregister
+      och persisterad roterbar ES256-nyckel — testat mot riktig Postgres (flöde,
+      nyckel stabil över omstart, engångskoder). Se `packages/identity/README.md`.
+
 Se `integrations/README.md` för modulmatrisen och de två referensmönstren
 (jose-OIDC ESM · WebCrypto nolldependency).
 
 **Att låsa för stabil drift:**
-- [ ] **Paketdistribution:** publicera `@pixdrift/*` till privat register
-      (t.ex. CodeArtifact/GitHub Packages) *eller* fortsatt vendorering — ett
-      beslut som gäller alla subsystem. (Idag workspace-only → RITA/BRITT
-      vendorar självständiga moduler.)
-- [ ] **IdP-lagring:** in-memory → PostgreSQL med `*_owner`/`*_app` + RLS.
-- [ ] **Nyckelhantering:** IdP:ns signeringsnyckel i KMS (ALVA-`nyckelvalv`).
-- [ ] **Org-mappning:** vem äger `pixdrift:org ↔ lokalt org-id` och hur den
-      distribueras (IdP-katalog eller per-system-tabell).
+- [x] **IdP-lagring (KLART):** PostgreSQL-lager (`PgStore`) med `*_owner`/`*_app`
+      + snäva grants. RLS gäller subsystemens kunddata, inte IdP:ns
+      plattformstabeller (dokumenterat i `packages/identity/README.md`).
+- [x] **DB-baserat klientregister (KLART):** klienter läses ur `oauth_clients`;
+      en ny modul = en rad, ingen IdP-kodändring. Bevisat mot riktig Postgres.
+- [x] **Nyckelhantering (KLART för stabilitet):** ES256-nyckeln persisteras i
+      `signing_keys` med stabil `kid` över omstart + rotationsstöd
+      (`otherPublicJwks`). KMS/HSM är valfri härdning senare.
+- [ ] **Paketdistribution:** protokoll-först (OIDC + JWKS + claim-spec).
+      `@pixdrift/*` valfria hjälppaket (GitHub Packages) för JS-moduler, aldrig
+      krav — icke-JS-moduler (t.ex. TORA:s tjänst) använder standardbibliotek.
+- [ ] **Org-mappning:** IdP äger kanonisk org; varje modul håller en tunn
+      `pixdrift:org ↔ lokalt org-id`-mappning, fylld lat vid första inloggning.
 - [x] **Token-claim-alignment (surfaced av TORA):** KLART — IdP emitterar `sub`,
       `tenant` (org-`GlobalRef`), `tier` (deny-by-default) och `scope`/`scp`
       (beviljade `verb:noun`) vid sidan om `org`/`roles`/`permissions`.
       Entitlement/tier finns nu i identitetsmodellen (org-nivå).
 - [x] **Publika klienter:** KLART — IdP stöder publika klienter (PKCE, ingen
       hemlighet). `tora-web` + audience `tora-opportunity` registrerade.
-- [ ] **BankID:** direkt RP-integration (självhostat) som ytterligare
-      inloggningsmetod, om det krävs.
+- [x] **BankID:** utgår (beslut) — inte en inloggningsmetod. Tar bort broker,
+      certifikat och externt beroende.
 - [ ] **Landa adaptrarna:** RITA/BRITT-PR:er kräver skrivåtkomst. **ALVA avvaktar
       tills vidare** (patchen är vilande, inte bortkastad).
 

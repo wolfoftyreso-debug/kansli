@@ -184,7 +184,12 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
     token_endpoint_auth_methods_supported: ["client_secret_basic", "client_secret_post"],
   }));
 
-  app.get("/jwks.json", async () => jwks(config.signingKey));
+  app.get("/jwks.json", async () => {
+    const base = jwks(config.signingKey).keys;
+    const extra = config.additionalPublicJwks ?? [];
+    const seen = new Set(base.map((k) => k.kid));
+    return { keys: [...base, ...extra.filter((k) => !seen.has(k.kid))] };
+  });
 
   app.get("/halsa", async () => ({ status: "ok", lage: "drift", issuer: config.issuer }));
 

@@ -1,3 +1,4 @@
+import type { JWK } from "jose";
 import type { IdentityStore } from "./store.ts";
 import type { SigningKey } from "./keys.ts";
 
@@ -16,6 +17,8 @@ export interface IdentityConfig {
   issuer: string;
   store: IdentityStore;
   signingKey: SigningKey;
+  /** Extra public keys to publish in JWKS (e.g. previous keys during rotation). */
+  additionalPublicJwks?: JWK[];
   clients: OidcClient[];
   /** Access token lifetime in seconds. Default 600 (10 min). */
   accessTokenTtl?: number;
