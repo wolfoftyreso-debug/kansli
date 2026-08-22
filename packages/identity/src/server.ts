@@ -1,7 +1,7 @@
 import Fastify, { type FastifyInstance, type FastifyReply } from "fastify";
 import cookie from "@fastify/cookie";
 import formbody from "@fastify/formbody";
-import { importJWK, jwtVerify } from "jose";
+import { createLocalJWKSet, jwtVerify } from "jose";
 import { createHash, timingSafeEqual } from "node:crypto";
 import { parseRef } from "@pixdrift/contracts";
 import { verifyPassword, isCurrentScheme, hashPassword, newOpaqueId } from "@pixdrift/auth-core";
@@ -110,7 +110,11 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
   const sessionCookieName = config.sessionCookieName ?? DEFAULTS.sessionCookieName;
   const cookieSecure = config.cookieSecure ?? DEFAULTS.cookieSecure;
   const authCodeTtl = config.authCodeTtl ?? DEFAULTS.authCodeTtl;
-  const verifyKey = await importJWK(config.signingKey.publicJwk, "ES256");
+  // Verify against ALL published keys (active + any rotated-in), so tokens
+  // signed just before a key rotation still validate at /userinfo.
+  const verifyJwks = createLocalJWKSet({
+    keys: [config.signingKey.publicJwk, ...(config.additionalPublicJwks ?? [])],
+  });
 
   const clientById = new Map<string, OidcClient>();
   for (const client of config.clients) clientById.set(client.clientId, client);
@@ -300,7 +304,6 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
     const accessToken = await signAccessToken(config, {
       subject,
       audience,
-      scope: record.scope,
       org,
     });
     const idToken = await signIdToken(config, {
@@ -330,7 +333,7 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
     if (!token) return reply.code(401).send({ error: "invalid_token" });
     let userId: string;
     try {
-      const { payload } = await jwtVerify(token, verifyKey, { issuer: config.issuer });
+      const { payload } = await jwtVerify(token, verifyJwks, { issuer: config.issuer });
       userId = parseRef(String(payload.sub)).id;
     } catch {
       return reply.code(401).send({ error: "invalid_token" });

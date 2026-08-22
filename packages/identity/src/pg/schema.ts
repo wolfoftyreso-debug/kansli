@@ -90,6 +90,11 @@ create table if not exists signing_keys (
 
 /** Narrow, explicit grants for the runtime app role. Run as owner. */
 export function grantsSql(appRole: string): string {
+  // The role name is interpolated (GRANT cannot be parameterised), so it must be
+  // a plain SQL identifier — never attacker-controlled free text.
+  if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(appRole)) {
+    throw new Error(`ogiltigt appRole (måste vara en SQL-identifierare): ${appRole}`);
+  }
   return `
 grant usage on schema public to ${appRole};
 grant select on organizations, legal_entities, roles, users, memberships, oauth_clients, signing_keys to ${appRole};

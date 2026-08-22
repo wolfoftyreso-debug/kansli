@@ -11,7 +11,6 @@ function nowSeconds(): number {
 export interface AccessTokenInput {
   subject: string;
   audience: string | string[];
-  scope: string;
   org: TokenOrgContext | null;
 }
 
