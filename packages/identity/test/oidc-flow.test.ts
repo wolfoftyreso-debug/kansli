@@ -235,3 +235,24 @@ describe("Single sign-on across clients", () => {
     expect(new URL(res.headers.get("location")!).searchParams.get("code")).toBeTruthy();
   });
 });
+
+describe("RP-initiated logout", () => {
+  it("clears the SSO session cookie on both GET and POST", async () => {
+    const oidc = client();
+    const authUrl = await oidc.authorizationUrl({
+      state: randomValue(),
+      nonce: randomValue(),
+      codeVerifier: generateCodeVerifier(),
+    });
+    const loggedIn = await login(authUrl, "demo@exempelbolaget.se", "demo-losenord-1234");
+    const cookie = loggedIn.setCookie!.split(";")[0];
+
+    for (const method of ["GET", "POST"] as const) {
+      const out = await fetch(`${issuer}/logout`, { method, headers: { cookie }, redirect: "manual" });
+      expect(out.status).toBeLessThan(400); // not 404/405: both methods handled
+      const setCookie = out.headers.get("set-cookie") ?? "";
+      expect(setCookie).toContain("pixdrift_idp=");
+      expect(setCookie.toLowerCase()).toMatch(/max-age=0|expires=/);
+    }
+  });
+});
