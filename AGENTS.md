@@ -19,6 +19,7 @@ Innan du ändrar något i familjen, läs och följ:
 - `docs/PIXDRIFT-ARKITEKTUR.md` — målarkitektur, sammanflätning, synk, sekvens.
 - `docs/REPO-INTAKE.md` — pipeline och klassificering (KEEP/MOVE/MERGE/REWRITE/
   DEPRECATE/DELETE/UNKNOWN; `UNKNOWN` utreds, gissas aldrig).
+- `docs/INVENTORY.md` — exakt kodinventering (paket, adaptrar, endpoints, tester).
 
 Kärnregler i korthet: explicit dataägande; ingen modul skriver i en annans data;
 kontrakt/events, inte delade tabeller; testad restore; audit på allt viktigt;
