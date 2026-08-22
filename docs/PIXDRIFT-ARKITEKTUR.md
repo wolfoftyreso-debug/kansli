@@ -10,6 +10,68 @@ här är en översyn, inte en detalj.
 > händelser, så att RITA:s radsäkerhet, ALVA:s hashkedjor och BRITT:s valv
 > förblir intakta.
 
+## 0. Målarkitektur, styrning och sekvens
+
+Vi bygger inte "några hopslagna repon" utan en **liten, hårt kontrollerad
+gemensam plattform under produkterna**. Styrande dokument (läs först):
+[`ARCHITECTURE-CONSTITUTION.md`](ARCHITECTURE-CONSTITUTION.md) och
+[`REPO-INTAKE.md`](REPO-INTAKE.md).
+
+```mermaid
+flowchart TB
+  subgraph Produkter["Produktfamiljen (utvecklas självständigt)"]
+    ALVA; RITA; TORA; BRITT; IRMA; kansli
+  end
+  subgraph Plattform["Shared Platform (liten, hårt kontrollerad kärna)"]
+    ID["Identity Core"]; ONB["Onboarding Core"]; ORG["Organization Core"]
+    PERM["Permissions"]; PROF["User/Experience Profile"]; AUD["Audit / Events"]
+    NOTE["Notifications"]; INT["Integration Core"]; BILL["Billing / Entitlement"]
+  end
+  subgraph AWS["AWS Core (tråkigt med flit)"]
+    CF[CloudFront]-->ALB-->ECS["ECS Fargate: API · Workers · Jobs"]
+    ECS-->RDS[(RDS PostgreSQL)]; ECS-->REDIS[(ElastiCache Redis)]
+    ECS-->S3[(S3)]; ECS-->SQS[(SQS)]; ECS-->EB[(EventBridge)]
+  end
+  Produkter --> Plattform --> AWS
+```
+
+**Modulär backend, inte nio services.** Kod-, data- och kontraktsmässigt
+separerade moduler (`/platform/{identity,organizations,onboarding,profiles,permissions,audit,notifications,integrations}`)
+som kan **deploya tillsammans** tills en komponent verkligen behöver brytas ut.
+
+**Tre profiler hålls isär** (se konstitutionen): Identity Profile (vem, tekniskt)
+· Experience Profile (hur systemet kommunicerar — explicit/versionerad/reversibel)
+· Business Context (vad användaren arbetar med). Produkter frågar plattformen
+*"hur bör jag visa detta för Erik?"* i stället för att var och en löser det själv.
+
+**Automationsnivåer:** L0 Observe · L1 Recommend · L2 Prepare · L3
+Execute-with-approval · L4 Autonomous. Standard lågt; autonomi förtjänas.
+**AI är aldrig source of truth:** Fact ≠ Inference ≠ Recommendation ≠ Action.
+
+**Canonical Business Model** (integration-kärnans mål): all extern data
+(Fortnox/Visma/bank/CRM/…) normaliseras till familjens objekt — Organization,
+Person, Employee, Customer, Supplier, Invoice, Transaction, Agreement, Asset,
+Project, Task, Opportunity, Document — bakom **Integration Core** (Connector ·
+Credential · Connection · Sync · ExternalObject · Mapping · Webhook · ImportJob ·
+SyncError). Produkten frågar "ge mig företagets fakturor", inte hur Fortnox-auth
+fungerar.
+
+### Sekvens: börja med fem (överstandardisera inte för snabbt)
+Gemensamheten ger störst effekt i **Identity, Organization, Audit, Integration
+Contracts, Onboarding/Profile**. Resten förtjänar sin plats i kärnan efter hand.
+
+| Kärnområde | Målbild | Status nu |
+| --- | --- | --- |
+| **Identity** | User/Org/Membership/Role/Permission/Session/MFA/Consent/Device/AuthN-event | **Byggt:** IdP (OIDC/PKCE/JWKS), User/Org/Membership/Role/Permission, session. Delta: MFA, consent, device, emitterade authn-events |
+| **Organization** | Person→Membership→Company (aldrig `user.company_id`); Workspace/Entitlement/Subscription/ProductAccess | **Byggt:** org + membership förstklass, tier/entitlement (org-nivå). Delta: Workspace, Subscription, ProductAccess |
+| **Audit** | Gemensam, immutable audit från dag ett (who/when/product/resource/before/after/org/actor) | **Kontrakt finns** (`AuditEvent`). Delta: gemensam emission/lagring + `product`/`before`/`after`/`request_id`/`device_id` genomgående |
+| **Integration Contracts** | Integration Core + Canonical Business Model | **Delkontrakt finns** (`Connector`/`DataSource`; BRITT har rikt connector-ramverk). Delta: konvergera + canonical model |
+| **Onboarding/Profile** | Onboarding Engine → Experience Profile; "hur visa för Erik?" | **Ej byggt** (net-nytt, strategiskt viktigt) |
+
+Övriga principer (inget delat DB-schema, kontrakt/events mellan system,
+Postgres-tungt, tråkig AWS, testad restore, data som kronjuveler) gäller redan
+och är inskrivna i konstitutionen.
+
 ## 1. Systemöversikt
 
 | System | Roll i familjen | Stack | Datalager | Egen auth idag | Tenantbegrepp | Integritetsmekanism |
