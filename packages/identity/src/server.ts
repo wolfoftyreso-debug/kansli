@@ -61,7 +61,7 @@ const OIDC_FIELDS: (keyof AuthorizeParams)[] = [
   "org",
 ];
 
-function loginPage(params: AuthorizeParams, error?: string): string {
+function loginPage(params: AuthorizeParams, action: string, error?: string): string {
   const hidden = OIDC_FIELDS.map((f) =>
     params[f] ? `<input type="hidden" name="${f}" value="${esc(String(params[f]))}">` : "",
   ).join("\n      ");
@@ -83,7 +83,7 @@ function loginPage(params: AuthorizeParams, error?: string): string {
   .hint{margin-top:1rem;font-size:.75rem;color:#71717a}
 </style></head>
 <body>
-  <form class="card" method="post" action="/authorize">
+  <form class="card" method="post" action="${esc(action)}">
     <div class="brand"><span class="mark">P</span><h1>Pixdrift-inloggning</h1></div>
     ${hidden}
     <label for="email">E-post</label>
@@ -109,6 +109,11 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
 
   const sessionCookieName = config.sessionCookieName ?? DEFAULTS.sessionCookieName;
   const cookieSecure = config.cookieSecure ?? DEFAULTS.cookieSecure;
+  // The login form must post back to the authorize endpoint relative to the
+  // issuer path, so the IdP works both at an origin root (issuer
+  // `https://id.example`) and mounted under a path prefix (issuer
+  // `https://app.example/idp`, e.g. co-located inside the kansli Next app).
+  const authorizeAction = `${new URL(config.issuer).pathname.replace(/\/+$/, "")}/authorize`;
   const authCodeTtl = config.authCodeTtl ?? DEFAULTS.authCodeTtl;
   // Verify against ALL published keys (active + any rotated-in), so tokens
   // signed just before a key rotation still validate at /userinfo.
@@ -236,7 +241,7 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
         return reply;
       }
     }
-    return reply.type("text/html").send(loginPage(params));
+    return reply.type("text/html").send(loginPage(params, authorizeAction));
   });
 
   app.post<{ Body: AuthorizeParams & { email?: string; password?: string } }>(
@@ -259,7 +264,7 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
         return reply
           .code(429)
           .type("text/html")
-          .send(loginPage(params, "För många försök. Försök igen om en stund."));
+          .send(loginPage(params, authorizeAction, "För många försök. Försök igen om en stund."));
       }
 
       const user = await config.store.findUserByEmail(email);
@@ -273,7 +278,7 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
         return reply
           .code(200)
           .type("text/html")
-          .send(loginPage(params, "Fel e-post eller lösenord."));
+          .send(loginPage(params, authorizeAction, "Fel e-post eller lösenord."));
       }
       loginFailures.delete(throttleKey);
 

@@ -4,7 +4,10 @@
  * so `pnpm dev` + `pnpm dev:idp` work out of the box.
  */
 export const authConfig = {
-  issuer: process.env.PIXDRIFT_ISSUER ?? "http://127.0.0.1:4000",
+  // The IdP is co-located under /idp in this app; default to same-origin so
+  // `pnpm dev` gives a working SSO flow with no extra process. Override with
+  // PIXDRIFT_ISSUER (e.g. https://<host>/idp in production).
+  issuer: process.env.PIXDRIFT_ISSUER ?? "http://127.0.0.1:3000/idp",
   clientId: process.env.PIXDRIFT_CLIENT_ID ?? "kansli-web",
   clientSecret: process.env.PIXDRIFT_CLIENT_SECRET ?? "kansli-dev-secret",
   redirectUri: process.env.PIXDRIFT_REDIRECT_URI ?? "http://127.0.0.1:3000/api/auth/callback",
