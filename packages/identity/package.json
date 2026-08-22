@@ -15,6 +15,7 @@
   "scripts": {
     "start": "tsx src/main.ts",
     "dev": "tsx watch src/main.ts",
+    "onboard": "tsx scripts/onboard-module.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

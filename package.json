@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "dev:idp": "pnpm --filter @pixdrift/identity start",
+    "onboard": "pnpm --filter @pixdrift/identity onboard --",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
