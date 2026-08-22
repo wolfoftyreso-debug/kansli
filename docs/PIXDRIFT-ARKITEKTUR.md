@@ -217,6 +217,11 @@ Regeln: token bär `org` som `GlobalRef`; varje system håller en mappning
 - [x] **Varaktig IdP:** PostgreSQL-lager (owner/app), DB-baserat klientregister
       och persisterad roterbar ES256-nyckel — testat mot riktig Postgres (flöde,
       nyckel stabil över omstart, engångskoder). Se `packages/identity/README.md`.
+- [x] **AI Core (`@pixdrift/ai-core`):** gemensamt modell-API över
+      Claude/ChatGPT/Gemini (+ valfri AI-Gateway) med failover, provenance och
+      guardrails (utdata alltid `inference`, aldrig fakta). Se `docs/AI-PROVIDERS.md`.
+- [x] **Live-deploy:** kansli-navet driftsatt på Vercel (auto-deploy per push);
+      se `docs/DEPLOYMENT.md`.
 
 Se `integrations/README.md` för modulmatrisen och de två referensmönstren
 (jose-OIDC ESM · WebCrypto nolldependency).

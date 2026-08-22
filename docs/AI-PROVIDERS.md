@@ -36,6 +36,31 @@ Konstitutionen art. 8 + "kundens data är kronjuveler":
 - **Automation har uttrycklig nivå (L0–L4).** Ett AI-anrop höjer inte
   automationsnivån; L3/L4 kräver behörighet/godkännande.
 
+## Gemensam åtkomst via `@pixdrift/ai-core`
+
+Produkter anropar inte providers direkt — de går via **AI Core**, ett enhetligt
+modell-API med failover och provenance:
+
+```ts
+import { createModelRouter, providersFromEnv } from "@pixdrift/ai-core";
+
+const ai = createModelRouter({ providers: providersFromEnv() }); // läser env-nycklarna ovan
+const answer = await ai.complete({
+  model: "anthropic:claude-3-5-sonnet-latest", // provider-prefix väljer/failar över
+  purpose: "rita.finding.summary",
+  promptVersion: "2026-08-22",
+  messages: [
+    { role: "system", content: "Sammanfatta ett fynd. Aldrig ett belopp från modellen." },
+    { role: "user", content: evidencePacket },
+  ],
+});
+// answer.kind === "inference" — behandla aldrig som fakta. answer bär provider,
+// model, promptVersion, usage och latency för audit.
+```
+
+Byte av provider/modell blir en parameter, inte en kodändring. En `fakeProvider`
+finns för test/dev utan nätverk.
+
 ## Rekommenderat: en gemensam AI-Gateway
 
 I stället för att spreta tre providernycklar över varje produkt kan familjen
