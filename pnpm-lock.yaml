@@ -61,6 +61,34 @@ importers:
         specifier: ^3.2.4
         version: 3.2.7(@types/node@20.19.43)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.23.12)
 
+  integrations/alva:
+    devDependencies:
+      '@pixdrift/auth-client':
+        specifier: workspace:*
+        version: link:../../packages/auth-client
+      '@pixdrift/identity':
+        specifier: workspace:*
+        version: link:../../packages/identity
+
+  integrations/rita:
+    dependencies:
+      '@fastify/cookie':
+        specifier: ^11.0.2
+        version: 11.1.2
+      '@pixdrift/auth-client':
+        specifier: workspace:*
+        version: link:../../packages/auth-client
+      '@pixdrift/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      fastify:
+        specifier: ^5.2.1
+        version: 5.12.1
+    devDependencies:
+      '@pixdrift/identity':
+        specifier: workspace:*
+        version: link:../../packages/identity
+
   packages/auth-client:
     dependencies:
       '@pixdrift/contracts':

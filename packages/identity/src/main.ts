@@ -24,14 +24,35 @@ async function main(): Promise<void> {
   const issuer = process.env.ISSUER ?? `http://${host}:${port}`;
   const sessionSecret = process.env.SESSION_SECRET ?? "dev-idp-session-secret-min-32-chars-0001";
 
-  const webClient: OidcClient = {
-    clientId: process.env.CLIENT_ID ?? "kansli-web",
-    clientSecretHash: sha256Base64ForSecret(process.env.CLIENT_SECRET ?? "kansli-dev-secret"),
-    redirectUris: envList("REDIRECT_URIS", ["http://127.0.0.1:3000/api/auth/callback"]),
-    postLogoutRedirectUris: envList("POST_LOGOUT_URIS", ["http://127.0.0.1:3000/"]),
-    audiences: envList("AUDIENCES", ["kansli-web", "alva-plattform", "rita-api"]),
-    name: "Kansli (nav)",
-  };
+  // Registered subsystems of the Pixdrift family. Each interactive client runs
+  // the Authorization Code + PKCE BFF flow; `audiences` are the resource
+  // servers its access tokens are meant for (verified via JWKS by that server).
+  const clients: OidcClient[] = [
+    {
+      clientId: process.env.CLIENT_ID ?? "kansli-web",
+      clientSecretHash: sha256Base64ForSecret(process.env.CLIENT_SECRET ?? "kansli-dev-secret"),
+      redirectUris: envList("REDIRECT_URIS", ["http://127.0.0.1:3000/api/auth/callback"]),
+      postLogoutRedirectUris: envList("POST_LOGOUT_URIS", ["http://127.0.0.1:3000/"]),
+      audiences: envList("AUDIENCES", ["kansli-web"]),
+      name: "Kansli (nav)",
+    },
+    {
+      clientId: process.env.ALVA_CLIENT_ID ?? "alva-web",
+      clientSecretHash: sha256Base64ForSecret(process.env.ALVA_CLIENT_SECRET ?? "alva-dev-secret"),
+      redirectUris: envList("ALVA_REDIRECT_URIS", ["http://127.0.0.1:8080/auth/callback"]),
+      postLogoutRedirectUris: envList("ALVA_POST_LOGOUT_URIS", ["http://127.0.0.1:8080/"]),
+      audiences: envList("ALVA_AUDIENCES", ["alva-plattform", "alva-ai-orkester"]),
+      name: "ALVA",
+    },
+    {
+      clientId: process.env.RITA_CLIENT_ID ?? "rita-web",
+      clientSecretHash: sha256Base64ForSecret(process.env.RITA_CLIENT_SECRET ?? "rita-dev-secret"),
+      redirectUris: envList("RITA_REDIRECT_URIS", ["http://127.0.0.1:3000/auth/pixdrift/callback"]),
+      postLogoutRedirectUris: envList("RITA_POST_LOGOUT_URIS", ["http://127.0.0.1:3000/"]),
+      audiences: envList("RITA_AUDIENCES", ["rita-api"]),
+      name: "RITA",
+    },
+  ];
 
   const { store } = await seededStore();
   const signingKey = await generateSigningKey();
@@ -40,7 +61,7 @@ async function main(): Promise<void> {
     issuer,
     store,
     signingKey,
-    clients: [webClient],
+    clients,
     sessionSecret,
     cookieSecure: process.env.COOKIE_SECURE === "true",
   });

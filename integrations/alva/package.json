@@ -1,0 +1,15 @@
+{
+  "name": "@pixdrift/alva-adapter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Drop-in Pixdrift access-token verifier for ALVA. Zero external dependencies (node:crypto only), to honour ALVA's self-hosted, dependency-minimal design.",
+  "exports": {
+    ".": "./src/pixdrift-auth.mjs"
+  },
+  "main": "src/pixdrift-auth.mjs",
+  "devDependencies": {
+    "@pixdrift/auth-client": "workspace:*",
+    "@pixdrift/identity": "workspace:*"
+  }
+}
