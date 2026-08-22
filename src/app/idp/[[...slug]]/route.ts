@@ -44,6 +44,19 @@ function serverFor(issuer: string): Promise<FastifyInstance> {
 const HOP_BY_HOP = new Set(["content-length", "transfer-encoding", "connection", "keep-alive"]);
 
 async function handle(req: NextRequest): Promise<Response> {
+  try {
+    return await handleInner(req);
+  } catch (err) {
+    const e = err as Error;
+    // TEMP DEBUG: surface the runtime error to diagnose the Vercel 500.
+    return new Response(`IDP_ERROR ${e?.name}: ${e?.message}\n${e?.stack}`, {
+      status: 500,
+      headers: { "content-type": "text/plain" },
+    });
+  }
+}
+
+async function handleInner(req: NextRequest): Promise<Response> {
   const issuer = issuerFor(req);
   const app = await serverFor(issuer);
 
