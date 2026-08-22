@@ -1,192 +1,113 @@
-"use client";
+import { readSession } from "@/lib/auth/session";
+import TaskBoard from "./TaskBoard";
 
-import { useEffect, useMemo, useState } from "react";
-
-type Task = {
-  id: string;
-  title: string;
-  owner: string;
-  done: boolean;
-  createdAt: string;
-};
-
-export default function Home() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [title, setTitle] = useState("");
-  const [owner, setOwner] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  async function refresh() {
-    const res = await fetch("/api/tasks", { cache: "no-store" });
-    const data = await res.json();
-    setTasks(data.tasks ?? []);
-  }
-
-  useEffect(() => {
-    let active = true;
-    async function load() {
-      try {
-        const res = await fetch("/api/tasks", { cache: "no-store" });
-        const data = await res.json();
-        if (active) setTasks(data.tasks ?? []);
-      } catch {
-        if (active) setError("Kunde inte hämta uppgifter.");
-      } finally {
-        if (active) setLoading(false);
-      }
-    }
-    load();
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  async function addTask(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    if (!title.trim()) {
-      setError("Titeln får inte vara tom.");
-      return;
-    }
-    setSubmitting(true);
-    try {
-      const res = await fetch("/api/tasks", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, owner }),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error ?? "Kunde inte spara uppgiften.");
-      }
-      setTitle("");
-      setOwner("");
-      await refresh();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Något gick fel.");
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  async function toggle(id: string) {
-    await fetch(`/api/tasks/${id}`, { method: "PATCH" });
-    await refresh();
-  }
-
-  async function remove(id: string) {
-    await fetch(`/api/tasks/${id}`, { method: "DELETE" });
-    await refresh();
-  }
-
-  const { open, done } = useMemo(
-    () => ({
-      open: tasks.filter((t) => !t.done).length,
-      done: tasks.filter((t) => t.done).length,
-    }),
-    [tasks],
+function Brand() {
+  return (
+    <div className="flex items-center gap-3">
+      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-lg font-bold text-white shadow-sm">
+        K
+      </span>
+      <div className="flex flex-col leading-tight">
+        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
+          Kansli
+        </h1>
+        <span className="text-xs text-zinc-400">Pixdrift-nav</span>
+      </div>
+    </div>
   );
+}
+
+export default async function Home() {
+  const session = await readSession();
 
   return (
     <div className="min-h-full bg-zinc-50 dark:bg-zinc-950">
       <main className="mx-auto flex w-full max-w-2xl flex-col gap-8 px-6 py-16">
-        <header className="flex flex-col gap-2">
-          <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-lg font-bold text-white shadow-sm">
-              K
-            </span>
-            <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-              Kansli
-            </h1>
-          </div>
-          <p className="text-zinc-500 dark:text-zinc-400">
-            Uppgiftstavla för kansliet — {open} öppna, {done} klara.
-          </p>
+        <header className="flex items-center justify-between gap-4">
+          <Brand />
+          {session ? (
+            <form action="/api/auth/logout" method="post">
+              <button
+                type="submit"
+                className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800"
+              >
+                Logga ut
+              </button>
+            </form>
+          ) : (
+            <a
+              href="/api/auth/login"
+              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-500"
+            >
+              Logga in med Pixdrift
+            </a>
+          )}
         </header>
 
-        <form
-          onSubmit={addTask}
-          className="flex flex-col gap-3 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
-        >
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Ny uppgift…"
-              aria-label="Uppgiftens titel"
-              className="flex-1 rounded-lg border border-zinc-300 bg-transparent px-3 py-2 text-zinc-900 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-zinc-700 dark:text-zinc-100"
-            />
-            <input
-              value={owner}
-              onChange={(e) => setOwner(e.target.value)}
-              placeholder="Ansvarig"
-              aria-label="Ansvarig"
-              className="rounded-lg border border-zinc-300 bg-transparent px-3 py-2 text-zinc-900 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-zinc-700 dark:text-zinc-100 sm:w-40"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={submitting}
-            className="self-start rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 disabled:opacity-60"
-          >
-            {submitting ? "Sparar…" : "Lägg till"}
-          </button>
-          {error && (
-            <p role="alert" className="text-sm text-red-600 dark:text-red-400">
-              {error}
-            </p>
-          )}
-        </form>
+        {session ? (
+          <>
+            <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+              <div className="flex items-center gap-3">
+                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-indigo-100 text-base font-semibold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
+                  {session.name.slice(0, 1).toUpperCase()}
+                </span>
+                <div className="flex flex-col">
+                  <span className="font-medium text-zinc-900 dark:text-zinc-100">
+                    {session.name}
+                  </span>
+                  <span className="text-sm text-zinc-500 dark:text-zinc-400">{session.email}</span>
+                </div>
+              </div>
 
-        <section className="flex flex-col gap-2">
-          {loading ? (
-            <p className="text-zinc-500 dark:text-zinc-400">Laddar…</p>
-          ) : tasks.length === 0 ? (
-            <p className="rounded-2xl border border-dashed border-zinc-300 p-8 text-center text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
-              Inga uppgifter ännu. Lägg till den första ovan.
-            </p>
-          ) : (
-            <ul className="flex flex-col gap-2">
-              {tasks.map((task) => (
-                <li
-                  key={task.id}
-                  className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-white p-4 shadow-sm transition hover:shadow dark:border-zinc-800 dark:bg-zinc-900"
-                >
-                  <input
-                    type="checkbox"
-                    checked={task.done}
-                    onChange={() => toggle(task.id)}
-                    aria-label={`Markera "${task.title}" som klar`}
-                    className="h-5 w-5 shrink-0 accent-indigo-600"
-                  />
-                  <div className="flex min-w-0 flex-1 flex-col">
-                    <span
-                      className={`truncate font-medium ${
-                        task.done
-                          ? "text-zinc-400 line-through dark:text-zinc-600"
-                          : "text-zinc-900 dark:text-zinc-100"
-                      }`}
-                    >
-                      {task.title}
-                    </span>
-                    <span className="text-sm text-zinc-500 dark:text-zinc-400">
-                      {task.owner}
-                    </span>
+              {session.org && (
+                <div className="mt-4 border-t border-zinc-100 pt-4 dark:border-zinc-800">
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                    Aktiv organisation:{" "}
+                    <span className="font-medium text-zinc-800 dark:text-zinc-200">
+                      {session.org.name}
+                    </span>{" "}
+                    · roller: {session.org.roles.join(", ") || "—"}
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {session.org.permissions.map((permission) => (
+                      <span
+                        key={permission}
+                        className="rounded-md bg-zinc-100 px-2 py-0.5 font-mono text-xs text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
+                      >
+                        {permission}
+                      </span>
+                    ))}
                   </div>
-                  <button
-                    onClick={() => remove(task.id)}
-                    aria-label={`Ta bort "${task.title}"`}
-                    className="shrink-0 rounded-lg px-2 py-1 text-sm text-zinc-400 transition hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/40"
-                  >
-                    Ta bort
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
+                </div>
+              )}
+
+              {session.memberships.length > 1 && (
+                <p className="mt-3 text-xs text-zinc-400">
+                  Du är medlem i {session.memberships.length} organisationer via samma
+                  Pixdrift-identitet.
+                </p>
+              )}
+            </section>
+
+            <TaskBoard />
+          </>
+        ) : (
+          <section className="flex flex-col gap-4 rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+            <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+              Välkommen till kansliet
+            </h2>
+            <p className="text-zinc-600 dark:text-zinc-400">
+              Logga in med din Pixdrift-identitet för att se uppgiftstavlan. Samma inloggning
+              gäller i alla Pixdrift-system.
+            </p>
+            <a
+              href="/api/auth/login"
+              className="self-start rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white transition hover:bg-indigo-500"
+            >
+              Logga in med Pixdrift
+            </a>
+          </section>
+        )}
       </main>
     </div>
   );

@@ -4,17 +4,24 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:idp": "pnpm --filter @pixdrift/identity start",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "typecheck:packages": "pnpm -r --filter \"./packages/*\" typecheck",
+    "test": "vitest run"
   },
   "dependencies": {
+    "@pixdrift/auth-client": "workspace:*",
+    "@pixdrift/contracts": "workspace:*",
+    "jose": "^6.0.11",
     "next": "16.3.2",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@pixdrift/identity": "workspace:*",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -22,7 +29,9 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.2",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "tsx": "^4.20.7",
+    "typescript": "^5",
+    "vitest": "^3.2.4"
   },
   "packageManager": "pnpm@10.33.3"
 }
