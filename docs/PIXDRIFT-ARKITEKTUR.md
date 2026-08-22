@@ -19,6 +19,7 @@ här är en översyn, inte en detalj.
 | **RITA** | Ekonomi: lagliga skatte-/avdragsmöjligheter ur bokföring | pnpm-monorepo, Fastify + Next.js + Rust-motor, AWS | PostgreSQL (RLS) | Serversession (scrypt) | `tenants` + `legalEntities`, RLS `app.tenant_id` | Radsäkerhet (`*_owner`/`*_app`), append-only audit via rättigheter, dubbel evidens |
 | **BRITT** | Drift/beslut: overlay som *aggregerar* alla system och ger vägledning | Node/CommonJS, Express, `node:sqlite` | SQLite (inbyggt) | Serversession + API-nycklar | `org_id` + enhetshierarki (company→…→team) | Krypterat credential-valv, fail-closed synk, auditlogg |
 | **TORA** | Offentlig marknad: kan företaget få uppdraget? (anbud/upphandling) | Vite/React SPA + Fastify-tjänst, k8s, PostgreSQL | PostgreSQL | **OIDC/PKCE (inbyggt)** | `tenant`-claim (sträng) | Deny-by-default; `RÄTTIGHET` kräver `LegalBasis`; nivå ur signerad token |
+| **IRMA** | Avtal: avtalslivscykel — granskning, workflow, signering | Vinext/Vite + React 19 (RSC), Cloudflare (D1/R2), Drizzle | SQLite/D1 (PostgreSQL i prod) | Personalidentitet **+ Magic Links** (externa mottagare) | tenant-scopat, roller | Append-only hashkedjad audit; original = oföränderligt, content-addressed bevis |
 
 Rollfördelningen är hela poängen: **kansli** är ingången, **ALVA/RITA** är
 specialistsystem som producerar (ärenden, fynd, fakturor), och **BRITT** är
@@ -130,7 +131,7 @@ Regeln: token bär `org` som `GlobalRef`; varje system håller en mappning
 
 ## 5. Stabiliseringschecklista
 
-**Byggt och testat (32 automatiska tester):**
+**Byggt och testat (34 automatiska tester, 8 sviter):**
 - [x] Pixdrift IdP: OIDC discovery, JWKS, Authorization Code + PKCE (S256),
       userinfo, RP-logout, ES256-signering, SSO mellan klienter, **publika +
       konfidentiella klienter**.
@@ -148,6 +149,11 @@ Regeln: token bär `org` som `GlobalRef`; varje system håller en mappning
       `principal.ts` (`tier=enterprise`, `opportunity:read` m.fl.).
 - [x] **BRITT-adapter:** nolldependency CJS OIDC-BFF (WebCrypto ES256/JWKS + PKCE),
       testad mot riktig IdP.
+- [x] **IRMA-adapter:** jose-OIDC (ESM) BFF för personal-inloggning, testad mot
+      riktig IdP. Magic Links för externa mottagare förblir interna i IRMA.
+
+Se `integrations/README.md` för modulmatrisen och de två referensmönstren
+(jose-OIDC ESM · WebCrypto nolldependency).
 
 **Att låsa för stabil drift:**
 - [ ] **Paketdistribution:** publicera `@pixdrift/*` till privat register
@@ -184,3 +190,4 @@ Regeln: token bär `org` som `GlobalRef`; varje system håller en mappning
 | `wolfoftyreso-debug/RITA` | Ekonomi | In-repo-patch byggd + typecheckad; klar att landa |
 | `wolfoftyreso-debug/BRITT` | Drift/overlay | **Adapter byggd + testad** (nolldependency CJS OIDC-BFF); wiring-README klar; in-repo-patch återstår |
 | `wolfoftyreso-debug/TORA` | Offentlig marknad/anbud | **OIDC-native, inkopplad via konfig**; token-kontrakt bevisat (test). Peka klient+tjänst mot IdP |
+| `wolfoftyreso-debug/IRMA` | Avtal | **Adapter byggd + testad** (jose-OIDC ESM, personal); Magic Links interna; in-repo-patch återstår |

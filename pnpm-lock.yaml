@@ -76,6 +76,16 @@ importers:
         specifier: workspace:*
         version: link:../../packages/identity
 
+  integrations/irma:
+    dependencies:
+      jose:
+        specifier: ^6.0.11
+        version: 6.2.10
+    devDependencies:
+      '@pixdrift/identity':
+        specifier: workspace:*
+        version: link:../../packages/identity
+
   integrations/rita:
     dependencies:
       '@fastify/cookie':

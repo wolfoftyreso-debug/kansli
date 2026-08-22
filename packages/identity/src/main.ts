@@ -68,6 +68,14 @@ async function main(): Promise<void> {
       audiences: envList("BRITT_AUDIENCES", ["britt-api"]),
       name: "BRITT",
     },
+    {
+      clientId: process.env.IRMA_CLIENT_ID ?? "irma-web",
+      clientSecretHash: sha256Base64ForSecret(process.env.IRMA_CLIENT_SECRET ?? "irma-dev-secret"),
+      redirectUris: envList("IRMA_REDIRECT_URIS", ["http://127.0.0.1:5173/auth/pixdrift/callback"]),
+      postLogoutRedirectUris: envList("IRMA_POST_LOGOUT_URIS", ["http://127.0.0.1:5173/"]),
+      audiences: envList("IRMA_AUDIENCES", ["irma-api"]),
+      name: "IRMA",
+    },
   ];
 
   const { store } = await seededStore();

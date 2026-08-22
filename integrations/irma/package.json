@@ -1,0 +1,24 @@
+{
+  "name": "@pixdrift/irma-adapter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "OIDC BFF adapter for IRMA staff/tenant login (ESM + jose). Magic Links for external recipients stay internal to IRMA and do not go through Pixdrift.",
+  "exports": {
+    ".": {
+      "types": "./src/pixdrift-oidc.ts",
+      "import": "./src/pixdrift-oidc.ts"
+    }
+  },
+  "main": "src/pixdrift-oidc.ts",
+  "types": "src/pixdrift-oidc.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "jose": "^6.0.11"
+  },
+  "devDependencies": {
+    "@pixdrift/identity": "workspace:*"
+  }
+}
