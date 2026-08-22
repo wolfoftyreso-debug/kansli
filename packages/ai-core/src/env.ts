@@ -1,4 +1,9 @@
-import { anthropicProvider, geminiProvider, openAICompatibleProvider } from "./providers.ts";
+import {
+  anthropicProvider,
+  geminiProvider,
+  moonshotProvider,
+  openAICompatibleProvider,
+} from "./providers.ts";
 import type { Provider } from "./types.ts";
 
 export interface EnvProviderOptions {
@@ -24,6 +29,11 @@ export function providersFromEnv(options: EnvProviderOptions = {}): Provider[] {
   }
   if (env.GEMINI_API_KEY) {
     providers.push(geminiProvider({ apiKey: env.GEMINI_API_KEY, fetchImpl }));
+  }
+  if (env.MOONSHOT_API_KEY) {
+    providers.push(
+      moonshotProvider({ apiKey: env.MOONSHOT_API_KEY, baseUrl: env.MOONSHOT_BASE_URL, fetchImpl }),
+    );
   }
   if (env.AI_GATEWAY_API_KEY) {
     providers.push(

@@ -62,6 +62,13 @@ describe("providersFromEnv", () => {
     expect(names).toEqual(["anthropic", "gemini"]);
   });
 
+  it("adds Kimi (Moonshot) when MOONSHOT_API_KEY is set", () => {
+    const names = providersFromEnv({
+      env: { ANTHROPIC_API_KEY: "a", MOONSHOT_API_KEY: "m" },
+    }).map((p) => p.name);
+    expect(names).toEqual(["anthropic", "kimi"]);
+  });
+
   it("adds an OpenAI-compatible gateway when AI_GATEWAY_API_KEY is set", () => {
     const names = providersFromEnv({ env: { AI_GATEWAY_API_KEY: "k" } }).map((p) => p.name);
     expect(names).toEqual(["gateway"]);

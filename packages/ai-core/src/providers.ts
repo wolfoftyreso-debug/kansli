@@ -157,6 +157,23 @@ export function openAICompatibleProvider(opts: OpenAICompatibleOptions): Provide
   };
 }
 
+// --- Moonshot (Kimi) — OpenAI-compatible ------------------------------------
+export interface MoonshotOptions {
+  apiKey: string;
+  baseUrl?: string;
+  fetchImpl?: FetchImpl;
+}
+
+/** Kimi via Moonshot's OpenAI-compatible API. Provider name is "kimi". */
+export function moonshotProvider(opts: MoonshotOptions): Provider {
+  return openAICompatibleProvider({
+    apiKey: opts.apiKey,
+    baseUrl: opts.baseUrl ?? "https://api.moonshot.ai/v1",
+    name: "kimi",
+    fetchImpl: opts.fetchImpl,
+  });
+}
+
 // --- Google Gemini -----------------------------------------------------------
 export interface GeminiOptions {
   apiKey: string;

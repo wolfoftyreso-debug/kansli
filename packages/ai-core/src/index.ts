@@ -24,10 +24,12 @@ export {
   anthropicProvider,
   openAICompatibleProvider,
   geminiProvider,
+  moonshotProvider,
   fakeProvider,
   type AnthropicOptions,
   type OpenAICompatibleOptions,
   type GeminiOptions,
+  type MoonshotOptions,
 } from "./providers.ts";
 export {
   createModelRouter,

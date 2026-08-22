@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   anthropicProvider,
   geminiProvider,
+  moonshotProvider,
   openAICompatibleProvider,
   ProviderError,
 } from "../src/index.ts";
@@ -91,6 +92,27 @@ describe("OpenAI-compatible adapter", () => {
     });
     await provider.complete({ model: "anthropic/claude", messages: [] });
     expect(seen[0].url).toBe("https://gw.example/v1/chat/completions");
+  });
+});
+
+describe("Moonshot (Kimi) adapter", () => {
+  it("is named 'kimi' and calls Moonshot's OpenAI-compatible endpoint", async () => {
+    const seen: Captured[] = [];
+    const provider = moonshotProvider({
+      apiKey: "sk-moon",
+      fetchImpl: mockFetch(
+        200,
+        { choices: [{ message: { content: "hej" }, finish_reason: "stop" }], usage: { prompt_tokens: 2, completion_tokens: 1 } },
+        seen,
+      ),
+    });
+    expect(provider.name).toBe("kimi");
+    const res = await provider.complete({ model: "kimi-k2", messages: [{ role: "user", content: "q" }] });
+    expect(res.provider).toBe("kimi");
+    expect(res.text).toBe("hej");
+    expect(seen[0].url).toBe("https://api.moonshot.ai/v1/chat/completions");
+    const headers = seen[0].init?.headers as Record<string, string>;
+    expect(headers.authorization).toBe("Bearer sk-moon");
   });
 });
 

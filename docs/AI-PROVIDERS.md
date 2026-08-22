@@ -11,6 +11,7 @@ eller IdP:n. Detta dokument fastställer hur nycklarna hanteras gemensamt.
 | Anthropic (Claude) | `ANTHROPIC_API_KEY` | ALVA (ai-orkester), BRITT, RITA |
 | OpenAI (ChatGPT) | `OPENAI_API_KEY` | (ny reasoning-kod) |
 | Google (Gemini) | `GEMINI_API_KEY` | ALVA (ai-orkester) |
+| Moonshot (Kimi) | `MOONSHOT_API_KEY` (+ valfri `MOONSHOT_BASE_URL`) | via AI Core (provider `kimi`, OpenAI-kompatibel) |
 
 Ett gemensamt namnschema betyder att en modul får sina nycklar utan att uppfinna
 egna variabelnamn.
