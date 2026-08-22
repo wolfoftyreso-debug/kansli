@@ -12,6 +12,7 @@ IdP:n. Nycklarna hanteras precis som andra hemligheter.
 | **46elks** (SMS/röst) | `ELKS_API_USERNAME`, `ELKS_API_PASSWORD` | HTTP Basic (två delar) | Notifications — SMS-kanal |
 | **Resend** (mejl) | `RESEND_API_KEY` | Bearer (`re_…`) | Notifications — e-postkanal |
 | **Mapbox** (kartor/geokodning) | `MAPBOX_ACCESS_TOKEN` | Access token (`pk.*` klient / `sk.*` server) | Geo — kartor, geokodning, adresser |
+| **Apollo.io** (B2B-/kontaktdata) | `APOLLO_API_KEY` | Header `X-Api-Key` | Integration — datakälla (CRM/audience); BRITT `apollo`-connector. *Framtida bruk.* |
 
 ## Hantering — samma regler som alla hemligheter
 
