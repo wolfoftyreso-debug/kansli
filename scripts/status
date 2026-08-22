@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+print_row() {
+  local name="$1"
+  local path="$2"
+
+  if [[ ! -d "$path" ]]; then
+    printf "%-9s %s\n" "$name" "MISSING"
+    return 0
+  fi
+
+  if [[ ! -d "$path/.git" ]]; then
+    printf "%-9s %s\n" "$name" "PRESENT (not a git repo)"
+    return 0
+  fi
+
+  local status
+  status="$(git -C "$path" status --porcelain 2>/dev/null || true)"
+  if [[ -n "$status" ]]; then
+    printf "%-9s %s\n" "$name" "DIRTY"
+  else
+    printf "%-9s %s\n" "$name" "OK"
+  fi
+}
+
+echo "KANSLI DEVELOPMENT STATUS"
+echo
+
+print_row "PLATFORM" "$ROOT_DIR"
+print_row "ALVA"     "$ROOT_DIR/products/alva"
+print_row "TORA"     "$ROOT_DIR/products/tora"
+print_row "RITA"     "$ROOT_DIR/products/rita"
+print_row "IRMA"     "$ROOT_DIR/products/irma"
+print_row "BRITT"    "$ROOT_DIR/products/britt"
+

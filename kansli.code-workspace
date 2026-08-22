@@ -1,0 +1,20 @@
+{
+  "folders": [
+    { "name": "KANSLI — Platform (this repo)", "path": "." },
+    { "name": "ALVA (clone into products/alva)", "path": "products/alva" },
+    { "name": "TORA (clone into products/tora)", "path": "products/tora" },
+    { "name": "RITA (clone into products/rita)", "path": "products/rita" },
+    { "name": "IRMA (clone into products/irma)", "path": "products/irma" },
+    { "name": "BRITT (clone into products/britt)", "path": "products/britt" }
+  ],
+  "settings": {
+    "search.followSymlinks": true,
+    "files.watcherExclude": {
+      "**/node_modules/**": true,
+      "**/.next/**": true,
+      "**/dist/**": true,
+      "**/.turbo/**": true
+    }
+  }
+}
+

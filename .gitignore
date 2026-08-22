@@ -1,0 +1,15 @@
+# KANSLI control-plane repo should not track product source code.
+# Product repositories should be cloned/attached separately and keep their own Git history.
+products/*
+!products/README.md
+
+# Common local junk
+.DS_Store
+*.log
+node_modules/
+dist/
+.next/
+.turbo/
+.env
+.env.*
+

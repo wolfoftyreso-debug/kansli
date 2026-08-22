@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+echo "KANSLI CHECK-ALL"
+echo
+echo "This script is intentionally minimal for Phase 0 (inventory)."
+echo "Planned future capabilities:"
+echo "- install validation per repo"
+echo "- typecheck"
+echo "- lint"
+echo "- unit tests"
+echo "- build"
+echo
+echo "Repositories:"
+echo "- PLATFORM: $ROOT_DIR"
+echo "- ALVA:     $ROOT_DIR/products/alva"
+echo "- TORA:     $ROOT_DIR/products/tora"
+echo "- RITA:     $ROOT_DIR/products/rita"
+echo "- IRMA:     $ROOT_DIR/products/irma"
+echo "- BRITT:    $ROOT_DIR/products/britt"
+
