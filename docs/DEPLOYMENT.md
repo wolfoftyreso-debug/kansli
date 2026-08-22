@@ -5,9 +5,16 @@ Två deploybara delar i dag: **kansli** (nav, Next.js) och **Pixdrift IdP**
 hela familjen (konstitutionens artikel 4–5: managed services, motiverad
 komplexitet).
 
-> **Status i denna miljö:** ingen molnkredential finns (Vercel MCP = needsAuth,
-> ingen `VERCEL_TOKEN`, ingen AWS). Deploy kan därför inte köras härifrån —
-> se "Vad som krävs för länkar" sist. Allt nedan är verifierat lokalt.
+## Live
+
+| Del | URL | Status |
+| --- | --- | --- |
+| **kansli (nav)** | https://kansli-git-cursor-pixdrift-shared-auth-39a5-hypbit.vercel.app | **Live** (Vercel, auto-deploy på varje push till grenen) |
+| Pixdrift IdP | `id.pixdrift.com` | Ej deployad än (behöver host + Postgres — se nedan) |
+
+Vercel-projekt: `kansli` (`prj_L8oHYD0UrqQMjQUaqnd96CUT3K7c`), team `hypbit`.
+Navets landningssida renderas publikt (200). Själva inloggningsknappen fungerar
+end-to-end först när IdP:n är deployad och `PIXDRIFT_*`-env pekar på den.
 
 ## 1. kansli (nav) → Vercel
 
