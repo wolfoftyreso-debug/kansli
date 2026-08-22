@@ -119,6 +119,12 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
   const clientById = new Map<string, OidcClient>();
   for (const client of config.clients) clientById.set(client.clientId, client);
 
+  // Simple per-instance brute-force throttle: count FAILED logins per ip+email,
+  // reset on success. Multi-instance deployments should back this with Redis.
+  const MAX_LOGIN_FAILURES = 10;
+  const LOGIN_WINDOW_MS = 15 * 60_000;
+  const loginFailures = new Map<string, { count: number; resetAt: number }>();
+
   function currentUserId(request: import("fastify").FastifyRequest): string | null {
     const raw = request.cookies[sessionCookieName];
     if (!raw) return null;
@@ -222,8 +228,11 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
 
     const userId = currentUserId(request);
     if (userId && params.prompt !== "login") {
-      await issueCodeAndRedirect(reply, client, redirectUri, params, userId);
-      return reply;
+      const current = await config.store.findUserById(userId);
+      if (current && current.status === "active") {
+        await issueCodeAndRedirect(reply, client, redirectUri, params, userId);
+        return reply;
+      }
     }
     return reply.type("text/html").send(loginPage(params));
   });
@@ -240,11 +249,26 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
 
       const email = (request.body.email ?? "").trim();
       const password = request.body.password ?? "";
+
+      const throttleKey = `${request.ip}:${email.toLowerCase()}`;
+      const now = Date.now();
+      const failure = loginFailures.get(throttleKey);
+      if (failure && failure.resetAt > now && failure.count >= MAX_LOGIN_FAILURES) {
+        return reply
+          .code(429)
+          .type("text/html")
+          .send(loginPage(params, "För många försök. Försök igen om en stund."));
+      }
+
       const user = await config.store.findUserByEmail(email);
       const ok = user && user.status === "active" && (await verifyPassword(password, user.passwordHash));
       if (!user || !ok) {
+        const base = failure && failure.resetAt > now ? failure : { count: 0, resetAt: now + LOGIN_WINDOW_MS };
+        base.count += 1;
+        loginFailures.set(throttleKey, base);
         return reply.code(200).type("text/html").send(loginPage(params, "Fel e-post eller lösenord."));
       }
+      loginFailures.delete(throttleKey);
 
       // Opportunistic re-hash if a legacy scheme ever verifies (migration path).
       if (!isCurrentScheme(user.passwordHash)) {
@@ -294,7 +318,8 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
     }
 
     const user = await config.store.findUserById(record.userId);
-    if (!user) return reply.code(400).send({ error: "invalid_grant" });
+    // A user suspended after the code was issued must not receive tokens.
+    if (!user || user.status !== "active") return reply.code(400).send({ error: "invalid_grant" });
 
     const subject = userSubject(user.id);
     const org = record.orgId ? await orgContext(config.store, user.id, record.orgId) : null;
@@ -354,16 +379,22 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
   // clear the IdP SSO session so a later /authorize prompts for credentials.
   const endSessionHandler = async (
     request: import("fastify").FastifyRequest<{
-      Querystring: { post_logout_redirect_uri?: string; state?: string };
+      Querystring: { post_logout_redirect_uri?: string; state?: string; client_id?: string };
     }>,
     reply: FastifyReply,
   ) => {
     reply.clearCookie(sessionCookieName, { path: "/" });
     const target = request.query.post_logout_redirect_uri;
+    // Open-redirect guard: only redirect to a URI registered for the named
+    // client. An unknown/unregistered target is ignored (we just log out).
     if (target) {
-      const url = new URL(target);
-      if (request.query.state) url.searchParams.set("state", request.query.state);
-      return reply.redirect(url.toString());
+      const client = request.query.client_id ? clientById.get(request.query.client_id) : undefined;
+      const allowed = client?.postLogoutRedirectUris ?? [];
+      if (allowed.includes(target)) {
+        const url = new URL(target);
+        if (request.query.state) url.searchParams.set("state", request.query.state);
+        return reply.redirect(url.toString());
+      }
     }
     return reply.type("text/html").send(`<!doctype html><meta charset="utf-8"><p>Du är utloggad.</p>`);
   };

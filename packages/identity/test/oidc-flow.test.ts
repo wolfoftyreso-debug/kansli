@@ -46,6 +46,7 @@ beforeAll(async () => {
         clientId: CLIENT_ID,
         clientSecretHash: sha256Base64ForSecret(CLIENT_SECRET),
         redirectUris: [REDIRECT_URI],
+        postLogoutRedirectUris: ["http://127.0.0.1:9/after-logout"],
         audiences: [CLIENT_ID, "alva-plattform", "rita-api"],
         name: "Test web",
       },
@@ -254,5 +255,64 @@ describe("RP-initiated logout", () => {
       expect(setCookie).toContain("pixdrift_idp=");
       expect(setCookie.toLowerCase()).toMatch(/max-age=0|expires=/);
     }
+  });
+});
+
+describe("Logout open-redirect guard", () => {
+  it("redirects only to a URI registered for the named client", async () => {
+    const registered = "http://127.0.0.1:9/after-logout";
+    const ok = await fetch(
+      `${issuer}/logout?client_id=${CLIENT_ID}&post_logout_redirect_uri=${encodeURIComponent(registered)}`,
+      { redirect: "manual" },
+    );
+    expect(ok.status).toBe(302);
+    expect(ok.headers.get("location")).toBe(registered);
+  });
+
+  it("ignores an unregistered target (no open redirect)", async () => {
+    const evil = "https://evil.example/phish";
+    const res = await fetch(
+      `${issuer}/logout?client_id=${CLIENT_ID}&post_logout_redirect_uri=${encodeURIComponent(evil)}`,
+      { redirect: "manual" },
+    );
+    expect(res.status).toBe(200);
+    expect(res.headers.get("location")).toBeNull();
+  });
+
+  it("ignores a target with no client_id", async () => {
+    const registered = "http://127.0.0.1:9/after-logout";
+    const res = await fetch(
+      `${issuer}/logout?post_logout_redirect_uri=${encodeURIComponent(registered)}`,
+      { redirect: "manual" },
+    );
+    expect(res.status).toBe(200);
+    expect(res.headers.get("location")).toBeNull();
+  });
+});
+
+describe("Login brute-force throttle", () => {
+  it("blocks after repeated failed logins", async () => {
+    const oidc = client();
+    const authUrl = await oidc.authorizationUrl({
+      state: randomValue(),
+      nonce: randomValue(),
+      codeVerifier: generateCodeVerifier(),
+    });
+    const badEmail = "brute@exempelbolaget.se";
+    let last = 200;
+    for (let i = 0; i < 12; i++) {
+      const form = new URLSearchParams();
+      for (const [k, v] of new URL(authUrl).searchParams) form.set(k, v);
+      form.set("email", badEmail);
+      form.set("password", "fel");
+      const res = await fetch(`${issuer}/authorize`, {
+        method: "POST",
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        body: form,
+        redirect: "manual",
+      });
+      last = res.status;
+    }
+    expect(last).toBe(429);
   });
 });

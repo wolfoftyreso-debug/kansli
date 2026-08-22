@@ -170,6 +170,8 @@ export function createOidcClient(config: OidcClientConfig): OidcClient {
       const endpoint = doc.end_session_endpoint ?? `${doc.issuer}/logout`;
       const url = new URL(endpoint);
       url.searchParams.set("post_logout_redirect_uri", postLogoutRedirectUri);
+      // The IdP allowlists the target against this client's registered URIs.
+      url.searchParams.set("client_id", config.clientId);
       if (state) url.searchParams.set("state", state);
       return url.toString();
     },

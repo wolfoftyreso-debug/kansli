@@ -18,11 +18,24 @@ function envList(name: string, fallback: string[]): string[] {
   return raw.split(",").map((s) => s.trim()).filter(Boolean);
 }
 
+const DEV_SESSION_SECRET = "dev-idp-session-secret-min-32-chars-0001";
+
 async function main(): Promise<void> {
   const port = Number(process.env.PORT ?? 4000);
   const host = process.env.HOST ?? "127.0.0.1";
   const issuer = process.env.ISSUER ?? `http://${host}:${port}`;
-  const sessionSecret = process.env.SESSION_SECRET ?? "dev-idp-session-secret-min-32-chars-0001";
+  const isProd = process.env.NODE_ENV === "production" || process.env.APP_ENV === "prod";
+
+  // Fail closed in production: no weak/default signing secret for IdP sessions.
+  if (isProd && (!process.env.SESSION_SECRET || process.env.SESSION_SECRET === DEV_SESSION_SECRET)) {
+    throw new Error("SESSION_SECRET måste sättas till ett starkt, unikt värde i produktion");
+  }
+  const sessionSecret = process.env.SESSION_SECRET ?? DEV_SESSION_SECRET;
+  // Secure cookies by default over HTTPS; overridable with COOKIE_SECURE.
+  const cookieSecure =
+    process.env.COOKIE_SECURE !== undefined
+      ? process.env.COOKIE_SECURE === "true"
+      : issuer.startsWith("https://");
 
   // Registered subsystems of the Pixdrift family. Each interactive client runs
   // the Authorization Code + PKCE BFF flow; `audiences` are the resource
@@ -91,7 +104,7 @@ async function main(): Promise<void> {
       signingKey,
       clients,
       sessionSecret,
-      cookieSecure: process.env.COOKIE_SECURE === "true",
+      cookieSecure,
     });
   }
 
@@ -106,7 +119,8 @@ async function main(): Promise<void> {
         ownerUrl: process.env.PIXDRIFT_DB_OWNER_URL,
         appRole: process.env.PIXDRIFT_DB_APP_ROLE ?? "pixdrift_app",
         clients,
-        seedDemo: process.env.PIXDRIFT_SEED_DEMO !== "false",
+        // Opt-in only: never seed the known-credential demo tenant by default.
+        seedDemo: process.env.PIXDRIFT_SEED_DEMO === "true",
       });
     }
     const store = new PgStore(process.env.DATABASE_URL as string);
@@ -120,7 +134,7 @@ async function main(): Promise<void> {
       additionalPublicJwks,
       clients: registered.length > 0 ? registered : clients,
       sessionSecret,
-      cookieSecure: process.env.COOKIE_SECURE === "true",
+      cookieSecure,
     });
   }
 
