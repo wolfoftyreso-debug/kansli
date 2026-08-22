@@ -1,11 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createOidcClient, generateCodeVerifier, randomValue } from "@pixdrift/auth-client";
-import {
-  authConfig,
-  NONCE_COOKIE,
-  STATE_COOKIE,
-  VERIFIER_COOKIE,
-} from "@/lib/auth/config";
+import { authConfig, NONCE_COOKIE, STATE_COOKIE, VERIFIER_COOKIE } from "@/lib/auth/config";
 
 export async function GET(request: NextRequest) {
   const client = createOidcClient({

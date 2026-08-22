@@ -83,7 +83,12 @@ export function skapaPixdriftVerifierare(opts) {
       const nyckel = await importeraEcNyckel(jwk);
       const data = new TextEncoder().encode(`${huvudB64}.${kroppB64}`);
       const signatur = fromBase64Url(signaturB64);
-      const giltig = await subtle.verify({ name: "ECDSA", hash: "SHA-256" }, nyckel, signatur, data);
+      const giltig = await subtle.verify(
+        { name: "ECDSA", hash: "SHA-256" },
+        nyckel,
+        signatur,
+        data,
+      );
       if (!giltig) throw new Error("ogiltig signatur");
 
       const anspr = decodeJson(kroppB64);

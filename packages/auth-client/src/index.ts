@@ -80,7 +80,9 @@ export function createOidcClient(config: OidcClientConfig): OidcClient {
 
   async function discover(): Promise<DiscoveryDocument> {
     if (discovery) return discovery;
-    const res = await doFetch(`${config.issuer.replace(/\/$/, "")}/.well-known/openid-configuration`);
+    const res = await doFetch(
+      `${config.issuer.replace(/\/$/, "")}/.well-known/openid-configuration`,
+    );
     if (!res.ok) throw new Error(`discovery misslyckades: ${res.status}`);
     discovery = (await res.json()) as DiscoveryDocument;
     jwkSet = createRemoteJWKSet(new URL(discovery.jwks_uri));

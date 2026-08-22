@@ -10,7 +10,9 @@ import {
 import { sealSession } from "@/lib/auth/session";
 
 function fail(reason: string): NextResponse {
-  return NextResponse.redirect(new URL(`/?error=${encodeURIComponent(reason)}`, authConfig.baseUrl));
+  return NextResponse.redirect(
+    new URL(`/?error=${encodeURIComponent(reason)}`, authConfig.baseUrl),
+  );
 }
 
 export async function GET(request: NextRequest) {

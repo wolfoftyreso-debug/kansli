@@ -229,7 +229,12 @@ export async function seededStore(): Promise<SeedResult> {
     isDemo: true,
     tier: "pro",
     legalEntities: [
-      { id: "le-nordvik", name: "Nordvik Verkstad AB", registrationNumber: "5569999999", country: "SE" },
+      {
+        id: "le-nordvik",
+        name: "Nordvik Verkstad AB",
+        registrationNumber: "5569999999",
+        country: "SE",
+      },
     ],
   });
   store.addMembership({ userId: demoUserId, orgId: secondOrgId, roleKeys: ["orgMember"] });

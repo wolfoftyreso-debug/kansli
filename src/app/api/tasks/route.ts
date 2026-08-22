@@ -10,10 +10,7 @@ export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);
 
   if (!body || typeof body.title !== "string" || !body.title.trim()) {
-    return Response.json(
-      { error: "Titeln får inte vara tom." },
-      { status: 400 },
-    );
+    return Response.json({ error: "Titeln får inte vara tom." }, { status: 400 });
   }
 
   const owner = typeof body.owner === "string" ? body.owner : undefined;

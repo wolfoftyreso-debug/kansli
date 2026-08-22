@@ -17,11 +17,7 @@ import { createIdentityServer, generateSigningKey, seededStore } from "@pixdrift
 // --- Verbatim from TORA's platform/opportunity/service/src/auth/principal.ts ---
 type Tier = "free" | "pro" | "professional" | "enterprise";
 type Scope =
-  | "opportunity:read"
-  | "profile:read"
-  | "profile:write"
-  | "watchlist:read"
-  | "watchlist:write";
+  "opportunity:read" | "profile:read" | "profile:write" | "watchlist:read" | "watchlist:write";
 const ALL_SCOPES: Scope[] = [
   "opportunity:read",
   "profile:read",
@@ -31,15 +27,13 @@ const ALL_SCOPES: Scope[] = [
 ];
 const TIERS: Tier[] = ["free", "pro", "professional", "enterprise"];
 function parseTier(value: unknown): Tier {
-  return typeof value === "string" && (TIERS as string[]).includes(value) ? (value as Tier) : "free";
+  return typeof value === "string" && (TIERS as string[]).includes(value)
+    ? (value as Tier)
+    : "free";
 }
 function parseScopes(value: unknown): Set<Scope> {
   const raw =
-    typeof value === "string"
-      ? value.split(/\s+/)
-      : Array.isArray(value)
-        ? value.map(String)
-        : [];
+    typeof value === "string" ? value.split(/\s+/) : Array.isArray(value) ? value.map(String) : [];
   return new Set(raw.filter((s): s is Scope => (ALL_SCOPES as string[]).includes(s)));
 }
 interface Principal {

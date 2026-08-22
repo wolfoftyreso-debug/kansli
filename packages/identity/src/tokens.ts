@@ -14,7 +14,10 @@ export interface AccessTokenInput {
   org: TokenOrgContext | null;
 }
 
-export async function signAccessToken(config: IdentityConfig, input: AccessTokenInput): Promise<string> {
+export async function signAccessToken(
+  config: IdentityConfig,
+  input: AccessTokenInput,
+): Promise<string> {
   const iat = nowSeconds();
   const ttl = config.accessTokenTtl ?? DEFAULTS.accessTokenTtl;
   const permissions = input.org?.permissions ?? [];

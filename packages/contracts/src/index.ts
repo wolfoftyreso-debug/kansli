@@ -30,8 +30,16 @@ export const CONTRACTS_VERSION = "1.0.0";
  * and somebody joins them.
  */
 export const GlobalRef = z.object({
-  system: z.string().min(1).max(32).regex(/^[a-z][a-z0-9-]*$/),
-  kind: z.string().min(1).max(64).regex(/^[a-z][a-zA-Z0-9]*$/),
+  system: z
+    .string()
+    .min(1)
+    .max(32)
+    .regex(/^[a-z][a-z0-9-]*$/),
+  kind: z
+    .string()
+    .min(1)
+    .max(64)
+    .regex(/^[a-z][a-zA-Z0-9]*$/),
   id: z.string().min(1).max(128),
 });
 export type GlobalRef = z.infer<typeof GlobalRef>;
@@ -57,7 +65,10 @@ export type Timestamp = z.infer<typeof Timestamp>;
  * not a number: a JSON number invites a consumer to parse it as a float.
  */
 export const MinorAmount = z.object({
-  currency: z.string().length(3).regex(/^[A-Z]{3}$/),
+  currency: z
+    .string()
+    .length(3)
+    .regex(/^[A-Z]{3}$/),
   minorUnits: z.string().regex(/^-?\d+$/),
 });
 export type MinorAmount = z.infer<typeof MinorAmount>;
@@ -91,7 +102,10 @@ export const Organization = z
   .object({
     ref: GlobalRef,
     name: z.string().min(1),
-    country: z.string().length(2).regex(/^[A-Z]{2}$/),
+    country: z
+      .string()
+      .length(2)
+      .regex(/^[A-Z]{2}$/),
     isDemo: z.boolean().default(false),
     legalEntities: z.array(
       z
@@ -123,7 +137,11 @@ export type Permission = z.infer<typeof Permission>;
  */
 export const Role = z
   .object({
-    key: z.string().min(1).max(64).regex(/^[a-z][a-zA-Z0-9]*$/),
+    key: z
+      .string()
+      .min(1)
+      .max(64)
+      .regex(/^[a-z][a-zA-Z0-9]*$/),
     label: z.string().min(1),
     scope: z.enum(["organization", "legalEntity", "platform"]),
     permissions: z.array(Permission),
@@ -303,7 +321,11 @@ export const Artifact = z
     title: z.string().min(1),
     contentType: z.string().min(1),
     storageKey: z.string().nullable().default(null),
-    sha256: z.string().regex(/^[0-9a-f]{64}$/).nullable().default(null),
+    sha256: z
+      .string()
+      .regex(/^[0-9a-f]{64}$/)
+      .nullable()
+      .default(null),
     byteLength: z.number().int().nonnegative().nullable().default(null),
     producedBy: GlobalRef.nullable(),
     createdAt: Timestamp,

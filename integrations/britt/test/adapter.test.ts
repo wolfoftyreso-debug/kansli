@@ -1,7 +1,12 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createServer } from "node:net";
 import type { FastifyInstance } from "fastify";
-import { createIdentityServer, generateSigningKey, seededStore, sha256Base64ForSecret } from "@pixdrift/identity";
+import {
+  createIdentityServer,
+  generateSigningKey,
+  seededStore,
+  sha256Base64ForSecret,
+} from "@pixdrift/identity";
 import pkg from "../pixdrift-oidc.js";
 
 const { createPixdriftOidc } = pkg as {
@@ -12,11 +17,23 @@ const { createPixdriftOidc } = pkg as {
     redirectUri: string;
     fetchImpl?: typeof fetch;
   }) => {
-    beginLogin(): Promise<{ authorizationUrl: string; state: string; nonce: string; codeVerifier: string }>;
+    beginLogin(): Promise<{
+      authorizationUrl: string;
+      state: string;
+      nonce: string;
+      codeVerifier: string;
+    }>;
     completeLogin(
       params: { code?: string; state?: string },
       expected: { state: string; nonce: string; codeVerifier: string },
-    ): Promise<{ sub: string; email: string; name: string; org: { ref: string; tier: string } | null; tier: string; memberships: unknown[] }>;
+    ): Promise<{
+      sub: string;
+      email: string;
+      name: string;
+      org: { ref: string; tier: string } | null;
+      tier: string;
+      memberships: unknown[];
+    }>;
   };
 };
 

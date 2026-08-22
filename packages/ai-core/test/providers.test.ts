@@ -29,7 +29,11 @@ describe("Anthropic adapter", () => {
       apiKey: "sk-test",
       fetchImpl: mockFetch(
         200,
-        { content: [{ type: "text", text: "hej där" }], usage: { input_tokens: 11, output_tokens: 5 }, stop_reason: "end_turn" },
+        {
+          content: [{ type: "text", text: "hej där" }],
+          usage: { input_tokens: 11, output_tokens: 5 },
+          stop_reason: "end_turn",
+        },
         seen,
       ),
     });
@@ -57,7 +61,9 @@ describe("Anthropic adapter", () => {
 
   it("throws ProviderError on a non-2xx", async () => {
     const provider = anthropicProvider({ apiKey: "x", fetchImpl: mockFetch(401, { error: "no" }) });
-    await expect(provider.complete({ model: "m", messages: [] })).rejects.toBeInstanceOf(ProviderError);
+    await expect(provider.complete({ model: "m", messages: [] })).rejects.toBeInstanceOf(
+      ProviderError,
+    );
   });
 });
 
@@ -69,11 +75,17 @@ describe("OpenAI-compatible adapter", () => {
       name: "openai",
       fetchImpl: mockFetch(
         200,
-        { choices: [{ message: { content: "svar" }, finish_reason: "stop" }], usage: { prompt_tokens: 3, completion_tokens: 4 } },
+        {
+          choices: [{ message: { content: "svar" }, finish_reason: "stop" }],
+          usage: { prompt_tokens: 3, completion_tokens: 4 },
+        },
         seen,
       ),
     });
-    const res = await provider.complete({ model: "gpt-x", messages: [{ role: "user", content: "q" }] });
+    const res = await provider.complete({
+      model: "gpt-x",
+      messages: [{ role: "user", content: "q" }],
+    });
     expect(res.provider).toBe("openai");
     expect(res.text).toBe("svar");
     expect(res.usage).toEqual({ inputTokens: 3, outputTokens: 4 });
@@ -88,7 +100,11 @@ describe("OpenAI-compatible adapter", () => {
       apiKey: "gw",
       name: "gateway",
       baseUrl: "https://gw.example/v1",
-      fetchImpl: mockFetch(200, { choices: [{ message: { content: "" }, finish_reason: "stop" }] }, seen),
+      fetchImpl: mockFetch(
+        200,
+        { choices: [{ message: { content: "" }, finish_reason: "stop" }] },
+        seen,
+      ),
     });
     await provider.complete({ model: "anthropic/claude", messages: [] });
     expect(seen[0].url).toBe("https://gw.example/v1/chat/completions");
@@ -102,12 +118,18 @@ describe("Moonshot (Kimi) adapter", () => {
       apiKey: "sk-moon",
       fetchImpl: mockFetch(
         200,
-        { choices: [{ message: { content: "hej" }, finish_reason: "stop" }], usage: { prompt_tokens: 2, completion_tokens: 1 } },
+        {
+          choices: [{ message: { content: "hej" }, finish_reason: "stop" }],
+          usage: { prompt_tokens: 2, completion_tokens: 1 },
+        },
         seen,
       ),
     });
     expect(provider.name).toBe("kimi");
-    const res = await provider.complete({ model: "kimi-k2", messages: [{ role: "user", content: "q" }] });
+    const res = await provider.complete({
+      model: "kimi-k2",
+      messages: [{ role: "user", content: "q" }],
+    });
     expect(res.provider).toBe("kimi");
     expect(res.text).toBe("hej");
     expect(seen[0].url).toBe("https://api.moonshot.ai/v1/chat/completions");
@@ -124,7 +146,9 @@ describe("Gemini adapter", () => {
       fetchImpl: mockFetch(
         200,
         {
-          candidates: [{ content: { parts: [{ text: "ge" }, { text: "mini" }] }, finishReason: "STOP" }],
+          candidates: [
+            { content: { parts: [{ text: "ge" }, { text: "mini" }] }, finishReason: "STOP" },
+          ],
           usageMetadata: { promptTokenCount: 7, candidatesTokenCount: 2 },
         },
         seen,

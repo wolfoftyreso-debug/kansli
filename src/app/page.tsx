@@ -97,8 +97,8 @@ export default async function Home() {
               Välkommen till kansliet
             </h2>
             <p className="text-zinc-600 dark:text-zinc-400">
-              Logga in med din Pixdrift-identitet för att se uppgiftstavlan. Samma inloggning
-              gäller i alla Pixdrift-system.
+              Logga in med din Pixdrift-identitet för att se uppgiftstavlan. Samma inloggning gäller
+              i alla Pixdrift-system.
             </p>
             <a
               href="/api/auth/login"

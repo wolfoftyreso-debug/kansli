@@ -25,7 +25,9 @@ export function providersFromEnv(options: EnvProviderOptions = {}): Provider[] {
     providers.push(anthropicProvider({ apiKey: env.ANTHROPIC_API_KEY, fetchImpl }));
   }
   if (env.OPENAI_API_KEY) {
-    providers.push(openAICompatibleProvider({ apiKey: env.OPENAI_API_KEY, name: "openai", fetchImpl }));
+    providers.push(
+      openAICompatibleProvider({ apiKey: env.OPENAI_API_KEY, name: "openai", fetchImpl }),
+    );
   }
   if (env.GEMINI_API_KEY) {
     providers.push(geminiProvider({ apiKey: env.GEMINI_API_KEY, fetchImpl }));

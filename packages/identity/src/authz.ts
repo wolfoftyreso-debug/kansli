@@ -16,7 +16,10 @@ export function orgRef(orgId: string): string {
 }
 
 /** All organisations a user belongs to, for the id token / org switcher. */
-export async function membershipsFor(store: IdentityStore, userId: string): Promise<MembershipView[]> {
+export async function membershipsFor(
+  store: IdentityStore,
+  userId: string,
+): Promise<MembershipView[]> {
   const memberships = await store.membershipsForUser(userId);
   const views: MembershipView[] = [];
   for (const membership of memberships) {

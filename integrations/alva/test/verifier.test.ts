@@ -1,11 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createServer } from "node:net";
 import type { FastifyInstance } from "fastify";
-import {
-  createOidcClient,
-  generateCodeVerifier,
-  randomValue,
-} from "@pixdrift/auth-client";
+import { createOidcClient, generateCodeVerifier, randomValue } from "@pixdrift/auth-client";
 import {
   createIdentityServer,
   generateSigningKey,
@@ -131,7 +127,11 @@ describe("ALVA zero-dependency Pixdrift verifier", () => {
   });
 
   it("rejects a malformed token", async () => {
-    const verifier = skapaPixdriftVerifierare({ issuer, jwksUri: `${issuer}/jwks.json`, fetchImpl: fetch });
+    const verifier = skapaPixdriftVerifierare({
+      issuer,
+      jwksUri: `${issuer}/jwks.json`,
+      fetchImpl: fetch,
+    });
     await expect(verifier.verifiera("not-a-jwt")).rejects.toThrow(/format/);
   });
 });

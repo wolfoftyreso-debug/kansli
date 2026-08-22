@@ -28,7 +28,10 @@ function has(name: string): boolean {
   return process.argv.includes(`--${name}`);
 }
 function list(name: string): string[] {
-  return (arg(name) ?? "").split(",").map((s) => s.trim()).filter(Boolean);
+  return (arg(name) ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
 }
 
 async function main(): Promise<void> {
@@ -82,9 +85,12 @@ async function main(): Promise<void> {
   console.log("\nModulkonfiguration:");
   console.log(`  PIXDRIFT_ISSUER=<https://id.pixdrift.com>`);
   console.log(`  PIXDRIFT_CLIENT_ID=${clientId}`);
-  if (secret) console.log(`  PIXDRIFT_CLIENT_SECRET=${secret}   # visas EN gång — lagra i secrets store`);
+  if (secret)
+    console.log(`  PIXDRIFT_CLIENT_SECRET=${secret}   # visas EN gång — lagra i secrets store`);
   console.log(`  PIXDRIFT_REDIRECT_URI=${redirects[0]}`);
-  console.log("\nIngen IdP-omstartskod behövs — starta om (eller ladda om) IdP:n så plockas raden upp.\n");
+  console.log(
+    "\nIngen IdP-omstartskod behövs — starta om (eller ladda om) IdP:n så plockas raden upp.\n",
+  );
 }
 
 main().catch((err) => {

@@ -2,7 +2,12 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createServer } from "node:net";
 import Fastify, { type FastifyInstance } from "fastify";
 import cookie from "@fastify/cookie";
-import { createIdentityServer, generateSigningKey, seededStore, sha256Base64ForSecret } from "@pixdrift/identity";
+import {
+  createIdentityServer,
+  generateSigningKey,
+  seededStore,
+  sha256Base64ForSecret,
+} from "@pixdrift/identity";
 import { registerPixdriftOidc, type PixdriftIdentity } from "../src/pixdrift-oidc.ts";
 
 function freePort(): Promise<number> {
@@ -118,7 +123,9 @@ describe("RITA Pixdrift OIDC plugin", () => {
   });
 
   it("rejects a callback without the temporary state cookie", async () => {
-    const res = await fetch(`${appBase}/auth/pixdrift/callback?code=x&state=y`, { redirect: "manual" });
+    const res = await fetch(`${appBase}/auth/pixdrift/callback?code=x&state=y`, {
+      redirect: "manual",
+    });
     expect(res.status).toBe(400);
   });
 });

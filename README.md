@@ -1,41 +1,66 @@
-# kansli
+# Pixdrift-plattformen (kansli-navet)
 
-**Kansli** is a small office task board built with [Next.js](https://nextjs.org) (App Router) and Tailwind CSS. It demonstrates a full end-to-end flow: a React UI that reads and writes tasks through JSON API route handlers, backed by a file-based store.
+Detta repo är **navet** och hemmet för Pixdrift-familjens **gemensamma plattform** —
+en liten, hårt kontrollerad kärna under självständiga produkter (ALVA, RITA,
+TORA, BRITT, IRMA …). Här bor den självhostade identitetstjänsten, de delade
+kontrakten, AI Core och `kansli`-navets webb.
 
-## Getting started
+> Läs styrningen först: [`docs/ARCHITECTURE-CONSTITUTION.md`](docs/ARCHITECTURE-CONSTITUTION.md).
+> Full kodkarta: [`docs/INVENTORY.md`](docs/INVENTORY.md).
 
-Requires Node.js 22+ and [pnpm](https://pnpm.io).
+## Struktur
+
+```
+src/                     kansli-navet (Next.js) + BFF-auth (api/auth/*)
+packages/                delade plattformspaket (@pixdrift/*)
+  contracts/  auth-core/  auth-client/  identity/  ai-core/
+integrations/            inkopplings-adaptrar per subsystem (alva/rita/britt/irma/tora)
+docs/                    styrning, arkitektur, drift, inventering
+.github/workflows/       CI (lint/typecheck/test m. Postgres + build)
+```
+
+## Kom igång
+
+Kräver Node.js 22+ och [pnpm](https://pnpm.io) 10+.
 
 ```bash
 pnpm install
-pnpm dev
+pnpm dev:idp     # identitetstjänsten på http://127.0.0.1:4000 (in-memory dev)
+pnpm dev         # kansli-navet på http://127.0.0.1:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to use the task board.
+Demo-inloggning (dev): `demo@exempelbolaget.se` / `demo-losenord-1234`.
 
-## Scripts
+## Skript
 
-| Command | Description |
+| Kommando | Beskrivning |
 | --- | --- |
-| `pnpm dev` | Start the development server. |
-| `pnpm build` | Create a production build. |
-| `pnpm start` | Run the production build. |
-| `pnpm lint` | Run ESLint. |
-| `pnpm typecheck` | Type-check with `tsc --noEmit`. |
+| `pnpm dev` / `pnpm dev:idp` | Nav resp. identitetstjänst (dev) |
+| `pnpm build` | Produktionsbygge (nav) |
+| `pnpm test` | Vitesviten (Postgres-svit hoppas över utan test-DB) |
+| `pnpm typecheck` · `pnpm typecheck:packages` | Typkontroll |
+| `pnpm lint` | ESLint |
+| `pnpm format` · `pnpm format:check` | Prettier (en konsekvent stil) |
+| `pnpm onboard -- --id … --redirect … --audience …` | Registrera en ny modul (en rad i klientregistret) |
 
-## API
+## Dokumentation
 
-| Method | Path | Description |
+| Fil | Innehåll |
+| --- | --- |
+| `docs/ARCHITECTURE-CONSTITUTION.md` | Styrande artiklar (läs först) |
+| `docs/PIXDRIFT-ARKITEKTUR.md` | Målarkitektur, sammanflätning, synk |
+| `docs/REPO-INTAKE.md` | Intake-pipeline + klassificering |
+| `docs/INVENTORY.md` | Exakt kodinventering |
+| `docs/AI-PROVIDERS.md` · `docs/INTEGRATIONS.md` | AI- resp. externa integrationer |
+| `docs/DEPLOYMENT.md` | Drift, runbook, live-länk |
+
+## kansli-navets uppgifts-API (exempelyta)
+
+| Metod | Väg | Beskrivning |
 | --- | --- | --- |
-| `GET` | `/api/tasks` | List all tasks. |
-| `POST` | `/api/tasks` | Create a task (`{ "title": string, "owner"?: string }`). |
-| `PATCH` | `/api/tasks/:id` | Toggle a task's done state. |
-| `DELETE` | `/api/tasks/:id` | Delete a task. |
+| `GET` | `/api/tasks` | Lista uppgifter |
+| `POST` | `/api/tasks` | Skapa (`{ "title": string, "owner"?: string }`) |
+| `PATCH` | `/api/tasks/:id` | Växla klar-status |
+| `DELETE` | `/api/tasks/:id` | Ta bort |
 
-Tasks are persisted to `data/tasks.json` (git-ignored, seeded on first run).
-
-## Project structure
-
-- `src/app/page.tsx` — client UI for the task board.
-- `src/app/api/tasks/` — route handlers for the tasks API.
-- `src/lib/store.ts` — file-based JSON task store.
+Uppgifter lagras i `data/tasks.json` (git-ignorerad, seedas vid första körning).

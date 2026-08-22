@@ -104,7 +104,10 @@ export function anthropicProvider(opts: AnthropicOptions): Provider {
         "anthropic",
         req,
         text,
-        { inputTokens: json.usage?.input_tokens ?? null, outputTokens: json.usage?.output_tokens ?? null },
+        {
+          inputTokens: json.usage?.input_tokens ?? null,
+          outputTokens: json.usage?.output_tokens ?? null,
+        },
         json.stop_reason ?? null,
         ms,
       );
@@ -149,7 +152,10 @@ export function openAICompatibleProvider(opts: OpenAICompatibleOptions): Provide
         name,
         req,
         choice?.message?.content ?? "",
-        { inputTokens: json.usage?.prompt_tokens ?? null, outputTokens: json.usage?.completion_tokens ?? null },
+        {
+          inputTokens: json.usage?.prompt_tokens ?? null,
+          outputTokens: json.usage?.completion_tokens ?? null,
+        },
         choice?.finish_reason ?? null,
         ms,
       );

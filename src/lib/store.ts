@@ -47,8 +47,7 @@ async function save(tasks: Task[]): Promise<void> {
 
 function sortForDisplay(tasks: Task[]): Task[] {
   return [...tasks].sort(
-    (a, b) =>
-      Number(a.done) - Number(b.done) || b.createdAt.localeCompare(a.createdAt),
+    (a, b) => Number(a.done) - Number(b.done) || b.createdAt.localeCompare(a.createdAt),
   );
 }
 
@@ -56,10 +55,7 @@ export async function listTasks(): Promise<Task[]> {
   return sortForDisplay(await readAll());
 }
 
-export async function addTask(input: {
-  title: string;
-  owner?: string;
-}): Promise<Task> {
+export async function addTask(input: { title: string; owner?: string }): Promise<Task> {
   const tasks = await readAll();
   const task: Task = {
     id: randomUUID(),

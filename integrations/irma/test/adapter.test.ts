@@ -1,6 +1,11 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createServer } from "node:net";
-import { createIdentityServer, generateSigningKey, seededStore, sha256Base64ForSecret } from "@pixdrift/identity";
+import {
+  createIdentityServer,
+  generateSigningKey,
+  seededStore,
+  sha256Base64ForSecret,
+} from "@pixdrift/identity";
 import { createPixdriftOidc } from "../src/pixdrift-oidc.ts";
 
 function freePort(): Promise<number> {

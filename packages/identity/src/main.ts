@@ -15,7 +15,10 @@ import type { OidcClient } from "./config.ts";
 function envList(name: string, fallback: string[]): string[] {
   const raw = process.env[name];
   if (!raw) return fallback;
-  return raw.split(",").map((s) => s.trim()).filter(Boolean);
+  return raw
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
 }
 
 const DEV_SESSION_SECRET = "dev-idp-session-secret-min-32-chars-0001";
@@ -27,7 +30,10 @@ async function main(): Promise<void> {
   const isProd = process.env.NODE_ENV === "production" || process.env.APP_ENV === "prod";
 
   // Fail closed in production: no weak/default signing secret for IdP sessions.
-  if (isProd && (!process.env.SESSION_SECRET || process.env.SESSION_SECRET === DEV_SESSION_SECRET)) {
+  if (
+    isProd &&
+    (!process.env.SESSION_SECRET || process.env.SESSION_SECRET === DEV_SESSION_SECRET)
+  ) {
     throw new Error("SESSION_SECRET måste sättas till ett starkt, unikt värde i produktion");
   }
   const sessionSecret = process.env.SESSION_SECRET ?? DEV_SESSION_SECRET;
@@ -69,14 +75,20 @@ async function main(): Promise<void> {
       // Public SPA client: PKCE only, no client secret (clientSecretHash omitted).
       clientId: process.env.TORA_CLIENT_ID ?? "tora-web",
       redirectUris: envList("TORA_REDIRECT_URIS", ["http://127.0.0.1:8080/opportunity"]),
-      postLogoutRedirectUris: envList("TORA_POST_LOGOUT_URIS", ["http://127.0.0.1:8080/opportunity"]),
+      postLogoutRedirectUris: envList("TORA_POST_LOGOUT_URIS", [
+        "http://127.0.0.1:8080/opportunity",
+      ]),
       audiences: envList("TORA_AUDIENCES", ["tora-opportunity"]),
       name: "TORA",
     },
     {
       clientId: process.env.BRITT_CLIENT_ID ?? "britt-web",
-      clientSecretHash: sha256Base64ForSecret(process.env.BRITT_CLIENT_SECRET ?? "britt-dev-secret"),
-      redirectUris: envList("BRITT_REDIRECT_URIS", ["http://127.0.0.1:3000/auth/pixdrift/callback"]),
+      clientSecretHash: sha256Base64ForSecret(
+        process.env.BRITT_CLIENT_SECRET ?? "britt-dev-secret",
+      ),
+      redirectUris: envList("BRITT_REDIRECT_URIS", [
+        "http://127.0.0.1:3000/auth/pixdrift/callback",
+      ]),
       postLogoutRedirectUris: envList("BRITT_POST_LOGOUT_URIS", ["http://127.0.0.1:3000/"]),
       audiences: envList("BRITT_AUDIENCES", ["britt-api"]),
       name: "BRITT",
@@ -91,9 +103,7 @@ async function main(): Promise<void> {
     },
   ];
 
-  const app = process.env.DATABASE_URL
-    ? await bootPostgres()
-    : await bootInMemory();
+  const app = process.env.DATABASE_URL ? await bootPostgres() : await bootInMemory();
 
   async function bootInMemory() {
     const { store } = await seededStore();

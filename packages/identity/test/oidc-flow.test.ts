@@ -76,7 +76,12 @@ async function login(
   authorizeUrl: string,
   email: string,
   password: string,
-): Promise<{ status: number; location: string | null; setCookie: string | null; bodyHadForm: boolean }> {
+): Promise<{
+  status: number;
+  location: string | null;
+  setCookie: string | null;
+  bodyHadForm: boolean;
+}> {
   const url = new URL(authorizeUrl);
   const form = new URLSearchParams();
   for (const [k, v] of url.searchParams) form.set(k, v);
@@ -249,7 +254,11 @@ describe("RP-initiated logout", () => {
     const cookie = loggedIn.setCookie!.split(";")[0];
 
     for (const method of ["GET", "POST"] as const) {
-      const out = await fetch(`${issuer}/logout`, { method, headers: { cookie }, redirect: "manual" });
+      const out = await fetch(`${issuer}/logout`, {
+        method,
+        headers: { cookie },
+        redirect: "manual",
+      });
       expect(out.status).toBeLessThan(400); // not 404/405: both methods handled
       const setCookie = out.headers.get("set-cookie") ?? "";
       expect(setCookie).toContain("pixdrift_idp=");

@@ -143,7 +143,9 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
     });
   }
 
-  function validateClientRedirect(params: AuthorizeParams): { client: OidcClient; redirectUri: string } | { error: string } {
+  function validateClientRedirect(
+    params: AuthorizeParams,
+  ): { client: OidcClient; redirectUri: string } | { error: string } {
     const client = params.client_id ? clientById.get(params.client_id) : undefined;
     if (!client) return { error: "okänd client_id" };
     const redirectUri = params.redirect_uri ?? "";
@@ -261,12 +263,17 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
       }
 
       const user = await config.store.findUserByEmail(email);
-      const ok = user && user.status === "active" && (await verifyPassword(password, user.passwordHash));
+      const ok =
+        user && user.status === "active" && (await verifyPassword(password, user.passwordHash));
       if (!user || !ok) {
-        const base = failure && failure.resetAt > now ? failure : { count: 0, resetAt: now + LOGIN_WINDOW_MS };
+        const base =
+          failure && failure.resetAt > now ? failure : { count: 0, resetAt: now + LOGIN_WINDOW_MS };
         base.count += 1;
         loginFailures.set(throttleKey, base);
-        return reply.code(200).type("text/html").send(loginPage(params, "Fel e-post eller lösenord."));
+        return reply
+          .code(200)
+          .type("text/html")
+          .send(loginPage(params, "Fel e-post eller lösenord."));
       }
       loginFailures.delete(throttleKey);
 
@@ -324,7 +331,8 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
     const subject = userSubject(user.id);
     const org = record.orgId ? await orgContext(config.store, user.id, record.orgId) : null;
     const memberships = await membershipsFor(config.store, user.id);
-    const audience = client.audiences && client.audiences.length > 0 ? client.audiences : client.clientId;
+    const audience =
+      client.audiences && client.audiences.length > 0 ? client.audiences : client.clientId;
 
     const accessToken = await signAccessToken(config, {
       subject,
@@ -396,7 +404,9 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
         return reply.redirect(url.toString());
       }
     }
-    return reply.type("text/html").send(`<!doctype html><meta charset="utf-8"><p>Du är utloggad.</p>`);
+    return reply
+      .type("text/html")
+      .send(`<!doctype html><meta charset="utf-8"><p>Du är utloggad.</p>`);
   };
   app.route({ method: ["GET", "POST"], url: "/logout", handler: endSessionHandler });
 

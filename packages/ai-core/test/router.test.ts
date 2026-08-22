@@ -29,7 +29,16 @@ describe("model router", () => {
       name,
       async complete(req) {
         seen.push(`${name}:${req.model}`);
-        return { kind: "inference", text: "", provider: name, model: req.model, promptVersion: null, usage: { inputTokens: null, outputTokens: null }, finishReason: null, latencyMs: 0 };
+        return {
+          kind: "inference",
+          text: "",
+          provider: name,
+          model: req.model,
+          promptVersion: null,
+          usage: { inputTokens: null, outputTokens: null },
+          finishReason: null,
+          latencyMs: 0,
+        };
       },
     });
     const ai = createModelRouter({ providers: [p("a"), p("b")] });
@@ -38,14 +47,19 @@ describe("model router", () => {
   });
 
   it("fails over through the order on error", async () => {
-    const ai = createModelRouter({ providers: [throwing("a"), fakeProvider("b")], order: ["a", "b"] });
+    const ai = createModelRouter({
+      providers: [throwing("a"), fakeProvider("b")],
+      order: ["a", "b"],
+    });
     const res = await ai.complete({ model: "m", messages: [{ role: "user", content: "x" }] });
     expect(res.provider).toBe("b");
   });
 
   it("does not fail over when a provider is chosen explicitly", async () => {
     const ai = createModelRouter({ providers: [throwing("a"), fakeProvider("b")] });
-    await expect(ai.complete({ model: "m", messages: [] }, { provider: "a" })).rejects.toThrow(/alla providers/);
+    await expect(ai.complete({ model: "m", messages: [] }, { provider: "a" })).rejects.toThrow(
+      /alla providers/,
+    );
   });
 
   it("aggregates errors when everything fails", async () => {

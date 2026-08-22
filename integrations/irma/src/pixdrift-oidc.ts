@@ -66,7 +66,9 @@ export function createPixdriftOidc(config: PixdriftClientConfig): PixdriftOidc {
 
   async function discover(): Promise<Discovery> {
     if (discovery) return discovery;
-    const res = await doFetch(`${config.issuer.replace(/\/$/, "")}/.well-known/openid-configuration`);
+    const res = await doFetch(
+      `${config.issuer.replace(/\/$/, "")}/.well-known/openid-configuration`,
+    );
     if (!res.ok) throw new Error(`pixdrift discovery ${res.status}`);
     discovery = (await res.json()) as Discovery;
     jwks = createRemoteJWKSet(new URL(discovery.jwks_uri));
