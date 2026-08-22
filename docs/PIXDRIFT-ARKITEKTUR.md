@@ -18,6 +18,7 @@ här är en översyn, inte en detalj.
 | **ALVA** | Verkstad: guidad fordonsfelsökning, ärenden, fakturering | Rå `node:http`, Vite-klient, AWS EKS/Aurora | PostgreSQL (Aurora) | Egen HS256-JWT | `organisation_id` | Append-only hashkedja, RFC 3161-tidsstämpel, KMS-valv, TÜV |
 | **RITA** | Ekonomi: lagliga skatte-/avdragsmöjligheter ur bokföring | pnpm-monorepo, Fastify + Next.js + Rust-motor, AWS | PostgreSQL (RLS) | Serversession (scrypt) | `tenants` + `legalEntities`, RLS `app.tenant_id` | Radsäkerhet (`*_owner`/`*_app`), append-only audit via rättigheter, dubbel evidens |
 | **BRITT** | Drift/beslut: overlay som *aggregerar* alla system och ger vägledning | Node/CommonJS, Express, `node:sqlite` | SQLite (inbyggt) | Serversession + API-nycklar | `org_id` + enhetshierarki (company→…→team) | Krypterat credential-valv, fail-closed synk, auditlogg |
+| **TORA** | Offentlig marknad: kan företaget få uppdraget? (anbud/upphandling) | Vite/React SPA + Fastify-tjänst, k8s, PostgreSQL | PostgreSQL | **OIDC/PKCE (inbyggt)** | `tenant`-claim (sträng) | Deny-by-default; `RÄTTIGHET` kräver `LegalBasis`; nivå ur signerad token |
 
 Rollfördelningen är hela poängen: **kansli** är ingången, **ALVA/RITA** är
 specialistsystem som producerar (ärenden, fynd, fakturor), och **BRITT** är
@@ -148,6 +149,17 @@ Regeln: token bär `org` som `GlobalRef`; varje system håller en mappning
 - [ ] **Nyckelhantering:** IdP:ns signeringsnyckel i KMS (ALVA-`nyckelvalv`).
 - [ ] **Org-mappning:** vem äger `pixdrift:org ↔ lokalt org-id` och hur den
       distribueras (IdP-katalog eller per-system-tabell).
+- [ ] **Token-claim-alignment (surfaced av TORA):** resursservrar konsumerar
+      olika vokabulär. TORA verifierar via `jose`/JWKS och kräver `sub`,
+      **`tenant`** (sträng), **`tier`** (`free|pro|professional|enterprise`,
+      deny-by-default) och **`scope`/`scp`** (`opportunity:read`,
+      `profile:*`, `watchlist:*`). IdP bör emittera standard `tenant` + `scope`
+      (beviljade) + `tier` *vid sidan om* `org`/`roles`/`permissions`, och
+      identitetsmodellen få ett **entitlement/tier**-begrepp (abonnemang, skilt
+      från scope och subject).
+- [ ] **Publika klienter:** TORA är en publik SPA-klient (PKCE, ingen hemlighet)
+      — stöds redan av IdP (hemlighet krävs bara när `clientSecretHash` finns).
+      Registrera `tora-web` (public) + audience `tora-opportunity`.
 - [ ] **BankID:** direkt RP-integration (självhostat) som ytterligare
       inloggningsmetod, om det krävs.
 - [ ] **Landa adaptrarna:** RITA/BRITT-PR:er kräver skrivåtkomst. **ALVA avvaktar
@@ -167,3 +179,4 @@ Regeln: token bär `org` som `GlobalRef`; varje system håller en mappning
 | `wolfoftyreso-debug/alva` | Verkstad | **Avvaktar tills vidare** (adapter byggd + testad, patch vilande) |
 | `wolfoftyreso-debug/RITA` | Ekonomi | In-repo-patch byggd + typecheckad; klar att landa |
 | `wolfoftyreso-debug/BRITT` | Drift/overlay | Kartlagt; adapter klar att byggas (samma väg som RITA) |
+| `wolfoftyreso-debug/TORA` | Offentlig marknad/anbud | Kartlagt; **OIDC-native** — mestadels konfiguration + token-claim-alignment (`tenant`/`tier`/`scope`) |
