@@ -5,10 +5,11 @@
  * failover and provenance. Output is always an inference (constitution art. 9);
  * products decide an automation level (art. 10) before acting on it.
  *
- *   import { createModelRouter, providersFromEnv } from "@pixdrift/ai-core";
- *   const ai = createModelRouter({ providers: providersFromEnv() });
+ *   import { createDefaultRouter } from "@pixdrift/ai-core";
+ *   // Every configured provider on its heaviest model, Claude first, falling
+ *   // down to the others. Omit `model` (or pass "auto") to run each flagship.
+ *   const ai = createDefaultRouter();
  *   const answer = await ai.complete({
- *     model: "anthropic:claude-3-5-sonnet-latest",
  *     purpose: "rita.finding.summary",
  *     promptVersion: "2026-08-22",
  *     messages: [
@@ -26,6 +27,7 @@ export {
   geminiProvider,
   moonshotProvider,
   fakeProvider,
+  FLAGSHIP_MODELS,
   type AnthropicOptions,
   type OpenAICompatibleOptions,
   type GeminiOptions,
@@ -33,8 +35,9 @@ export {
 } from "./providers.ts";
 export {
   createModelRouter,
+  DEFAULT_FAILOVER_ORDER,
   type ModelRouter,
   type RouterOptions,
   type CompleteOptions,
 } from "./router.ts";
-export { providersFromEnv, type EnvProviderOptions } from "./env.ts";
+export { providersFromEnv, createDefaultRouter, type EnvProviderOptions } from "./env.ts";

@@ -16,6 +16,28 @@ import {
 
 type FetchImpl = typeof fetch;
 
+/**
+ * The heaviest / most capable model per provider, current as of 2026-08-22.
+ * These are the defaults used when a request does not name a model. Each is
+ * overridable via env (see env.ts) so ops can pin or bump without a code change.
+ */
+export const FLAGSHIP_MODELS = {
+  /** Anthropic's "most powerful" model. */
+  anthropic: "claude-fable-5",
+  /** OpenAI flagship (alias of gpt-5.6). */
+  openai: "gpt-5.6-sol",
+  /** Google's most advanced model for complex tasks. */
+  gemini: "gemini-3.1-pro-preview",
+  /** Moonshot's flagship Kimi model. */
+  kimi: "kimi-k3",
+  /** Vercel AI Gateway slug routing to the heaviest Claude (Claude-first). */
+  gateway: "anthropic/claude-fable-5",
+} as const;
+
+function pickModel(model: string | undefined, flagship: string): string {
+  return model && model.length > 0 ? model : flagship;
+}
+
 function splitSystem(messages: Message[]): { system: string | undefined; rest: Message[] } {
   const system = messages
     .filter((m) => m.role === "system")
@@ -50,7 +72,7 @@ function result(
     kind: "inference",
     text,
     provider,
-    model: req.model,
+    model: req.model ?? "",
     promptVersion: req.promptVersion ?? null,
     usage,
     finishReason,
@@ -63,15 +85,20 @@ export interface AnthropicOptions {
   apiKey: string;
   baseUrl?: string;
   version?: string;
+  /** Override the heaviest model; defaults to FLAGSHIP_MODELS.anthropic. */
+  model?: string;
   fetchImpl?: FetchImpl;
 }
 
 export function anthropicProvider(opts: AnthropicOptions): Provider {
   const doFetch = opts.fetchImpl ?? fetch;
   const baseUrl = opts.baseUrl ?? "https://api.anthropic.com";
+  const flagshipModel = opts.model ?? FLAGSHIP_MODELS.anthropic;
   return {
     name: "anthropic",
+    flagshipModel,
     async complete(req) {
+      const model = pickModel(req.model, flagshipModel);
       const { system, rest } = splitSystem(req.messages);
       const { value: res, ms } = await timed(() =>
         doFetch(`${baseUrl}/v1/messages`, {
@@ -82,7 +109,7 @@ export function anthropicProvider(opts: AnthropicOptions): Provider {
             "anthropic-version": opts.version ?? "2023-06-01",
           },
           body: JSON.stringify({
-            model: req.model,
+            model,
             max_tokens: req.maxTokens ?? 1024,
             temperature: req.temperature,
             system,
@@ -102,7 +129,7 @@ export function anthropicProvider(opts: AnthropicOptions): Provider {
         .join("");
       return result(
         "anthropic",
-        req,
+        { ...req, model },
         text,
         {
           inputTokens: json.usage?.input_tokens ?? null,
@@ -120,6 +147,8 @@ export interface OpenAICompatibleOptions {
   apiKey: string;
   baseUrl?: string;
   name?: string;
+  /** Override the heaviest model; defaults to FLAGSHIP_MODELS.openai. */
+  model?: string;
   fetchImpl?: FetchImpl;
 }
 
@@ -127,15 +156,18 @@ export function openAICompatibleProvider(opts: OpenAICompatibleOptions): Provide
   const doFetch = opts.fetchImpl ?? fetch;
   const baseUrl = opts.baseUrl ?? "https://api.openai.com/v1";
   const name = opts.name ?? "openai";
+  const flagshipModel = opts.model ?? FLAGSHIP_MODELS.openai;
   return {
     name,
+    flagshipModel,
     async complete(req) {
+      const model = pickModel(req.model, flagshipModel);
       const { value: res, ms } = await timed(() =>
         doFetch(`${baseUrl}/chat/completions`, {
           method: "POST",
           headers: { "content-type": "application/json", authorization: `Bearer ${opts.apiKey}` },
           body: JSON.stringify({
-            model: req.model,
+            model,
             messages: req.messages.map((m) => ({ role: m.role, content: m.content })),
             max_tokens: req.maxTokens,
             temperature: req.temperature,
@@ -150,7 +182,7 @@ export function openAICompatibleProvider(opts: OpenAICompatibleOptions): Provide
       const choice = json.choices?.[0];
       return result(
         name,
-        req,
+        { ...req, model },
         choice?.message?.content ?? "",
         {
           inputTokens: json.usage?.prompt_tokens ?? null,
@@ -167,6 +199,8 @@ export function openAICompatibleProvider(opts: OpenAICompatibleOptions): Provide
 export interface MoonshotOptions {
   apiKey: string;
   baseUrl?: string;
+  /** Override the heaviest model; defaults to FLAGSHIP_MODELS.kimi. */
+  model?: string;
   fetchImpl?: FetchImpl;
 }
 
@@ -176,6 +210,7 @@ export function moonshotProvider(opts: MoonshotOptions): Provider {
     apiKey: opts.apiKey,
     baseUrl: opts.baseUrl ?? "https://api.moonshot.ai/v1",
     name: "kimi",
+    model: opts.model ?? FLAGSHIP_MODELS.kimi,
     fetchImpl: opts.fetchImpl,
   });
 }
@@ -184,17 +219,22 @@ export function moonshotProvider(opts: MoonshotOptions): Provider {
 export interface GeminiOptions {
   apiKey: string;
   baseUrl?: string;
+  /** Override the heaviest model; defaults to FLAGSHIP_MODELS.gemini. */
+  model?: string;
   fetchImpl?: FetchImpl;
 }
 
 export function geminiProvider(opts: GeminiOptions): Provider {
   const doFetch = opts.fetchImpl ?? fetch;
   const baseUrl = opts.baseUrl ?? "https://generativelanguage.googleapis.com/v1beta";
+  const flagshipModel = opts.model ?? FLAGSHIP_MODELS.gemini;
   return {
     name: "gemini",
+    flagshipModel,
     async complete(req) {
+      const model = pickModel(req.model, flagshipModel);
       const { system, rest } = splitSystem(req.messages);
-      const url = `${baseUrl}/models/${encodeURIComponent(req.model)}:generateContent?key=${encodeURIComponent(opts.apiKey)}`;
+      const url = `${baseUrl}/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(opts.apiKey)}`;
       const { value: res, ms } = await timed(() =>
         doFetch(url, {
           method: "POST",
@@ -218,7 +258,7 @@ export function geminiProvider(opts: GeminiOptions): Provider {
       const text = (cand?.content?.parts ?? []).map((p) => p.text ?? "").join("");
       return result(
         "gemini",
-        req,
+        { ...req, model },
         text,
         {
           inputTokens: json.usageMetadata?.promptTokenCount ?? null,
@@ -236,10 +276,20 @@ export function fakeProvider(
   name = "fake",
   responder: (req: ModelRequest) => string = (r) => `echo:${r.messages.at(-1)?.content ?? ""}`,
 ): Provider {
+  const flagshipModel = `${name}-flagship`;
   return {
     name,
+    flagshipModel,
     async complete(req) {
-      return result(name, req, responder(req), { inputTokens: 0, outputTokens: 0 }, "stop", 0);
+      const model = pickModel(req.model, flagshipModel);
+      return result(
+        name,
+        { ...req, model },
+        responder(req),
+        { inputTokens: 0, outputTokens: 0 },
+        "stop",
+        0,
+      );
     },
   };
 }

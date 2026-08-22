@@ -16,6 +16,25 @@ eller IdP:n. Detta dokument fastställer hur nycklarna hanteras gemensamt.
 Ett gemensamt namnschema betyder att en modul får sina nycklar utan att uppfinna
 egna variabelnamn.
 
+## Tyngsta modellen per provider (falldown, Claude först)
+
+Varje provider kör sin **tyngsta/mest kapabla modell** som standard (aktuellt
+2026-08-22). Kedjan failar över **Claude först**, sedan ner till de övriga:
+
+| Ordning | Provider | Tyngsta modell (default) | Override |
+| --- | --- | --- | --- |
+| 1 | Anthropic (Claude) | `claude-fable-5` | `ANTHROPIC_MODEL` |
+| 2 | OpenAI | `gpt-5.6-sol` | `OPENAI_MODEL` |
+| 3 | Google (Gemini) | `gemini-3.1-pro-preview` | `GEMINI_MODEL` |
+| 4 | Moonshot (Kimi) | `kimi-k3` | `MOONSHOT_MODEL` / `KIMI_MODEL` |
+| 5 | AI-Gateway | `anthropic/claude-fable-5` | `AI_GATEWAY_MODEL` |
+
+Falldown-ordningen är `DEFAULT_FAILOVER_ORDER`. Endast providers med satt nyckel
+byggs — kedjan består alltså av dem du konfigurerat, i ordningen ovan. Modell-
+id:n är env-överstyrbara så drift kan pinna/höja utan kodändring. Orkestrering
+(välja modell per uppgift) läggs ovanpå detta senare — basen är: tyngsta modell,
+Claude först, resten som fallback.
+
 ## Hantering — nyckeln är en hemlighet
 
 Konstitutionen art. 8 + "kundens data är kronjuveler":
@@ -43,11 +62,13 @@ Produkter anropar inte providers direkt — de går via **AI Core**, ett enhetli
 modell-API med failover och provenance:
 
 ```ts
-import { createModelRouter, providersFromEnv } from "@pixdrift/ai-core";
+import { createDefaultRouter } from "@pixdrift/ai-core";
 
-const ai = createModelRouter({ providers: providersFromEnv() }); // läser env-nycklarna ovan
+// Alla konfigurerade providers på sin tyngsta modell, Claude först, falldown
+// till de övriga. Utelämna `model` (eller skicka "auto"/"flagship") för att
+// köra varje providers flaggskepp när kedjan failar över.
+const ai = createDefaultRouter(); // läser env-nycklarna ovan
 const answer = await ai.complete({
-  model: "anthropic:claude-3-5-sonnet-latest", // provider-prefix väljer/failar över
   purpose: "rita.finding.summary",
   promptVersion: "2026-08-22",
   messages: [
@@ -59,8 +80,9 @@ const answer = await ai.complete({
 // model, promptVersion, usage och latency för audit.
 ```
 
-Byte av provider/modell blir en parameter, inte en kodändring. En `fakeProvider`
-finns för test/dev utan nätverk.
+Vill du styra en enskild modell: `model: "openai:o-custom"` (provider-prefix
+väljer/pinns utan failover), eller sätt `*_MODEL`-env. En `fakeProvider` finns
+för test/dev utan nätverk.
 
 ## Rekommenderat: en gemensam AI-Gateway
 

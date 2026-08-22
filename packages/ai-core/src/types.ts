@@ -16,8 +16,12 @@ export interface Message {
 }
 
 export interface ModelRequest {
-  /** Model id, optionally provider-prefixed for the router, e.g. "anthropic:claude-3-5-sonnet". */
-  model: string;
+  /**
+   * Model id, optionally provider-prefixed for the router, e.g.
+   * "anthropic:claude-fable-5". Omit (or pass "auto"/"flagship") to let the
+   * router use each provider's heaviest model as it fails over.
+   */
+  model?: string;
   messages: Message[];
   maxTokens?: number;
   temperature?: number;
@@ -46,6 +50,12 @@ export interface ModelResult {
 
 export interface Provider {
   readonly name: string;
+  /**
+   * The provider's heaviest / most capable model. The router uses this when a
+   * request does not name a model, so cross-provider failover always lands on
+   * each provider's flagship rather than a foreign model id.
+   */
+  readonly flagshipModel?: string;
   complete(request: ModelRequest): Promise<ModelResult>;
 }
 
