@@ -342,19 +342,24 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
   });
 
   // ---- Logout (end session) ------------------------------------------------
-  app.get<{ Querystring: { post_logout_redirect_uri?: string; state?: string } }>(
-    "/logout",
-    async (request, reply) => {
-      reply.clearCookie(sessionCookieName, { path: "/" });
-      const target = request.query.post_logout_redirect_uri;
-      if (target) {
-        const url = new URL(target);
-        if (request.query.state) url.searchParams.set("state", request.query.state);
-        return reply.redirect(url.toString());
-      }
-      return reply.type("text/html").send(`<!doctype html><meta charset="utf-8"><p>Du är utloggad.</p>`);
-    },
-  );
+  // RP-initiated logout may arrive as GET (redirect) or POST (form); both must
+  // clear the IdP SSO session so a later /authorize prompts for credentials.
+  const endSessionHandler = async (
+    request: import("fastify").FastifyRequest<{
+      Querystring: { post_logout_redirect_uri?: string; state?: string };
+    }>,
+    reply: FastifyReply,
+  ) => {
+    reply.clearCookie(sessionCookieName, { path: "/" });
+    const target = request.query.post_logout_redirect_uri;
+    if (target) {
+      const url = new URL(target);
+      if (request.query.state) url.searchParams.set("state", request.query.state);
+      return reply.redirect(url.toString());
+    }
+    return reply.type("text/html").send(`<!doctype html><meta charset="utf-8"><p>Du är utloggad.</p>`);
+  };
+  app.route({ method: ["GET", "POST"], url: "/logout", handler: endSessionHandler });
 
   return app;
 }

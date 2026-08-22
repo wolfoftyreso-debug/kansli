@@ -17,7 +17,9 @@ async function endSession(): Promise<NextResponse> {
     target = `${authConfig.baseUrl}/`;
   }
 
-  const response = NextResponse.redirect(target);
+  // 303 so the browser performs a GET on the IdP end-session endpoint (a POST
+  // form submit would otherwise be re-issued as a POST by a 307).
+  const response = NextResponse.redirect(target, 303);
   response.cookies.delete(SESSION_COOKIE);
   return response;
 }
