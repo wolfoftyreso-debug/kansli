@@ -1,60 +1,81 @@
 # Deployment & driftsättning
 
-Två deploybara delar i dag: **kansli** (nav, Next.js) och **Pixdrift IdP**
-(`@pixdrift/identity`, Node + Postgres). Boring-AWS-baslinjen nedan är målet för
-hela familjen (konstitutionens artikel 4–5: managed services, motiverad
-komplexitet).
+**Beslut (Vercel):** IdP:n körs samlokaliserad i kansli-appen under `/idp` — **ett**
+Vercel-projekt, **en** deploy, **en** uppsättning miljövariabler, med **Vercel
+Postgres (Neon)** som datalager. Samma Fastify-IdP som testsviten kör drivs via
+`app.inject()` från en catch-all route handler (`src/app/idp/[[...slug]]/route.ts`);
+inga separata värdar eller sockets. OIDC-issuer blir `${APP_BASE_URL}/idp`.
+
+Boring-baslinjen (AWS) i avsnitt 4 kvarstår som långsiktigt mål för hela
+familjen; Vercel + Vercel Postgres är den valda driften nu (konstitutionens
+art. 4–5: managed services, motiverad komplexitet).
 
 ## Live
 
 | Del | URL | Status |
 | --- | --- | --- |
-| **kansli (nav)** | https://kansli-git-cursor-pixdrift-shared-auth-39a5-hypbit.vercel.app | **Live** (Vercel, auto-deploy på varje push till grenen) |
-| Pixdrift IdP | `id.pixdrift.com` | Ej deployad än (behöver host + Postgres — se nedan) |
+| **kansli (nav) + IdP** | https://kansli-git-cursor-pixdrift-shared-auth-39a5-hypbit.vercel.app | **Live** (Vercel, auto-deploy på varje push) |
+| Pixdrift IdP | samma host, under `/idp` (t.ex. `…/idp/.well-known/openid-configuration`) | **Live så fort Postgres + env är satta** (se nedan) |
 
 Vercel-projekt: `kansli` (`prj_L8oHYD0UrqQMjQUaqnd96CUT3K7c`), team `hypbit`.
-Navets landningssida renderas publikt (200). Själva inloggningsknappen fungerar
-end-to-end först när IdP:n är deployad och `PIXDRIFT_*`-env pekar på den.
+Navets landningssida renderas publikt (200). Hela SSO-flödet är verifierat
+end-to-end lokalt mot `/idp` (Authorization Code + PKCE, discovery, JWKS,
+token, userinfo, SSO-återanvändning, logout).
 
-## 1. kansli (nav) → Vercel
+## 1. Sätt upp Vercel Postgres (2 klick i dashboarden)
 
-Next.js 16, redo för Vercel (`vercel.json`). Antingen Git-integration (koppla
-repot i Vercel) eller CLI:
+Detta är det enda som inte kan göras från kod (kräver dashboard-åtgärd):
 
-```bash
-vercel link && vercel deploy --prebuilt   # eller push till kopplad branch
+1. Vercel → projektet `kansli` → **Storage** → **Create Database** → **Postgres**
+   (Neon). Koppla den till projektet. Vercel injicerar då automatiskt
+   `DATABASE_URL` (och `POSTGRES_URL`) som miljövariabler.
+2. Kör schema/bootstrap **en gång** (se avsnitt 3).
+
+Utan `DATABASE_URL` faller `/idp` tillbaka på en in-memory-store per instans —
+det räcker för `pnpm dev` (en process) men **inte** för serverless på Vercel
+(flera instanser delar inte minne). Postgres krävs alltså i drift.
+
+## 2. Miljövariabler (Production, projektet `kansli`)
+
+Klistra in i Vercel → Settings → Environment Variables. `DATABASE_URL` kommer
+från Postgres-integrationen ovan. Ersätt `<host>` med projektets domän.
+
 ```
-
-Miljövariabler (Production):
-
-```
-PIXDRIFT_ISSUER=https://id.pixdrift.com
+# --- Kansli som OIDC-klient (BFF) ---
+APP_BASE_URL=https://<host>
+PIXDRIFT_ISSUER=https://<host>/idp
 PIXDRIFT_CLIENT_ID=kansli-web
-PIXDRIFT_CLIENT_SECRET=<secrets store>
-PIXDRIFT_REDIRECT_URI=https://<kansli-host>/api/auth/callback
-APP_BASE_URL=https://<kansli-host>
-APP_SESSION_SECRET=<32+ tecken>
+PIXDRIFT_CLIENT_SECRET=<KANSLI_CLIENT_SECRET>
+PIXDRIFT_REDIRECT_URI=https://<host>/api/auth/callback
+APP_SESSION_SECRET=<APP_SESSION_SECRET, 32+ tecken>
 COOKIE_SECURE=true
+
+# --- IdP:n under /idp ---
+CLIENT_SECRET=<KANSLI_CLIENT_SECRET>        # måste vara SAMMA som PIXDRIFT_CLIENT_SECRET
+REDIRECT_URIS=https://<host>/api/auth/callback
+POST_LOGOUT_URIS=https://<host>/
+SESSION_SECRET=<SESSION_SECRET, 32+ tecken>
+APP_ENV=prod                                # fail-closed: kräver starkt SESSION_SECRET
+# DATABASE_URL sätts automatiskt av Vercel Postgres-integrationen
 ```
 
-## 2. Pixdrift IdP → container + Postgres
+Andra moduler (ALVA, RITA, TORA, BRITT, IRMA) registreras via egna
+`*_CLIENT_ID`/`*_CLIENT_SECRET`/`*_REDIRECT_URIS`-variabler (se
+`packages/identity/src/boot.ts`) eller via `oauth_clients`-tabellen utan omdeploy.
 
-IdP:n är en Node-tjänst (Fastify) med Postgres-lager (owner/app). Kör som en
-container (ECS Fargate i mål-AWS; interimistiskt valfri container-host) mot RDS
-PostgreSQL. Se `packages/identity/README.md`.
+## 3. Bootstrap av Postgres (en gång)
 
-```
-DATABASE_URL=postgres://pixdrift_app:...@<rds>/pixdrift_idp
-PIXDRIFT_DB_OWNER_URL=postgres://pixdrift_owner:...@<rds>/pixdrift_idp   # endast vid bootstrap/migrering
-ISSUER=https://id.pixdrift.com
-SESSION_SECRET=<32+ tecken>
-COOKIE_SECURE=true
-```
+Schemat/nyckeln/klientregistret skapas av en **owner**-roll. Enklast:
 
-Nya moduler registreras utan omdeploy: `pnpm onboard -- --id … --redirect … --audience …`
-(eller en rad i `oauth_clients`).
+- Sätt tillfälligt `PIXDRIFT_DB_OWNER_URL` (owner-connection) i env och gör en
+  deploy. Vid boot kör IdP:n `pgBootstrap` (schema + grants + roterande ES256-
+  nyckel + klientregister). Sätt `PIXDRIFT_SEED_DEMO=true` om demotenant/
+  demoanvändare ska seedas. **Ta bort owner-URL:en efter bootstrap** — drift
+  kör som app-rollen (`DATABASE_URL`).
+- Alternativt kör migreringen separat som owner och registrera klienter med
+  `pnpm onboard -- --id … --redirect … --audience …`.
 
-## 3. Boring-AWS-baslinje (mål)
+## 4. Boring-AWS-baslinje (långsiktigt mål)
 
 ```
 CloudFront → ALB → ECS Fargate (API · Workers · Scheduled jobs)
@@ -66,27 +87,17 @@ Secrets Manager · KMS · CloudWatch · AWS Backup (cross-region)
 PostgreSQL = system of record; Redis = cache; S3 = filer; SQS = async. Inga
 fler datastores utan arkitekturgodkännande (konstitutionen art. 6). IaC (art.
 4/11) byggs när AWS-credentials finns; **backup räknas inte förrän restore är
-testad** (art. 3): backup → restore → integrity check → application boot →
-critical data verification, regelbundet.
+testad** (art. 3).
 
-## 4. Verifieringschecklista (efter deploy → detta ger länkarna)
+## 5. Verifieringschecklista (efter Postgres + env)
 
 | Kontroll | URL/kommando | Förväntat |
 | --- | --- | --- |
-| kansli live | `https://<kansli-host>/` | Inloggningsgrind renderas |
-| IdP hälsa | `https://id.pixdrift.com/halsa` | `{"status":"ok","lage":"drift"}` |
-| OIDC discovery | `https://id.pixdrift.com/.well-known/openid-configuration` | `issuer` matchar |
-| JWKS | `https://id.pixdrift.com/jwks.json` | ES256-nyckel, stabil `kid` |
+| kansli live | `https://<host>/` | Inloggningsgrind renderas |
+| IdP hälsa | `https://<host>/idp/halsa` | `{"status":"ok","lage":"drift"}` |
+| OIDC discovery | `https://<host>/idp/.well-known/openid-configuration` | `issuer` = `https://<host>/idp` |
+| JWKS | `https://<host>/idp/jwks.json` | ES256-nyckel, stabil `kid` (persisterad i Postgres) |
 | SSO-flöde | Klicka "Logga in med Pixdrift" på kansli | Login → callback → inloggad |
-
-## Vad som krävs för länkar (blockerare)
-
-För att jag ska kunna deploya och lämna faktiska URL:er behövs något av:
-
-- **Vercel:** autentisera Vercel-MCP:n i Cursor, eller lägg en `VERCEL_TOKEN` i
-  Secrets — då deployar jag kansli och returnerar preview/prod-URL.
-- **IdP-host:** AWS-credentials (för ECS+RDS enligt baslinjen), eller en enklare
-  container-host, för `id.pixdrift.com`.
 
 CI (`.github/workflows/ci.yml`) kör lint/typecheck/test (inkl. Postgres) på varje
 push så att varje ny modul håller samma kvalitetsgrind.

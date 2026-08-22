@@ -41,12 +41,7 @@ function serverFor(issuer: string): Promise<FastifyInstance> {
   return cached.app;
 }
 
-const HOP_BY_HOP = new Set([
-  "content-length",
-  "transfer-encoding",
-  "connection",
-  "keep-alive",
-]);
+const HOP_BY_HOP = new Set(["content-length", "transfer-encoding", "connection", "keep-alive"]);
 
 async function handle(req: NextRequest): Promise<Response> {
   const issuer = issuerFor(req);

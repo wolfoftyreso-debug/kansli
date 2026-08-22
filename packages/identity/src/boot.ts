@@ -114,9 +114,7 @@ export async function bootIdentityFromEnv(opts: BootOptions = {}): Promise<Fasti
   const sessionSecret = env.SESSION_SECRET ?? DEV_SESSION_SECRET;
   // Secure cookies by default over HTTPS; overridable with COOKIE_SECURE.
   const cookieSecure =
-    env.COOKIE_SECURE !== undefined
-      ? env.COOKIE_SECURE === "true"
-      : issuer.startsWith("https://");
+    env.COOKIE_SECURE !== undefined ? env.COOKIE_SECURE === "true" : issuer.startsWith("https://");
 
   const clients = clientsFromEnv(env);
 
