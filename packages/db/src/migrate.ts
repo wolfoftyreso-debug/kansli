@@ -18,6 +18,8 @@ export interface MigrationFile {
   checksum: string;
 }
 
+export type SchemaGrant = "readwrite" | "append";
+
 export interface MigrateOptions {
   connectionString: string;
   /** Directory of `NNNN_name.sql` files. */
@@ -28,6 +30,10 @@ export interface MigrateOptions {
    * accidentally write each other's tables (constitution art. 2).
    */
   schema?: string;
+  /** After applying files, grant the runtime app role access to this schema. */
+  appRole?: string;
+  /** `append` is insert+select only (event log). Default `readwrite`. */
+  grant?: SchemaGrant;
 }
 
 export interface MigrateResult {
@@ -79,7 +85,7 @@ function migrationsTable(schema?: string): string {
   return schema ? `${quoteIdent(schema)}.schema_migrations` : "schema_migrations";
 }
 
-function quoteIdent(ident: string): string {
+export function quoteIdent(ident: string): string {
   if (!/^[a-z_][a-z0-9_]*$/.test(ident)) {
     throw new MigrationError(`ogiltigt schemanamn: ${ident}`);
   }
@@ -158,8 +164,28 @@ export async function migrate(opts: MigrateOptions): Promise<MigrateResult> {
       }
     }
 
+    if (opts.appRole && opts.schema) {
+      await grantSchemaAccess(pool, opts.schema, opts.appRole, opts.grant ?? "readwrite");
+    }
+
     return { applied, already };
   } finally {
     await pool.end();
   }
+}
+
+export async function grantSchemaAccess(
+  pool: pg.Pool,
+  schema: string,
+  appRole: string,
+  mode: SchemaGrant,
+): Promise<void> {
+  if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(appRole)) {
+    throw new MigrationError(`ogiltigt appRole: ${appRole}`);
+  }
+  const s = quoteIdent(schema);
+  const dml = mode === "append" ? "select, insert" : "select, insert, update, delete";
+  await pool.query(`grant usage on schema ${s} to ${appRole}`);
+  await pool.query(`grant ${dml} on all tables in schema ${s} to ${appRole}`);
+  await pool.query(`grant usage, select on all sequences in schema ${s} to ${appRole}`);
 }

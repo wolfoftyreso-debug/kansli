@@ -13,9 +13,13 @@ export {
   loadMigrations,
   parseMigrationFilename,
   checksumSql,
+  grantSchemaAccess,
+  quoteIdent,
   MIGRATION_FILENAME,
   MigrationError,
   type MigrationFile,
   type MigrateOptions,
   type MigrateResult,
+  type SchemaGrant,
 } from "./migrate.ts";
+export { migrateWorkspace, WORKSPACE_SCHEMAS, type WorkspaceMigrateOptions } from "./workspace.ts";

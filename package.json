@@ -14,16 +14,20 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "doc:gap": "pnpm --filter @pixdrift/doc-intel gap-report"
+    "doc:gap": "pnpm --filter @pixdrift/doc-intel gap-report",
+    "db:migrate": "tsx scripts/migrate.ts"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
     "@fastify/formbody": "^8.0.2",
+    "@pixdrift/api-core": "workspace:*",
     "@pixdrift/auth-client": "workspace:*",
     "@pixdrift/contracts": "workspace:*",
     "@pixdrift/db": "workspace:*",
+    "@pixdrift/events": "workspace:*",
     "@pixdrift/identity": "workspace:*",
     "@pixdrift/rita-engine": "workspace:*",
+    "@pixdrift/systems": "workspace:*",
     "@pixdrift/tora": "workspace:*",
     "fastify": "^5.2.1",
     "jose": "^6.0.11",
@@ -35,6 +39,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/pg": "^8.11.10",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

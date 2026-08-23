@@ -14,6 +14,9 @@ importers:
       '@fastify/formbody':
         specifier: ^8.0.2
         version: 8.0.2
+      '@pixdrift/api-core':
+        specifier: workspace:*
+        version: link:packages/api-core
       '@pixdrift/auth-client':
         specifier: workspace:*
         version: link:packages/auth-client
@@ -23,12 +26,18 @@ importers:
       '@pixdrift/db':
         specifier: workspace:*
         version: link:packages/db
+      '@pixdrift/events':
+        specifier: workspace:*
+        version: link:packages/events
       '@pixdrift/identity':
         specifier: workspace:*
         version: link:packages/identity
       '@pixdrift/rita-engine':
         specifier: workspace:*
         version: link:packages/rita-engine
+      '@pixdrift/systems':
+        specifier: workspace:*
+        version: link:packages/systems
       '@pixdrift/tora':
         specifier: workspace:*
         version: link:packages/tora
@@ -57,6 +66,9 @@ importers:
       '@types/node':
         specifier: ^20
         version: 20.19.43
+      '@types/pg':
+        specifier: ^8.11.10
+        version: 8.23.1
       '@types/react':
         specifier: ^19
         version: 19.2.18
@@ -150,6 +162,12 @@ importers:
         specifier: ^4.20.7
         version: 4.23.12
 
+  packages/api-core:
+    dependencies:
+      '@pixdrift/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+
   packages/auth-client:
     dependencies:
       '@pixdrift/contracts':
@@ -189,6 +207,19 @@ importers:
       tsx:
         specifier: ^4.20.7
         version: 4.23.12
+
+  packages/events:
+    dependencies:
+      '@pixdrift/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      pg:
+        specifier: ^8.13.1
+        version: 8.23.0
+    devDependencies:
+      '@types/pg':
+        specifier: ^8.11.10
+        version: 8.23.1
 
   packages/identity:
     dependencies:
@@ -232,6 +263,8 @@ importers:
       zod:
         specifier: ^4.1.13
         version: 4.4.3
+
+  packages/systems: {}
 
   packages/tora: {}
 
