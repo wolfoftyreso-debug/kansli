@@ -13,7 +13,7 @@ describe("TORA loaders", () => {
   });
 
   it("returns a legal basis for a known call-off", () => {
-    const id = `opp:${demoCompany.id}:proc:nacka-elservice`;
+    const id = `opp:${demoCompany.id}:proc:tyresobostader-avrop-hiss`;
     const detail = loadToraOpportunity("enterprise", id);
     expect(detail).toBeDefined();
     const basis = legalBasisText(detail!.view.legalBasis);

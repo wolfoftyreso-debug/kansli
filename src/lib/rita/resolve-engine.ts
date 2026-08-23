@@ -4,7 +4,7 @@ import {
   SubprocessAnalysisEngine,
   type AnalysisEngine,
 } from "@pixdrift/rita-engine";
-import { ritaEngineConfig } from "@/lib/platform/env";
+import { ritaEngineConfig } from "../platform/env.ts";
 
 export type RitaEngineKind = "http" | "subprocess";
 
@@ -28,7 +28,6 @@ export function resolveRitaEngine(): ResolvedRitaEngine | null {
       engine: new SubprocessAnalysisEngine({
         binaryPath: binary,
         timeoutMs: 120_000,
-        env: { LANG: "sv_SE.UTF-8" },
       }),
     };
   }
