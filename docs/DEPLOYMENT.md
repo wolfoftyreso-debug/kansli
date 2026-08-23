@@ -14,8 +14,13 @@ art. 4–5: managed services, motiverad komplexitet).
 
 | Del | URL | Status |
 | --- | --- | --- |
-| **kansli (nav) + IdP** | https://kansli-git-cursor-pixdrift-shared-auth-39a5-hypbit.vercel.app | **Live** (Vercel, auto-deploy på varje push) |
-| Pixdrift IdP | samma host, under `/idp` (t.ex. `…/idp/.well-known/openid-configuration`) | **Live så fort Postgres + env är satta** (se nedan) |
+| **kansli (nav) + IdP** | https://kansli.vercel.app | **LIVE** — SSO fungerar end-to-end (Neon Postgres) |
+| Pixdrift IdP | https://kansli.vercel.app/idp (discovery, jwks, authorize/token/userinfo) | **LIVE** — Neon-backad, roterande ES256-nyckel persisterad |
+
+Databas: **Neon Postgres** via Vercel Marketplace (resurs `neon-sky-island`),
+provisionerad + kopplad via CLI/API. Env satt via Vercel-API. Demo-inloggning:
+`demo@exempelbolaget.se` / `demo-losenord-1234`. Verifierat live: discovery, JWKS,
+authorize → login → callback → inloggat `/kansli`.
 
 Vercel-projekt: `kansli` (`prj_L8oHYD0UrqQMjQUaqnd96CUT3K7c`), team `hypbit`.
 Navets landningssida renderas publikt (200). Hela SSO-flödet är verifierat
