@@ -1,5 +1,6 @@
 import { AppShell } from "@/components/app/AppShell";
 import { EmptyState, Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
+import { authConfig } from "@/lib/auth/config";
 import { readSession } from "@/lib/auth/session";
 import { listAgreements } from "@/lib/irma/agreements";
 import { tryRuntime } from "@/lib/platform/page";
@@ -35,9 +36,13 @@ export default async function IrmaPage({
 
       {params.issued && params.link ? (
         <Notice>
-          Magic link för avtal <span className="font-mono">{params.issued}</span>:{" "}
-          <span className="break-all font-mono text-ink">{params.link}</span>. Kopiera nu — den
-          visas inte igen.
+          Länk till motparten (visas en gång):{" "}
+          <a
+            href={params.link}
+            className="break-all font-mono text-ink underline decoration-line underline-offset-4"
+          >
+            {params.link.startsWith("http") ? params.link : `${authConfig.baseUrl}${params.link}`}
+          </a>
         </Notice>
       ) : null}
 

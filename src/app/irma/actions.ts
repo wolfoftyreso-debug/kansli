@@ -20,7 +20,8 @@ export async function createIrmaAgreement(formData: FormData) {
     requestId: crypto.randomUUID(),
   });
   revalidatePath("/irma");
+  revalidatePath("/britt");
   revalidatePath("/platform/events");
-  const token = agreement.magicLink ?? "";
-  redirect(`/irma?issued=${encodeURIComponent(agreement.id)}&link=${encodeURIComponent(token)}`);
+  const link = agreement.magicLink ?? "";
+  redirect(`/irma?issued=${encodeURIComponent(agreement.id)}&link=${encodeURIComponent(link)}`);
 }

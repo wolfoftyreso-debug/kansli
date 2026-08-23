@@ -11,6 +11,7 @@ export const EVENT_KINDS = [
   "rita.analysis.blocked",
   "britt.observation.recorded",
   "irma.agreement.created",
+  "irma.agreement.viewed",
   "alva.case.created",
 ] as const;
 
