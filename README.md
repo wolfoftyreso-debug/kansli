@@ -37,6 +37,18 @@ pnpm dev         # kansli-navet på http://127.0.0.1:3000
 
 Demo-inloggning (dev): `demo@exempelbolaget.se` / `demo-losenord-1234`.
 
+### Hela miljön mot riktig Postgres (owner/app-split)
+
+```bash
+scripts/dev-postgres.sh     # startar lokal Postgres 16 + roller + databaser
+BUILD=1 scripts/dev-up.sh   # hela stacken på :3000 (Postgres-backad IdP under /idp)
+scripts/verify-env.sh       # hälsokontroller (sajt, kansli, IdP, discovery, JWKS)
+```
+
+Kör de gated Postgres-integrationstesterna genom att sätta `PIXDRIFT_TEST_OWNER_URL`
++ `PIXDRIFT_TEST_DATABASE_URL` (se `scripts/dev-postgres.sh`-utskriften) före
+`pnpm test`. Hård utvärdering: `docs/SYSTEM-EVALUATION.md`.
+
 ## Skript
 
 | Kommando | Beskrivning |
