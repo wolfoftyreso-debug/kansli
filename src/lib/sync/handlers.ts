@@ -14,13 +14,14 @@ export function registerSyncHandlers(events: EventLog, pool: pg.Pool): void {
     title: string,
     body: string,
     subjectRef: string | null,
+    severity = "info",
   ) => {
     if (!orgRef) return;
     const id = randomUUID();
     await pool.query(
       `insert into britt.observations (id, org_ref, source_system, title, body, severity, subject_ref)
-       values ($1,$2,$3,$4,$5,'info',$6)`,
-      [id, orgRef, source, title, body, subjectRef],
+       values ($1,$2,$3,$4,$5,$6,$7)`,
+      [id, orgRef, source, title, body, severity, subjectRef],
     );
     await events.publish({
       system: "britt",
@@ -79,6 +80,29 @@ export function registerSyncHandlers(events: EventLog, pool: pg.Pool): void {
       "Motparten har öppnat IRMA-länken",
       String(event.payload["title"] ?? "Avtalet är sett."),
       event.subjectRef,
+    );
+  });
+
+  events.subscribe("irma.agreement.signed", async (event) => {
+    await record(
+      event.orgRef,
+      "irma",
+      "Motparten har bekräftat IRMA-underlaget",
+      String(event.payload["title"] ?? "Avtalet är bekräftat."),
+      event.subjectRef,
+    );
+  });
+
+  events.subscribe("britt.finding.recorded", async (event) => {
+    const severity = String(event.payload["severity"] ?? "info");
+    if (severity !== "high") return;
+    await record(
+      event.orgRef,
+      "britt",
+      String(event.payload["title"] ?? "BRITT har ett högt fynd"),
+      "Ett högt fynd från demonstrationsanalysen.",
+      event.subjectRef,
+      "high",
     );
   });
 

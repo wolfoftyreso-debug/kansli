@@ -38,13 +38,34 @@ live("registerSyncHandlers (live Postgres)", () => {
       orgRef,
       payload: { title: "Ring kunden" },
     });
+    await events.publish({
+      system: "irma",
+      kind: "irma.agreement.signed",
+      orgRef,
+      payload: { title: "Avtal X" },
+    });
+    await events.publish({
+      system: "britt",
+      kind: "britt.finding.recorded",
+      orgRef,
+      payload: { title: "Omsättningen ligger under plan", severity: "high" },
+    });
+    await events.publish({
+      system: "britt",
+      kind: "britt.finding.recorded",
+      orgRef,
+      payload: { title: "Medelfynd", severity: "medium" },
+    });
 
-    const { rows } = await pool.query<{ source_system: string; title: string }>(
-      `select source_system, title from britt.observations where org_ref = $1 order by created_at`,
+    const { rows } = await pool.query<{ source_system: string; title: string; severity: string }>(
+      `select source_system, title, severity from britt.observations where org_ref = $1 order by created_at`,
       [orgRef],
     );
-    expect(rows.map((r) => r.source_system)).toEqual(["irma", "alva", "kansli"]);
+    expect(rows.map((r) => r.source_system)).toEqual(["irma", "alva", "kansli", "irma", "britt"]);
     expect(rows[0]?.title).toMatch(/IRMA/);
     expect(rows[2]?.title).toMatch(/Kansli/);
+    expect(rows[3]?.title).toMatch(/bekräftat/);
+    expect(rows[4]?.severity).toBe("high");
+    expect(rows.some((row) => row.title === "Medelfynd")).toBe(false);
   });
 });
