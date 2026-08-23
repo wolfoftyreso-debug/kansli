@@ -215,27 +215,61 @@ export const systems: PixSystem[] = [
     purpose: "A register of rights and opportunities anchored to a stated legal basis.",
     stewardship: "MANAGED_PRODUCT",
     category: "Operational software",
-    status: "Development",
+    status: "Pilot",
     regions: ["Europe"],
     summary:
-      "Keeps rights and opportunities structured and traceable, where a right requires an explicit legal basis rather than an assumption.",
+      "Keeps rights and opportunities structured and traceable, where a right requires an explicit legal basis rather than an assumption. Separate from RITA.",
     sections: [
       {
         no: "01",
         title: "Purpose",
         body: [
-          "Make rights and opportunities explicit and traceable, so a claim is backed by a stated basis rather than memory.",
+          "Make rights and opportunities in public procurement explicit and traceable, so a claim is backed by a stated legal basis rather than memory.",
         ],
       },
-      forthcoming("02", "Problem"),
-      forthcoming("03", "System"),
-      forthcoming("04", "How it works"),
-      forthcoming("05", "Architecture"),
-      forthcoming("06", "Applications"),
+      {
+        no: "02",
+        title: "Problem",
+        body: [
+          "A company learns too late that a door was open, or spends time on a procurement it cannot bid for. The legal basis, the deadline and the recommended action live in different heads.",
+        ],
+      },
+      {
+        no: "03",
+        title: "System",
+        body: [
+          "An opportunity engine: access, eligibility, lifecycle, scoring and recommended action, with server-side redaction by subscription tier. Not RITA — RITA verifies financial records; TORA decides whether a company may bid.",
+        ],
+      },
+      {
+        no: "04",
+        title: "How it works",
+        body: [
+          "A company profile is joined to a procurement graph. The engine produces a verdict, a legal basis when one exists, and a next action. Free-tier clients never receive a field they are not entitled to.",
+        ],
+      },
+      {
+        no: "05",
+        title: "Architecture",
+        body: [
+          "TypeScript engine in @pixdrift/tora, served from Next.js on Vercel. Identity via PIXDRIFT Identity. Persistence on Neon Postgres (product schema owned by TORA).",
+        ],
+      },
+      {
+        no: "06",
+        title: "Applications",
+        body: ["Pilot surface at /tora on the PIXDRIFT hub. Standalone SPA remains at tora-hypbit.vercel.app."],
+      },
       { no: "07", title: "Integrations", body: [sharedIdentityIntegration] },
-      forthcoming("08", "Security"),
-      { no: "09", title: "Documentation", body: ["In preparation."] },
-      { no: "10", title: "Availability", body: ["In development. Europe."] },
+      {
+        no: "08",
+        title: "Security",
+        body: [
+          "Redaction is enforcement on the server, not a UI filter. A right requires an explicit legal basis. Demo data is labelled as such.",
+        ],
+      },
+      { no: "09", title: "Documentation", body: ["Technical notes under Consolidation and the migration ledger."] },
+      { no: "10", title: "Availability", body: ["Pilot. Europe."] },
     ],
   },
   {

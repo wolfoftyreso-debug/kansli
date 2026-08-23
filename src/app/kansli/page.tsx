@@ -95,6 +95,19 @@ export default async function KansliHub() {
               )}
             </section>
 
+            <section className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+              <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">Produkter</h2>
+              <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                Samma identitet. Egna system — RITA och TORA slås inte ihop.
+              </p>
+              <Link
+                href="/tora"
+                className="mt-3 inline-flex rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
+              >
+                Öppna TORA
+              </Link>
+            </section>
+
             <TaskBoard />
           </>
         ) : (
