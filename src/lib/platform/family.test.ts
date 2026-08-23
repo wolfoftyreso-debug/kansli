@@ -1,0 +1,24 @@
+import { describe, expect, it } from "vitest";
+import { EVENT_KINDS } from "@pixdrift/events";
+import { FAMILY_LINKS, FAMILY_SYSTEMS } from "./family.ts";
+
+describe("family map", () => {
+  it("covers every product once and keeps RITA distinct from TORA", () => {
+    const ids = FAMILY_SYSTEMS.map((s) => s.id);
+    expect(ids).toEqual(["identity", "kansli", "tora", "rita", "britt", "irma", "alva"]);
+    const rita = FAMILY_SYSTEMS.find((s) => s.id === "rita")!;
+    const tora = FAMILY_SYSTEMS.find((s) => s.id === "tora")!;
+    expect(rita.does).not.toEqual(tora.does);
+    expect(rita.question).not.toEqual(tora.question);
+  });
+
+  it("only names event kinds that exist", () => {
+    const kinds = new Set<string>(EVENT_KINDS);
+    for (const link of FAMILY_LINKS) {
+      const named = link.via.split("|").map((part) => part.trim());
+      for (const name of named) {
+        if (name.includes(".")) expect(kinds.has(name)).toBe(true);
+      }
+    }
+  });
+});

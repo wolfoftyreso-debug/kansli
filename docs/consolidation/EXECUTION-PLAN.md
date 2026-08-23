@@ -54,6 +54,6 @@ silent feature loss; every capability has a disposition in the ledger) · Repo
 
 ## Immediate next step
 
-Product UI routes, TORA publish-on-POST, and org-scoped event viewer are in.
-Next: provision the RITA engine host for `HttpAnalysisEngine`. ALVA remains
-deferred until the finished repo arrives.
+Family map, IRMA link-consume, and full BRITT listen-set (TORA/RITA/IRMA/ALVA/Kansli)
+are in. Still blocked outside this repo: RITA engine host, ALVA diagnosis
+engine, IRMA e-sign/Blob, BRITT full intelligence product.

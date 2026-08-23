@@ -64,7 +64,7 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
     status: "pilot",
     schema: "irma",
     basePath: "/irma",
-    capabilities: ["agreements", "magic-link"],
+    capabilities: ["agreements", "magic-link", "link-consume"],
   },
   {
     id: "alva",

@@ -1,11 +1,27 @@
 import Link from "next/link";
-import { SYSTEM_MODULES } from "@pixdrift/systems";
 import { AppShell } from "@/components/app/AppShell";
+import { Notice } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
+import {
+  FAMILY_BLOCKED,
+  FAMILY_LINKS,
+  FAMILY_PRINCIPLE,
+  FAMILY_SYSTEMS,
+} from "@/lib/platform/family";
 
 export const metadata = {
   title: "Plattform — Pixdrift",
-  description: "Gemensam infrastruktur: identitet, API-kärna, databaser och synk.",
+  description: "Vad varje system gör, och hur de hänger ihop.",
+};
+
+const PATH: Record<string, string> = {
+  identity: "/idp",
+  kansli: "/kansli",
+  tora: "/tora",
+  rita: "/rita",
+  britt: "/britt",
+  irma: "/irma",
+  alva: "/alva",
 };
 
 export default async function PlatformPage() {
@@ -15,30 +31,57 @@ export default async function PlatformPage() {
     <AppShell current="platform" session={session}>
       <header className="flex flex-col gap-3">
         <p className="pd-label text-faint">PIXDRIFT / Plattform</p>
-        <h1 className="text-3xl font-semibold tracking-tight">En kärna. Egna system.</h1>
-        <p className="text-ink-soft">
-          Gemensam identitet, gemensamma API:er och en append-only händelselogg. Varje produkt
-          äger sitt schema. Ingen produkt skriver i en annans tabeller.
-        </p>
+        <h1 className="text-3xl font-semibold tracking-tight">Vad varje system gör</h1>
+        <p className="text-ink-soft">{FAMILY_PRINCIPLE}</p>
+        <Notice>
+          En process. En Postgres. Append-only <span className="font-mono">platform.events</span>.
+          Ingen produkt skriver i en annans schema.
+        </Notice>
       </header>
 
-      <section className="grid gap-3">
-        {SYSTEM_MODULES.map((module) => (
-          <article key={module.id} className="rounded-xl border border-line bg-surface px-4 py-3">
+      <section className="flex flex-col gap-3">
+        {FAMILY_SYSTEMS.map((system) => (
+          <article key={system.id} className="rounded-xl border border-line bg-surface px-4 py-4">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <h2 className="font-semibold">
-                <Link href={module.basePath} className="hover:underline">
-                  {module.name}
+                <Link href={PATH[system.id] ?? "/platform"} className="hover:underline">
+                  {system.name}
                 </Link>
               </h2>
-              <p className="font-mono text-xs text-faint">{module.status}</p>
+              <p className="font-mono text-xs text-faint">{system.status}</p>
             </div>
-            <p className="mt-1 text-sm text-ink-soft">{module.purpose}</p>
-            <p className="mt-2 font-mono text-xs text-muted">
-              schema {module.schema ?? "public"} · {module.basePath}
-            </p>
+            <p className="mt-2 text-sm font-medium text-ink">{system.question}</p>
+            <p className="mt-2 text-sm text-ink-soft">{system.does}</p>
+            <p className="mt-2 text-sm text-muted">{system.doesNot}</p>
+            <p className="mt-3 font-mono text-xs text-faint">äger {system.owns}</p>
           </article>
         ))}
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-semibold">Hur de hänger ihop</h2>
+        <ul className="flex flex-col gap-2">
+          {FAMILY_LINKS.map((link) => (
+            <li key={`${link.from}-${link.via}`} className="rounded-xl border border-line bg-surface px-4 py-3">
+              <p className="font-mono text-xs text-accent">{link.via}</p>
+              <p className="mt-1 text-sm font-medium">
+                {link.from} → {link.to}
+              </p>
+              <p className="mt-1 text-sm text-ink-soft">{link.meaning}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-semibold">Väntar på underlag utanför det här repot</h2>
+        <ul className="flex flex-col gap-2">
+          {FAMILY_BLOCKED.map((item) => (
+            <li key={item.id} className="rounded-xl border border-line bg-surface px-4 py-3 text-sm text-ink-soft">
+              {item.need}
+            </li>
+          ))}
+        </ul>
       </section>
 
       <p className="text-sm text-faint">

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
 import { EmptyState, Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
@@ -62,7 +63,11 @@ export default async function RitaPage() {
                     <p className="text-xs font-medium uppercase tracking-wide text-accent">
                       {item.status}
                     </p>
-                    <p className="mt-2 font-medium">{item.companyName}</p>
+                    <p className="mt-2 font-medium">
+                      <Link href={`/rita/${item.id}`} className="hover:underline">
+                        {item.companyName}
+                      </Link>
+                    </p>
                     <p className="font-mono text-xs text-faint">{item.orgNumber}</p>
                     {item.blockedReason ? (
                       <p className="mt-2 text-sm text-muted">{item.blockedReason}</p>

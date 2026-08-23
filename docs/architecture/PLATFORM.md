@@ -44,6 +44,7 @@ Browser → Next.js (kansli)
 | GET/POST | `/api/rita/analyses` | yes |
 | GET/POST | `/api/britt/observations` | yes |
 | GET/POST | `/api/irma/agreements` | yes |
+| GET | `/api/irma/l/:token` | no (hashed magic link). First open → `viewed`. |
 | GET/POST | `/api/alva/cases` | yes |
 | GET/POST | `/api/tasks` | yes |
 
@@ -56,8 +57,12 @@ Browser → Next.js (kansli)
 | `/rita` | Analysis requests (blocked without engine host) |
 | `/britt` | Observations inbox (including synced events) |
 | `/irma` | Agreements + one-time magic link |
+| `/irma/l/:token` | Counterparty view (no account). First open marks `viewed`. |
 | `/alva` | Case registration (engine deferred) |
 | `/platform` | Module catalog |
 | `/platform/events` | Org-scoped event log |
 
 Login accepts `?next=` for those paths only (`pd_next` cookie). Anything else falls back to `/kansli`.
+
+The operating map — what each system does now, and how they connect — is
+`docs/FAMILY.md` and `/platform`.
