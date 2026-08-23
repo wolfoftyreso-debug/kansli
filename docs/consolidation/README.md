@@ -21,10 +21,18 @@ on **Next.js App Router**, scheduled work on **Vercel Cron** — porting BRITT
 (SQLite→PG) and IRMA (Cloudflare/D1/R2→Vercel/PG/Blob) as the two biggest jobs,
 with **no silent feature loss**.
 
-## Open decisions (need owner input)
+## Locked decisions
 
-1. **RITA vs TORA overlap** — both use "opportunity" vocabulary. Distinct
-   products (keep both) or overlapping engines to merge?
-2. **alva** — finish first (owner said not done) or defer its port?
-3. **Order** — proposed first port is **TORA** (already Postgres + deployed) as
-   the end-to-end proof of the target pattern; confirm or reprioritize.
+1. **RITA and TORA stay separate products.** Shared "opportunity" vocabulary is
+   coincidental. RITA verifies financial records against a rule set; TORA
+   decides whether a company may bid on a public procurement, on what legal
+   basis, and what to do next. They do not merge.
+2. **ALVA is deferred** until the owner provides the finished repo.
+3. **RITA analysis engine: keep the real Rust binary, reach it over HTTP.**
+   A serious system for businesses cannot ship `FakeAnalysisEngine`. Vercel Node
+   Functions cannot execute `skattjakt`; the product stays on Vercel and talks
+   to the engine through `HttpAnalysisEngine` (`@pixdrift/rita-engine`). WASM
+   or a TypeScript rewrite remain possible later as another class behind the
+   same interface — they are not the first production path.
+4. **Port order** — TORA first (engine is already TypeScript), then RITA
+   (HTTP host + Next), then BRITT (SQLite→PG), then IRMA (Cloudflare→Vercel).

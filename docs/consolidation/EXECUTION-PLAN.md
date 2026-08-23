@@ -9,7 +9,8 @@ next. Difficulty is described technically, not in calendar time.
   duplication report, target architecture, ledger, plan. Non-destructive. ✅
 - **WAVE 1 — Foundation.** Confirm workspace + TS standards + Vercel deploy + env
   registry; add thin `packages/db` (shared `pg` pool + SQL migration runner);
-  Neon Postgres already live for kansli. Establish one migration dir + CI gates.
+  Neon Postgres already live for kansli. Establish one migration dir + CI gates. ✅
+  (`@pixdrift/db` + identity now uses it.)
 - **WAVE 2 — Identity.** Wire each product to Pixdrift Identity (adapters exist);
   remove product-owned login/identity; keep local BFF sessions where needed.
 - **WAVE 3 — Domain.** Reconcile org/user/tenant/audit to `@pixdrift/contracts`;
@@ -17,7 +18,7 @@ next. Difficulty is described technically, not in calendar time.
 - **WAVE 4 — Files.** Introduce Vercel Blob (direct client upload + PG metadata);
   migrate IRMA R2, BRITT exports, alva evidence.
 - **WAVE 5 — Application modules.** Port products into `apps/web` one at a time:
-  1. **TORA** (SPA already deployed; port to Next, keep PG). Lowest risk.
+  1. **TORA** (SPA already deployed; port to Next, keep PG). Lowest risk. ✅ engine in `@pixdrift/tora`; `/tora` + `/api/tora/market` serve redacted market. SPA still live separately.
   2. **RITA** (Next+api+worker → Next + Route Handlers + Vercel Cron; `pg`).
   3. **BRITT** (Express → Route Handlers; **SQLite→Neon PG** = biggest data port).
   4. **IRMA** (**Cloudflare→Next**, **D1→PG**, **R2→Blob**) = biggest infra port.
@@ -46,14 +47,13 @@ silent feature loss; every capability has a disposition in the ledger) · Repo
 | **IRMA Cloudflare→Vercel port** (vinext/D1/R2) | Largest infra rewrite | High | Re-home to Next incrementally; D1 schema→pg (drizzle pg dialect); R2→Blob; preserve magic-link + e-sign flows |
 | **Auth consolidation regressions** | Users locked out / authz holes | Med | Move to Identity per product behind a flag; fail-closed; keep server-side authz; E2E per product |
 | **Schema reconciliation** (6 org/user/audit models) | Data mismatch / migration failure | Med | Map each to contracts; migrations from clean state; no blind concatenation |
-| **RITA vs TORA overlap** | Wasted merge or wrong split | Med | Owner decision before merging engines |
+| **RITA vs TORA overlap** | Wasted merge or wrong split | Closed | Owner: separate products. Do not merge engines. |
 | **Silent feature loss** | Product regression | Absolute rule | Ledger disposition for every capability; parity checks in WAVE 9 |
 | **Stateful-on-serverless** (BRITT/RITA/alva assume persistent FS/process) | Runtime breakage on Vercel | Proven (BRITT demo) | Postgres for state; Vercel Cron for loops; no local FS/sqlite |
 | **Data loss during migration** | Critical | Low (demo data now) | Migrations reversible; back up before any prod data move; audit destructive ops |
 
-## Immediate next step (WAVE 1 start, on approval)
+## Immediate next step
 
-Add `packages/db` (shared `pg` pool + migration runner) and begin WAVE 5.1
-(TORA → Next module) as the first end-to-end proof of the pattern, since TORA is
-already Postgres + deployed. Await owner confirmation on the **RITA/TORA overlap**
-and on **alva** (finish vs. defer) before those waves.
+WAVE 1 and TORA engine-in-Next are in. Next: persist TORA on Neon via
+`@pixdrift/db` (product-owned schema), then provision the RITA engine host
+for `HttpAnalysisEngine`. ALVA remains deferred.

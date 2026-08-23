@@ -34,6 +34,12 @@ Vercel-native primitive insufficient.
   Next Route Handlers / Vercel Functions.
 - **Dockerfiles / infra/ / deploy/** (BRITT, alva) → Vercel deploy.
 - No AWS/K8s/Terraform/broker/Redis/second DB introduced (none exist to keep).
+- **RITA analysis engine exception (art. 4):** the real `skattjakt` Rust binary
+  cannot run inside a Vercel Node Function (filesystem work dir, Anthropic
+  calls, ~180s analyses). Production uses `HttpAnalysisEngine` against a
+  dedicated engine host. The product UI/API/Cron stay on Vercel. Fake engines
+  are forbidden outside local/test. This is extra infrastructure with a
+  documented reason, not a second platform.
 
 ## Target workspace shape (illustrative, not ceremony)
 
