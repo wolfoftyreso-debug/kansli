@@ -1,19 +1,21 @@
 import Link from "next/link";
 import { brand } from "@/lib/pixdrift/brand";
+import { presentSurfaces } from "@/lib/pixdrift/platform";
 import { PixelMark } from "./PixelMark";
 
 export function Footer() {
   const year = new Date().getFullYear();
   return (
     <footer className="mt-24 border-t border-line bg-surface">
-      <div className="mx-auto grid w-full max-w-[1200px] grid-cols-1 gap-12 px-6 py-16 md:grid-cols-[1.4fr_1fr_1fr]">
+      <div className="mx-auto grid w-full max-w-[1200px] grid-cols-1 gap-12 px-6 py-16 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-2.5">
             <PixelMark size={22} />
             <span className="text-sm font-semibold tracking-[0.18em] text-ink">{brand.name}</span>
           </div>
           <p className="max-w-sm text-sm leading-relaxed text-muted">{brand.microStatement}</p>
-          <p className="pd-label mt-2">Developed by {brand.company.name}</p>
+          <p className="mt-3 text-sm font-medium text-ink">{brand.secondaryTagline}</p>
+          <p className="pd-label mt-3">Developed by {brand.company.name}</p>
         </div>
 
         <div className="flex flex-col gap-3">
@@ -28,6 +30,15 @@ export function Footer() {
           ].map((i) => (
             <Link key={i.href} href={i.href} className="text-sm text-ink-soft hover:text-ink">
               {i.label}
+            </Link>
+          ))}
+        </div>
+
+        <div className="flex flex-col gap-3">
+          <p className="pd-label">Platform</p>
+          {presentSurfaces.map((s) => (
+            <Link key={s.id} href={s.route ?? "/"} className="text-sm text-ink-soft hover:text-ink">
+              {s.name.replace(/^PIXDRIFT /, "")}
             </Link>
           ))}
         </div>

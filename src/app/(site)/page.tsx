@@ -50,6 +50,7 @@ export default function HomePage() {
               Organizations already have powerful systems. {brand.name} builds the focused software
               that handles the connections, workflows and operational gaps between them.
             </p>
+            <p className="pd-label">{brand.secondaryTagline}</p>
             <div className="flex flex-wrap items-center gap-4">
               <Link
                 href="/systems"

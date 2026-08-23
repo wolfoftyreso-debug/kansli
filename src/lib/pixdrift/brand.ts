@@ -11,6 +11,12 @@ export const brand = {
   domain: "pixdrift.com",
   url: "https://pixdrift.com",
   tagline: "The layer between systems.",
+  /**
+   * Secondary, recurring expression. The two pair intentionally:
+   * "The layer between systems." says what PIXDRIFT is;
+   * "Built because it was missing." says why the products exist.
+   */
+  secondaryTagline: "Built because it was missing.",
   statement:
     "PIXDRIFT develops focused software for the operational gaps, connections and workflows that remain between the systems organizations already use.",
   /** Doctrine §11 — short corporate version. */
