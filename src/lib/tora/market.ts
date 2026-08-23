@@ -7,8 +7,27 @@ export function parseTier(value: string | null | undefined): Tier {
   return "free";
 }
 
+const api = () => createLocalApi(demoGraph);
+
 export function loadToraMarket(tier: Tier) {
-  return createLocalApi(demoGraph).getMarket({
+  return api().getMarket({
+    company: demoCompany,
+    tier,
+    today: DEMO_TODAY,
+  });
+}
+
+export function loadToraOpportunity(tier: Tier, opportunityId: string) {
+  return api().getOpportunity({
+    company: demoCompany,
+    tier,
+    today: DEMO_TODAY,
+    opportunityId,
+  });
+}
+
+export function loadToraCalendar(tier: Tier) {
+  return api().getCalendar({
     company: demoCompany,
     tier,
     today: DEMO_TODAY,

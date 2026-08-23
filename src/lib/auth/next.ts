@@ -5,6 +5,7 @@
 export const APP_NEXT_PATHS = [
   "/kansli",
   "/tora",
+  "/tora/calendar",
   "/rita",
   "/britt",
   "/irma",

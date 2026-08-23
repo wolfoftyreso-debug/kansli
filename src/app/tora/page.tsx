@@ -1,28 +1,19 @@
+import Link from "next/link";
 import { demoCompany } from "@pixdrift/tora";
 import { AppShell } from "@/components/app/AppShell";
+import { OpportunityCard } from "@/components/app/OpportunityCard";
 import { EmptyState, Notice, Submit } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
 import { loadToraMarket, parseTier } from "@/lib/tora/market";
 import { listSnapshots } from "@/lib/tora/persist";
+import { sek } from "@/lib/tora/view";
 import { publishToraMarket } from "./actions";
 
 export const metadata = {
   title: "TORA — Pixdrift",
   description: "Tender Opportunity and Requirement Analysis.",
 };
-
-function sek(value: number): string {
-  return new Intl.NumberFormat("sv-SE", { maximumFractionDigits: 0 }).format(value) + " kr";
-}
-
-function field(
-  value: { state: "locked"; teaser: string } | { state: "unlocked"; value: unknown },
-): string {
-  if (value.state === "locked") return value.teaser;
-  if (value.value === undefined || value.value === null) return "—";
-  return String(value.value);
-}
 
 export default async function ToraPage() {
   const session = await readSession();
@@ -47,12 +38,20 @@ export default async function ToraPage() {
           <span className="font-medium text-ink">{tier}</span>
           {session ? ` · ${session.email}` : " · inte inloggad (gratisnivå)"}
         </Notice>
+        <p className="text-sm">
+          <Link
+            href="/tora/calendar"
+            className="underline decoration-line underline-offset-4 hover:text-ink"
+          >
+            Kalender
+          </Link>
+        </p>
       </header>
 
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat label="Aktuellt" value={String(summary.openNowCount)} />
         <Stat label="Kommande" value={String(summary.upcomingCount)} />
-        <Stat label="Organisationer" value={String(summary.organizationCount)} />
+        <Stat label="Bevakning" value={String(summary.watchCount)} />
         <Stat label="Publicerat värde" value={sek(summary.knownValueSek)} />
       </section>
 
@@ -79,28 +78,10 @@ export default async function ToraPage() {
         </p>
       )}
 
-      <section className="flex flex-col gap-4">
-        <h2 className="text-lg font-semibold">Aktuellt</h2>
-        {market.openNow.length === 0 ? (
-          <EmptyState>Inga öppna möjligheter i demonstrationsunderlaget.</EmptyState>
-        ) : (
-          <ul className="flex flex-col gap-3">
-            {market.openNow.map((item) => (
-              <li key={item.id} className="rounded-xl border border-line bg-surface p-4">
-                <div className="flex flex-wrap items-baseline justify-between gap-2">
-                  <p className="text-xs font-medium uppercase tracking-wide text-accent">
-                    {item.verdict}
-                  </p>
-                  <p className="font-mono text-xs text-faint">{item.scoreBand}</p>
-                </div>
-                <p className="mt-2 font-medium">{field(item.title)}</p>
-                <p className="mt-1 text-sm text-ink-soft">{field(item.organizationName)}</p>
-                <p className="mt-2 text-sm text-muted">{field(item.rationale)}</p>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+      <MarketSection title="Aktuellt" empty="Inga öppna möjligheter i demonstrationsunderlaget." items={market.openNow} />
+      <MarketSection title="Kommande" empty="Inga kommande möjligheter." items={market.upcoming} />
+      <MarketSection title="Bevakning" empty="Inget att bevaka." items={market.watch} />
+      <MarketSection title="Historik" empty="Ingen historik i underlaget." items={market.history} />
 
       {session?.org ? (
         <section className="flex flex-col gap-3">
@@ -122,6 +103,31 @@ export default async function ToraPage() {
         </section>
       ) : null}
     </AppShell>
+  );
+}
+
+function MarketSection({
+  title,
+  empty,
+  items,
+}: {
+  title: string;
+  empty: string;
+  items: Parameters<typeof OpportunityCard>[0]["item"][];
+}) {
+  return (
+    <section className="flex flex-col gap-4">
+      <h2 className="text-lg font-semibold">{title}</h2>
+      {items.length === 0 ? (
+        <EmptyState>{empty}</EmptyState>
+      ) : (
+        <ul className="flex flex-col gap-3">
+          {items.map((item) => (
+            <OpportunityCard key={item.id} item={item} />
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
 

@@ -6,7 +6,20 @@
  * company may bid, on what legal basis, and what to do next.
  */
 
-export { createLocalApi, type OpportunityApi, type ApiRequest, type MarketResponse } from "./engine/api";
+export {
+  createLocalApi,
+  type OpportunityApi,
+  type ApiRequest,
+  type MarketResponse,
+  type OpportunityDetailResponse,
+  type CalendarResponse,
+} from "./engine/api";
 export { buildOpportunities, type Opportunity } from "./engine/opportunity";
-export { TIER_CAPABILITIES, type Tier } from "./engine/entitlement";
+export {
+  TIER_CAPABILITIES,
+  type Tier,
+  type OpportunityView,
+  type CalendarEntryView,
+  type Locked,
+} from "./engine/entitlement";
 export { demoCompany, demoGraph, DEMO_TODAY } from "./data/seed";
