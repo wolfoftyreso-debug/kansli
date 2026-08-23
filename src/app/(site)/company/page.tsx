@@ -41,6 +41,87 @@ export default function CompanyPage() {
         />
       </div>
 
+      {/* Why we build (doctrine §10) */}
+      <div className="mt-24 grid grid-cols-1 gap-8 md:grid-cols-[8rem_1fr] md:gap-10">
+        <p className="pd-label pt-1">Why we build</p>
+        <div className="flex max-w-2xl flex-col gap-5 text-lg leading-relaxed text-ink">
+          <p>
+            {brand.name} grew out of a recurring experience. After years of building and operating
+            businesses, we repeatedly encountered small but consequential problems that sat between
+            the systems we already used.
+          </p>
+          <p>
+            We looked for software to solve them. Sometimes it existed — and we used it. Sometimes
+            it almost existed. And sometimes the obvious solution simply wasn&rsquo;t there, so we
+            built what we needed.
+          </p>
+          <p>
+            Most of these projects began as internal tools, used, changed and improved because they
+            had to work in real operating environments. Occasionally one became something more: it
+            solved the problem unusually well, other organizations had the same problem, and
+            internal software became worth maintaining for others.
+          </p>
+          <p className="text-muted">
+            That is how {brand.name} grows — not by searching for categories to disrupt, but by
+            building the software we thought should already exist.
+          </p>
+        </div>
+      </div>
+
+      {/* Development model (doctrine §8) */}
+      <div className="mt-20">
+        <p className="pd-label">How a system comes to exist</p>
+        <ol className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2">
+          {["Experience", "Problem", "Search", "Build", "Use", "Improve", "Validate", "Decide"].map(
+            (step, i, arr) => (
+              <li key={step} className="flex items-center gap-3">
+                <span className="font-mono text-sm text-ink">{step}</span>
+                {i < arr.length - 1 ? (
+                  <span aria-hidden className="text-faint">
+                    →
+                  </span>
+                ) : null}
+              </li>
+            ),
+          )}
+        </ol>
+      </div>
+
+      {/* Three outcomes (doctrine §4) */}
+      <div className="mt-16">
+        <p className="pd-label">Three possible outcomes</p>
+        <div className="mt-6 grid grid-cols-1 gap-px border border-line bg-line md:grid-cols-3">
+          <div className="flex flex-col gap-2 bg-surface p-6">
+            <h2 className="text-lg font-semibold tracking-tight text-ink">Internal</h2>
+            <p className="text-sm text-ink-soft">
+              Useful to us. We keep it and improve it when necessary.
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 bg-surface p-6">
+            <h2 className="text-lg font-semibold tracking-tight text-ink">Open source</h2>
+            <p className="text-sm text-ink-soft">
+              Useful beyond us, but it does not require us to operate it. We publish, document and
+              let others use and build on it.
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 bg-surface p-6">
+            <h2 className="text-lg font-semibold tracking-tight text-ink">Managed product</h2>
+            <p className="text-sm text-ink-soft">
+              Important enough that users should not have to operate it themselves. Then we take
+              responsibility for it.
+            </p>
+            <p className="mt-1 font-mono text-xs leading-relaxed text-muted">
+              hosting · security · availability · maintenance · updates · documentation · support ·
+              data integrity · compatibility · long-term operation
+            </p>
+          </div>
+        </div>
+        <p className="mt-6 max-w-2xl text-sm text-muted">
+          Software becomes a {brand.name} product when we are prepared to take responsibility for it
+          — not merely when it is for sale.
+        </p>
+      </div>
+
       <div className="mt-20">
         <p className="pd-label">Corporate character</p>
         <div className="mt-6 grid grid-cols-1 gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">

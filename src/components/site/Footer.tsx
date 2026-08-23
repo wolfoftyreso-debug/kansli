@@ -12,7 +12,7 @@ export function Footer() {
             <PixelMark size={22} />
             <span className="text-sm font-semibold tracking-[0.18em] text-ink">{brand.name}</span>
           </div>
-          <p className="max-w-sm text-sm leading-relaxed text-muted">{brand.statement}</p>
+          <p className="max-w-sm text-sm leading-relaxed text-muted">{brand.microStatement}</p>
           <p className="pd-label mt-2">Developed by {brand.company.name}</p>
         </div>
 

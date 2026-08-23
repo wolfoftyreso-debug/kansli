@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getSystem, systems } from "@/lib/pixdrift/systems";
+import { getSystem, STEWARDSHIP_LABEL, systems } from "@/lib/pixdrift/systems";
 import { Container } from "@/components/site/Container";
 import { SpecTable } from "@/components/site/SpecTable";
 import { RegionIndicator, StatusIndicator } from "@/components/site/indicators";
@@ -60,6 +60,7 @@ export default async function SystemPage({ params }: { params: Promise<{ slug: s
             <SpecTable
               rows={[
                 { label: "Category", value: system.category },
+                { label: "Stewardship", value: STEWARDSHIP_LABEL[system.stewardship] },
                 { label: "Status", value: <StatusIndicator status={system.status} /> },
                 { label: "Region", value: <RegionIndicator regions={system.regions} /> },
               ]}

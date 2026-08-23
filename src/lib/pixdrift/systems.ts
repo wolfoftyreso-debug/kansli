@@ -11,6 +11,19 @@
 export type SystemStatus = "Operational" | "Development" | "Pilot";
 export type Region = "Europe" | "United States" | "Global";
 
+/**
+ * The three possible outcomes for anything PIXDRIFT builds (doctrine §4).
+ * Software becomes a MANAGED_PRODUCT only when PIXDRIFT is prepared to take
+ * operational responsibility for it (hosting, security, support, lifecycle).
+ */
+export type Stewardship = "INTERNAL" | "OPEN_SOURCE" | "MANAGED_PRODUCT";
+
+export const STEWARDSHIP_LABEL: Record<Stewardship, string> = {
+  INTERNAL: "Internal",
+  OPEN_SOURCE: "Open source",
+  MANAGED_PRODUCT: "Managed product",
+};
+
 export interface SystemSection {
   /** Standardized product-page section id, e.g. "01". */
   no: string;
@@ -28,6 +41,8 @@ export interface PixSystem {
   purpose: string;
   category: string;
   status: SystemStatus;
+  /** Which of the three outcomes this system is (doctrine §4). */
+  stewardship: Stewardship;
   regions: Region[];
   /** Short summary for cards/metadata. */
   summary: string;
@@ -48,6 +63,7 @@ export const systems: PixSystem[] = [
     slug: "identity",
     name: "PIXDRIFT Identity",
     purpose: "One identity and single sign-on across every system in the family.",
+    stewardship: "MANAGED_PRODUCT",
     category: "Platform infrastructure",
     status: "Operational",
     regions: ["Europe", "United States"],
@@ -121,6 +137,7 @@ export const systems: PixSystem[] = [
     slug: "alva",
     name: "ALVA",
     purpose: "Structured vehicle diagnosis, from the customer's own words to a clear protocol.",
+    stewardship: "MANAGED_PRODUCT",
     category: "Operational software",
     status: "Development",
     regions: ["Europe"],
@@ -166,6 +183,7 @@ export const systems: PixSystem[] = [
     slug: "rita",
     name: "RITA",
     purpose: "Verification and findings across financial and operational records.",
+    stewardship: "MANAGED_PRODUCT",
     category: "Verification software",
     status: "Development",
     regions: ["Europe"],
@@ -195,6 +213,7 @@ export const systems: PixSystem[] = [
     slug: "tora",
     name: "TORA",
     purpose: "A register of rights and opportunities anchored to a stated legal basis.",
+    stewardship: "MANAGED_PRODUCT",
     category: "Operational software",
     status: "Development",
     regions: ["Europe"],
@@ -224,6 +243,7 @@ export const systems: PixSystem[] = [
     slug: "irma",
     name: "IRMA",
     purpose: "Secure exchange of information with people outside the organization.",
+    stewardship: "MANAGED_PRODUCT",
     category: "Operational software",
     status: "Development",
     regions: ["Europe"],
@@ -253,6 +273,7 @@ export const systems: PixSystem[] = [
     slug: "britt",
     name: "BRITT",
     purpose: "Focused operational workflow software for a specific, recurring task.",
+    stewardship: "MANAGED_PRODUCT",
     category: "Operational software",
     status: "Development",
     regions: ["Europe"],

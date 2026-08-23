@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { systems } from "@/lib/pixdrift/systems";
+import { terminology } from "@/lib/pixdrift/terminology";
 import { Container } from "@/components/site/Container";
 import { SectionHeading } from "@/components/site/SectionHeading";
 
@@ -62,6 +63,28 @@ export default function DocumentationPage() {
             not yet documented are reported rather than assumed complete.
           </p>
         </div>
+      </div>
+
+      {/* Controlled terminology (doctrine §15) */}
+      <div className="mt-24">
+        <p className="pd-label">Terminology</p>
+        <p className="mt-4 max-w-2xl text-ink-soft">
+          One controlled vocabulary across every system. English is canonical; translations derive
+          from it so terms do not drift between products.
+        </p>
+        <dl className="mt-8 border-t border-line">
+          {terminology.map((t) => (
+            <div
+              key={t.term}
+              className="grid grid-cols-1 gap-2 border-b border-line py-5 md:grid-cols-[12rem_1fr] md:gap-10"
+            >
+              <dt className="font-medium text-ink">{t.term}</dt>
+              <dd className="max-w-2xl text-ink-soft">
+                {t.definition} <span className="text-muted">{t.context}</span>
+              </dd>
+            </div>
+          ))}
+        </dl>
       </div>
     </Container>
   );
