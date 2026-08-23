@@ -10,6 +10,7 @@ import {
 } from "@/lib/auth/config";
 import { safeNextPath } from "@/lib/auth/next";
 import { sealSession } from "@/lib/auth/session";
+import { getRuntime } from "@/lib/platform/runtime";
 
 function fail(reason: string): NextResponse {
   return NextResponse.redirect(
@@ -39,8 +40,14 @@ export async function GET(request: NextRequest) {
   });
 
   let sessionValue: string;
+  let claims: { sub: string; email: string; orgRef: string | null };
   try {
     const tokens = await client.exchangeCode({ code, codeVerifier: verifier, nonce: nonce ?? "" });
+    claims = {
+      sub: tokens.claims.sub,
+      email: tokens.claims.email,
+      orgRef: tokens.claims.org?.ref ?? null,
+    };
     sessionValue = await sealSession({
       sub: tokens.claims.sub,
       email: tokens.claims.email,
@@ -50,6 +57,20 @@ export async function GET(request: NextRequest) {
     });
   } catch {
     return fail("exchange");
+  }
+
+  try {
+    await getRuntime().events.publish({
+      system: "identity",
+      kind: "identity.session.started",
+      orgRef: claims.orgRef,
+      actorKind: "user",
+      actorRef: claims.sub,
+      subjectRef: claims.sub,
+      payload: { email: claims.email },
+    });
+  } catch {
+    // Login must succeed even if the event log is down.
   }
 
   const next = safeNextPath(request.cookies.get(NEXT_COOKIE)?.value) ?? "/kansli";

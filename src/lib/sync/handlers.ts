@@ -4,8 +4,8 @@ import type pg from "pg";
 
 /**
  * Cross-system sync. A handler may write only the schema of the system it
- * belongs to. TORA/RITA never write `britt.observations` from their own API;
- * BRITT learns by listening.
+ * belongs to. TORA/RITA/IRMA/ALVA/Kansli never write `britt.observations`
+ * from their own API; BRITT learns by listening.
  */
 export function registerSyncHandlers(events: EventLog, pool: pg.Pool): void {
   const record = async (
@@ -58,6 +58,46 @@ export function registerSyncHandlers(events: EventLog, pool: pg.Pool): void {
       "rita",
       "RITA kunde inte köra analysmotorn",
       String(event.payload["reason"] ?? "Motorn är inte konfigurerad."),
+      event.subjectRef,
+    );
+  });
+
+  events.subscribe("irma.agreement.created", async (event) => {
+    await record(
+      event.orgRef,
+      "irma",
+      "IRMA har skapat ett avtal",
+      String(event.payload["title"] ?? "Ett underlag väntar på motparten."),
+      event.subjectRef,
+    );
+  });
+
+  events.subscribe("irma.agreement.viewed", async (event) => {
+    await record(
+      event.orgRef,
+      "irma",
+      "Motparten har öppnat IRMA-länken",
+      String(event.payload["title"] ?? "Avtalet är sett."),
+      event.subjectRef,
+    );
+  });
+
+  events.subscribe("alva.case.created", async (event) => {
+    await record(
+      event.orgRef,
+      "alva",
+      "ALVA har registrerat ett fall",
+      String(event.payload["note"] ?? "Diagnosmotorn saknas. Fallet är registrerat."),
+      event.subjectRef,
+    );
+  });
+
+  events.subscribe("kansli.task.created", async (event) => {
+    await record(
+      event.orgRef,
+      "kansli",
+      "Kansli har en ny intern uppgift",
+      String(event.payload["title"] ?? ""),
       event.subjectRef,
     );
   });
