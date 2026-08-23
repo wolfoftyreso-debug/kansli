@@ -28,10 +28,13 @@ export default async function IrmaPage({
         <p className="pd-label text-faint">PIXDRIFT / IRMA</p>
         <h1 className="text-3xl font-semibold tracking-tight">IRMA</h1>
         <p className="text-ink-soft">
-          Avtal och en engångslänk till motparten. E-signatur och objektlagring väntar — token
-          hashas; klartext visas bara när avtalet skapas.
+          Avtal, klausuler och en engångslänk till motparten. Token hashas; klartext visas bara när
+          avtalet skapas. Motparten kan bekräfta med en hashad förklaring — inte BankID.
         </p>
-        <Notice>Ingen e-signatur och ingen fillagring i den här ytan.</Notice>
+        <Notice>
+          Ingen kvalificerad e-signatur och ingen fillagring. Artefakten är SHA-256 av det
+          bekräftade underlaget.
+        </Notice>
       </header>
 
       {params.issued && params.link ? (
@@ -72,6 +75,11 @@ export default async function IrmaPage({
                     </p>
                     <p className="mt-2 font-medium">{item.title}</p>
                     <p className="text-sm text-ink-soft">{item.counterparty}</p>
+                    {item.artifactSha256 ? (
+                      <p className="mt-2 break-all font-mono text-xs text-faint">
+                        artefakt {item.artifactSha256}
+                      </p>
+                    ) : null}
                     <p className="mt-2 font-mono text-xs text-faint">{item.createdAt}</p>
                   </li>
                 ))}
