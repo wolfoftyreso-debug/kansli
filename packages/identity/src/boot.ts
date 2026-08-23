@@ -117,6 +117,12 @@ export async function bootIdentityFromEnv(opts: BootOptions = {}): Promise<Fasti
     env.COOKIE_SECURE !== undefined ? env.COOKIE_SECURE === "true" : issuer.startsWith("https://");
 
   const clients = clientsFromEnv(env);
+  // Demo deployments (PIXDRIFT_SEED_DEMO) prefill the login form so the known
+  // demo account can sign in with a single click.
+  const demoLogin =
+    env.PIXDRIFT_SEED_DEMO === "true"
+      ? { email: "demo@exempelbolaget.se", password: "demo-losenord-1234" }
+      : undefined;
 
   if (env.DATABASE_URL) {
     const { PgStore } = await import("./pg/store.ts");
@@ -145,6 +151,7 @@ export async function bootIdentityFromEnv(opts: BootOptions = {}): Promise<Fasti
       clients: registered.length > 0 ? registered : clients,
       sessionSecret,
       cookieSecure,
+      demoLogin,
     });
   }
 
@@ -157,5 +164,6 @@ export async function bootIdentityFromEnv(opts: BootOptions = {}): Promise<Fasti
     clients,
     sessionSecret,
     cookieSecure,
+    demoLogin,
   });
 }

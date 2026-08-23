@@ -61,10 +61,17 @@ const OIDC_FIELDS: (keyof AuthorizeParams)[] = [
   "org",
 ];
 
-function loginPage(params: AuthorizeParams, action: string, error?: string): string {
+function loginPage(
+  params: AuthorizeParams,
+  action: string,
+  error?: string,
+  demo?: { email: string; password: string },
+): string {
   const hidden = OIDC_FIELDS.map((f) =>
     params[f] ? `<input type="hidden" name="${f}" value="${esc(String(params[f]))}">` : "",
   ).join("\n      ");
+  const emailValue = demo ? ` value="${esc(demo.email)}"` : "";
+  const passwordValue = demo ? ` value="${esc(demo.password)}"` : "";
   return `<!doctype html>
 <html lang="sv"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -87,9 +94,9 @@ function loginPage(params: AuthorizeParams, action: string, error?: string): str
     <div class="brand"><span class="mark">P</span><h1>Pixdrift-inloggning</h1></div>
     ${hidden}
     <label for="email">E-post</label>
-    <input id="email" name="email" type="email" autocomplete="username" required autofocus>
+    <input id="email" name="email" type="email" autocomplete="username" required autofocus${emailValue}>
     <label for="password">Lösenord</label>
-    <input id="password" name="password" type="password" autocomplete="current-password" required>
+    <input id="password" name="password" type="password" autocomplete="current-password" required${passwordValue}>
     ${error ? `<p class="err">${esc(error)}</p>` : ""}
     <button type="submit">Logga in</button>
     <p class="hint">Demo: demo@exempelbolaget.se / demo-losenord-1234</p>
@@ -241,7 +248,9 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
         return reply;
       }
     }
-    return reply.type("text/html").send(loginPage(params, authorizeAction));
+    return reply
+      .type("text/html")
+      .send(loginPage(params, authorizeAction, undefined, config.demoLogin));
   });
 
   app.post<{ Body: AuthorizeParams & { email?: string; password?: string } }>(
@@ -264,7 +273,14 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
         return reply
           .code(429)
           .type("text/html")
-          .send(loginPage(params, authorizeAction, "För många försök. Försök igen om en stund."));
+          .send(
+            loginPage(
+              params,
+              authorizeAction,
+              "För många försök. Försök igen om en stund.",
+              config.demoLogin,
+            ),
+          );
       }
 
       const user = await config.store.findUserByEmail(email);
@@ -278,7 +294,7 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
         return reply
           .code(200)
           .type("text/html")
-          .send(loginPage(params, authorizeAction, "Fel e-post eller lösenord."));
+          .send(loginPage(params, authorizeAction, "Fel e-post eller lösenord.", config.demoLogin));
       }
       loginFailures.delete(throttleKey);
 

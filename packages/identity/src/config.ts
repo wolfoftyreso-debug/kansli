@@ -30,6 +30,8 @@ export interface IdentityConfig {
   sessionCookieName?: string;
   /** Secret used to sign the IdP SSO session cookie. */
   sessionSecret: string;
+  /** When set (demo deployments), the login form is prefilled with these. */
+  demoLogin?: { email: string; password: string };
   /** Set false in tests over http; true in production behind TLS. Default true. */
   cookieSecure?: boolean;
 }
