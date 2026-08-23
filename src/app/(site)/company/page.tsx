@@ -142,10 +142,10 @@ export default function CompanyPage() {
           {brand.company.name}.
         </p>
         <a
-          href={`mailto:hello@${brand.domain}`}
+          href={`mailto:${brand.contactEmail}`}
           className="mt-6 inline-block bg-ink px-5 py-3 text-sm font-medium text-paper transition-colors hover:bg-ink-soft"
         >
-          hello@{brand.domain}
+          {brand.contactEmail}
         </a>
       </div>
     </Container>

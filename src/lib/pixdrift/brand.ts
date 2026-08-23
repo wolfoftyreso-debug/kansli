@@ -10,6 +10,8 @@ export const brand = {
   wordmark: "Pixdrift",
   domain: "pixdrift.com",
   url: "https://pixdrift.com",
+  /** Public contact address (restrained, not a startup "hello@"). */
+  contactEmail: "contact@pixdrift.com",
   tagline: "The layer between systems.",
   /**
    * Secondary, recurring expression. The two pair intentionally:
