@@ -54,6 +54,6 @@ silent feature loss; every capability has a disposition in the ledger) · Repo
 
 ## Immediate next step
 
-WAVE 1 and TORA engine-in-Next are in. Next: persist TORA on Neon via
-`@pixdrift/db` (product-owned schema), then provision the RITA engine host
-for `HttpAnalysisEngine`. ALVA remains deferred.
+Product UI routes, TORA publish-on-POST, and org-scoped event viewer are in.
+Next: provision the RITA engine host for `HttpAnalysisEngine`. ALVA remains
+deferred until the finished repo arrives.

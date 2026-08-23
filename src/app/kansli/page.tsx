@@ -102,18 +102,23 @@ export default async function KansliHub() {
                 plattformens händelselogg.
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
-                <Link
-                  href="/tora"
-                  className="inline-flex rounded-lg bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
-                >
-                  TORA
-                </Link>
-                <Link
-                  href="/platform"
-                  className="inline-flex rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800"
-                >
-                  Plattform
-                </Link>
+                {[
+                  ["/tora", "TORA"],
+                  ["/rita", "RITA"],
+                  ["/britt", "BRITT"],
+                  ["/irma", "IRMA"],
+                  ["/alva", "ALVA"],
+                  ["/platform", "Plattform"],
+                  ["/platform/events", "Händelser"],
+                ].map(([href, label]) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    className="inline-flex rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                  >
+                    {label}
+                  </Link>
+                ))}
               </div>
             </section>
 

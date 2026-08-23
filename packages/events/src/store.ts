@@ -35,6 +35,7 @@ export interface ListFilter {
   kind?: EventKind;
   orgRef?: string;
   limit?: number;
+  order?: "asc" | "desc";
 }
 
 export type EventHandler = (event: StoredEvent) => Promise<void>;
@@ -106,13 +107,14 @@ export class EventLog {
     if (filter.kind) add("kind = ?", filter.kind);
     if (filter.orgRef) add("org_ref = ?", filter.orgRef);
     const limit = Math.min(Math.max(filter.limit ?? 50, 1), 200);
+    const order = filter.order === "desc" ? "desc" : "asc";
     values.push(limit);
 
     const { rows } = await this.db.query(
       `select id::text, occurred_at, system, kind, org_ref, actor_kind, actor_ref, subject_ref, payload, contracts_version, request_id
          from ${this.schema}.events
         where ${clauses.join(" and ")}
-        order by id asc
+        order by id ${order}
         limit $${values.length}`,
       values,
     );

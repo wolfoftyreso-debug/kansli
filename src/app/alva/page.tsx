@@ -1,0 +1,68 @@
+import { AppShell } from "@/components/app/AppShell";
+import { EmptyState, Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
+import { listCases } from "@/lib/alva/cases";
+import { readSession } from "@/lib/auth/session";
+import { tryRuntime } from "@/lib/platform/page";
+import { registerAlvaCase } from "./actions";
+
+export const metadata = {
+  title: "ALVA — Pixdrift",
+  description: "Strukturerad fordonsdiagnos. Motorn anländer med ALVA-repot.",
+};
+
+export default async function AlvaPage() {
+  const session = await readSession();
+  const runtime = tryRuntime();
+  const cases = session?.org?.ref && runtime ? await listCases(runtime.pool, session.org.ref) : [];
+
+  return (
+    <AppShell current="alva" session={session}>
+      <header className="flex flex-col gap-3">
+        <p className="pd-label text-faint">PIXDRIFT / ALVA</p>
+        <h1 className="text-3xl font-semibold tracking-tight">ALVA</h1>
+        <p className="text-ink-soft">
+          Registrerar ett diagnostiskt fall. Själva diagnosmotorn väntar på ALVA-repot — fallet
+          får status open, inte en påhittad slutsats.
+        </p>
+        <Notice>Diagnosmotorn är deferred. Inga fynd, inga protokoll, ingen AI-sanning.</Notice>
+      </header>
+
+      {!session?.org ? (
+        <SignInGate next="/alva" title="Logga in för att registrera fall">
+          Fallet skrivs i ALVA:s schema. Motorn kopplas när repot finns.
+        </SignInGate>
+      ) : (
+        <>
+          <form action={registerAlvaCase} className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4">
+            <h2 className="text-lg font-semibold">Nytt fall</h2>
+            <Field name="complaint" label="Kundens beskrivning" required multiline />
+            <Field name="vehicleRef" label="Fordonsreferens (valfritt)" />
+            <Submit>Registrera fall</Submit>
+          </form>
+
+          <section className="flex flex-col gap-3">
+            <h2 className="text-lg font-semibold">Fall</h2>
+            {cases.length === 0 ? (
+              <EmptyState>Inga fall ännu.</EmptyState>
+            ) : (
+              <ul className="flex flex-col gap-3">
+                {cases.map((item) => (
+                  <li key={item.id} className="rounded-xl border border-line bg-surface p-4">
+                    <p className="text-xs font-medium uppercase tracking-wide text-accent">
+                      {item.status}
+                    </p>
+                    <p className="mt-2 font-medium">{item.complaint}</p>
+                    {item.vehicleRef ? (
+                      <p className="font-mono text-xs text-faint">{item.vehicleRef}</p>
+                    ) : null}
+                    <p className="mt-2 font-mono text-xs text-faint">{item.createdAt}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </>
+      )}
+    </AppShell>
+  );
+}

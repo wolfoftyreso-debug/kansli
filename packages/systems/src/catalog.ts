@@ -45,7 +45,7 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
     purpose: "Verification and findings against financial records.",
     status: "pilot",
     schema: "rita",
-    basePath: "/api/rita",
+    basePath: "/rita",
     capabilities: ["analysis", "findings"],
   },
   {
@@ -54,7 +54,7 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
     purpose: "Operational observations and follow-up.",
     status: "pilot",
     schema: "britt",
-    basePath: "/api/britt",
+    basePath: "/britt",
     capabilities: ["observations"],
   },
   {
@@ -63,7 +63,7 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
     purpose: "Agreements and handovers to people outside the organisation.",
     status: "pilot",
     schema: "irma",
-    basePath: "/api/irma",
+    basePath: "/irma",
     capabilities: ["agreements", "magic-link"],
   },
   {
@@ -72,7 +72,7 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
     purpose: "Structured vehicle diagnosis. Domain engine arrives with the ALVA repo.",
     status: "deferred",
     schema: "alva",
-    basePath: "/api/alva",
+    basePath: "/alva",
     capabilities: ["cases"],
   },
 ];

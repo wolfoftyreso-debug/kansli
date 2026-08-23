@@ -39,9 +39,25 @@ Browser → Next.js (kansli)
 | GET | `/api/platform/systems` | no |
 | GET | `/api/platform/me` | yes |
 | GET | `/api/platform/events` | yes (scoped to active org) |
-| GET | `/api/tora/market` | no (demo) / yes (tier) |
+| GET | `/api/tora/market` | no (demo) / yes (tier). Evaluate only — does not persist or publish. |
+| POST | `/api/tora/market` | yes. Persist a snapshot and publish `tora.market.evaluated`. |
 | GET/POST | `/api/rita/analyses` | yes |
 | GET/POST | `/api/britt/observations` | yes |
 | GET/POST | `/api/irma/agreements` | yes |
 | GET/POST | `/api/alva/cases` | yes |
 | GET/POST | `/api/tasks` | yes |
+
+## Product UI
+
+| Path | Product |
+| --- | --- |
+| `/kansli` | Hub, session, tasks |
+| `/tora` | Market evaluation + explicit publish |
+| `/rita` | Analysis requests (blocked without engine host) |
+| `/britt` | Observations inbox (including synced events) |
+| `/irma` | Agreements + one-time magic link |
+| `/alva` | Case registration (engine deferred) |
+| `/platform` | Module catalog |
+| `/platform/events` | Org-scoped event log |
+
+Login accepts `?next=` for those paths only (`pd_next` cookie). Anything else falls back to `/kansli`.

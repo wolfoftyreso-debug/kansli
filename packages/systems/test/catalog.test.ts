@@ -17,4 +17,18 @@ describe("system catalog", () => {
     expect(getModule("rita")?.schema).toBe("rita");
     expect(getModule("tora")?.schema).toBe("tora");
   });
+
+  it("points each product at its UI route, not its JSON API", () => {
+    expect(getModule("identity")?.basePath).toBe("/idp");
+    expect(getModule("kansli")?.basePath).toBe("/kansli");
+    expect(getModule("tora")?.basePath).toBe("/tora");
+    expect(getModule("rita")?.basePath).toBe("/rita");
+    expect(getModule("britt")?.basePath).toBe("/britt");
+    expect(getModule("irma")?.basePath).toBe("/irma");
+    expect(getModule("alva")?.basePath).toBe("/alva");
+    for (const module of SYSTEM_MODULES) {
+      if (module.id === "identity") continue;
+      expect(module.basePath.startsWith("/api")).toBe(false);
+    }
+  });
 });

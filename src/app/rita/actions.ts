@@ -1,0 +1,24 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { requireOrgAction } from "@/lib/platform/actions";
+import { requestAnalysis } from "@/lib/rita/analyses";
+
+export async function requestRitaAnalysis(formData: FormData) {
+  const { session, pool, events } = await requireOrgAction("/rita");
+  const companyName = String(formData.get("companyName") ?? "").trim();
+  const orgNumber = String(formData.get("orgNumber") ?? "").trim();
+  if (!companyName || !orgNumber) return;
+  await requestAnalysis({
+    pool,
+    events,
+    orgRef: session.org.ref,
+    actorRef: session.sub,
+    companyName,
+    orgNumber,
+    requestId: crypto.randomUUID(),
+  });
+  revalidatePath("/rita");
+  revalidatePath("/britt");
+  revalidatePath("/platform/events");
+}
