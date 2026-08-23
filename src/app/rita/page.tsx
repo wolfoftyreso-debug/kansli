@@ -27,8 +27,8 @@ export default async function RitaPage() {
           får lämna anbud.
         </p>
         <Notice>
-          Utan <span className="font-mono">RITA_ENGINE_URL</span> och{" "}
-          <span className="font-mono">RITA_ENGINE_TOKEN</span> lagras analysen som{" "}
+          Utan <span className="font-mono">RITA_ENGINE_URL</span> + token eller{" "}
+          <span className="font-mono">RITA_ENGINE_BINARY</span> lagras analysen som{" "}
           <span className="font-medium text-ink">blocked</span>. Motorn fejkars inte.
         </Notice>
       </header>

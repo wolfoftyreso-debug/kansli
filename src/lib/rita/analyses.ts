@@ -1,8 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type pg from "pg";
 import type { EventLog } from "@pixdrift/events";
-import { HttpAnalysisEngine } from "@pixdrift/rita-engine";
-import { ritaEngineConfig } from "@/lib/platform/env";
+import { resolveRitaEngine, ritaEngineUnavailableReason } from "./resolve-engine.ts";
 
 export interface Analysis {
   id: string;
@@ -41,14 +40,13 @@ export async function requestAnalysis(input: {
     payload: { companyName: input.companyName },
   });
 
-  const engine = ritaEngineConfig();
-  if (!engine) {
-    return fail(input, id, "engine_unavailable", "RITA_ENGINE_URL och RITA_ENGINE_TOKEN saknas.");
+  const resolved = resolveRitaEngine();
+  if (!resolved) {
+    return fail(input, id, "engine_unavailable", ritaEngineUnavailableReason());
   }
 
   try {
-    const host = new HttpAnalysisEngine(engine);
-    const envelope = await host.analyse({
+    const envelope = await resolved.engine.analyse({
       analysis_id: id,
       company: {
         id: input.orgRef,
