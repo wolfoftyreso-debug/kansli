@@ -23,6 +23,7 @@
     "@fastify/formbody": "^8.0.2",
     "@pixdrift/auth-core": "workspace:*",
     "@pixdrift/contracts": "workspace:*",
+    "@pixdrift/db": "workspace:*",
     "fastify": "^5.2.1",
     "jose": "^6.0.11",
     "pg": "^8.13.1"

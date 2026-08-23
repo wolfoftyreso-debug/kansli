@@ -8,7 +8,7 @@ import pg from "pg";
 import { exportPKCS8 } from "jose";
 import { hashPassword } from "@pixdrift/auth-core";
 import { SCHEMA_SQL, grantsSql } from "./schema.ts";
-import { poolConfig } from "./pool.ts";
+import { poolConfig } from "@pixdrift/db";
 import { SEED_ROLES } from "../store.ts";
 import { generateSigningKey } from "../keys.ts";
 import type { OidcClient } from "../config.ts";

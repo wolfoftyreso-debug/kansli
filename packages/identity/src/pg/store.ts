@@ -8,7 +8,7 @@
  */
 
 import pg from "pg";
-import { poolConfig } from "./pool.ts";
+import { poolConfig } from "@pixdrift/db";
 import type { JWK } from "jose";
 import type {
   AuthCodeRecord,
