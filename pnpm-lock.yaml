@@ -155,6 +155,19 @@ importers:
         specifier: ^4.1.13
         version: 4.4.3
 
+  packages/doc-intel:
+    dependencies:
+      zod:
+        specifier: ^4.1.13
+        version: 4.4.3
+    devDependencies:
+      '@types/node':
+        specifier: ^20
+        version: 20.19.43
+      tsx:
+        specifier: ^4.20.7
+        version: 4.23.12
+
   packages/identity:
     dependencies:
       '@fastify/cookie':

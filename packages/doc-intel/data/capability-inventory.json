@@ -1,0 +1,459 @@
+{
+  "generatedAt": "2026-08-22",
+  "repo": "kansli (Pixdrift platform hub)",
+  "commit": "cursor/pixdrift-shared-auth-39a5",
+  "note": "PHASE 0 inventory. The ALVA diagnosis PRODUCT is NOT in this repository — it lives in its own (currently parked) repo. What exists here for ALVA is a single resource-server auth adapter. ALVA product capabilities are therefore recorded as NOT_PRESENT (unverifiable here), so unknown coverage is never masked as complete.",
+  "capabilities": [
+    {
+      "id": "platform.idp.discovery",
+      "name": "OIDC discovery document",
+      "area": "Identity / SSO",
+      "presence": "IN_REPO",
+      "routeRefs": ["/idp/.well-known/openid-configuration"],
+      "componentRefs": ["packages/identity/src/server.ts"],
+      "visibility": "PUBLIC",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "platform.idp.jwks",
+      "name": "JWKS (public signing keys)",
+      "area": "Identity / SSO",
+      "presence": "IN_REPO",
+      "routeRefs": ["/idp/jwks.json"],
+      "componentRefs": ["packages/identity/src/keys.ts", "packages/identity/src/server.ts"],
+      "visibility": "PUBLIC",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "platform.idp.authorize-login",
+      "name": "Authorize endpoint + login page (Auth Code + PKCE)",
+      "area": "Identity / SSO",
+      "presence": "IN_REPO",
+      "routeRefs": ["/idp/authorize"],
+      "componentRefs": ["packages/identity/src/server.ts"],
+      "visibility": "PUBLIC",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "platform.idp.token",
+      "name": "Token endpoint (PKCE, single-use codes)",
+      "area": "Identity / SSO",
+      "presence": "IN_REPO",
+      "routeRefs": ["/idp/token"],
+      "componentRefs": ["packages/identity/src/server.ts", "packages/identity/src/tokens.ts"],
+      "visibility": "AUTHENTICATED",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "platform.idp.userinfo",
+      "name": "Userinfo endpoint",
+      "area": "Identity / SSO",
+      "presence": "IN_REPO",
+      "routeRefs": ["/idp/userinfo"],
+      "componentRefs": ["packages/identity/src/server.ts"],
+      "visibility": "AUTHENTICATED",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "platform.idp.logout",
+      "name": "RP-initiated logout (open-redirect allowlist)",
+      "area": "Identity / SSO",
+      "presence": "IN_REPO",
+      "routeRefs": ["/idp/logout"],
+      "componentRefs": ["packages/identity/src/server.ts"],
+      "visibility": "AUTHENTICATED",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "platform.idp.postgres-store",
+      "name": "Durable Postgres store + rotating ES256 key + client registry",
+      "area": "Identity / SSO",
+      "presence": "IN_REPO",
+      "componentRefs": ["packages/identity/src/pg/store.ts", "packages/identity/src/pg/bootstrap.ts", "packages/identity/src/pg/schema.ts"],
+      "visibility": "ROLE_RESTRICTED",
+      "roles": ["platform-admin"],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "platform.idp.onboarding-cli",
+      "name": "Module onboarding CLI (client registry, one line)",
+      "area": "Identity / SSO",
+      "presence": "IN_REPO",
+      "componentRefs": ["packages/identity/scripts/onboard-module.ts"],
+      "visibility": "ROLE_RESTRICTED",
+      "roles": ["platform-admin"],
+      "confidence": "HIGH"
+    },
+    {
+      "id": "platform.kansli.landing-login-gate",
+      "name": "Kansli landing page / login gate",
+      "area": "Kansli (hub)",
+      "presence": "IN_REPO",
+      "routeRefs": ["/"],
+      "componentRefs": ["src/app/page.tsx"],
+      "visibility": "PUBLIC",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "platform.kansli.sso-login",
+      "name": "Kansli SSO login (BFF: login + callback)",
+      "area": "Kansli (hub)",
+      "presence": "IN_REPO",
+      "routeRefs": ["/api/auth/login", "/api/auth/callback"],
+      "componentRefs": ["src/app/api/auth/login/route.ts", "src/app/api/auth/callback/route.ts", "src/lib/auth/config.ts"],
+      "visibility": "PUBLIC",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "platform.kansli.taskboard",
+      "name": "Kansli task board (list/add/toggle/delete)",
+      "area": "Kansli (hub)",
+      "presence": "IN_REPO",
+      "routeRefs": ["/api/tasks", "/api/tasks/[id]"],
+      "componentRefs": ["src/app/TaskBoard.tsx", "src/app/api/tasks/route.ts", "src/lib/store.ts"],
+      "visibility": "AUTHENTICATED",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "platform.kansli.logout",
+      "name": "Kansli logout (clears BFF session)",
+      "area": "Kansli (hub)",
+      "presence": "IN_REPO",
+      "routeRefs": ["/api/auth/logout"],
+      "componentRefs": ["src/app/api/auth/logout/route.ts"],
+      "visibility": "AUTHENTICATED",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "platform.kansli.idp-mount",
+      "name": "Co-located IdP mount under /idp",
+      "area": "Kansli (hub)",
+      "presence": "IN_REPO",
+      "routeRefs": ["/idp/[[...slug]]"],
+      "componentRefs": ["src/app/idp/[[...slug]]/route.ts"],
+      "visibility": "PUBLIC",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "platform.ai-core.router",
+      "name": "AI Core model router (heaviest model per provider, Claude-first failover)",
+      "area": "AI Core",
+      "presence": "IN_REPO",
+      "componentRefs": ["packages/ai-core/src/router.ts", "packages/ai-core/src/providers.ts", "packages/ai-core/src/env.ts"],
+      "visibility": "AUTHENTICATED",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "platform.contracts",
+      "name": "Shared platform contracts (identity, authz, audit, automations)",
+      "area": "Platform contracts",
+      "presence": "IN_REPO",
+      "componentRefs": ["packages/contracts/src/index.ts"],
+      "visibility": "AUTHENTICATED",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "platform.auth-core",
+      "name": "Auth-core primitives (scrypt passwords, sessions, bcrypt->scrypt migration)",
+      "area": "Identity / SSO",
+      "presence": "IN_REPO",
+      "componentRefs": ["packages/auth-core/src/index.ts"],
+      "visibility": "AUTHENTICATED",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "integration.alva.token-verifier",
+      "name": "ALVA resource-server token verifier (Pixdrift JWKS, zero-dependency)",
+      "area": "Integrations / ALVA",
+      "presence": "IN_REPO",
+      "componentRefs": ["integrations/alva/src/pixdrift-auth.mjs", "integrations/alva/test/verifier.test.ts"],
+      "visibility": "AUTHENTICATED",
+      "confidence": "HIGH",
+      "notes": "This is the ONLY ALVA code in this repo: a drop-in adapter that replaces ALVA's shared HS256 secret with asymmetric verification. It is NOT the ALVA product."
+    },
+    {
+      "id": "integration.rita.oidc-plugin",
+      "name": "RITA OIDC BFF plugin (jose, Fastify)",
+      "area": "Integrations / RITA",
+      "presence": "IN_REPO",
+      "componentRefs": ["integrations/rita/"],
+      "visibility": "AUTHENTICATED",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "integration.irma.oidc-adapter",
+      "name": "IRMA OIDC BFF adapter (jose)",
+      "area": "Integrations / IRMA",
+      "presence": "IN_REPO",
+      "componentRefs": ["integrations/irma/"],
+      "visibility": "AUTHENTICATED",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "integration.britt.bff-adapter",
+      "name": "BRITT BFF adapter (WebCrypto, CJS)",
+      "area": "Integrations / BRITT",
+      "presence": "IN_REPO",
+      "componentRefs": ["integrations/britt/"],
+      "visibility": "AUTHENTICATED",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "integration.tora.public-pkce",
+      "name": "TORA public PKCE client + resource (config-only)",
+      "area": "Integrations / TORA",
+      "presence": "IN_REPO",
+      "componentRefs": ["integrations/tora/"],
+      "visibility": "PUBLIC",
+      "confidence": "HIGH"
+    },
+
+    {
+      "id": "alva.product.vehicles",
+      "name": "Vehicles",
+      "area": "Vehicles",
+      "presence": "NOT_PRESENT",
+      "sourceRepo": "ALVA product repo (not connected to this workspace)",
+      "roles": ["technician", "workshop-admin"],
+      "visibility": "AUTHENTICATED",
+      "confidence": "NONE",
+      "knownGaps": ["ALVA product source not in this repository; asserted in the request, cannot be verified here"]
+    },
+    {
+      "id": "alva.product.work-orders",
+      "name": "Work orders",
+      "area": "Work Orders",
+      "presence": "NOT_PRESENT",
+      "sourceRepo": "ALVA product repo (not connected)",
+      "roles": ["technician", "workshop-admin"],
+      "visibility": "AUTHENTICATED",
+      "confidence": "NONE",
+      "knownGaps": ["Not in repo. Entity model to document (must NOT teach 1 work order = 1 diagnosis): Vehicle -> Work Order -> Customer Complaint -> Diagnosis Session -> Diagnosis Protocol"]
+    },
+    {
+      "id": "alva.product.customer-complaints",
+      "name": "Customer complaints (multiple per work order)",
+      "area": "Customer Complaints",
+      "presence": "NOT_PRESENT",
+      "sourceRepo": "ALVA product repo (not connected)",
+      "roles": ["technician"],
+      "visibility": "AUTHENTICATED",
+      "confidence": "NONE",
+      "knownGaps": ["Not in repo. Each complaint owns its own independent diagnosis session/protocol"]
+    },
+    {
+      "id": "alva.product.diagnosis-sessions",
+      "name": "Diagnosis sessions",
+      "area": "Diagnosis Sessions",
+      "presence": "NOT_PRESENT",
+      "sourceRepo": "ALVA product repo (not connected)",
+      "roles": ["technician", "student"],
+      "visibility": "AUTHENTICATED",
+      "confidence": "NONE",
+      "knownGaps": ["Not in repo. Candidate for the first vertical slice once the ALVA repo is available"]
+    },
+    {
+      "id": "alva.product.diagnosis-protocols",
+      "name": "Diagnosis protocols (print/export)",
+      "area": "Diagnosis Protocols",
+      "presence": "NOT_PRESENT",
+      "sourceRepo": "ALVA product repo (not connected)",
+      "roles": ["technician"],
+      "visibility": "AUTHENTICATED",
+      "confidence": "NONE",
+      "knownGaps": ["Not in repo"]
+    },
+    {
+      "id": "alva.product.measurements-tests",
+      "name": "Measurements & tests",
+      "area": "Measurements & Tests",
+      "presence": "NOT_PRESENT",
+      "sourceRepo": "ALVA product repo (not connected)",
+      "roles": ["technician"],
+      "visibility": "AUTHENTICATED",
+      "confidence": "NONE",
+      "knownGaps": ["Not in repo"]
+    },
+    {
+      "id": "alva.product.evidence-media",
+      "name": "Evidence & media (images)",
+      "area": "Evidence & Media",
+      "presence": "NOT_PRESENT",
+      "sourceRepo": "ALVA product repo (not connected)",
+      "roles": ["technician"],
+      "visibility": "AUTHENTICATED",
+      "confidence": "NONE",
+      "knownGaps": ["Not in repo"]
+    },
+    {
+      "id": "alva.product.search-history",
+      "name": "Search & history",
+      "area": "Search & History",
+      "presence": "NOT_PRESENT",
+      "sourceRepo": "ALVA product repo (not connected)",
+      "visibility": "AUTHENTICATED",
+      "confidence": "NONE",
+      "knownGaps": ["Not in repo"]
+    },
+    {
+      "id": "alva.product.reports-export",
+      "name": "Reports & export",
+      "area": "Reports & Export",
+      "presence": "NOT_PRESENT",
+      "sourceRepo": "ALVA product repo (not connected)",
+      "visibility": "AUTHENTICATED",
+      "confidence": "NONE",
+      "knownGaps": ["Not in repo"]
+    },
+    {
+      "id": "alva.product.administration",
+      "name": "Administration",
+      "area": "Administration",
+      "presence": "NOT_PRESENT",
+      "sourceRepo": "ALVA product repo (not connected)",
+      "roles": ["workshop-admin"],
+      "visibility": "ROLE_RESTRICTED",
+      "confidence": "NONE",
+      "knownGaps": ["Not in repo; admin instructions require authentication and are not public"]
+    },
+    {
+      "id": "alva.product.users-permissions",
+      "name": "Users & permissions",
+      "area": "Users & Permissions",
+      "presence": "NOT_PRESENT",
+      "sourceRepo": "ALVA product repo (not connected)",
+      "roles": ["workshop-admin"],
+      "visibility": "ROLE_RESTRICTED",
+      "confidence": "NONE",
+      "knownGaps": ["Not in repo"]
+    },
+    {
+      "id": "alva.product.integrations",
+      "name": "Integrations",
+      "area": "Integrations",
+      "presence": "NOT_PRESENT",
+      "sourceRepo": "ALVA product repo (not connected)",
+      "roles": ["workshop-admin"],
+      "visibility": "ROLE_RESTRICTED",
+      "confidence": "NONE",
+      "knownGaps": ["Not in repo; internal integration details must not be exposed publicly"]
+    },
+    {
+      "id": "alva.product.education-mode",
+      "name": "Education mode",
+      "area": "ALVA Education",
+      "presence": "NOT_PRESENT",
+      "sourceRepo": "ALVA product repo (not connected)",
+      "roles": ["teacher", "student"],
+      "visibility": "AUTHENTICATED",
+      "confidence": "NONE",
+      "knownGaps": ["Not in repo"]
+    },
+    {
+      "id": "alva.product.academy",
+      "name": "ALVA Academy / Training Engine",
+      "area": "ALVA Academy",
+      "presence": "NOT_PRESENT",
+      "sourceRepo": "ALVA product repo (not connected)",
+      "roles": ["teacher", "student"],
+      "visibility": "AUTHENTICATED",
+      "confidence": "NONE",
+      "knownGaps": ["Not in repo; handbook<->training relationships to be modelled once available"]
+    },
+    {
+      "id": "alva.product.teacher-guide",
+      "name": "Teacher guide (incl. assessment answers)",
+      "area": "Teacher Guide",
+      "presence": "NOT_PRESENT",
+      "sourceRepo": "ALVA product repo (not connected)",
+      "roles": ["teacher"],
+      "visibility": "ROLE_RESTRICTED",
+      "confidence": "NONE",
+      "knownGaps": ["Not in repo; teacher-only assessment answers must never leak publicly"]
+    },
+    {
+      "id": "alva.product.student-guide",
+      "name": "Student guide",
+      "area": "Student Guide",
+      "presence": "NOT_PRESENT",
+      "sourceRepo": "ALVA product repo (not connected)",
+      "roles": ["student"],
+      "visibility": "AUTHENTICATED",
+      "confidence": "NONE",
+      "knownGaps": ["Not in repo"]
+    },
+    {
+      "id": "alva.product.simulation",
+      "name": "Simulation",
+      "area": "Simulation",
+      "presence": "NOT_PRESENT",
+      "sourceRepo": "ALVA product repo (not connected)",
+      "roles": ["teacher", "student"],
+      "visibility": "AUTHENTICATED",
+      "confidence": "NONE",
+      "knownGaps": ["Not in repo"]
+    },
+    {
+      "id": "alva.product.assessment",
+      "name": "Assessment",
+      "area": "Assessment",
+      "presence": "NOT_PRESENT",
+      "sourceRepo": "ALVA product repo (not connected)",
+      "roles": ["teacher"],
+      "visibility": "ROLE_RESTRICTED",
+      "confidence": "NONE",
+      "knownGaps": ["Not in repo"]
+    },
+    {
+      "id": "alva.product.account-licensing",
+      "name": "Account & licensing",
+      "area": "Account & Licensing",
+      "presence": "NOT_PRESENT",
+      "sourceRepo": "ALVA product repo (not connected)",
+      "roles": ["workshop-admin"],
+      "visibility": "ROLE_RESTRICTED",
+      "confidence": "NONE",
+      "knownGaps": ["Not in repo; presence of billing/licensing in ALVA is unconfirmed"]
+    },
+    {
+      "id": "alva.product.notifications",
+      "name": "Notifications",
+      "area": "Notifications",
+      "presence": "NOT_PRESENT",
+      "sourceRepo": "ALVA product repo (not connected)",
+      "visibility": "AUTHENTICATED",
+      "confidence": "NONE",
+      "knownGaps": ["Not in repo"]
+    },
+    {
+      "id": "alva.product.onboarding",
+      "name": "Onboarding",
+      "area": "Getting Started",
+      "presence": "NOT_PRESENT",
+      "sourceRepo": "ALVA product repo (not connected)",
+      "visibility": "PUBLIC",
+      "confidence": "NONE",
+      "knownGaps": ["Not in repo"]
+    },
+    {
+      "id": "alva.product.settings",
+      "name": "Settings (incl. language)",
+      "area": "Administration",
+      "presence": "NOT_PRESENT",
+      "sourceRepo": "ALVA product repo (not connected)",
+      "visibility": "AUTHENTICATED",
+      "confidence": "NONE",
+      "knownGaps": ["Not in repo"]
+    },
+    {
+      "id": "alva.product.contextual-help",
+      "name": "In-product contextual help surface",
+      "area": "Understanding ALVA",
+      "presence": "NOT_PRESENT",
+      "sourceRepo": "ALVA product repo (not connected)",
+      "visibility": "AUTHENTICATED",
+      "confidence": "NONE",
+      "knownGaps": ["Not in repo; requires hooking the ALVA UI to expose route/screen/role context"]
+    }
+  ]
+}

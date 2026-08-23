@@ -13,7 +13,8 @@
     "typecheck:packages": "pnpm -r --filter \"./packages/*\" typecheck",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "doc:gap": "pnpm --filter @pixdrift/doc-intel gap-report"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
