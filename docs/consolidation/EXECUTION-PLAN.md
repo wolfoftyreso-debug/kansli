@@ -54,6 +54,7 @@ silent feature loss; every capability has a disposition in the ledger) · Repo
 
 ## Immediate next step
 
-Family map, IRMA link-consume, and full BRITT listen-set (TORA/RITA/IRMA/ALVA/Kansli)
-are in. Still blocked outside this repo: RITA engine host, ALVA diagnosis
-engine, IRMA e-sign/Blob, BRITT full intelligence product.
+TORA detail/calendar, IRMA hashed acknowledgement, RITA findings parser, and
+BRITT demo intel are in. Still blocked outside this repo: RITA engine host
+(or a built `skattjakt` binary), ALVA diagnosis engine, qualified e-sign/Blob,
+Fortnox/Revolut.

@@ -24,7 +24,7 @@ Browser
        kansli     tasks
        tora       market_snapshots
        rita       analyses
-       britt      observations
+       britt      observations, findings, metric_snapshots, analysis_runs
        irma       agreements
        alva       cases
 ```
@@ -48,22 +48,24 @@ uppgift skapas publiceras `kansli.task.created`; BRITT skriver en observation.
 ### TORA — får vi lämna anbud?
 
 Upphandlingsrätt, behörighet, rekommenderad åtgärd. Motorn körs i processen.
-**GET `/api/tora/market` utvärderar bara.** **POST publicerar** en ögonblicksbild
-och `tora.market.evaluated`. BRITT lyssnar. TORA skriver inte i BRITT.
+**GET `/api/tora/market` utvärderar bara.** Detalj och kalender läser samma
+motor. **POST publicerar** en ögonblicksbild och `tora.market.evaluated`.
+BRITT lyssnar. TORA skriver inte i BRITT.
 
 ### RITA — stämmer räkenskaperna?
 
-Beställning → `HttpAnalysisEngine` mot Rust-motorn `skattjakt`. Utan
-`RITA_ENGINE_URL` + `RITA_ENGINE_TOKEN` blir status `blocked`. Motorn fejkars
-inte. RITA avgör inte anbudsrätt.
+Beställning → `HttpAnalysisEngine` eller `SubprocessAnalysisEngine` mot
+Rust-motorn `skattjakt`. Utan host eller `RITA_ENGINE_BINARY` blir status
+`blocked`. Motorn fejkars inte. RITA avgör inte anbudsrätt.
 
 Händelser: `rita.analysis.requested`, sedan `completed` eller `blocked`.
-BRITT lyssnar på de två sista.
+BRITT lyssnar på de två sista. Fynd läses ur `result.opportunities`.
 
 ### BRITT — vad ska någon följa upp?
 
-Observationsinkorg. Egna anteckningar plus synk. BRITT är den enda som skriver
-`britt.observations`. Den lär sig genom att lyssna:
+Observationsinkorg plus en deterministisk demonstrationsanalys (omsättning
+mot plan, likviditet, kundkoncentration). BRITT är den enda som skriver
+`britt.observations` och `britt.findings`. Den lär sig genom att lyssna:
 
 | Händelse | Observation |
 | --- | --- |
@@ -72,16 +74,21 @@ Observationsinkorg. Egna anteckningar plus synk. BRITT är den enda som skriver
 | `rita.analysis.blocked` | RITA kunde inte köra motorn |
 | `irma.agreement.created` | Ett avtal väntar på motparten |
 | `irma.agreement.viewed` | Motparten har öppnat länken |
+| `irma.agreement.signed` | Motparten har bekräftat underlaget |
 | `alva.case.created` | Ett fall är registrerat |
 | `kansli.task.created` | Intern uppgift |
+| `britt.finding.recorded` (high) | Ett högt fynd från analysen |
 
-Det är inte hela underrättelseprodukten från BRITT-repot.
+Det är inte hela underrättelseprodukten från BRITT-repot. Inga Fortnox- eller
+Revolut-kopplingar.
 
 ### IRMA — underlag till någon utanför
 
-Avtal + hashad magic link. Klartext-token visas en gång som `/irma/l/<token>`.
-Motparten öppnar utan konto. Första öppning sätter `viewed` och
-`irma.agreement.viewed`. Ingen e-signatur. Ingen fillagring.
+Avtal med klausuler + hashad magic link. Klartext-token visas en gång som
+`/irma/l/<token>`. Motparten öppnar utan konto. Första öppning sätter
+`viewed` och `irma.agreement.viewed`. Bekräftelse sätter `signed`, en
+SHA-256-artefakt och `irma.agreement.signed`. Inte BankID. Inte kvalificerad
+e-signatur. Ingen fillagring.
 
 ### ALVA — fallet, inte diagnosen
 
@@ -90,7 +97,7 @@ väntar på ALVA-repot. Inga fynd, inga protokoll.
 
 ## Vad som inte går att göra i det här repot
 
-- Köra RITA:s Rust-motor (saknar host + token)
+- Köra RITA:s Rust-motor utan host eller `RITA_ENGINE_BINARY`
 - Diagnostisera i ALVA (saknar repo)
-- E-signera eller lagra filer i IRMA
-- Köra BRITT som full underrättelseprodukt
+- Kvalificerat e-signera eller lagra filer i IRMA
+- Köra BRITT som full underrättelseprodukt mot livebokföring

@@ -37,7 +37,7 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
     status: "pilot",
     schema: "tora",
     basePath: "/tora",
-    capabilities: ["market", "eligibility", "legal-basis"],
+    capabilities: ["market", "eligibility", "legal-basis", "calendar"],
   },
   {
     id: "rita",
@@ -55,7 +55,7 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
     status: "pilot",
     schema: "britt",
     basePath: "/britt",
-    capabilities: ["observations"],
+    capabilities: ["observations", "findings"],
   },
   {
     id: "irma",
@@ -64,7 +64,7 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
     status: "pilot",
     schema: "irma",
     basePath: "/irma",
-    capabilities: ["agreements", "magic-link", "link-consume"],
+    capabilities: ["agreements", "magic-link", "link-consume", "acknowledge"],
   },
   {
     id: "alva",

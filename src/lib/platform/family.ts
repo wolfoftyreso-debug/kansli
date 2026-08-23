@@ -45,7 +45,7 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     id: "tora",
     name: "TORA",
     question: "Får det här bolaget lämna anbud — på vilken rättslig grund, och vad gör vi nu?",
-    does: "Kör upphandlingsmotorn i processen. GET utvärderar och redigerar efter nivå. POST (Publicera) skriver en ögonblicksbild och en händelse.",
+    does: "Kör upphandlingsmotorn i processen. GET utvärderar och redigerar efter nivå. Marknad, detalj, kalender. POST (Publicera) skriver en ögonblicksbild och en händelse.",
     doesNot: "Verifierar inte räkenskaper. Det är RITA.",
     owns: "tora.market_snapshots",
     status: "pilot",
@@ -54,8 +54,8 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     id: "rita",
     name: "RITA",
     question: "Stämmer räkenskaperna mot regelverket?",
-    does: "Tar emot en analysbeställning, anropar den riktiga Rust-motorn via HttpAnalysisEngine, lagrar fynd eller blocked.",
-    doesNot: "Ingen FakeAnalysisEngine i drift. Utan RITA_ENGINE_URL + token blir status blocked. Avgör inte anbudsrätt.",
+    does: "Tar emot en analysbeställning, anropar den riktiga Rust-motorn via HTTP eller lokal binär, lagrar fynd eller blocked.",
+    doesNot: "Ingen FakeAnalysisEngine i drift. Utan host eller RITA_ENGINE_BINARY blir status blocked. Avgör inte anbudsrätt.",
     owns: "rita.analyses",
     status: "pilot",
   },
@@ -63,17 +63,17 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     id: "britt",
     name: "BRITT",
     question: "Vad har hänt som någon behöver följa upp?",
-    does: "Observationsinkorg. Egna anteckningar plus synk: lyssnar på familjehändelser och skriver bara i britt.observations.",
-    doesNot: "Inte hela underrättelseprodukten (profiler, Fortnox, export). Ingen läsning av TORA/RITA-tabeller.",
-    owns: "britt.observations",
+    does: "Observationsinkorg plus deterministisk demonstrationsanalys (omsättning, likviditet, koncentration). Skriver bara i britt-schemat.",
+    doesNot: "Inte Fortnox, Revolut eller hela underrättelseprodukten. Ingen läsning av TORA/RITA-tabeller.",
+    owns: "britt.observations, britt.findings, britt.metric_snapshots, britt.analysis_runs",
     status: "pilot",
   },
   {
     id: "irma",
     name: "IRMA",
     question: "Hur lämnar vi ett underlag till någon utanför organisationen?",
-    does: "Skapar ett avtal, hashar en magic link, motparten öppnar /irma/l/<token> utan konto. Första öppning = viewed.",
-    doesNot: "Ingen e-signatur. Ingen fillagring (Blob/R2).",
+    does: "Skapar ett avtal med klausuler, hashar en magic link, motparten öppnar /irma/l/<token> och kan bekräfta. Första öppning = viewed. Bekräftelse = signed + SHA-256-artefakt.",
+    doesNot: "Ingen kvalificerad e-signatur. Ingen BankID. Ingen fillagring (Blob/R2).",
     owns: "irma.agreements",
     status: "pilot",
   },
@@ -116,8 +116,8 @@ export const FAMILY_LINKS: readonly FamilyLink[] = [
   {
     from: "irma",
     to: "britt",
-    via: "irma.agreement.created | irma.agreement.viewed",
-    meaning: "Avtal skapat, och när motparten öppnat länken.",
+    via: "irma.agreement.created | irma.agreement.viewed | irma.agreement.signed",
+    meaning: "Avtal skapat, öppnat och bekräftat.",
   },
   {
     from: "alva",
@@ -133,6 +133,12 @@ export const FAMILY_LINKS: readonly FamilyLink[] = [
   },
   {
     from: "britt",
+    to: "britt",
+    via: "britt.finding.recorded",
+    meaning: "Höga fynd från demonstrationsanalysen blir observationer. Medel och låg stannar i findings.",
+  },
+  {
+    from: "britt",
     to: "platform.events",
     via: "britt.observation.recorded",
     meaning: "Varje observation är själv en händelse, så loggen är komplett.",
@@ -142,7 +148,7 @@ export const FAMILY_LINKS: readonly FamilyLink[] = [
 export const FAMILY_BLOCKED = [
   {
     id: "rita-engine",
-    need: "RITA_ENGINE_URL + RITA_ENGINE_TOKEN mot den riktiga Rust-motorn (skattjakt).",
+    need: "RITA_ENGINE_URL + RITA_ENGINE_TOKEN mot den riktiga Rust-motorn (skattjakt), eller RITA_ENGINE_BINARY lokalt.",
   },
   {
     id: "alva-repo",
@@ -150,10 +156,10 @@ export const FAMILY_BLOCKED = [
   },
   {
     id: "irma-sign",
-    need: "E-signatur och Vercel Blob när den ytan ska bli mer än underlag + länk.",
+    need: "Kvalificerad e-signatur, BankID och Vercel Blob när bekräftelsen ska bli mer än en hashad förklaring.",
   },
   {
     id: "britt-intel",
-    need: "BRITT-repots profiler och integrationer om inkorgen ska bli hela produkten.",
+    need: "Fortnox, Revolut och BRITT-repots profiler om demonstrationsanalysen ska bli hela produkten.",
   },
 ] as const;
