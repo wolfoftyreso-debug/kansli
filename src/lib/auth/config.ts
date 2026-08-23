@@ -21,3 +21,4 @@ export const SESSION_COOKIE = "kansli_session";
 export const STATE_COOKIE = "pd_state";
 export const NONCE_COOKIE = "pd_nonce";
 export const VERIFIER_COOKIE = "pd_verifier";
+export const NEXT_COOKIE = "pd_next";

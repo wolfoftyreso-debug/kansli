@@ -2,11 +2,13 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createOidcClient } from "@pixdrift/auth-client";
 import {
   authConfig,
+  NEXT_COOKIE,
   NONCE_COOKIE,
   SESSION_COOKIE,
   STATE_COOKIE,
   VERIFIER_COOKIE,
 } from "@/lib/auth/config";
+import { safeNextPath } from "@/lib/auth/next";
 import { sealSession } from "@/lib/auth/session";
 
 function fail(reason: string): NextResponse {
@@ -50,7 +52,8 @@ export async function GET(request: NextRequest) {
     return fail("exchange");
   }
 
-  const response = NextResponse.redirect(new URL("/kansli", authConfig.baseUrl));
+  const next = safeNextPath(request.cookies.get(NEXT_COOKIE)?.value) ?? "/kansli";
+  const response = NextResponse.redirect(new URL(next, authConfig.baseUrl));
   response.cookies.set(SESSION_COOKIE, sessionValue, {
     httpOnly: true,
     sameSite: "lax",
@@ -61,5 +64,6 @@ export async function GET(request: NextRequest) {
   response.cookies.delete(STATE_COOKIE);
   response.cookies.delete(NONCE_COOKIE);
   response.cookies.delete(VERIFIER_COOKIE);
+  response.cookies.delete(NEXT_COOKIE);
   return response;
 }
