@@ -15,7 +15,7 @@ import {
   ContractVersionMismatch,
   SUPPORTED_CONTRACT_VERSION,
   type EngineRequest,
-} from "./contract.js";
+} from "./contract.ts";
 
 export interface AnalysisEngine {
   /** Version string, for the health check and for stamping a run. */
