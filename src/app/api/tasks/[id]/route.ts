@@ -1,24 +1,39 @@
-import type { NextRequest } from "next/server";
-import { deleteTask, toggleTask } from "@/lib/store";
+import { ApiError, requireOrg } from "@pixdrift/api-core";
+import { handleApi, json } from "@/lib/platform/http";
+import { deleteTask, toggleTask } from "@/lib/kansli/tasks";
 
-export async function PATCH(_request: NextRequest, ctx: RouteContext<"/api/tasks/[id]">) {
-  const { id } = await ctx.params;
-  const task = await toggleTask(id);
-
-  if (!task) {
-    return Response.json({ error: "Uppgiften hittades inte." }, { status: 404 });
-  }
-
-  return Response.json({ task });
+export async function PATCH(
+  _request: Request,
+  context: { params: Promise<{ id: string }> },
+) {
+  return handleApi(async ({ actor, pool, events, requestId }) => {
+    const present = requireOrg(actor);
+    const { id } = await context.params;
+    const task = await toggleTask(pool, present.orgRef, id);
+    if (!task) throw new ApiError("not_found", "Uppgiften hittades inte.");
+    await events.publish({
+      system: "kansli",
+      kind: "kansli.task.updated",
+      orgRef: present.orgRef,
+      actorKind: "user",
+      actorRef: present.sub,
+      subjectRef: `kansli:task:${task.id}`,
+      requestId,
+      payload: { done: task.done },
+    });
+    return json({ task });
+  });
 }
 
-export async function DELETE(_request: NextRequest, ctx: RouteContext<"/api/tasks/[id]">) {
-  const { id } = await ctx.params;
-  const ok = await deleteTask(id);
-
-  if (!ok) {
-    return Response.json({ error: "Uppgiften hittades inte." }, { status: 404 });
-  }
-
-  return Response.json({ ok: true });
+export async function DELETE(
+  _request: Request,
+  context: { params: Promise<{ id: string }> },
+) {
+  return handleApi(async ({ actor, pool }) => {
+    const present = requireOrg(actor);
+    const { id } = await context.params;
+    const ok = await deleteTask(pool, present.orgRef, id);
+    if (!ok) throw new ApiError("not_found", "Uppgiften hittades inte.");
+    return json({ ok: true });
+  });
 }

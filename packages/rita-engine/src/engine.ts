@@ -8,7 +8,7 @@
  * and must never be wired outside `local`/`test`.
  */
 
-import { spawn } from "node:child_process";
+import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
 import { access, constants } from "node:fs/promises";
 import {
   AnalysisEnvelope,
@@ -142,9 +142,9 @@ export class SubprocessAnalysisEngine implements AnalysisEngine {
     return new Promise((resolve, reject) => {
       const child = spawn(this.options.binaryPath, [...args], {
         cwd: this.options.cwd,
-        env: this.options.env ?? { PATH: process.env["PATH"] ?? "" },
+        env: this.options.env ?? ({ PATH: process.env["PATH"] ?? "" } as unknown as NodeJS.ProcessEnv),
         stdio: ["pipe", "pipe", "pipe"],
-      });
+      }) as ChildProcessWithoutNullStreams;
 
       let stdout = "";
       let stderr = "";

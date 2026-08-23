@@ -11,6 +11,9 @@ const nextConfig: NextConfig = {
     "@pixdrift/db",
     "@pixdrift/tora",
     "@pixdrift/rita-engine",
+    "@pixdrift/api-core",
+    "@pixdrift/events",
+    "@pixdrift/systems",
   ],
   // Keep the IdP's Node runtime dependencies external (loaded from node_modules
   // at runtime) rather than bundling them into the server output.

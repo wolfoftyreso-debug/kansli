@@ -44,16 +44,18 @@ Vercel-native primitive insufficient.
 ## Target workspace shape (illustrative, not ceremony)
 
 ```
-apps/web/                 # the Pixdrift Next.js app (hub + product modules)
+src/app                   # Next.js hub + /idp + /api/platform + /api/{system}
 packages/
-  contracts/  auth-core/  auth-client/  identity/  ai-core/  doc-intel/
-  db/                     # shared pg pool + migration runner (new, thin)
-  domain/                 # canonical business logic extracted from products
-  ui/                     # shared components (new, as products merge)
-integrations/             # OIDC adapters (already present)
-docs/{architecture,product,migrations,consolidation}/
-scripts/  tests/
+  api-core/               # one error model, one permission check
+  events/                 # append-only sync + audit log
+  systems/                # product catalog
+  db/                     # pg pool + SQL migrations
+  contracts/ auth-core/ auth-client/ identity/
+  tora/  rita-engine/  ai-core/  doc-intel/
+db/migrations/{platform,kansli,tora,rita,britt,irma,alva}/
 ```
+
+See `docs/architecture/PLATFORM.md` for the running shape.
 
 Products (RITA/BRITT/TORA/IRMA/alva) become **modules/routes within `apps/web`**
 (or a small number of apps) sharing identity, db, contracts, ui — not separate
