@@ -17,6 +17,16 @@ export const brand = {
    * "Built because it was missing." says why the products exist.
    */
   secondaryTagline: "Built because it was missing.",
+  /** Third statement — what the customer experiences (engineering doctrine §21). */
+  experienceTagline: "Less software. More flow.",
+  /** Supporting engineering statement. */
+  engineeringStatement: "Connect what exists. Automate what repeats. Surface what matters.",
+  /** The three complementary positioning statements. */
+  positioning: [
+    { statement: "The layer between systems.", label: "What we are" },
+    { statement: "Built because it was missing.", label: "Why we build" },
+    { statement: "Less software. More flow.", label: "What you experience" },
+  ],
   statement:
     "PIXDRIFT develops focused software for the operational gaps, connections and workflows that remain between the systems organizations already use.",
   /** Doctrine §11 — short corporate version. */

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/site/Container";
 import { SectionHeading } from "@/components/site/SectionHeading";
+import { PixelFlow } from "@/components/site/PixelFlow";
+import { pixdriftStack } from "@/lib/pixdrift/stack";
 
 export const metadata: Metadata = {
   title: "How it works — PIXDRIFT",
@@ -64,6 +66,50 @@ export default function HowItWorksPage() {
           </li>
         ))}
       </ol>
+
+      {/* The PIXDRIFT stack */}
+      <div className="mt-24">
+        <p className="pd-label">The PIXDRIFT stack</p>
+        <p className="mt-4 max-w-2xl text-lg text-ink-soft">
+          Most systems combine six functions — connect what exists, automate what repeats, surface
+          what matters.
+        </p>
+        <div className="mt-8 grid grid-cols-1 gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+          {pixdriftStack.map((fn) => (
+            <div key={fn.no} className="flex flex-col gap-2 bg-surface p-6">
+              <div className="flex items-baseline gap-3">
+                <span className="pd-label">{fn.no}</span>
+                <h3 className="text-lg font-semibold tracking-tight text-ink">{fn.name}</h3>
+              </div>
+              <p className="text-sm text-ink-soft">{fn.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Event-driven by default */}
+      <div className="mt-20">
+        <p className="pd-label">Event-driven by default</p>
+        <p className="mt-4 max-w-2xl text-lg text-ink-soft">
+          Automation before interface. The best interface for a repetitive process is often no
+          interface at all.
+        </p>
+        <ol className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-sm text-ink">
+          {["Event", "Condition", "Action", "Verification"].map((s, i, arr) => (
+            <li key={s} className="flex items-center gap-3">
+              <span>{s}</span>
+              {i < arr.length - 1 ? (
+                <span aria-hidden className="text-faint">
+                  →
+                </span>
+              ) : null}
+            </li>
+          ))}
+        </ol>
+        <div className="mt-8 max-w-3xl">
+          <PixelFlow from="Event" to="Action" />
+        </div>
+      </div>
     </Container>
   );
 }

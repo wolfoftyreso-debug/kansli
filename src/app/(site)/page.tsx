@@ -3,6 +3,7 @@ import Link from "next/link";
 import { brand } from "@/lib/pixdrift/brand";
 import { systems } from "@/lib/pixdrift/systems";
 import { PixelField } from "@/components/site/PixelField";
+import { PixelFlow } from "@/components/site/PixelFlow";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { SystemCard } from "@/components/site/SystemCard";
 import { Container } from "@/components/site/Container";
@@ -136,6 +137,26 @@ export default function HomePage() {
         </Container>
       </section>
 
+      {/* LESS SOFTWARE. MORE FLOW. */}
+      <section className="border-b border-line">
+        <Container className="py-20 lg:py-28">
+          <SectionHeading
+            eyebrow="What you experience"
+            title="Less software. More flow."
+            intro={brand.engineeringStatement}
+          />
+          <div className="mt-14 flex flex-col gap-4">
+            <PixelFlow from="5 systems" to="1 decision" />
+            <PixelFlow from="Event" to="Action" />
+            <PixelFlow from="System A" to="System B" />
+          </div>
+          <p className="mt-8 max-w-2xl text-sm text-muted">
+            We automate before adding another screen, and present a decision rather than another
+            dashboard. The graph is supporting evidence — not the product.
+          </p>
+        </Container>
+      </section>
+
       {/* SYSTEMS */}
       <section className="border-b border-line">
         <Container className="py-20 lg:py-28">
@@ -184,6 +205,21 @@ export default function HomePage() {
             </p>
             <span className="mt-2 text-sm font-medium text-accent">About the company →</span>
           </Link>
+        </Container>
+      </section>
+
+      {/* POSITIONING TRIO */}
+      <section className="border-b border-line">
+        <Container className="py-20 lg:py-28">
+          <div className="grid grid-cols-1 gap-px border border-line bg-line sm:grid-cols-3">
+            {brand.positioning.map((p) => (
+              <div key={p.statement} className="flex flex-col gap-3 bg-surface p-8">
+                <p className="pd-label">{p.label}</p>
+                <p className="text-xl font-semibold tracking-tight text-ink">{p.statement}</p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-8 font-mono text-sm text-muted">{brand.engineeringStatement}</p>
         </Container>
       </section>
     </>
