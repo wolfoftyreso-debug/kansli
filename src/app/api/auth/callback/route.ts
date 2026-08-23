@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
     return fail("exchange");
   }
 
-  const response = NextResponse.redirect(new URL("/", authConfig.baseUrl));
+  const response = NextResponse.redirect(new URL("/kansli", authConfig.baseUrl));
   response.cookies.set(SESSION_COOKIE, sessionValue, {
     httpOnly: true,
     sameSite: "lax",

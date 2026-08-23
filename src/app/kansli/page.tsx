@@ -1,9 +1,15 @@
+import Link from "next/link";
 import { readSession } from "@/lib/auth/session";
-import TaskBoard from "./TaskBoard";
+import TaskBoard from "../TaskBoard";
+
+export const metadata = {
+  title: "Kansli — Pixdrift",
+  description: "Internal hub. Sign in with your Pixdrift identity.",
+};
 
 function Brand() {
   return (
-    <div className="flex items-center gap-3">
+    <Link href="/" className="flex items-center gap-3">
       <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-lg font-bold text-white shadow-sm">
         K
       </span>
@@ -13,11 +19,11 @@ function Brand() {
         </h1>
         <span className="text-xs text-zinc-400">Pixdrift-nav</span>
       </div>
-    </div>
+    </Link>
   );
 }
 
-export default async function Home() {
+export default async function KansliHub() {
   const session = await readSession();
 
   return (

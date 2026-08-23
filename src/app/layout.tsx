@@ -13,14 +13,29 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Kansli — Uppgiftstavla",
-  description: "En enkel uppgiftstavla för kansliet, byggd med Next.js.",
+  metadataBase: new URL("https://pixdrift.com"),
+  title: {
+    default: "PIXDRIFT — The layer between systems",
+    template: "%s",
+  },
+  description:
+    "PIXDRIFT develops focused software for the operational gaps, connections and workflows that remain between the systems organizations already use. Developed by Landvex.",
+  applicationName: "PIXDRIFT",
+  openGraph: {
+    type: "website",
+    siteName: "PIXDRIFT",
+    title: "PIXDRIFT — The layer between systems",
+    description:
+      "Focused software for the operational gaps between the systems organizations already use. Developed by Landvex. Stockholm · Houston.",
+    url: "https://pixdrift.com",
+  },
+  twitter: { card: "summary" },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">{children}</body>
     </html>
   );
 }
