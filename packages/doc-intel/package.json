@@ -14,7 +14,8 @@
   "types": "src/index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "gap-report": "tsx scripts/gap-report.ts"
+    "gap-report": "tsx scripts/gap-report.ts",
+    "demo-gap-report": "tsx scripts/demo-gap-report.ts"
   },
   "dependencies": {
     "zod": "^4.1.13"

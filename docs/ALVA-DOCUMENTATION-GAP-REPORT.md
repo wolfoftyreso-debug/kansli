@@ -5,7 +5,7 @@
 > antaganden** — denna rapport är kontrollpunkten över vad som faktiskt finns,
 > vad som är dokumenterat, och vad som inte kan verifieras härifrån.
 
-Genererad: 2026-08-23T00:07:54.340Z
+Genererad: 2026-08-23T00:22:08.030Z
 Repo: kansli (Pixdrift platform hub) @ cursor/pixdrift-shared-auth-39a5
 
 > PHASE 0 inventory. The ALVA diagnosis PRODUCT is NOT in this repository — it lives in its own (currently parked) repo. What exists here for ALVA is a single resource-server auth adapter. ALVA product capabilities are therefore recorded as NOT_PRESENT (unverifiable here), so unknown coverage is never masked as complete.
