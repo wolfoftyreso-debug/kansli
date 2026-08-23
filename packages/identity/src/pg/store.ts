@@ -8,6 +8,7 @@
  */
 
 import pg from "pg";
+import { poolConfig } from "./pool.ts";
 import type { JWK } from "jose";
 import type {
   AuthCodeRecord,
@@ -24,7 +25,7 @@ export class PgStore implements IdentityStore {
   private pool: pg.Pool;
 
   constructor(appUrl: string) {
-    this.pool = new pg.Pool({ connectionString: appUrl, max: 10 });
+    this.pool = new pg.Pool({ ...poolConfig(appUrl), max: 10 });
   }
 
   async close(): Promise<void> {

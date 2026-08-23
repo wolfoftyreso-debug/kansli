@@ -8,6 +8,7 @@ import pg from "pg";
 import { exportPKCS8 } from "jose";
 import { hashPassword } from "@pixdrift/auth-core";
 import { SCHEMA_SQL, grantsSql } from "./schema.ts";
+import { poolConfig } from "./pool.ts";
 import { SEED_ROLES } from "../store.ts";
 import { generateSigningKey } from "../keys.ts";
 import type { OidcClient } from "../config.ts";
@@ -22,7 +23,7 @@ export interface BootstrapOptions {
 }
 
 export async function pgBootstrap(opts: BootstrapOptions): Promise<void> {
-  const pool = new pg.Pool({ connectionString: opts.ownerUrl });
+  const pool = new pg.Pool(poolConfig(opts.ownerUrl));
   try {
     await pool.query(SCHEMA_SQL);
     await pool.query(grantsSql(opts.appRole ?? "pixdrift_app"));
