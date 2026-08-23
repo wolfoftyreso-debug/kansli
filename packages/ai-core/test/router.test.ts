@@ -5,6 +5,7 @@ import {
   DEFAULT_FAILOVER_ORDER,
   fakeProvider,
   FLAGSHIP_MODELS,
+  gatewayFromEnv,
   providersFromEnv,
   type ModelResult,
   type Provider,
@@ -197,6 +198,51 @@ describe("createDefaultRouter", () => {
   });
 });
 
+describe("AI Gateway", () => {
+  const modelsBody = {
+    object: "list",
+    data: [
+      { id: "openai/gpt-5.4" },
+      { id: "anthropic/claude-opus-4.6" },
+      { id: "google/gemini-3-flash" },
+    ],
+  };
+  const fetchImpl = (async (input: unknown, init?: { headers?: Record<string, string> }) => {
+    const url = String(input);
+    if (url.endsWith("/models")) {
+      // Auth header must be forwarded as Bearer.
+      expect(init?.headers?.authorization).toMatch(/^Bearer /);
+      return new Response(JSON.stringify(modelsBody), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    }
+    return new Response("nope", { status: 404 });
+  }) as unknown as typeof fetch;
+
+  it("lists 100+-style model slugs from the gateway /models endpoint", async () => {
+    const gateway = gatewayFromEnv({ env: { AI_GATEWAY_API_KEY: "k" }, fetchImpl });
+    expect(gateway).not.toBeNull();
+    const models = await gateway!.listModels!();
+    // Sorted, provider/model form.
+    expect(models).toEqual([
+      "anthropic/claude-opus-4.6",
+      "google/gemini-3-flash",
+      "openai/gpt-5.4",
+    ]);
+  });
+
+  it("returns null when no gateway credential is configured", () => {
+    expect(gatewayFromEnv({ env: {} })).toBeNull();
+  });
+
+  it("defaults the gateway flagship to a provider/model slug", () => {
+    const gateway = gatewayFromEnv({ env: { AI_GATEWAY_API_KEY: "k" } });
+    expect(gateway?.flagshipModel).toBe(FLAGSHIP_MODELS.gateway);
+    expect(FLAGSHIP_MODELS.gateway).toMatch(/^[a-z-]+\/[a-z0-9.-]+$/);
+  });
+});
+
 describe("providersFromEnv", () => {
   it("builds only providers with a configured key", () => {
     const names = providersFromEnv({
@@ -214,6 +260,11 @@ describe("providersFromEnv", () => {
 
   it("adds an OpenAI-compatible gateway when AI_GATEWAY_API_KEY is set", () => {
     const names = providersFromEnv({ env: { AI_GATEWAY_API_KEY: "k" } }).map((p) => p.name);
+    expect(names).toEqual(["gateway"]);
+  });
+
+  it("adds the gateway via OIDC token when no API key is set", () => {
+    const names = providersFromEnv({ env: { VERCEL_OIDC_TOKEN: "oidc" } }).map((p) => p.name);
     expect(names).toEqual(["gateway"]);
   });
 

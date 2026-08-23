@@ -40,4 +40,9 @@ export {
   type RouterOptions,
   type CompleteOptions,
 } from "./router.ts";
-export { providersFromEnv, createDefaultRouter, type EnvProviderOptions } from "./env.ts";
+export {
+  providersFromEnv,
+  createDefaultRouter,
+  gatewayFromEnv,
+  type EnvProviderOptions,
+} from "./env.ts";

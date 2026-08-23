@@ -30,8 +30,13 @@ export const FLAGSHIP_MODELS = {
   gemini: "gemini-3.1-pro-preview",
   /** Moonshot's flagship Kimi model. */
   kimi: "kimi-k3",
-  /** Vercel AI Gateway slug routing to the heaviest Claude (Claude-first). */
-  gateway: "anthropic/claude-fable-5",
+  /**
+   * Vercel AI Gateway default: a `provider/model` slug (dots for versions),
+   * Claude-first and heaviest-tier. Overridable via AI_GATEWAY_MODEL, and the
+   * live catalog (100+ models) should be confirmed with `listModels()` /
+   * `pnpm --filter @pixdrift/ai-core models` before pinning a specific slug.
+   */
+  gateway: "anthropic/claude-opus-4.6",
 } as const;
 
 function pickModel(model: string | undefined, flagship: string): string {
@@ -160,6 +165,21 @@ export function openAICompatibleProvider(opts: OpenAICompatibleOptions): Provide
   return {
     name,
     flagshipModel,
+    async listModels() {
+      const res = await doFetch(`${baseUrl}/models`, {
+        headers: { authorization: `Bearer ${opts.apiKey}` },
+      });
+      if (!res.ok) throw new ProviderError(name, res.status, await safeText(res));
+      const json = (await res.json()) as {
+        data?: { id?: string }[];
+        models?: { id?: string }[];
+      };
+      const rows = json.data ?? json.models ?? [];
+      return rows
+        .map((m) => m.id ?? "")
+        .filter(Boolean)
+        .sort();
+    },
     async complete(req) {
       const model = pickModel(req.model, flagshipModel);
       const { value: res, ms } = await timed(() =>

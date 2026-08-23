@@ -57,6 +57,11 @@ export interface Provider {
    */
   readonly flagshipModel?: string;
   complete(request: ModelRequest): Promise<ModelResult>;
+  /**
+   * List the model ids this provider exposes, when the API supports it (e.g. the
+   * Vercel AI Gateway's `/models` endpoint over 100+ models). Optional.
+   */
+  listModels?(): Promise<string[]>;
 }
 
 /** Automation permission levels (constitution art. 10). Default stays low. */

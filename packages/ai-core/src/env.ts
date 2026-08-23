@@ -59,18 +59,29 @@ export function providersFromEnv(options: EnvProviderOptions = {}): Provider[] {
       }),
     );
   }
-  if (env.AI_GATEWAY_API_KEY) {
-    providers.push(
-      openAICompatibleProvider({
-        apiKey: env.AI_GATEWAY_API_KEY,
-        baseUrl: env.AI_GATEWAY_BASE_URL ?? "https://ai-gateway.vercel.sh/v1",
-        name: "gateway",
-        model: env.AI_GATEWAY_MODEL ?? FLAGSHIP_MODELS.gateway,
-        fetchImpl,
-      }),
-    );
-  }
+  const gateway = gatewayFromEnv(options);
+  if (gateway) providers.push(gateway);
   return providers;
+}
+
+/**
+ * Build the Vercel AI Gateway provider from env, or null when no credential is
+ * configured. Auth resolves to `AI_GATEWAY_API_KEY`, then the OIDC
+ * `VERCEL_OIDC_TOKEN` (written by `vercel env pull`), matching the gateway's own
+ * auth priority. A single credential fronts 100+ models via `provider/model`
+ * slugs; use `provider.listModels()` to enumerate them.
+ */
+export function gatewayFromEnv(options: EnvProviderOptions = {}): Provider | null {
+  const env = options.env ?? (process.env as Record<string, string | undefined>);
+  const apiKey = env.AI_GATEWAY_API_KEY ?? env.VERCEL_OIDC_TOKEN;
+  if (!apiKey) return null;
+  return openAICompatibleProvider({
+    apiKey,
+    baseUrl: env.AI_GATEWAY_BASE_URL ?? "https://ai-gateway.vercel.sh/v1",
+    name: "gateway",
+    model: env.AI_GATEWAY_MODEL ?? FLAGSHIP_MODELS.gateway,
+    fetchImpl: options.fetchImpl,
+  });
 }
 
 /**

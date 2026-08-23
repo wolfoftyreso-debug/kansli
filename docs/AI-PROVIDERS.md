@@ -87,9 +87,38 @@ för test/dev utan nätverk.
 ## Rekommenderat: en gemensam AI-Gateway
 
 I stället för att spreta tre providernycklar över varje produkt kan familjen
-routa via **en AI-Gateway** (t.ex. Vercel AI Gateway): en nyckel
-(`AI_GATEWAY_API_KEY`), enhetligt API, provider-failover och kostnads-/
-användningsspårning på ett ställe. Det matchar "gemensam infrastruktur under
-produkterna" och låter enskilda produkter byta modell utan kodändring. De
-per-provider-nycklar som definieras ovan fungerar oavsett; gatewayen är en
-konvergenspunkt när ni vill ha den.
+routa via **Vercel AI Gateway**: en credential, enhetligt API över **100+
+modeller**, provider-failover och kostnads-/användningsspårning på ett ställe.
+Det matchar "gemensam infrastruktur under produkterna" och låter enskilda
+produkter byta modell utan kodändring. Per-provider-nycklarna ovan fungerar
+oavsett; gatewayen är en konvergenspunkt när ni vill ha den.
+
+### Lägg in token (Cloud Agent)
+
+Lägg **en** av dessa i **Secrets-panelen** (persisterar mellan körningar,
+injiceras som env):
+
+- `AI_GATEWAY_API_KEY` — statisk gateway-nyckel (enklast för Cloud Agent/CI), **eller**
+- `VERCEL_OIDC_TOKEN` — OIDC-token från `vercel env pull` (kortlivad, auto-förnyas på Vercel).
+
+AI Core löser auth i den ordningen (nyckel först, sedan OIDC), precis som
+gatewayen själv. Valfritt:
+
+- `AI_GATEWAY_BASE_URL` (default `https://ai-gateway.vercel.sh/v1`)
+- `AI_GATEWAY_MODEL` — pinna en specifik `provider/model`-slug (t.ex. `openai/gpt-5.4`).
+
+### Modell-slugs och katalog
+
+Gateway-modeller anges som `provider/model` med **punkt** för version
+(`anthropic/claude-opus-4.6`, `openai/gpt-5.4`) — aldrig bindestreck i
+versionsnumret. Katalogen ändras ofta; hårdkoda inte en slug utan lista den
+faktiska katalogen först:
+
+```bash
+pnpm --filter @pixdrift/ai-core models   # kräver token; skriver ut alla slugs
+```
+
+Programmatiskt: `gatewayFromEnv().listModels()` eller `provider.listModels()`.
+Gatewayen ligger sist i `DEFAULT_FAILOVER_ORDER` (Claude-först direkt-providers
+prioriteras); vill du göra gatewayen primär, sätt bara gateway-credentialen och
+utelämna direkt-nycklarna, eller ange egen `order`.

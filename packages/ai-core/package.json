@@ -13,9 +13,11 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "models": "tsx scripts/list-gateway-models.ts"
   },
   "devDependencies": {
-    "@types/node": "^20"
+    "@types/node": "^20",
+    "tsx": "^4.20.7"
   }
 }
