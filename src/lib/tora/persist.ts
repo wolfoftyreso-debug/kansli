@@ -4,7 +4,26 @@ import type { EventLog } from "@pixdrift/events";
 import { demoCompany } from "@pixdrift/tora";
 import { loadToraMarket, parseTier } from "./market";
 
-export async function evaluateAndStore(input: {
+export interface MarketSnapshot {
+  id: string;
+  orgRef: string;
+  companyName: string;
+  tier: string;
+  openNow: number;
+  upcoming: number;
+  organizationCount: number;
+  knownValueSek: number;
+  headline: string;
+  evaluatedAt: string;
+}
+
+export function evaluateMarket(tier: string) {
+  const parsed = parseTier(tier);
+  const market = loadToraMarket(parsed);
+  return { market, company: demoCompany.name, tier: parsed };
+}
+
+export async function persistSnapshot(input: {
   pool: pg.Pool;
   events: EventLog;
   orgRef: string;
@@ -12,7 +31,7 @@ export async function evaluateAndStore(input: {
   actorRef?: string | null;
   requestId: string;
 }) {
-  const market = loadToraMarket(parseTier(input.tier));
+  const { market, company, tier } = evaluateMarket(input.tier);
   const id = randomUUID();
   await input.pool.query(
     `insert into tora.market_snapshots
@@ -21,8 +40,8 @@ export async function evaluateAndStore(input: {
     [
       id,
       input.orgRef,
-      demoCompany.name,
-      input.tier,
+      company,
+      tier,
       market.summary.openNowCount,
       market.summary.upcomingCount,
       market.summary.organizationCount,
@@ -45,5 +64,29 @@ export async function evaluateAndStore(input: {
       headline: market.summary.headline,
     },
   });
-  return { id, market, company: demoCompany.name };
+  return { id, market, company, tier };
+}
+
+export async function listSnapshots(pool: pg.Pool, orgRef: string): Promise<MarketSnapshot[]> {
+  const { rows } = await pool.query(
+    `select id, org_ref, company_name, tier, open_now, upcoming, organization_count,
+            known_value_sek, headline, evaluated_at
+       from tora.market_snapshots
+      where org_ref = $1
+      order by evaluated_at desc
+      limit 20`,
+    [orgRef],
+  );
+  return rows.map((row) => ({
+    id: row.id as string,
+    orgRef: row.org_ref as string,
+    companyName: row.company_name as string,
+    tier: row.tier as string,
+    openNow: Number(row.open_now),
+    upcoming: Number(row.upcoming),
+    organizationCount: Number(row.organization_count),
+    knownValueSek: Number(row.known_value_sek),
+    headline: row.headline as string,
+    evaluatedAt: new Date(row.evaluated_at as Date).toISOString(),
+  }));
 }
