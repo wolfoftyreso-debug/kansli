@@ -1,9 +1,15 @@
 # Pixdrift-plattformen (kansli-navet)
 
+**Pixdrift** ([pixdrift.com](https://pixdrift.com)) är systemnamnet — skapat av **Landvex**.
+
 Detta repo är **navet** och hemmet för Pixdrift-familjens **gemensamma plattform** —
 en liten, hårt kontrollerad kärna under självständiga produkter (ALVA, RITA,
 TORA, BRITT, IRMA …). Här bor den självhostade identitetstjänsten, de delade
 kontrakten, AI Core och `kansli`-navets webb.
+
+> Kanonisk identitet (namn, domän, upphovsman) bor på **ett** ställe:
+> `packages/doc-intel/data/brand.json`, och löses i dokumentationens reaktiva
+> platshållare (`{{product.name}}` → Pixdrift, `{{company.name}}` → Landvex).
 
 > Läs styrningen först: [`docs/ARCHITECTURE-CONSTITUTION.md`](docs/ARCHITECTURE-CONSTITUTION.md).
 > Full kodkarta: [`docs/INVENTORY.md`](docs/INVENTORY.md).
@@ -64,3 +70,7 @@ Demo-inloggning (dev): `demo@exempelbolaget.se` / `demo-losenord-1234`.
 | `DELETE` | `/api/tasks/:id` | Ta bort |
 
 Uppgifter lagras i `data/tasks.json` (git-ignorerad, seedas vid första körning).
+
+---
+
+© 2026 Landvex. **Pixdrift** och **pixdrift.com** tillhör Landvex.

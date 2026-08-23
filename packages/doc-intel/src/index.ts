@@ -14,6 +14,7 @@ import { CoverageMatrix, Inventory } from "./model.ts";
 
 export * from "./model.ts";
 export * from "./gaps.ts";
+export * from "./brand.ts";
 
 /** URL of the packaged `data/` directory (machine-readable registries). */
 export const dataDir = new URL("../data/", import.meta.url);
