@@ -7,21 +7,21 @@ export function GuestProgress({ step }: { step: 1 | 2 | 3 }) {
     <ol className="flex gap-1.5" aria-label={`Steg ${step} av 3`}>
       {STEPS.map((label, index) => {
         const n = (index + 1) as 1 | 2 | 3;
-        const done = n < step;
+        const reached = n <= step;
         const current = n === step;
         return (
           <li key={label} className="flex min-w-0 flex-1 flex-col gap-1.5">
             <span
               className={
-                done || current ? "h-1 rounded-full bg-ink" : "h-1 rounded-full bg-line-strong"
+                reached ? "h-1.5 rounded-full bg-ink" : "h-1.5 rounded-full bg-line-strong"
               }
             />
             <span
               className={
                 current
-                  ? "text-xs font-medium text-ink"
-                  : done
-                    ? "text-xs text-ink-soft"
+                  ? "text-xs font-semibold text-ink"
+                  : reached
+                    ? "text-xs font-medium text-ink"
                     : "text-xs text-faint"
               }
             >
