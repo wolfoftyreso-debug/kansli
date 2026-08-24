@@ -3,7 +3,8 @@ import { AppShell } from "@/components/app/AppShell";
 import { Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
 import { listConnectorSlots } from "@/lib/ekonomi/connectors";
 import { railSnapshot } from "@/lib/ekonomi/rails";
-import { revolutOAuthRedirectUri, revolutRedirectStatus } from "@/lib/ekonomi/revolut-oauth";
+import { revolutConfigState } from "@/lib/ekonomi/revolut/config";
+import { revolutHealth } from "@/lib/ekonomi/revolut/health";
 import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
 import { saveConnectorAction, syncRevolutAction } from "../actions";
@@ -24,8 +25,9 @@ export default async function AnslutningarPage() {
   const slots =
     session?.org?.ref && runtime ? await listConnectorSlots(runtime.pool, session.org.ref) : [];
   const rails = railSnapshot();
-  const revolutRedirect = revolutRedirectStatus();
-  const revolutUri = revolutOAuthRedirectUri();
+  const revolutConfig = revolutConfigState();
+  const revolut =
+    session?.org?.ref && runtime ? await revolutHealth(runtime.pool, session.org.ref) : null;
 
   return (
     <AppShell current="ekonomi" session={session}>
@@ -38,8 +40,8 @@ export default async function AnslutningarPage() {
       </p>
       <h1 className="text-3xl font-semibold tracking-tight">Nycklar</h1>
       <p className="max-w-xl text-ink-soft">
-        Vill du se kontoutdraget? Klistra in Revolut Business-token här, öppna Kontoutdrag. Tokenen
-        krypteras och visas aldrig igen — bara sista fyra.
+        Revolut ansluts en gång med OAuth och sköter sig själv efter det. De andra slottarna tar en
+        inklistrad nyckel: den krypteras och visas aldrig igen — bara sista fyra.
       </p>
       {!session ? (
         <SignInGate next="/ekonomi/anslutningar" title="Logga in för anslutningar">
@@ -51,6 +53,27 @@ export default async function AnslutningarPage() {
             Business-tokenen läser saldo och transaktioner. Merchant tar betalt av kunden. Det är
             två API:er.
           </Notice>
+          <section className="rounded-xl border border-line bg-surface px-4 py-4">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <h2 className="text-lg font-semibold">Revolut Business</h2>
+              <span className="pd-label text-faint">{revolutConfig.environment}</span>
+            </div>
+            <p className="mt-2 text-sm text-ink-soft">
+              {revolut?.summary ?? "Statusen kan inte läsas just nu."}
+            </p>
+            <p className="mt-3">
+              <Link
+                href="/ekonomi/anslutningar/revolut"
+                className="underline decoration-line underline-offset-4"
+              >
+                {revolut?.actionRequired
+                  ? "Anslut om Revolut"
+                  : revolut?.oauthConnected
+                    ? "Visa anslutningen"
+                    : "Anslut Revolut"}
+              </Link>
+            </p>
+          </section>
           <p>
             <Link
               href="/ekonomi/kontoutdrag"
@@ -90,13 +113,12 @@ export default async function AnslutningarPage() {
             </div>
           </form>
           <section className="rounded-xl border border-line bg-surface px-4 py-4">
-            <h2 className="text-lg font-semibold">Om du inte har token än</h2>
+            <h2 className="text-lg font-semibold">Revoluts certifikatdialog</h2>
             <p className="mt-2 text-sm text-ink-soft">
-              Revoluts certifikatdialog skapar tokenen. Omdirigerings-URI är inte
-              Pixdrift-inloggningen. Den publika https-URI:n är inte live än.
+              Omdirigerings-URI:n nedan är permanent och är inte Pixdrift-inloggningen.
             </p>
-            <p className="mt-3 break-all font-mono text-sm">{revolutUri}</p>
-            <p className="mt-3 text-sm text-ink-soft">{revolutRedirect.reason}</p>
+            <p className="mt-3 break-all font-mono text-sm">{revolutConfig.redirect.uri}</p>
+            <p className="mt-3 text-sm text-ink-soft">{revolutConfig.redirect.reason}</p>
           </section>
         </>
       )}

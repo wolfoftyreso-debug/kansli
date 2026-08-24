@@ -73,7 +73,7 @@ export function railSnapshot(env: NodeJS.ProcessEnv = process.env): Record<Payme
         ? "Business-token finns. Kontoutdrag och matchning kan köras. Merchant-order bara om REVOLUT_MERCHANT_SECRET också finns."
         : keys.revolutMerchant
           ? "Merchant-secret finns. Kontoutdrag saknas."
-          : "Ingen Revolut-token. Kontoutdraget är tomt.",
+          : "Ingen Revolut-behörighet. Anslut Revolut Business under Anslutningar — då förnyas tokenen automatiskt.",
       envKey: "REVOLUT_BUSINESS_TOKEN",
     },
     swish: {

@@ -23,6 +23,11 @@ node_modules/
 # misc
 .DS_Store
 *.pem
+*.p8
+*.key
+
+# locally generated integration credentials (Revolut private key lives here)
+/.secrets/
 
 # local runtime data (json store)
 /data

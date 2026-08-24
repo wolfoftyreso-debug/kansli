@@ -8,13 +8,19 @@ import {
 } from "@/lib/ekonomi/connectors";
 import { publicRailBoard } from "@/lib/ekonomi/connectors";
 import { syncRevolut } from "@/lib/ekonomi/revolut";
+import { revolutHealth, warnOnCertificateExpiry } from "@/lib/ekonomi/revolut/health";
 
 export async function GET() {
-  return handleApi(async ({ actor, pool }) => {
+  return handleApi(async ({ actor, pool, events }) => {
     const present = requireOrg(actor);
+    // Authenticated and org-scoped. Never a public endpoint: it describes the
+    // state of a bank connection.
+    const health = await revolutHealth(pool, present.orgRef);
+    await warnOnCertificateExpiry(events, present.orgRef, health).catch(() => undefined);
     return json({
       slots: await listConnectorSlots(pool, present.orgRef),
       rails: publicRailBoard(),
+      revolut: health,
     });
   });
 }

@@ -12,6 +12,9 @@ import {
 } from "@/lib/ekonomi/invoices";
 import { offerPayment, parseRail, recordReceivedPayment } from "@/lib/ekonomi/payments";
 import { loadRevolutStatement, syncRevolut } from "@/lib/ekonomi/revolut";
+import { revolutEnvironment } from "@/lib/ekonomi/revolut/config";
+import { disconnect as disconnectRevolut } from "@/lib/ekonomi/revolut/connection";
+import { logRevolut } from "@/lib/ekonomi/revolut/observability";
 
 function formList(form: FormData, name: string): string[] {
   return form.getAll(name).map((value) => String(value));
@@ -128,7 +131,43 @@ export async function syncRevolutAction() {
 }
 
 export async function refreshStatementAction() {
-  const { session, pool } = await requireOrgAction("/ekonomi/kontoutdrag", "invoice:approve");
-  await loadRevolutStatement({ pool, orgRef: session.org.ref });
+  const { session, pool, events } = await requireOrgAction(
+    "/ekonomi/kontoutdrag",
+    "invoice:approve",
+  );
+  await loadRevolutStatement({ pool, orgRef: session.org.ref, events });
+  revalidatePath("/ekonomi/kontoutdrag");
+}
+
+/**
+ * Ends the Revolut authorization. Revolut's Business API publishes no token
+ * revocation endpoint for this flow, so we destroy the stored credentials and
+ * tell the owner where to remove the app's consent in Revolut.
+ */
+export async function disconnectRevolutAction() {
+  const { session, pool, events } = await requireOrgAction(
+    "/ekonomi/anslutningar/revolut",
+    "invoice:approve",
+  );
+  const environment = revolutEnvironment();
+  await disconnectRevolut(pool, {
+    orgRef: session.org.ref,
+    environment,
+    actorRef: session.sub,
+  });
+  logRevolut("connection.disconnected", { orgRef: session.org.ref, environment });
+  await events
+    .publish({
+      system: "ekonomi",
+      kind: "ekonomi.revolut.connection.disconnected",
+      orgRef: session.org.ref,
+      actorKind: "user",
+      actorRef: session.sub,
+      subjectRef: `ekonomi:connection:revolut:${environment}`,
+      payload: { title: "Revolut kopplades bort", environment },
+    })
+    .catch(() => undefined);
+  revalidatePath("/ekonomi/anslutningar");
+  revalidatePath("/ekonomi/anslutningar/revolut");
   revalidatePath("/ekonomi/kontoutdrag");
 }

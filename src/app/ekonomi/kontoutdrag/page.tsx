@@ -16,7 +16,11 @@ export default async function KontoutdragPage() {
   const runtime = tryRuntime();
   const statement =
     session?.org?.ref && runtime
-      ? await loadRevolutStatement({ pool: runtime.pool, orgRef: session.org.ref })
+      ? await loadRevolutStatement({
+          pool: runtime.pool,
+          orgRef: session.org.ref,
+          events: runtime.events,
+        })
       : null;
 
   return (
@@ -30,7 +34,7 @@ export default async function KontoutdragPage() {
       </p>
       <h1 className="text-3xl font-semibold tracking-tight">Kontoutdrag</h1>
       <p className="max-w-xl text-ink-soft">
-        Saldo och transaktioner från Revolut Business. Utan token är listan tom.
+        Saldo och transaktioner från Revolut Business. Utan ansluten behörighet är listan tom.
       </p>
 
       {!session ? (
@@ -44,24 +48,29 @@ export default async function KontoutdragPage() {
           {statement.source === "revolut" ? (
             <p className="text-sm text-ink-soft">Hämtat från Revolut just nu.</p>
           ) : statement.source === "stored" ? (
-            <p className="text-sm text-ink-soft">Senast sparade rader. Live-hämtning misslyckades eller saknas.</p>
+            <p className="text-sm text-ink-soft">
+              Senast sparade rader. Live-hämtning misslyckades eller saknas.
+            </p>
           ) : null}
 
           {statement.error ? <Notice>{statement.error}</Notice> : null}
 
           {!statement.hasToken ? (
             <section className="rounded-xl border border-line bg-surface px-4 py-4">
-              <p className="font-medium">Ingen Revolut-token</p>
+              <p className="font-medium">
+                {statement.reauthorize ? "Revolut måste anslutas om" : "Revolut är inte ansluten"}
+              </p>
               <p className="mt-2 text-sm text-ink-soft">
-                Revolut släpper inte ut kontoutdraget utan en Business-token. Klistra in den under
-                Anslutningar. Certifikatdialogen hos Revolut är bara vägen till den tokenen.
+                {statement.reauthorize
+                  ? "Revolut har dragit tillbaka behörigheten. Ett tryck på Anslut om ger tillbaka utdraget."
+                  : "Revolut släpper inte ut kontoutdraget utan behörighet. Anslut en gång — sen sköter tokenförnyelsen sig själv."}
               </p>
               <p className="mt-3">
                 <Link
-                  href="/ekonomi/anslutningar"
+                  href="/ekonomi/anslutningar/revolut"
                   className="underline decoration-line underline-offset-4"
                 >
-                  Öppna anslutningar
+                  {statement.reauthorize ? "Anslut om Revolut" : "Anslut Revolut"}
                 </Link>
               </p>
             </section>

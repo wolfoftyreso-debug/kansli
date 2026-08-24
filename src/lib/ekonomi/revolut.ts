@@ -4,9 +4,8 @@ import { readConnectorSecret } from "./connectors.ts";
 import { remainingOre, listInvoices } from "./invoices.ts";
 import { matchInbound, type InboundTransfer } from "./match.ts";
 import { recordReceivedPayment } from "./payments.ts";
-
-const BUSINESS_LIVE = "https://b2b.revolut.com/api/1.0";
-const BUSINESS_SANDBOX = "https://sandbox-b2b.revolut.com/api/1.0";
+import { revolutApiBase, revolutEnvironment } from "./revolut/config.ts";
+import { getValidAccessToken, ReauthorizationRequired } from "./revolut/tokens.ts";
 
 export interface RevolutTransaction {
   id: string;
@@ -40,13 +39,62 @@ export interface StatementLine {
 export interface RevolutStatement {
   hasToken: boolean;
   source: "revolut" | "stored" | "none";
+  /** Where the credential came from. `oauth` renews itself. */
+  tokenSource: TokenSource;
+  reauthorize: boolean;
   accounts: RevolutAccount[];
   lines: StatementLine[];
   error: string | null;
 }
 
+/** Endpoints live in one module now. This keeps the old call sites working. */
 export function revolutBaseUrl(env: NodeJS.ProcessEnv = process.env): string {
-  return env.REVOLUT_BUSINESS_SANDBOX === "true" ? BUSINESS_SANDBOX : BUSINESS_LIVE;
+  return revolutApiBase(env);
+}
+
+export type TokenSource = "oauth" | "manual" | "none";
+
+export interface ResolvedToken {
+  token: string | null;
+  source: TokenSource;
+  /** True when the OAuth grant is dead and only a human reconnect will fix it. */
+  reauthorize: boolean;
+}
+
+/**
+ * The credential every Revolut read goes through.
+ *
+ * The OAuth connection comes first because it renews itself. The manually
+ * pasted Business token stays as a fallback so the account statement keeps
+ * working while the owner is still registering the certificate.
+ */
+export async function resolveRevolutAccessToken(input: {
+  pool: pg.Pool;
+  orgRef: string;
+  events?: EventLog | null;
+  actorRef?: string | null;
+  requestId?: string | null;
+}): Promise<ResolvedToken> {
+  let reauthorize = false;
+  try {
+    const token = await getValidAccessToken({
+      pool: input.pool,
+      orgRef: input.orgRef,
+      environment: revolutEnvironment(),
+      events: input.events ?? null,
+      actorRef: input.actorRef ?? null,
+      requestId: input.requestId ?? null,
+    });
+    return { token, source: "oauth", reauthorize: false };
+  } catch (error) {
+    // "Not connected yet" is expected. A dead grant is worth surfacing.
+    if (error instanceof ReauthorizationRequired) {
+      reauthorize = error.code !== "not_configured";
+    }
+  }
+  const manual = await readConnectorSecret(input.pool, input.orgRef, "revolut_business");
+  if (manual) return { token: manual, source: "manual", reauthorize };
+  return { token: null, source: "none", reauthorize };
 }
 
 export function toStatementLine(tx: RevolutTransaction): StatementLine | null {
@@ -156,10 +204,7 @@ async function persistStatementLines(
   }
 }
 
-export async function listStoredStatement(
-  pool: pg.Pool,
-  orgRef: string,
-): Promise<StatementLine[]> {
+export async function listStoredStatement(pool: pg.Pool, orgRef: string): Promise<StatementLine[]> {
   const { rows } = await pool.query<{ raw: RevolutTransaction }>(
     `select raw from ekonomi.inbound_transfers
       where org_ref = $1 and provider = 'revolut'
@@ -172,15 +217,23 @@ export async function listStoredStatement(
 export async function loadRevolutStatement(input: {
   pool: pg.Pool;
   orgRef: string;
+  events?: EventLog | null;
   fetchAccounts?: (token: string) => Promise<RevolutAccount[]>;
   fetchTx?: (token: string) => Promise<RevolutTransaction[]>;
+  resolveToken?: (input: { pool: pg.Pool; orgRef: string }) => Promise<ResolvedToken>;
 }): Promise<RevolutStatement> {
-  const token = await readConnectorSecret(input.pool, input.orgRef, "revolut_business");
+  const resolved = await (input.resolveToken ?? resolveRevolutAccessToken)({
+    pool: input.pool,
+    orgRef: input.orgRef,
+    events: input.events ?? null,
+  });
   const stored = await listStoredStatement(input.pool, input.orgRef);
-  if (!token) {
+  if (!resolved.token) {
     return {
       hasToken: false,
       source: stored.length > 0 ? "stored" : "none",
+      tokenSource: resolved.source,
+      reauthorize: resolved.reauthorize,
       accounts: [],
       lines: stored,
       error: null,
@@ -188,13 +241,15 @@ export async function loadRevolutStatement(input: {
   }
   try {
     const [accounts, raw] = await Promise.all([
-      (input.fetchAccounts ?? fetchRevolutAccounts)(token),
-      (input.fetchTx ?? fetchRevolutTransactions)(token),
+      (input.fetchAccounts ?? fetchRevolutAccounts)(resolved.token),
+      (input.fetchTx ?? fetchRevolutTransactions)(resolved.token),
     ]);
     await persistStatementLines(input.pool, input.orgRef, raw);
     return {
       hasToken: true,
       source: "revolut",
+      tokenSource: resolved.source,
+      reauthorize: false,
       accounts,
       lines: statementFromTransactions(raw),
       error: null,
@@ -203,6 +258,8 @@ export async function loadRevolutStatement(input: {
     return {
       hasToken: true,
       source: stored.length > 0 ? "stored" : "none",
+      tokenSource: resolved.source,
+      reauthorize: resolved.reauthorize,
       accounts: [],
       lines: stored,
       error: error instanceof Error ? error.message : "Revolut svarade inte.",
@@ -217,6 +274,7 @@ export async function syncRevolut(input: {
   actorRef: string;
   requestId: string;
   fetchTx?: (token: string) => Promise<RevolutTransaction[]>;
+  resolveToken?: (input: { pool: pg.Pool; orgRef: string }) => Promise<ResolvedToken>;
 }): Promise<{
   fetched: number;
   matched: number;
@@ -224,7 +282,14 @@ export async function syncRevolut(input: {
   blocked: boolean;
   detail: string;
 }> {
-  const token = await readConnectorSecret(input.pool, input.orgRef, "revolut_business");
+  const resolved = await (input.resolveToken ?? resolveRevolutAccessToken)({
+    pool: input.pool,
+    orgRef: input.orgRef,
+    events: input.events,
+    actorRef: input.actorRef,
+    requestId: input.requestId,
+  });
+  const token = resolved.token;
   if (!token) {
     await input.events.publish({
       system: "ekonomi",
@@ -234,14 +299,19 @@ export async function syncRevolut(input: {
       actorRef: input.actorRef,
       subjectRef: "ekonomi:connector:revolut_business",
       requestId: input.requestId,
-      payload: { title: "Revolut-synk blockerad", reason: "no_token" },
+      payload: {
+        title: "Revolut-synk blockerad",
+        reason: resolved.reauthorize ? "reauthorization_required" : "no_token",
+      },
     });
     return {
       fetched: 0,
       matched: 0,
       ambiguous: 0,
       blocked: true,
-      detail: "Ingen REVOLUT_BUSINESS_TOKEN och ingen sparad token i slottet.",
+      detail: resolved.reauthorize
+        ? "Revolut-anslutningen måste göras om. Tryck Anslut om på Anslutningar."
+        : "Ingen ansluten Revolut-behörighet och ingen sparad token i slottet.",
     };
   }
 

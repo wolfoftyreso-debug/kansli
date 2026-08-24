@@ -215,6 +215,13 @@ export const FAMILY_LINKS: readonly FamilyLink[] = [
   {
     from: "ekonomi",
     to: "platform.events",
+    via: "ekonomi.revolut.oauth.started | ekonomi.revolut.oauth.completed | ekonomi.revolut.oauth.failed | ekonomi.revolut.connection.action_required | ekonomi.revolut.connection.disconnected | ekonomi.revolut.certificate.expiry_warning",
+    meaning:
+      "Bankanslutningens livscykel. Rutinmässig tokenförnyelse loggas som drift, inte som händelse i pärmen.",
+  },
+  {
+    from: "ekonomi",
+    to: "platform.events",
     via: "ekonomi.invoice.created",
     meaning: "Utkast syns i loggen. Ingen bokföring förrän utfärdande.",
   },
