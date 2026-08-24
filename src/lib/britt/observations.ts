@@ -10,14 +10,29 @@ export interface Observation {
   severity: string;
   subjectRef: string | null;
   status: string;
+  assigneeRef: string | null;
   createdAt: string;
 }
 
-export async function listObservations(pool: pg.Pool, orgRef: string): Promise<Observation[]> {
+export type ObservationListFilter = {
+  status?: "open" | "done" | "all";
+  assigneeRef?: string | null;
+};
+
+export async function listObservations(
+  pool: pg.Pool,
+  orgRef: string,
+  filter: ObservationListFilter = {},
+): Promise<Observation[]> {
+  const status = filter.status ?? "all";
   const { rows } = await pool.query(
-    `select id, source_system, title, body, severity, subject_ref, status, created_at
-       from britt.observations where org_ref = $1 order by created_at desc`,
-    [orgRef],
+    `select id, source_system, title, body, severity, subject_ref, status, assignee_ref, created_at
+       from britt.observations
+      where org_ref = $1
+        and ($2 = 'all' or status = $2)
+        and ($3::text is null or assignee_ref = $3)
+      order by created_at desc`,
+    [orgRef, status, filter.assigneeRef ?? null],
   );
   return rows.map(toObservation);
 }
@@ -60,11 +75,23 @@ export async function addObservation(input: {
     payload: { title: input.title.trim(), source: "britt" },
   });
   const { rows } = await input.pool.query(
-    `select id, source_system, title, body, severity, subject_ref, status, created_at
+    `select id, source_system, title, body, severity, subject_ref, status, assignee_ref, created_at
        from britt.observations where id = $1`,
     [id],
   );
   return toObservation(rows[0]!);
+}
+
+export async function setObservationAssignee(input: {
+  pool: pg.Pool;
+  orgRef: string;
+  id: string;
+  assigneeRef: string | null;
+}): Promise<void> {
+  await input.pool.query(
+    `update britt.observations set assignee_ref = $3 where org_ref = $1 and id = $2`,
+    [input.orgRef, input.id, input.assigneeRef],
+  );
 }
 
 function toObservation(row: {
@@ -75,6 +102,7 @@ function toObservation(row: {
   severity: string;
   subject_ref?: string | null;
   status?: string | null;
+  assignee_ref?: string | null;
   created_at: Date;
 }): Observation {
   return {
@@ -85,6 +113,7 @@ function toObservation(row: {
     severity: row.severity,
     subjectRef: row.subject_ref ?? null,
     status: row.status ?? "open",
+    assigneeRef: row.assignee_ref ?? null,
     createdAt: new Date(row.created_at).toISOString(),
   };
 }

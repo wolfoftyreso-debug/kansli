@@ -6,7 +6,13 @@ import { listFindings, listRuns, listSnapshots } from "@/lib/britt/intel";
 import { listObservations, type Observation } from "@/lib/britt/observations";
 import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
-import { closeObservation, recordObservation, runBrittIntel } from "./actions";
+import {
+  assignObservationToMe,
+  closeObservation,
+  recordObservation,
+  reopenObservation,
+  runBrittIntel,
+} from "./actions";
 
 export const metadata = {
   title: "BRITT — Pixdrift",
@@ -16,11 +22,27 @@ export const metadata = {
 const kr = (value: number) =>
   new Intl.NumberFormat("sv-SE", { maximumFractionDigits: 0 }).format(value) + " kr";
 
-export default async function BrittPage() {
+export default async function BrittPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string; mine?: string }>;
+}) {
   const session = await readSession();
   const runtime = tryRuntime();
   const orgRef = session?.org?.ref;
-  const observations = orgRef && runtime ? await listObservations(runtime.pool, orgRef) : [];
+  const params = await searchParams;
+  const status =
+    params.status === "done" || params.status === "all" || params.status === "open"
+      ? params.status
+      : "open";
+  const mine = params.mine === "1";
+  const observations =
+    orgRef && runtime
+      ? await listObservations(runtime.pool, orgRef, {
+          status,
+          assigneeRef: mine ? session.sub : null,
+        })
+      : [];
   const findings = orgRef && runtime ? await listFindings(runtime.pool, orgRef) : [];
   const snapshots = orgRef && runtime ? await listSnapshots(runtime.pool, orgRef) : [];
   const runs = orgRef && runtime ? await listRuns(runtime.pool, orgRef) : [];
@@ -119,8 +141,34 @@ export default async function BrittPage() {
 
           <section className="flex flex-col gap-3">
             <h2 className="text-lg font-semibold">Inkorgen</h2>
+            <p className="flex flex-wrap gap-3 text-sm">
+              <Link
+                href="/britt?status=open"
+                className="underline decoration-line underline-offset-4"
+              >
+                Öppna
+              </Link>
+              <Link
+                href="/britt?status=done"
+                className="underline decoration-line underline-offset-4"
+              >
+                Klara
+              </Link>
+              <Link
+                href="/britt?status=all"
+                className="underline decoration-line underline-offset-4"
+              >
+                Alla
+              </Link>
+              <Link
+                href="/britt?status=open&mine=1"
+                className="underline decoration-line underline-offset-4"
+              >
+                Mina
+              </Link>
+            </p>
             {observations.length === 0 ? (
-              <EmptyState>Inga observationer ännu.</EmptyState>
+              <EmptyState>Inga observationer i den här vyn.</EmptyState>
             ) : (
               groupedObservations(observations).map(([source, items]) => (
                 <div key={source} className="flex flex-col gap-2">
@@ -148,14 +196,30 @@ export default async function BrittPage() {
                             </p>
                           ) : null}
                           <p className="mt-2 font-mono text-xs text-faint">
-                            {item.status} · {item.createdAt}
+                            {item.status}
+                            {item.assigneeRef ? ` · ${item.assigneeRef}` : " · ingen ansvarig"}
+                            {" · "}
+                            {item.createdAt}
                           </p>
-                          {item.status !== "done" ? (
-                            <form action={closeObservation} className="mt-2">
-                              <input type="hidden" name="id" value={item.id} />
-                              <Submit>Markera klar</Submit>
-                            </form>
-                          ) : null}
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {item.status !== "done" ? (
+                              <form action={closeObservation}>
+                                <input type="hidden" name="id" value={item.id} />
+                                <Submit>Markera klar</Submit>
+                              </form>
+                            ) : (
+                              <form action={reopenObservation}>
+                                <input type="hidden" name="id" value={item.id} />
+                                <Submit>Återöppna</Submit>
+                              </form>
+                            )}
+                            {!item.assigneeRef ? (
+                              <form action={assignObservationToMe}>
+                                <input type="hidden" name="id" value={item.id} />
+                                <Submit>Ta den</Submit>
+                              </form>
+                            ) : null}
+                          </div>
                         </li>
                       );
                     })}

@@ -24,10 +24,15 @@ const HREF: Record<string, string> = {
   alva: "/alva",
 };
 
-export default async function KansliHub() {
+export default async function KansliHub({
+  searchParams,
+}: {
+  searchParams: Promise<{ task?: string }>;
+}) {
   const session = await readSession();
   const runtime = tryRuntime();
   const status = hubStatus();
+  const highlightId = (await searchParams).task?.trim() || null;
   const events =
     session?.org?.ref && runtime
       ? await runtime.events.list({ orgRef: session.org.ref, limit: 8, order: "desc" })
@@ -124,7 +129,7 @@ export default async function KansliHub() {
           <Notice>
             Uppgifter skrivs i kansli.tasks. BRITT får en observation när en uppgift skapas.
           </Notice>
-          <TaskBoard />
+          <TaskBoard highlightId={highlightId} />
         </>
       )}
     </AppShell>

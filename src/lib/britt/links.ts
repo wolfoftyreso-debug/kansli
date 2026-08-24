@@ -4,7 +4,7 @@ const ROUTES: ReadonlyArray<{ prefix: string; href: (id: string) => string }> = 
   { prefix: "irma:agreement:", href: (id) => `/irma/${id}` },
   { prefix: "alva:case:", href: (id) => `/alva/${id}` },
   { prefix: "tora:snapshot:", href: (id) => `/tora/${id}` },
-  { prefix: "kansli:task:", href: () => "/kansli" },
+  { prefix: "kansli:task:", href: (id) => `/kansli?task=${id}` },
   { prefix: "tyra:outbox:", href: () => "/tyra/integrations" },
   { prefix: "tyra:customer:", href: () => "/tyra/kunder" },
 ];

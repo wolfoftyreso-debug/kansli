@@ -3,7 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { requireOrgAction } from "@/lib/platform/actions";
 import { runIntel } from "@/lib/britt/intel";
-import { addObservation, setObservationStatus } from "@/lib/britt/observations";
+import {
+  addObservation,
+  setObservationAssignee,
+  setObservationStatus,
+} from "@/lib/britt/observations";
 
 export async function recordObservation(formData: FormData) {
   const { session, pool, events } = await requireOrgAction("/britt", "finding:read");
@@ -33,6 +37,32 @@ export async function closeObservation(formData: FormData) {
     orgRef: session.org.ref,
     id,
     status: "done",
+  });
+  revalidatePath("/britt");
+}
+
+export async function reopenObservation(formData: FormData) {
+  const { session, pool } = await requireOrgAction("/britt", "finding:read");
+  const id = String(formData.get("id") ?? "").trim();
+  if (!id) return;
+  await setObservationStatus({
+    pool,
+    orgRef: session.org.ref,
+    id,
+    status: "open",
+  });
+  revalidatePath("/britt");
+}
+
+export async function assignObservationToMe(formData: FormData) {
+  const { session, pool } = await requireOrgAction("/britt", "finding:read");
+  const id = String(formData.get("id") ?? "").trim();
+  if (!id) return;
+  await setObservationAssignee({
+    pool,
+    orgRef: session.org.ref,
+    id,
+    assigneeRef: session.sub,
   });
   revalidatePath("/britt");
 }

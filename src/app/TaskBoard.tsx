@@ -10,7 +10,7 @@ type Task = {
   createdAt: string;
 };
 
-export default function TaskBoard() {
+export default function TaskBoard({ highlightId }: { highlightId?: string | null }) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [title, setTitle] = useState("");
   const [owner, setOwner] = useState("");
@@ -141,7 +141,12 @@ export default function TaskBoard() {
             {tasks.map((task) => (
               <li
                 key={task.id}
-                className="flex items-center gap-3 rounded-xl border border-line bg-surface p-4"
+                id={`task-${task.id}`}
+                className={
+                  task.id === highlightId
+                    ? "flex items-center gap-3 rounded-xl border border-line-strong bg-accent-soft p-4"
+                    : "flex items-center gap-3 rounded-xl border border-line bg-surface p-4"
+                }
               >
                 <input
                   type="checkbox"
