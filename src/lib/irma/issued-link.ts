@@ -14,11 +14,11 @@ export async function setIssuedLink(path: string): Promise<void> {
   });
 }
 
-export async function takeIssuedLink(): Promise<string | null> {
+/** Read-only. Deleting cookies from a Server Component throws in Next.js. The cookie expires in 120s. */
+export async function peekIssuedLink(): Promise<string | null> {
   const jar = await cookies();
   const value = jar.get(IRMA_ISSUED_COOKIE)?.value?.trim() ?? "";
   if (!value.startsWith("/irma/l/")) return null;
-  jar.delete({ name: IRMA_ISSUED_COOKIE, path: "/irma" });
   return value;
 }
 

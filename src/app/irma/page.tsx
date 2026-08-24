@@ -10,7 +10,7 @@ import {
 } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { listAgreements } from "@/lib/irma/agreements";
-import { publicIrmaUrl, takeIssuedLink } from "@/lib/irma/issued-link";
+import { peekIssuedLink, publicIrmaUrl } from "@/lib/irma/issued-link";
 import { statusLabel } from "@/lib/irma/status";
 import { tryRuntime } from "@/lib/platform/page";
 import { createIrmaAgreement } from "./actions";
@@ -33,7 +33,7 @@ export default async function IrmaPage({
     session?.org?.ref && runtime
       ? await listAgreements(runtime.pool, session.org.ref, query || undefined)
       : [];
-  const issued = params.issued === "1" ? await takeIssuedLink() : null;
+  const issued = params.issued === "1" ? await peekIssuedLink() : null;
 
   return (
     <AppShell current="irma" session={session}>
