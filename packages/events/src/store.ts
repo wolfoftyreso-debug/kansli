@@ -30,10 +30,10 @@ export interface StoredEvent {
 }
 
 export interface ListFilter {
+  orgRef: string;
   after?: string;
   system?: SystemId;
   kind?: EventKind;
-  orgRef?: string;
   limit?: number;
   order?: "asc" | "desc";
 }
@@ -95,17 +95,19 @@ export class EventLog {
     return event;
   }
 
-  async list(filter: ListFilter = {}): Promise<StoredEvent[]> {
+  async list(filter: ListFilter): Promise<StoredEvent[]> {
+    const orgRef = filter.orgRef?.trim();
+    if (!orgRef) throw new Error("orgRef krävs. EventLog listar inte hela boken.");
     const clauses = ["true"];
     const values: unknown[] = [];
     const add = (sql: string, value: unknown) => {
       values.push(value);
       clauses.push(sql.replace("?", `$${values.length}`));
     };
+    add("org_ref = ?", orgRef);
     if (filter.after) add("id > ?::bigint", filter.after);
     if (filter.system) add("system = ?", filter.system);
     if (filter.kind) add("kind = ?", filter.kind);
-    if (filter.orgRef) add("org_ref = ?", filter.orgRef);
     const limit = Math.min(Math.max(filter.limit ?? 50, 1), 200);
     const order = filter.order === "desc" ? "desc" : "asc";
     values.push(limit);

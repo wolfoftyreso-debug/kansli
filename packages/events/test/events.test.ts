@@ -6,6 +6,13 @@ const OWNER = process.env.PIXDRIFT_TEST_OWNER_URL;
 const APP = process.env.PIXDRIFT_TEST_DATABASE_URL;
 const live = OWNER && APP ? describe : describe.skip;
 
+describe("EventLog.list", () => {
+  it("refuses to list the whole book", async () => {
+    const log = new EventLog({ query: async () => ({ rows: [] }) } as never);
+    await expect(log.list({} as never)).rejects.toThrow(/orgRef krävs/);
+  });
+});
+
 live("EventLog (live Postgres)", () => {
   const pool = createPool(APP!, { applicationName: "events-test", max: 2 });
 
