@@ -5,7 +5,7 @@ import { AppShell } from "@/components/app/AppShell";
 import { Notice } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { loadToraOpportunity, parseTier } from "@/lib/tora/market";
-import { displayField, legalBasisText, sek } from "@/lib/tora/view";
+import { displayField, evaluationKindText, legalBasisText, sek } from "@/lib/tora/view";
 
 export const metadata = {
   title: "Möjlighet — TORA — Pixdrift",
@@ -74,6 +74,8 @@ export default async function ToraOpportunityPage({
         </section>
       ) : null}
 
+      <ValueBlock detail={detail} />
+      <EvaluationBlock detail={detail} />
       <Actions detail={detail} />
       <WalkthroughBlock detail={detail} />
       <DocumentsBlock detail={detail} />
@@ -85,6 +87,63 @@ export default async function ToraOpportunityPage({
         belopp följer nivån.
       </Notice>
     </AppShell>
+  );
+}
+
+function ValueBlock({ detail }: { detail: OpportunityDetailResponse }) {
+  const field = detail.value;
+  if (field.state === "locked") {
+    return (
+      <section>
+        <h2 className="text-lg font-semibold">Värde</h2>
+        <p className="mt-2 text-sm text-muted">{field.teaser}</p>
+      </section>
+    );
+  }
+  const value = field.value;
+  if (!value) return null;
+  return (
+    <section className="flex flex-col gap-2">
+      <h2 className="text-lg font-semibold">Värde</h2>
+      <p className="text-sm text-ink-soft">{value.explanation}</p>
+      <p className="font-mono text-xs text-faint">
+        {value.securedMonths} säkrade månader
+        {value.undecidedOptionMonths > 0 ? ` · ${value.undecidedOptionMonths} oavgjorda optionsmånader` : ""}
+        {typeof value.totalValueSek === "number" ? ` · ${sek(value.totalValueSek)} publicerat` : ""}
+        {typeof value.annualValueSek === "number" ? ` · ${sek(value.annualValueSek)} / år` : ""}
+      </p>
+      <p className="text-sm text-muted">{value.yourShare.explanation}</p>
+    </section>
+  );
+}
+
+function EvaluationBlock({ detail }: { detail: OpportunityDetailResponse }) {
+  const field = detail.evaluation;
+  if (field.state === "locked") {
+    return (
+      <section>
+        <h2 className="text-lg font-semibold">Utvärdering</h2>
+        <p className="mt-2 text-sm text-muted">{field.teaser}</p>
+      </section>
+    );
+  }
+  const evaluation = field.value;
+  if (!evaluation) return null;
+  return (
+    <section className="flex flex-col gap-2">
+      <h2 className="text-lg font-semibold">Utvärdering</h2>
+      <p className="text-sm text-ink-soft">{evaluationKindText(evaluation.kind)}</p>
+      {evaluation.criteria.length > 0 ? (
+        <ul className="flex flex-col gap-2">
+          {evaluation.criteria.map((criterion) => (
+            <li key={criterion.name} className="rounded-xl border border-line bg-surface px-4 py-3 text-sm">
+              {criterion.name}
+              <span className="ml-2 font-mono text-xs text-faint">{criterion.weightPct} %</span>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </section>
   );
 }
 

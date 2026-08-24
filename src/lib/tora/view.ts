@@ -14,6 +14,16 @@ export function opportunityHref(item: Pick<OpportunityView, "id">): string {
   return `/tora/${encodeURIComponent(item.id)}`;
 }
 
+const EVALUATION_KIND: Record<string, string> = {
+  lowest_price: "Lägsta pris",
+  best_price_quality_ratio: "Bästa förhållandet mellan pris och kvalitet",
+  fixed_price_best_quality: "Fast pris, bästa kvalitet",
+};
+
+export function evaluationKindText(kind: string): string {
+  return EVALUATION_KIND[kind] ?? kind;
+}
+
 export function legalBasisText(
   field: Locked<{ contractId: string; reason: string } | undefined>,
 ): { locked: boolean; reason: string; contractId?: string } {
