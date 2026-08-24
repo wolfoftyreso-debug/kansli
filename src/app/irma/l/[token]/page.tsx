@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { Field, Notice, Submit } from "@/components/app/SignInGate";
 import { ACKNOWLEDGEMENT_DECLARATION } from "@/lib/irma/clauses";
 import { openAgreementByToken } from "@/lib/irma/agreements";
+import { daysUntilExpiry } from "@/lib/irma/status";
 import {
   irmaThrottleKey,
   irmaTokenBlocked,
@@ -49,6 +50,13 @@ export default async function IrmaLinkPage({ params }: { params: Promise<{ token
       <header className="flex flex-col gap-3">
         <h1 className="text-3xl font-semibold tracking-tight">{agreement.title}</h1>
         <p className="text-ink-soft">Till {agreement.counterparty}. Inget konto behövs.</p>
+        {!signed && daysUntilExpiry(agreement.tokenExpiresAt) != null ? (
+          <p className="text-sm text-muted">
+            {daysUntilExpiry(agreement.tokenExpiresAt)! <= 0
+              ? "Länken har gått ut."
+              : `Länken gäller ${daysUntilExpiry(agreement.tokenExpiresAt)} dagar till.`}
+          </p>
+        ) : null}
       </header>
 
       {signed && agreement.signerName ? (

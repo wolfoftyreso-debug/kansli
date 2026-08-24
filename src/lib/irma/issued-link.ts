@@ -14,7 +14,7 @@ export async function setIssuedLink(path: string): Promise<void> {
     sameSite: "lax",
     secure: authConfig.cookieSecure,
     path: "/",
-    maxAge: 120,
+    maxAge: 600,
   });
 }
 

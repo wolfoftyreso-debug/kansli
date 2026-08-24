@@ -1,18 +1,12 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
-import {
-  CheckField,
-  EmptyState,
-  Field,
-  Notice,
-  SignInGate,
-  Submit,
-} from "@/components/app/SignInGate";
+import { CheckField, EmptyState, Field, SignInGate, Submit } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { listAgreements, type Agreement } from "@/lib/irma/agreements";
 import { peekIssuedLink, publicIrmaUrl } from "@/lib/irma/issued-link";
-import { daysUntilExpiry, statusLabel } from "@/lib/irma/status";
+import { daysUntilExpiry, effectiveStatus, statusLabel } from "@/lib/irma/status";
 import { tryRuntime } from "@/lib/platform/page";
+import { CopyIssuedLink } from "./CopyIssuedLink";
 import { createIrmaAgreement } from "./actions";
 
 export const metadata = {
@@ -52,22 +46,39 @@ function AgreementCard({ item }: { item: Agreement }) {
   );
 }
 
+const STATUS_FILTERS = ["all", "waiting", "signed", "expired", "cancelled"] as const;
+type StatusFilter = (typeof STATUS_FILTERS)[number];
+
+function parseStatusFilter(value: string | undefined): StatusFilter {
+  return STATUS_FILTERS.includes(value as StatusFilter) ? (value as StatusFilter) : "all";
+}
+
+function matchesFilter(item: Agreement, filter: StatusFilter): boolean {
+  if (filter === "all") return true;
+  if (filter === "waiting") return needsAttention(item);
+  return effectiveStatus(item) === filter;
+}
+
 export default async function IrmaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ issued?: string; q?: string }>;
+  searchParams: Promise<{ issued?: string; q?: string; status?: string }>;
 }) {
   const session = await readSession();
   const runtime = tryRuntime();
   const params = await searchParams;
   const query = params.q?.trim() ?? "";
+  const status = parseStatusFilter(params.status);
   const agreements =
     session?.org?.ref && runtime
       ? await listAgreements(runtime.pool, session.org.ref, query || undefined)
       : [];
   const issued = params.issued === "1" ? await peekIssuedLink() : null;
-  const waiting = query ? [] : agreements.filter(needsAttention);
-  const rest = query ? agreements : agreements.filter((item) => !needsAttention(item));
+  const waiting = query || status !== "all" ? [] : agreements.filter(needsAttention);
+  const rest =
+    query || status !== "all"
+      ? agreements.filter((item) => matchesFilter(item, status))
+      : agreements.filter((item) => !needsAttention(item));
 
   return (
     <AppShell current="irma" session={session}>
@@ -82,23 +93,16 @@ export default async function IrmaPage({
       </header>
 
       {issued ? (
-        <Notice>
-          Länk till motparten — giltig två minuter i den här webbläsaren. Kopiera den nu.
-          <label className="mt-2 flex flex-col gap-1">
-            <span className="sr-only">Länk till motparten</span>
-            <input
-              readOnly
-              value={publicIrmaUrl(issued)}
-              className="min-h-11 w-full rounded-md border border-line bg-paper px-3 py-2 font-mono text-sm text-ink"
-            />
-          </label>
+        <section className="rounded-md border border-line bg-accent-soft px-3 py-3 text-sm text-ink-soft">
+          <p>Länk till motparten — giltig tio minuter i den här webbläsaren. Kopiera den nu.</p>
+          <CopyIssuedLink url={publicIrmaUrl(issued)} />
           <a
             href={issued}
             className="mt-2 inline-block font-medium text-ink underline decoration-line underline-offset-4"
           >
             Öppna länken
           </a>
-        </Notice>
+        </section>
       ) : null}
 
       {!session?.org ? (
@@ -137,7 +141,37 @@ export default async function IrmaPage({
           </form>
 
           <section className="flex flex-col gap-3">
+            <p className="flex flex-wrap gap-3 text-sm">
+              <Link href="/irma" className="underline decoration-line underline-offset-4">
+                Alla
+              </Link>
+              <Link
+                href="/irma?status=waiting"
+                className="underline decoration-line underline-offset-4"
+              >
+                Väntar
+              </Link>
+              <Link
+                href="/irma?status=signed"
+                className="underline decoration-line underline-offset-4"
+              >
+                Bekräftade
+              </Link>
+              <Link
+                href="/irma?status=expired"
+                className="underline decoration-line underline-offset-4"
+              >
+                Utgångna
+              </Link>
+              <Link
+                href="/irma?status=cancelled"
+                className="underline decoration-line underline-offset-4"
+              >
+                Återkallade
+              </Link>
+            </p>
             <form className="flex gap-2" action="/irma" method="get">
+              {status !== "all" ? <input type="hidden" name="status" value={status} /> : null}
               <input
                 name="q"
                 defaultValue={query}
