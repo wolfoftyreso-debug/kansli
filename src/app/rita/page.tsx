@@ -11,6 +11,7 @@ import {
 import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
 import { listAnalyses } from "@/lib/rita/analyses";
+import { ritaEngineSnapshot } from "@/lib/rita/resolve-engine";
 import { requestRitaAnalysis } from "./actions";
 
 export const metadata = {
@@ -23,6 +24,7 @@ export default async function RitaPage() {
   const runtime = tryRuntime();
   const analyses =
     session?.org?.ref && runtime ? await listAnalyses(runtime.pool, session.org.ref) : [];
+  const engine = ritaEngineSnapshot();
 
   return (
     <AppShell current="rita" session={session}>
@@ -34,9 +36,11 @@ export default async function RitaPage() {
           lämna anbud.
         </p>
         <Notice>
-          Utan <span className="font-mono">RITA_ENGINE_URL</span> + token eller{" "}
-          <span className="font-mono">RITA_ENGINE_BINARY</span> lagras analysen som{" "}
-          <span className="font-medium text-ink">blocked</span>. Motorn fejkars inte.
+          {engine.available
+            ? engine.modelReady
+              ? `Motorn är kopplad (${engine.kind}${engine.modelId ? `, ${engine.modelId}` : ""}). Regelverk plus språkmodell. Svaret är inferens där modellen bidragit.`
+              : `Motorn är kopplad (${engine.kind}) men kör bara regelverket. ANTHROPIC_API_KEY saknas i subprocessen.`
+            : "Ingen motor. Utan RITA_ENGINE_URL + token eller RITA_ENGINE_BINARY blir status blocked. Motorn fejkars inte."}{" "}
           Demonstrationsbokslutet är en inbyggd textfil, inte en kunduppladdning.
         </Notice>
       </header>

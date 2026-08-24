@@ -78,6 +78,10 @@ liveEngine("RITA requestAnalysis against skattjakt", () => {
       });
       expect(analysis.status).toBe("completed");
       expect(analysis.blockedReason).toBeNull();
+      const envelope = analysis.result as { model_configured?: boolean } | null;
+      if (process.env.ANTHROPIC_API_KEY?.trim()) {
+        expect(envelope?.model_configured).toBe(true);
+      }
       const findings = findingsFromAnalysis(analysis.result);
       expect(findings.length).toBeGreaterThanOrEqual(1);
       const completed = await events.list({ orgRef, kind: "rita.analysis.completed" });
@@ -92,5 +96,5 @@ liveEngine("RITA requestAnalysis against skattjakt", () => {
       if (previous) process.env.RITA_ENGINE_BINARY = previous;
       else delete process.env.RITA_ENGINE_BINARY;
     }
-  }, 120_000);
+  }, 180_000);
 });

@@ -64,10 +64,12 @@ BRITT lyssnar. TORA skriver inte i BRITT.
 ### RITA — stämmer räkenskaperna?
 
 Beställning → `HttpAnalysisEngine` eller `SubprocessAnalysisEngine` mot
-Rust-motorn `skattjakt`. `company.id` och dokument-id är UUID. Motorn kräver
-minst ett dokument på disk och ett organisationsnummer som klarar
-checksumman. Lokalt kan formuläret skicka `exempel-bokslut.txt`. Utan host
-eller `RITA_ENGINE_BINARY` blir status `blocked`. Motorn fejkars inte. RITA
+Rust-motorn `skattjakt`. Subprocessen får bara en allowlist (Anthropic +
+`SKATTJAKT_*`), aldrig databaslösen. Utan `ANTHROPIC_API_KEY` kör motorn
+bara regelverket. `company.id` och dokument-id är UUID. Motorn kräver minst
+ett dokument på disk och ett organisationsnummer som klarar checksumman.
+Lokalt kan formuläret skicka `exempel-bokslut.txt`. Utan host eller
+`RITA_ENGINE_BINARY` blir status `blocked`. Motorn fejkars inte. RITA
 avgör inte anbudsrätt. Kunduppladdning via Blob är inte kopplad.
 
 Händelser: `rita.analysis.requested`, sedan `completed` eller `blocked`.

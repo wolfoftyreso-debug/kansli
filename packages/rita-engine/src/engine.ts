@@ -16,6 +16,7 @@ import {
   SUPPORTED_CONTRACT_VERSION,
   type EngineRequest,
 } from "./contract.ts";
+import { subprocessEngineEnv } from "./subprocess-env.ts";
 
 export interface AnalysisEngine {
   /** Version string, for the health check and for stamping a run. */
@@ -138,8 +139,7 @@ export class SubprocessAnalysisEngine implements AnalysisEngine {
     return new Promise((resolve, reject) => {
       const child = spawn(this.options.binaryPath, [...args], {
         cwd: this.options.cwd,
-        env:
-          this.options.env ?? ({ PATH: process.env["PATH"] ?? "" } as unknown as NodeJS.ProcessEnv),
+        env: this.options.env ?? subprocessEngineEnv(),
         stdio: ["pipe", "pipe", "pipe"],
       }) as ChildProcessWithoutNullStreams;
 
