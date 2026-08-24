@@ -82,5 +82,9 @@ pnpm install
 pnpm test
 pnpm typecheck && pnpm typecheck:packages
 pnpm lint && pnpm format:check && pnpm build
+pnpm db:restore-drill   # dump → tillfällig databas → släng (art. 3)
 pnpm dev          # nav + /idp på :3000
 ```
+
+Infrastrukturrevision (vad som finns, mognad, luckor):
+`docs/INFRASTRUCTURE-AUDIT.md`. Enkel ritning: `docs/architecture/hur-det-fungerar.html`.
