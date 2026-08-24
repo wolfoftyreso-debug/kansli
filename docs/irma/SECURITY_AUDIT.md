@@ -37,7 +37,7 @@ Ett system utan filuppladdning, utan SQL-strängkonkatenering och med org-scoped
 | M7 | Concurrent viewed kunde publicera två gånger | **FIXED** — samma mönster. |
 | M8 | Dubbel revoke publicerade `cancelled` igen | **FIXED**. |
 | M9 | IDOR mot `GET /irma/[id]` och API | **FIXED** — `id + org_ref`. Fel org → 404/null. Testat. |
-| M10 | Cookie-delete utan path kunde lämna `irma_issued` | **FIXED**. |
+| M10 | `takeIssuedLink` raderade cookien i en Server Component och kraschade `?issued=1` | **FIXED** — sidan läser bara. Cookien dör efter 120 s. |
 
 ## Low
 

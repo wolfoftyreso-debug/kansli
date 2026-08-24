@@ -26,7 +26,7 @@ Org-användare                Motpart                 Postgres              Even
 
 ## Varför cookie istället för query
 
-`?link=` lägger bearer-token i historik och i delade URL:er från org-sidan. Cookie med `httpOnly` + kort `maxAge` visar länken en gång till den inloggade användaren. Motparten får fortfarande token i den URL de skickas.
+`?link=` lägger bearer-token i historik och i delade URL:er från org-sidan. Cookie med `httpOnly` + 120 s `maxAge` visar länken på `?issued=1`. Sidan får inte radera cookien (Next tillåter inte cookie-write i Server Components). Motparten får token i den URL org-användaren kopierar.
 
 ## Varför ingen AI här
 
