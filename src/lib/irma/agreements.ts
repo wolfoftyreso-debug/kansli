@@ -366,7 +366,11 @@ async function loadByToken(pool: pg.Pool, token: string): Promise<AgreementRow |
   const row = (rows[0] as AgreementRow | undefined) ?? null;
   if (!row) return null;
   if (row.token_revoked_at) return null;
-  if (row.status !== "signed" && row.token_expires_at && new Date(row.token_expires_at) <= new Date()) {
+  if (
+    row.status !== "signed" &&
+    row.token_expires_at &&
+    new Date(row.token_expires_at) <= new Date()
+  ) {
     return null;
   }
   return row;

@@ -110,7 +110,8 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     name: "IRMA",
     question: "Hur lämnar vi ett underlag till någon utanför organisationen?",
     does: "Skapar ett avtal med klausuler, hashar en tidsbegränsad magic link (14 dagar), motparten öppnar /irma/l/<token> och kan bekräfta. Första öppning = viewed. Bekräftelse = signed + SHA-256-artefakt. Länken kan återkallas. Integritet räknas om mot hash.",
-    doesNot: "Ingen kvalificerad e-signatur. Ingen BankID. Ingen fillagring. Ingen OCR eller dokumentmotor. Nivå 2–5 är inte implementerade.",
+    doesNot:
+      "Ingen kvalificerad e-signatur. Ingen BankID. Ingen fillagring. Ingen OCR eller dokumentmotor. Nivå 2–5 är inte implementerade.",
     owns: "irma.agreements",
     status: "pilot",
   },

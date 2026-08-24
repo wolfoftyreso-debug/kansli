@@ -196,9 +196,10 @@ live("IRMA magic link (live Postgres)", () => {
     const miss = await listAgreements(pool, orgRef, "finns-inte");
     expect(miss).toHaveLength(0);
 
-    await pool.query(`update irma.agreements set token_expires_at = now() - interval '1 hour' where id = $1`, [
-      created.id,
-    ]);
+    await pool.query(
+      `update irma.agreements set token_expires_at = now() - interval '1 hour' where id = $1`,
+      [created.id],
+    );
     expect(await openAgreementByToken({ pool, events, token, requestId: "req-sec-2" })).toBeNull();
     expect((await getAgreement(pool, orgRef, created.id))?.status).toBe("expired");
 
@@ -221,7 +222,9 @@ live("IRMA magic link (live Postgres)", () => {
       requestId: "req-sec-4",
     });
     expect(revoked?.status).toBe("cancelled");
-    expect(await openAgreementByToken({ pool, events, token: liveToken, requestId: "req-sec-5" })).toBeNull();
+    expect(
+      await openAgreementByToken({ pool, events, token: liveToken, requestId: "req-sec-5" }),
+    ).toBeNull();
     const again = await revokeAgreement({
       pool,
       events,

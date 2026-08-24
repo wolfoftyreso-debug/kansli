@@ -14,8 +14,7 @@ export function ritaCompletedObservationBody(payload: Record<string, unknown>): 
   const count = typeof raw === "number" ? raw : typeof raw === "string" ? Number(raw) : NaN;
   const findings = Number.isFinite(count) ? `${count} fynd` : "fyndunderlag klart";
   const head = company ? `${company}: ${findings}` : findings;
-  const model =
-    payload.modelConfigured === true ? "Språkmodell var kopplad." : "Bara regelverket.";
+  const model = payload.modelConfigured === true ? "Språkmodell var kopplad." : "Bara regelverket.";
   return `${head}. ${model}`;
 }
 

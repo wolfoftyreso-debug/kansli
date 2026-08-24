@@ -73,13 +73,20 @@ export default async function IrmaAgreementPage({ params }: { params: Promise<{ 
           <section className="flex flex-col gap-2 rounded-xl border border-line bg-surface p-4">
             <h2 className="text-lg font-semibold">Bevis</h2>
             <p className="text-sm text-ink-soft">
-              Innehåll {integrity?.contentMatches === true ? "oförändrat" : integrity?.contentMatches === false ? "stämmer inte med hashen" : "ingen hash (äldre rad)"}
+              Innehåll{" "}
+              {integrity?.contentMatches === true
+                ? "oförändrat"
+                : integrity?.contentMatches === false
+                  ? "stämmer inte med hashen"
+                  : "ingen hash (äldre rad)"}
               {agreement.artifactSha256
                 ? ` · bekräftelse ${integrity?.artifactMatches === true ? "stämmer" : integrity?.artifactMatches === false ? "stämmer inte" : "kan inte räknas om"}`
                 : ""}
             </p>
             {agreement.contentSha256 ? (
-              <p className="break-all font-mono text-xs text-faint">innehåll {agreement.contentSha256}</p>
+              <p className="break-all font-mono text-xs text-faint">
+                innehåll {agreement.contentSha256}
+              </p>
             ) : null}
             {agreement.artifactSha256 ? (
               <p className="break-all font-mono text-xs text-faint">

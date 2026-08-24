@@ -114,9 +114,7 @@ export default async function IrmaPage({
               </button>
             </form>
             {agreements.length === 0 ? (
-              <EmptyState>
-                {query ? "Inget matchade sökningen." : "Inga avtal ännu."}
-              </EmptyState>
+              <EmptyState>{query ? "Inget matchade sökningen." : "Inga avtal ännu."}</EmptyState>
             ) : (
               <ul className="flex flex-col gap-3">
                 {agreements.map((item) => (

@@ -12,9 +12,7 @@ export async function createIrmaAgreement(formData: FormData) {
   const title = String(formData.get("title") ?? "").trim();
   const counterparty = String(formData.get("counterparty") ?? "").trim();
   const body = String(formData.get("body") ?? "").trim();
-  const verificationLevel = parseVerificationLevel(
-    formData.get("requireAck") === "on" ? 1 : 0,
-  );
+  const verificationLevel = parseVerificationLevel(formData.get("requireAck") === "on" ? 1 : 0);
   if (!title || !counterparty) return;
   const agreement = await createAgreement({
     pool,

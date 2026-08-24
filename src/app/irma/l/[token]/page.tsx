@@ -2,7 +2,12 @@ import { notFound } from "next/navigation";
 import { Field, Notice, Submit } from "@/components/app/SignInGate";
 import { ACKNOWLEDGEMENT_DECLARATION } from "@/lib/irma/clauses";
 import { openAgreementByToken } from "@/lib/irma/agreements";
-import { irmaThrottleKey, irmaTokenBlocked, noteIrmaTokenFailure, noteIrmaTokenSuccess } from "@/lib/irma/throttle";
+import {
+  irmaThrottleKey,
+  irmaTokenBlocked,
+  noteIrmaTokenFailure,
+  noteIrmaTokenSuccess,
+} from "@/lib/irma/throttle";
 import { statusLabel } from "@/lib/irma/status";
 import { tryRuntime } from "@/lib/platform/page";
 import { acknowledgeIrmaAgreement } from "./actions";
@@ -52,12 +57,16 @@ export default async function IrmaLinkPage({ params }: { params: Promise<{ token
           <li className={signed ? "text-ink" : "text-faint"}>3. Klart</li>
         </ol>
 
-        {agreement.body ? <p className="text-base leading-relaxed text-ink-soft">{agreement.body}</p> : null}
+        {agreement.body ? (
+          <p className="text-base leading-relaxed text-ink-soft">{agreement.body}</p>
+        ) : null}
 
         <section className="flex flex-col gap-3">
           <h2 className="text-lg font-semibold">Det här ska du läsa</h2>
           {agreement.clauses.length === 0 ? (
-            <p className="text-sm text-muted">Inga klausuler lagrades. Bekräftelsen gäller titel och motpart.</p>
+            <p className="text-sm text-muted">
+              Inga klausuler lagrades. Bekräftelsen gäller titel och motpart.
+            </p>
           ) : (
             <ol className="flex flex-col gap-3">
               {agreement.clauses.map((clause, index) => (
@@ -74,8 +83,8 @@ export default async function IrmaLinkPage({ params }: { params: Promise<{ token
 
         {signed ? (
           <Notice>
-            Bekräftat av <span className="font-medium text-ink">{agreement.signerName}</span>. Det är
-            inte BankID och inte en kvalificerad e-signatur.
+            Bekräftat av <span className="font-medium text-ink">{agreement.signerName}</span>. Det
+            är inte BankID och inte en kvalificerad e-signatur.
           </Notice>
         ) : needsAck ? (
           <form
