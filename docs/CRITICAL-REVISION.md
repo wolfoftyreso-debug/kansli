@@ -16,8 +16,8 @@ bättre än produktmognaden. Mission-copy är ofta starkare än runtime.
 Att “bygga klart alla moduler” i den här branchen vore att ljuga. Det som
 gick att slutföra utan påhittade motorer är gjort. Resten är namngiven skuld.
 
-Familjen som driftad plattform efter den här vågen: **56 %**. Inte 100.
-Inte nära 100.
+Familjen som driftad plattform efter den här vågen: **62 %**. Inte 100.
+Inte nära 100. En verkstadspilot kan erbjudas. Alla sex system kan inte.
 
 ---
 
@@ -54,10 +54,12 @@ använde den. Offert var en checkbox. Hubben var tom utan inspektioner.
 DONE; kundkort på `/tyra/kunder`; tidslinje på work card; `commercial_status`
 QUOTE_DRAFT/QUOTE_READY när offertsteget rörs; `storage_code`-kolumn.
 
-**Inte byggt:** live-pris, SMS SENT, inspektionsskrivning, pick-kö, Fortnox.
+**Inte byggt:** live-pris, SMS SENT, pick-kö, Fortnox, fotosteg.
 
-TYRA: **42 → 50**. Fortfarande en ärendemotor med CRM-skiva, inte ett
-däckhotell-OS.
+**Byggt sedan dess:** verifierad inspektion, offertutkast, lagerplats,
+kunduppgifter, anteckning, avbryt.
+
+TYRA: **50 → 62**. Verkstadsslingan går att köra. Den skickar inte.
 
 ### IRMA — handslag, inte avtalshantering
 
@@ -103,16 +105,18 @@ och ignorerades.
 **Byggt:** djuplänkar, gruppering per uppdrag, lyssning på task.updated
 inklusive radering.
 
-**Inte byggt:** Fortnox, status/done på observationer, LLM-sammanfattning.
+**Inte byggt:** Fortnox, assignee, LLM-sammanfattning.
 
-BRITT: **38 → 46**.
+**Byggt sedan dess:** observation open/done.
+
+BRITT: **46 → 50**.
 
 ### TORA — 19 motorer mot Exempelbolaget
 
-Inte rört i den här vågen. Org-profil mot seedad demo är nästa ärliga 10 %.
-Att låtsas “live marknad” vore att ljuga.
+**Byggt sedan dess:** `company_profiles` per org. Motorn utvärderar er profil.
+Marknaden är fortfarande seed.
 
-TORA: **58**. Oförändrat.
+TORA: **58 → 64**. Bolaget är ert. Marknaden är demo.
 
 ### Kansli / Identity
 
@@ -130,14 +134,12 @@ Kansli: **72 → 76**. Identity: **78 → 82**.
    ändå för lätt att sälja som färdigt.
 2. **`signed` är semantiskt gift.** IRMA L1 är en hashad bekräftelse. Ordet
    “Bekräftat” är medvetet. Ordet “signed” i databasen är en fälla.
-3. **TYRA-hubben är fortfarande tom** utan inspektionsskrivning. Lager finns
-   nu som rad. Kunden ser fortfarande ingen mönsterdjupssanning.
+3. **TYRA-hubben är tom utan inspektion.** Inspektionsskrivning finns nu.
+   Utan mätning ser kunden fortfarande ingen mönsterdjupssanning.
 4. **RITA på Vercel är en tegelsten** utan HTTP-host. UI-förbättringen syns
    bara när motorn faktiskt kör.
-5. **TORA utvärderar alltid Exempelbolaget.** Motorn är allvarlig.
-   Integration lagret är en demo-karusell.
-6. **Permissions är teater.** `requirePermission` finns. Produkt-API:er
-   använder den inte.
+5. **TORA-marknaden är demo.** Bolagsprofilen är er. TED/HILMA saknas.
+6. **Permissions täcker skrivvägarna.** Inte varje GET. Inte Kansli-tasks.
 7. **Inga HTTP-tester mot `route.ts`.** Domäntester är täta. Ytan är inte
    bevisad. Events-läckan hade fångats av en enda org-isolationstest.
 8. **Backup är CI-verklig och prod-falsk** tills någon skriver en daterad
@@ -194,10 +196,10 @@ Tills de grindarna är stängda är “alla system klara” ett löfte, inte ett
 
 1. Neon-restore i produktion, daterad.
 2. RITA HTTP-host om RITA ska synas på Vercel.
-3. TYRA manuell inspektion → hubben får innehåll.
-4. TORA `company_profiles` per org, annars stämpel “Exempelbolaget”.
-5. `requirePermission` på skrivande API:er.
-6. Observation-status i BRITT (`open`/`done`).
-7. ALVA-repot — eller ALVA stannar deferred.
+3. TYRA-sändadapter *om* kunden kräver SENT.
+4. ALVA-repot — eller ALVA stannar deferred.
+5. HTTP-tester mot `route.ts`.
 
 Gör inte: fler fonter, fler produkter, fler demo-live-vägar.
+
+Grindarna i drift: `/kansli/beredskap`.

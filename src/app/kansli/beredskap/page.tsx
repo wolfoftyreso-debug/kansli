@@ -1,0 +1,84 @@
+import Link from "next/link";
+import { AppShell } from "@/components/app/AppShell";
+import { Notice, SignInGate } from "@/components/app/SignInGate";
+import { readSession } from "@/lib/auth/session";
+import { loadFirstCustomerBoard, type GateState } from "@/lib/platform/first-customer";
+import { tryRuntime } from "@/lib/platform/page";
+
+export const dynamic = "force-dynamic";
+
+export const metadata = {
+  title: "Beredskap — Kansli",
+  description: "Grindarna för första kunden. Inte ett datum.",
+};
+
+function tone(state: GateState) {
+  if (state === "ready") return "text-ink";
+  if (state === "blocked") return "text-ink";
+  return "text-ink-soft";
+}
+
+function label(state: GateState) {
+  if (state === "ready") return "Klar";
+  if (state === "blocked") return "Blockerad";
+  return "Öppen";
+}
+
+export default async function BeredskapPage() {
+  const session = await readSession();
+  const runtime = tryRuntime();
+  const board = await loadFirstCustomerBoard(runtime?.pool ?? null, session?.org?.ref ?? null);
+
+  return (
+    <AppShell current="kansli" session={session}>
+      <p className="pd-label text-faint">
+        <Link href="/kansli" className="hover:underline">
+          Kansli
+        </Link>
+        {" · "}
+        Beredskap
+      </p>
+      <h1 className="text-3xl font-semibold tracking-tight">Första kunden</h1>
+      <p className="max-w-xl text-ink-soft">
+        Inte ett datum. En lista grindar. Volkswagen rullar ut det som är sant.
+      </p>
+
+      {!session?.org ? (
+        <SignInGate next="/kansli/beredskap" title="Logga in för att läsa grindarna">
+          Beredskapen läses ur er org och er runtime. Inte ur en broschyr.
+        </SignInGate>
+      ) : (
+        <>
+          <section className="rounded-xl border border-line bg-surface px-4 py-4">
+            <p className="font-medium">
+              {board.pilotOfferable
+                ? "Pilot kan erbjudas — om kunden skriver under vad produkten inte är."
+                : "Pilot kan inte erbjudas. En blockerad grind måste stängas först."}
+            </p>
+            <p className="mt-2 text-sm text-ink-soft">
+              Alla sex system klara:{" "}
+              {board.allSystemsReady ? "ja." : "nej. ALVA-diagnos och RITA-host är andra rum."}
+            </p>
+          </section>
+
+          <ol className="flex flex-col gap-2">
+            {board.gates.map((gate) => (
+              <li key={gate.id} className="rounded-xl border border-line bg-surface px-4 py-3">
+                <p className={`text-xs font-medium uppercase tracking-wide ${tone(gate.state)}`}>
+                  {label(gate.state)}
+                </p>
+                <p className="mt-1 font-medium">{gate.title}</p>
+                <p className="mt-1 text-sm text-ink-soft">{gate.detail}</p>
+              </li>
+            ))}
+          </ol>
+
+          <Notice>
+            Stäng inte en blockerad grind genom att låtsas. RITA utan motor säljs inte. ALVA utan
+            diagnosmotor är intag. TYRA utan sändadapter köar, den skickar inte.
+          </Notice>
+        </>
+      )}
+    </AppShell>
+  );
+}

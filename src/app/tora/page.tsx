@@ -99,6 +99,12 @@ export default async function ToraPage() {
             label="Certifieringar (kommaseparerade)"
             defaultValue={(profile?.certifications ?? []).join(", ")}
           />
+          <Field
+            name="registrations"
+            label="Registreringar (kommaseparerade)"
+            defaultValue={(profile?.registrations ?? []).join(", ")}
+            placeholder="f_tax, vat"
+          />
           <Submit>Spara bolagsprofil</Submit>
         </form>
       ) : null}

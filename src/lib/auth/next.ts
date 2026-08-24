@@ -8,6 +8,8 @@ export const APP_NEXT_PATHS = [
   ...productModules().map((module) => module.basePath),
   "/tora/calendar",
   "/tyra/integrations",
+  "/tyra/kunder",
+  "/kansli/beredskap",
   "/platform",
   "/platform/events",
 ] as const;

@@ -65,6 +65,14 @@ export default async function KansliHub() {
               {" · "}
               {ritaStatusLine(status.rita)}
             </p>
+            <p className="mt-3 text-sm">
+              <Link
+                href="/kansli/beredskap"
+                className="underline decoration-line underline-offset-4 hover:text-ink"
+              >
+                Första kunden — grindar, inte datum
+              </Link>
+            </p>
           </section>
 
           <section className="flex flex-col gap-3">
