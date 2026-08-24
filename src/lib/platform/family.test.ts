@@ -1,11 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { EVENT_KINDS } from "@pixdrift/events";
+import { SYSTEM_IDS } from "@pixdrift/systems";
 import { FAMILY_LINKS, FAMILY_SYSTEMS } from "./family.ts";
 
 describe("family map", () => {
   it("covers every product once and keeps RITA distinct from TORA", () => {
     const ids = FAMILY_SYSTEMS.map((s) => s.id);
-    expect(ids).toEqual(["identity", "kansli", "tora", "rita", "britt", "irma", "alva"]);
+    expect(ids).toEqual([...SYSTEM_IDS]);
     const rita = FAMILY_SYSTEMS.find((s) => s.id === "rita")!;
     const tora = FAMILY_SYSTEMS.find((s) => s.id === "tora")!;
     expect(rita.does).not.toEqual(tora.does);

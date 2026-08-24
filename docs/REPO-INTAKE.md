@@ -41,9 +41,9 @@ REPO ACCEPTED
 
 | Repo | Steg | Anteckning |
 | --- | --- | --- |
-| `kansli` | ACCEPTED (nav) | Plattformspaket + IdP bor här tills vidare |
-| `RITA` | Integration → Verification | Adapter + in-repo-patch klar; väntar på skrivåtkomst |
-| `TORA` | Integration | OIDC-native; konfig + bevisat token-kontrakt |
-| `BRITT` | Integration | Adapter byggd + testad; in-repo-patch återstår |
-| `IRMA` | Integration | Adapter byggd + testad; Magic Links interna |
-| `ALVA` | Parkerad | Adapter/patch vilande på användarens begäran |
+| `kansli` | ACCEPTED (nav) | Plattform + produktmoduler i samma Next-process. Kontrakt: `@pixdrift/systems` |
+| `RITA` | Verification (i navet) | Analys + fynd i `src/`. Rust-motor via HTTP/binär. Fristående repo: adapter klar |
+| `TORA` | Verification (i navet) | Motor i `@pixdrift/tora`. Marknad/detalj/kalender i `src/` |
+| `BRITT` | Verification (i navet) | Demo-intel + observationer i `src/`. Fortnox/Revolut saknas |
+| `IRMA` | Verification (i navet) | Avtal + hashad bekräftelse i `src/`. Inte kvalificerad e-sign |
+| `ALVA` | Parkerad | Fallregistrering i navet. Diagnosmotor väntar på ALVA-repot |

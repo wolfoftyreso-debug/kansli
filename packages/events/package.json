@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@pixdrift/contracts": "workspace:*",
+    "@pixdrift/systems": "workspace:*",
     "pg": "^8.13.1"
   },
   "devDependencies": {

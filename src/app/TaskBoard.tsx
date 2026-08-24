@@ -19,7 +19,7 @@ export default function TaskBoard() {
   const [error, setError] = useState<string | null>(null);
 
   async function refresh() {
-    const res = await fetch("/api/tasks", { cache: "no-store" });
+    const res = await fetch("/api/kansli/tasks", { cache: "no-store" });
     const data = await res.json();
     setTasks(data.tasks ?? []);
   }
@@ -28,7 +28,7 @@ export default function TaskBoard() {
     let active = true;
     async function load() {
       try {
-        const res = await fetch("/api/tasks", { cache: "no-store" });
+        const res = await fetch("/api/kansli/tasks", { cache: "no-store" });
         const data = await res.json();
         if (active) setTasks(data.tasks ?? []);
       } catch {
@@ -52,7 +52,7 @@ export default function TaskBoard() {
     }
     setSubmitting(true);
     try {
-      const res = await fetch("/api/tasks", {
+      const res = await fetch("/api/kansli/tasks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title, owner }),
@@ -72,12 +72,12 @@ export default function TaskBoard() {
   }
 
   async function toggle(id: string) {
-    await fetch(`/api/tasks/${id}`, { method: "PATCH" });
+    await fetch(`/api/kansli/tasks/${id}`, { method: "PATCH" });
     await refresh();
   }
 
   async function remove(id: string) {
-    await fetch(`/api/tasks/${id}`, { method: "DELETE" });
+    await fetch(`/api/kansli/tasks/${id}`, { method: "DELETE" });
     await refresh();
   }
 

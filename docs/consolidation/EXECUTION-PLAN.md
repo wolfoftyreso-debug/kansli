@@ -54,7 +54,6 @@ silent feature loss; every capability has a disposition in the ledger) · Repo
 
 ## Immediate next step
 
-TORA detail/calendar, IRMA hashed acknowledgement, RITA findings parser, and
-BRITT demo intel are in. Still blocked outside this repo: RITA engine host
-(or a built `skattjakt` binary), ALVA diagnosis engine, qualified e-sign/Blob,
-Fortnox/Revolut.
+Product modules are in the kansli process under one catalog (`@pixdrift/systems`).
+Still blocked outside this repo: RITA engine host on Vercel (local binary works),
+ALVA diagnosis engine, qualified e-sign/Blob, Fortnox/Revolut.

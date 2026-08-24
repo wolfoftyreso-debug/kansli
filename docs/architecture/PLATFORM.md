@@ -51,7 +51,8 @@ Browser → Next.js (kansli)
 | GET | `/api/irma/l/:token` | no (hashed magic link). First open → `viewed`. |
 | POST | `/api/irma/l/:token` | no. Hashed acknowledgement → `signed` + artifact SHA-256. |
 | GET/POST | `/api/alva/cases` | yes |
-| GET/POST | `/api/tasks` | yes |
+| GET/POST | `/api/kansli/tasks` | yes |
+| GET/POST/PATCH/DELETE | `/api/tasks` | yes (alias till `/api/kansli/tasks`) |
 
 ## Product UI
 
@@ -73,4 +74,7 @@ Browser → Next.js (kansli)
 Login accepts `?next=` for those paths only (`pd_next` cookie). Anything else falls back to `/kansli`.
 
 The operating map — what each system does now, and how they connect — is
-`docs/FAMILY.md` and `/platform`.
+`docs/FAMILY.md` and `/platform`. The machine contract (ids, schemas, API
+bases, event ownership) is `@pixdrift/systems`. A workspace-contract test
+fails the build if a product is missing UI, API, domain folder, migration or
+domain test.

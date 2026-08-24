@@ -1,15 +1,12 @@
+import { productModules } from "@pixdrift/systems";
+
 /**
  * After OIDC the BFF may send the user back to the product they came from.
  * Only same-origin app routes are allowed — never an open redirect.
  */
 export const APP_NEXT_PATHS = [
-  "/kansli",
-  "/tora",
+  ...productModules().map((module) => module.basePath),
   "/tora/calendar",
-  "/rita",
-  "/britt",
-  "/irma",
-  "/alva",
   "/platform",
   "/platform/events",
 ] as const;

@@ -1,7 +1,9 @@
 # Pixdrift-familjen — vad som finns i det här repot
 
 Det här är driftskartan, inte målbilden. Målbilden ligger i
-`PIXDRIFT-ARKITEKTUR.md`. Här står vad koden faktiskt gör.
+`PIXDRIFT-ARKITEKTUR.md`. Här står vad koden faktiskt gör. Id, schema, API
+och event-ägande är `@pixdrift/systems` — den här filen är den svenska
+beskrivningen, inte en andra id-lista.
 
 ## Princip
 

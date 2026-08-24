@@ -216,6 +216,9 @@ importers:
       '@pixdrift/contracts':
         specifier: workspace:*
         version: link:../contracts
+      '@pixdrift/systems':
+        specifier: workspace:*
+        version: link:../systems
       pg:
         specifier: ^8.13.1
         version: 8.23.0

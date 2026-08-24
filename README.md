@@ -17,13 +17,15 @@ kontrakten, AI Core och `kansli`-navets webb.
 ## Struktur
 
 ```
-src/                     kansli-navet (Next.js) + BFF-auth (api/auth/*)
-packages/                delade plattformspaket (@pixdrift/*)
-  contracts/  auth-core/  auth-client/  identity/  ai-core/
-integrations/            inkopplings-adaptrar per subsystem (alva/rita/britt/irma/tora)
-docs/                    styrning, arkitektur, drift, inventering
-.github/workflows/       CI (lint/typecheck/test m. Postgres + build)
+src/app/{kansli,tora,rita,britt,irma,alva,platform,idp}
+src/lib/{kansli,tora,rita,britt,irma,alva,platform}
+src/app/api/{kansli,tora,rita,britt,irma,alva,platform}
+packages/                @pixdrift/* (systems, events, db, identity, …)
+db/migrations/{platform,kansli,tora,rita,britt,irma,alva}
+integrations/            OIDC-adaptrar till fristående produktrepon
 ```
+
+Modulkontraktet ligger i `@pixdrift/systems`. Produkter delar inte tabeller.
 
 ## Kom igång
 
@@ -72,16 +74,17 @@ Kör de gated Postgres-integrationstesterna genom att sätta `PIXDRIFT_TEST_OWNE
 | `docs/AI-PROVIDERS.md` · `docs/INTEGRATIONS.md` | AI- resp. externa integrationer |
 | `docs/DEPLOYMENT.md` | Drift, runbook, live-länk |
 
-## kansli-navets uppgifts-API (exempelyta)
+## Kansli-uppgifter
 
 | Metod | Väg | Beskrivning |
 | --- | --- | --- |
-| `GET` | `/api/tasks` | Lista uppgifter |
-| `POST` | `/api/tasks` | Skapa (`{ "title": string, "owner"?: string }`) |
-| `PATCH` | `/api/tasks/:id` | Växla klar-status |
-| `DELETE` | `/api/tasks/:id` | Ta bort |
+| `GET` | `/api/kansli/tasks` | Lista uppgifter för aktiv org |
+| `POST` | `/api/kansli/tasks` | Skapa (`{ "title": string, "owner"?: string }`) |
+| `PATCH` | `/api/kansli/tasks/:id` | Växla klar-status |
+| `DELETE` | `/api/kansli/tasks/:id` | Ta bort |
 
-Uppgifter lagras i `data/tasks.json` (git-ignorerad, seedas vid första körning).
+Samma vägar finns som alias under `/api/tasks`. Data ligger i `kansli.tasks`,
+inte i en JSON-fil.
 
 ---
 

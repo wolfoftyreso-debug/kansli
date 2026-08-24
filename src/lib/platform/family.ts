@@ -1,15 +1,18 @@
+import type { SystemId, SystemStatus } from "@pixdrift/systems";
+
 /**
  * What each system does *in this repo today*, and how they connect.
  * Marketing copy lives elsewhere. This is the operating map.
+ * Machine fields (id, schema, paths, events) live in `@pixdrift/systems`.
  */
 export interface FamilySystem {
-  id: string;
+  id: SystemId;
   name: string;
   question: string;
   does: string;
   doesNot: string;
   owns: string;
-  status: "operational" | "pilot" | "deferred";
+  status: SystemStatus;
 }
 
 export interface FamilyLink {
