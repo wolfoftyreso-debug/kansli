@@ -46,17 +46,27 @@ export default async function BrittPage() {
         </SignInGate>
       ) : (
         <>
+          {latest ? (
+            <section className="flex flex-col gap-3">
+              <h2 className="text-lg font-semibold">Senaste ögonblicksbild · {latest.period}</h2>
+              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                <MetricCard label="Omsättning" value={kr(latest.revenue)} />
+                <MetricCard label="Plan" value={kr(latest.planRevenue)} />
+                <MetricCard label="Kassa" value={kr(latest.cash)} />
+                <MetricCard label="Månadsförbränning" value={kr(latest.monthlyBurn)} />
+                <MetricCard
+                  label="Största kund"
+                  value={`${Math.round(latest.topCustomerShare * 100)} %`}
+                />
+              </div>
+            </section>
+          ) : null}
+
           <form action={runBrittIntel} className="rounded-xl border border-line bg-surface p-4">
             <h2 className="text-lg font-semibold">Demonstrationsanalys</h2>
             <p className="mt-1 text-sm text-ink-soft">
               Kör omsättning mot plan, likviditet och kundkoncentration mot seedade fakta.
             </p>
-            {latest ? (
-              <p className="mt-2 font-mono text-xs text-faint">
-                Senaste {latest.period}: {kr(latest.revenue)} mot plan {kr(latest.planRevenue)} ·
-                kassa {kr(latest.cash)}
-              </p>
-            ) : null}
             {runs[0] ? (
               <p className="mt-1 font-mono text-xs text-faint">
                 {runs[0].findingCount} fynd · {runs[0].createdAt}
@@ -124,5 +134,14 @@ export default async function BrittPage() {
         </>
       )}
     </AppShell>
+  );
+}
+
+function MetricCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border border-line bg-surface px-4 py-3">
+      <p className="text-xs font-medium uppercase tracking-wide text-faint">{label}</p>
+      <p className="mt-2 font-medium">{value}</p>
+    </div>
   );
 }
