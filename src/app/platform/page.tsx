@@ -42,8 +42,8 @@ export default async function PlatformPage() {
         <h1 className="text-3xl font-semibold tracking-tight">Vad varje system gör</h1>
         <p className="text-ink-soft">{FAMILY_PRINCIPLE}</p>
         <Notice>
-          En process. En Postgres. Append-only <span className="font-mono">platform.events</span>.
-          Ingen produkt skriver i en annans schema.
+          IT-yta, inte verkstadsgolvet. En process. En Postgres. Append-only händelselogg. Ingen
+          produkt skriver i en annans schema.
         </Notice>
       </header>
 

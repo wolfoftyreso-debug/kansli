@@ -63,7 +63,10 @@ export default async function TyraHubPage({ params }: { params: Promise<{ token:
                 headline={
                   [position.tyre.brand, position.tyre.model, position.tyre.dimension]
                     .filter(Boolean)
-                    .join(" ") || "Däckuppgifter saknas"
+                    .join(" ") ||
+                  (position.health.treadDepthMm != null
+                    ? `Mönsterdjup ${position.health.treadDepthMm.toFixed(1)} mm`
+                    : `${position.position} · ${position.health.label}`)
                 }
                 subtitle={
                   position.health.treadDepthMm != null

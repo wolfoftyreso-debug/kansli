@@ -48,5 +48,6 @@ describe("operational motor: workflow resolver", () => {
     });
 
     expect(card.nextBestAction?.title).toBe("Nästa: Hämta hjul");
+    expect(card.summary).toBe("Hjulskifte från lager · Tvätt");
   });
 });

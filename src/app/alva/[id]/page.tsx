@@ -58,7 +58,7 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
         </SignInGate>
       ) : item ? (
         <>
-          <h1 className="text-3xl font-semibold tracking-tight">Protokolltom</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">{item.complaint}</h1>
           <p className="text-xs font-medium uppercase tracking-wide text-accent">
             {CASE_STATUS_LABELS[status]}
           </p>

@@ -66,6 +66,8 @@ live("TYRA cases + hub (live Postgres)", () => {
 
     const card = await getCaseWorkCard(pool, orgRef, created.id);
     expect(card?.headline).toBe("VOLVO XC60 — ABC123");
+    expect(card?.summary).not.toMatch(/tire swap/i);
+    expect(card?.summary).toMatch(/Hjulskifte|Tvätt|Balansering/);
     expect(card?.steps.map((step) => step.kind)).toEqual([
       "INSPECT_WHEELS",
       "BALANCE",

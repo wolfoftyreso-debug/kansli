@@ -26,7 +26,10 @@ export function AppShell({
       <header className="border-b border-line bg-paper/90 backdrop-blur">
         <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-4 px-6 py-3">
           <div className="flex min-w-0 items-center gap-6">
-            <Link href="/" className="shrink-0 text-sm font-semibold tracking-[0.18em]">
+            <Link
+              href={session ? "/kansli" : "/"}
+              className="shrink-0 text-sm font-semibold tracking-[0.18em]"
+            >
               PIXDRIFT
             </Link>
             <nav aria-label="Produkter" className="hidden items-center gap-4 md:flex">

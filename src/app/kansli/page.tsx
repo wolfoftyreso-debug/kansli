@@ -118,8 +118,7 @@ export default async function KansliHub({
               <ol className="flex flex-col gap-2">
                 {events.map((event) => (
                   <li key={event.id} className="rounded-xl border border-line bg-surface px-4 py-3">
-                    <p className="font-mono text-xs text-accent">{event.kind}</p>
-                    <p className="mt-1 text-sm text-ink-soft">{eventLine(event)}</p>
+                    <p className="text-sm text-ink">{eventLine(event)}</p>
                   </li>
                 ))}
               </ol>
@@ -127,7 +126,7 @@ export default async function KansliHub({
           ) : null}
 
           <Notice>
-            Uppgifter skrivs i kansli.tasks. BRITT får en observation när en uppgift skapas.
+            När en uppgift skapas får BRITT en observation. Det är samma hus, två pärmar.
           </Notice>
           <TaskBoard highlightId={highlightId} />
         </>

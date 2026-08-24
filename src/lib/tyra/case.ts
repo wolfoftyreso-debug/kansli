@@ -1,4 +1,4 @@
-import type { CanonicalOperation } from "./services";
+import { summarizeOperations, type CanonicalOperation } from "./services";
 
 export type TireCaseIntent =
   "TIRE_SWAP_APPOINTMENT" | "STORE_ONLY" | "PICKUP_ONLY" | "QUOTE_ONLY" | "MIXED";
@@ -267,7 +267,7 @@ export function buildWorkCard(input: {
         ? `${input.vehicle.registrationNumber}`
         : `Ärende`;
 
-  const summary = input.tireCase.requestedOperations.join(" + ").replaceAll("_", " ").toLowerCase();
+  const summary = summarizeOperations(input.tireCase.requestedOperations);
 
   return {
     caseId: input.tireCase.id,

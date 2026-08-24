@@ -76,8 +76,8 @@ export default async function TyraPage() {
               <Field name="model" label="Modell" placeholder="XC60" />
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field name="phone" label="Telefon (för påminnelse)" placeholder="+46…" />
-              <Field name="email" label="E-post (för påminnelse)" placeholder="kund@exempel.se" />
+              <Field name="phone" label="Telefon" placeholder="+46…" />
+              <Field name="email" label="E-post" placeholder="kund@exempel.se" />
             </div>
             <label className="flex flex-col gap-1">
               <span className="text-sm text-ink-soft">Avsikt</span>
@@ -131,8 +131,7 @@ export default async function TyraPage() {
       )}
 
       <Notice>
-        Port från `cursor/tyra-instrument-ui-06e9`. Outbox kan köas. Utan sändadapter blir den
-        BLOCKED, inte skickad. Ingen live-pris.
+        Påminnelser kan köas. Utan sändadapter blir de BLOCKED, inte skickade. Inga live-däckpriser.
       </Notice>
     </AppShell>
   );

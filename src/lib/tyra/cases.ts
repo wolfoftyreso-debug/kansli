@@ -9,7 +9,7 @@ import {
   type WorkflowStepKind,
   type WorkCard,
 } from "./case.ts";
-import type { CanonicalOperation } from "./services.ts";
+import { summarizeOperations, type CanonicalOperation } from "./services.ts";
 
 export type CaseEventSource =
   "SYSTEM" | "DMS" | "TECHNICIAN" | "ADVISOR" | "WAREHOUSE" | "CUSTOMER";
@@ -438,7 +438,7 @@ export async function getCaseWorkCard(
       v?.make && v?.model && v?.registration_number
         ? `${v.make.toUpperCase()} ${v.model.toUpperCase()} — ${v.registration_number}`
         : (v?.registration_number ?? "Ärende"),
-    summary: operations.join(" + ").replaceAll("_", " ").toLowerCase(),
+    summary: summarizeOperations(operations),
     nextBestAction: next ? { title: `Nästa: ${next.title}`, stepKind: next.kind } : null,
     steps,
   };

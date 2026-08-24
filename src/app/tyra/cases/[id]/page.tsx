@@ -73,7 +73,7 @@ export default async function TyraCasePage({
     <AppShell current="tyra" session={session}>
       {!session?.org ? (
         <SignInGate next="/tyra" title="Logga in för att se ärendet">
-          Work card läses ur TYRA-schemat för din organisation.
+          Ärendet tillhör organisationen. Logga in med Pixdrift.
         </SignInGate>
       ) : card ? (
         <>
