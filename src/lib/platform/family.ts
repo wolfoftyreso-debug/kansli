@@ -111,7 +111,7 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     question: "Hur lämnar vi ett underlag till någon utanför organisationen?",
     does: "Skapar ett avtal med klausuler, hashar en tidsbegränsad magic link (14 dagar), motparten öppnar /irma/l/<token> och kan bekräfta. Första öppning = viewed. Bekräftelse = signed + SHA-256-artefakt. Länken kan återkallas. Integritet räknas om mot hash.",
     doesNot:
-      "Ingen kvalificerad e-signatur. Ingen BankID. Ingen fillagring. Ingen OCR eller dokumentmotor. Nivå 2–5 är inte implementerade.",
+      "Ingen kvalificerad e-signatur. Ingen BankID. Ingen extern e-signleverantör. Ingen fillagring. Ingen OCR. Inga anrop utanför våra API-vendorer.",
     owns: "irma.agreements",
     status: "pilot",
   },
@@ -197,7 +197,7 @@ export const FAMILY_BLOCKED = [
   },
   {
     id: "irma-sign",
-    need: "Kvalificerad e-signatur, BankID och Vercel Blob när bekräftelsen ska bli mer än en hashad förklaring.",
+    need: "IRMA stannar i navet: hashad bekräftelse, Postgres, egen länk. Inga BankID-, e-sign- eller design-API:er. Starkare nivåer byggs här, mot våra vendorer, om de behövs.",
   },
   {
     id: "britt-intel",

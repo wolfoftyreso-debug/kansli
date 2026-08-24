@@ -176,6 +176,18 @@ result.
 Supporting engineering statement: **Connect what exists. Automate what repeats.
 Surface what matters.**
 
+## 22. Build it here
+
+Capabilities live in this repository. Runtime calls go only to **our API
+vendors** (Vercel AI Gateway and the keys named in `docs/AI-PROVIDERS.md` and
+`docs/INTEGRATIONS.md`: Anthropic, OpenAI, Gemini, Moonshot, and — when a
+connector exists — 46elks, Resend, Mapbox).
+
+Do not add BankID, e-sign SaaS, design APIs (Mobbin and the like), document
+vendors, or a new third party to fill a product gap. If IRMA needs a stronger
+acknowledgement, a PDF, or intake, implement it in this process against
+Postgres and the existing vendors. Guest magic links stay first-party.
+
 ## Final principle
 
 A PIXDRIFT product should make the surrounding technology environment feel

@@ -4,9 +4,13 @@
 
 IRMA är en modul i kansli-processen, inte en egen app. Den äger `irma.*` och publicerar events. Den läser inte `rita.*` eller `tora.*`.
 
-Signering *idag* är hashed acknowledgement. Det är medvetet. Att byta till BankID utan ny produktbeslut och ny infrastruktur vore teater.
+Signering *idag* är hashed acknowledgement. Det är medvetet. Inga externa
+e-signleverantörer, ingen BankID, ingen Mobbin eller annan design-API.
+Runtime-anrop ut ur processen är bara våra API-vendorer (AI Gateway m.fl. i
+`docs/AI-PROVIDERS.md` / `docs/INTEGRATIONS.md`). IRMA anropar ingen av dem
+ännu.
 
-Originalfil och extraherad modell finns inte. Det finns därför ingen pipeline att separera. När (om) Blob kommer ska originalet aldrig skrivas över — det kravet är redan doktrin, inte kod.
+Originalfil och extraherad modell finns inte. Det finns därför ingen pipeline att separera. Om filer kommer ska de ligga i detta system. Originalet skrivs inte över.
 
 ## Flöde
 
@@ -38,9 +42,13 @@ Specen vill ha ett Document OS. Den här kodbasen har en fungerande handshake. A
 
 ## Utbyggnad när det finns skäl
 
-1. Vercel Blob för originalfiler (privat bucket, signed URL, ingen publik ACL).
+Allt byggs i det här navet. Inga nya leverantörer.
+
+1. Originalfiler i privat storage vi själva äger (inte en publik bucket, inte en
+   e-signleverantörs vault).
 2. Deterministisk PDF från redan strukturerade fält — inte från fri LLM-text.
-3. Signeringsprovider bakom samma `verification_level` (fortfarande 0–1 tills providern finns).
-4. Påminnelser mot `token_expires_at` / framtida `notice_at` via jobb, inte via cron i Next-requesten.
+3. Starkare verifiering (OTP via 46elks, e-post via Resend) bakom samma
+   `verification_level`, om affären kräver det. Inte BankID. Inte Scrive.
+4. Påminnelser mot `token_expires_at` via jobb i denna process.
 
 Bygg inte 2–4 innan 1 och en ärlig nivåetikett finns kvar.

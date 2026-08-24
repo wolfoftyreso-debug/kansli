@@ -40,4 +40,6 @@ Samma uppdelning som navet: development, test, (eventuell) staging, production. 
 | Finns Critical öppna i handshake-ytan? | Nej efter token-cookie och race-fixar. |
 | Är produkten produktionsduglig enligt master-specen? | Nej. |
 
-Nästa verkliga steg är inte fler audit-filer. Det är antingen (a) lämna handshake som den är, eller (b) ett medvetet beslut om Blob + PDF + en signaturprovider.
+Nästa verkliga steg är inte fler audit-filer. Det är antingen (a) lämna
+handshake som den är, eller (b) bygga PDF/fil/OTP **i detta repo** mot Postgres
+och befintliga vendorer. Inte BankID. Inte extern e-sign. Inte Mobbin.

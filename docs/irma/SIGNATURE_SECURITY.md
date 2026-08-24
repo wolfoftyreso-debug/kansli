@@ -54,4 +54,4 @@ Det finns ingen “ändra avtalet”-väg. Därför finns ingen version 2. En ny
 
 ## Missbruk att bevaka
 
-Att visa en ritad canvas och kalla den nivå 2 utan provider. Att sätta `verification_level` till 4 i UI utan ID-flöde. Båda är förbjudna tills det finns bakända.
+Att visa en ritad canvas och kalla den nivå 2. Att sätta `verification_level` till 4 i UI utan ett flöde **i detta system**. Att koppla BankID, Scrive eller annan e-signleverantör. Allt det är förbjudet.

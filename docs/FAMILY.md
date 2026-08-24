@@ -119,5 +119,7 @@ väntar på ALVA-repot. Inga fynd, inga protokoll.
 - Köra RITA:s Rust-motor på Vercel utan HTTP-host. Lokalt: `RITA_ENGINE_BINARY`
   plus demonstrationsbokslutet.
 - Diagnostisera i ALVA (saknar repo)
-- Kvalificerat e-signera eller lagra filer i IRMA
+- Kvalificerat e-signera (finns inte i navet; byggs inte mot BankID eller
+  extern e-signleverantör)
+- Lagra filer i IRMA (ingen object store än; läggs i detta system om det behövs)
 - Köra BRITT som full underrättelseprodukt mot livebokföring

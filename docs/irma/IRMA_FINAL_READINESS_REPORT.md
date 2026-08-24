@@ -54,10 +54,10 @@ Inga i implementerad yta.
 
 ## Rekommenderade nästa steg (i ordning)
 
-1. Låt copy och sälj vara equally smala: “underlag + bekräftelse”, inte “IRMA signerar avtal”.
-2. Edge-rate-limit på `/irma/l/*` och `/api/irma/l/*`.
-3. När det finns affärsbehov: privat Blob, sedan PDF från strukturerade fält, sedan en riktig signaturprovider bakom samma nivåfält.
-4. Bygg inte Ask IRMA, market intel eller L5-liveness förrän 2–3 finns.
+1. Låt copy och sälj vara lika smala: “underlag + bekräftelse”, inte “IRMA signerar avtal”.
+2. Edge-rate-limit på `/irma/l/*` och `/api/irma/l/*` i denna app.
+3. När det finns affärsbehov: filer och PDF i detta system, OTP via 46elks/Resend om de redan är vendorer. Ingen ny e-signleverantör.
+4. Bygg inte Ask IRMA eller market intel förrän det finns strukturerad data här. Inga externa research-API:er.
 
 ## North star vs nuläge
 
