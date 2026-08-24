@@ -50,6 +50,23 @@ describe("revolut logging", () => {
     expect(fields.providerCode).toBe("[redacted]");
   });
 
+  it("keeps error codes that only name a credential field", () => {
+    // These are diagnoses, not secrets. Blanking them makes an outage harder
+    // to read for no security gain.
+    const fields = safeFields({
+      providerCode: "missing_refresh_token",
+      category: "refresh_rejected",
+      path: "/accounts",
+    });
+    expect(fields.providerCode).toBe("missing_refresh_token");
+    expect(fields.category).toBe("refresh_rejected");
+  });
+
+  it("redacts an opaque blob even when it names nothing", () => {
+    const jwt = `eyJhbGciOiJQUzI1NiJ9.${"a".repeat(60)}.${"b".repeat(60)}`;
+    expect(safeFields({ providerCode: jwt }).providerCode).toBe("[redacted]");
+  });
+
   it("logs an error's category and status, never its cause payload", () => {
     const sink = captured();
     logRevolutError(

@@ -23,22 +23,37 @@ export type RevolutOperation =
   | "api.authentication_failed"
   | "certificate.expiry_warning";
 
-/**
- * Substrings that must never appear in a log line, whatever the caller passes.
- * Kept lowercase because the comparison lowercases the value.
- */
-const FORBIDDEN = [
+/** Names of things that are secret. Lowercase; the value is lowercased too. */
+const CREDENTIAL_NAMES = [
   "access_token",
   "refresh_token",
   "client_assertion",
   "authorization_code",
   "private_key",
+];
+
+/** Anything containing one of these is a secret outright. */
+const CREDENTIAL_MARKERS = [
   "begin private key",
   "begin rsa private key",
   "begin certificate",
   "authorization:",
   "bearer ",
 ];
+
+/**
+ * True when the string plausibly *carries* a credential, rather than merely
+ * naming one. `missing_refresh_token` is a diagnosis worth reading;
+ * `refresh_token=rt_abc` is not.
+ */
+export function looksLikeSecret(value: string): boolean {
+  const lower = value.toLowerCase();
+  if (CREDENTIAL_MARKERS.some((marker) => lower.includes(marker))) return true;
+  if (CREDENTIAL_NAMES.some((name) => new RegExp(`${name}\\s*[=:]\\s*\\S`).test(lower)))
+    return true;
+  // An opaque blob long enough to be a token or a JWT.
+  return value.length > 64 && /[A-Za-z0-9._+/-]{40,}/.test(value);
+}
 
 export interface RevolutLogFields {
   orgRef?: string | null;
@@ -57,8 +72,7 @@ export interface RevolutLogFields {
 
 function scrub(value: unknown): unknown {
   if (typeof value !== "string") return value;
-  const lower = value.toLowerCase();
-  return FORBIDDEN.some((needle) => lower.includes(needle)) ? "[redacted]" : value;
+  return looksLikeSecret(value) ? "[redacted]" : value;
 }
 
 export function safeFields(fields: RevolutLogFields): Record<string, unknown> {

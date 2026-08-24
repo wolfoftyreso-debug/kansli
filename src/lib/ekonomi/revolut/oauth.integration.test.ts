@@ -12,6 +12,7 @@ import { generateKeyPairSync } from "node:crypto";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { createPool, migrateWorkspace } from "@pixdrift/db";
 import { EventLog } from "@pixdrift/events";
+import { loadRevolutStatement } from "../revolut.ts";
 import { RevolutClient } from "./client.ts";
 import {
   consumeOAuthState,
@@ -69,6 +70,18 @@ live("revolut connection (live Postgres, mocked Revolut)", () => {
   });
 
   afterAll(async () => {
+    // Each test invents its own org, so leaving the rows behind would slowly
+    // fill a shared database with fake banking connections.
+    await pool
+      .query(
+        `delete from ekonomi.integration_connections where org_ref like 'pixdrift:org:revolut-%'`,
+      )
+      .catch(() => undefined);
+    await pool
+      .query(
+        `delete from ekonomi.integration_oauth_states where org_ref like 'pixdrift:org:revolut-%'`,
+      )
+      .catch(() => undefined);
     await pool.end();
   });
 
@@ -527,5 +540,154 @@ live("revolut connection (live Postgres, mocked Revolut)", () => {
     await expect(
       getValidAccessToken({ pool, orgRef: other, environment: "sandbox" }),
     ).rejects.toBeInstanceOf(ReauthorizationRequired);
+  });
+
+  // --- the account statement, exactly as the page calls it -----------------
+  //
+  // The tests above exercise the modules. These drive `loadRevolutStatement`,
+  // which is what /ekonomi/kontoutdrag actually renders, with nothing but the
+  // global fetch mocked. They are the proof that the renewal is wired into the
+  // page and not only into the token manager.
+
+  /** Routes token calls and API calls the way sandbox Revolut would. */
+  function mockRevolut(behaviour: { refresh?: "ok" | "dead"; accountsStatus?: number[] }): {
+    calls: string[];
+  } {
+    const calls: string[] = [];
+    let issued = 0;
+    const accountsStatuses = [...(behaviour.accountsStatus ?? [])];
+    vi.spyOn(globalThis, "fetch").mockImplementation(async (input, init) => {
+      const url = String(input instanceof URL ? input.href : input);
+      if (url.endsWith("/auth/token")) {
+        const body = new URLSearchParams(String((init as RequestInit).body));
+        calls.push(`token:${body.get("grant_type")}`);
+        if (behaviour.refresh === "dead") {
+          return new Response(JSON.stringify({ error: "invalid_grant" }), {
+            status: 400,
+            headers: { "content-type": "application/json" },
+          });
+        }
+        issued += 1;
+        return new Response(
+          JSON.stringify({
+            access_token: `at_renewed_${issued}`,
+            token_type: "bearer",
+            expires_in: 2400,
+          }),
+          { status: 200, headers: { "content-type": "application/json" } },
+        );
+      }
+      const auth = String((init?.headers as Record<string, string>)?.authorization ?? "");
+      if (url.includes("/accounts")) {
+        calls.push(`accounts:${auth}`);
+        const status = accountsStatuses.shift();
+        if (status) return new Response("{}", { status });
+        return new Response(
+          JSON.stringify([{ id: "acc-1", name: "Drift", balance: 1843.2, currency: "SEK" }]),
+          { status: 200, headers: { "content-type": "application/json" } },
+        );
+      }
+      calls.push(`transactions:${auth}`);
+      return new Response(
+        JSON.stringify([
+          {
+            id: "tx-live",
+            type: "transfer",
+            state: "completed",
+            completed_at: new Date().toISOString(),
+            reference: "Faktura 2026-0041",
+            legs: [{ amount: 125, currency: "SEK" }],
+          },
+        ]),
+        { status: 200, headers: { "content-type": "application/json" } },
+      );
+    });
+    return { calls };
+  }
+
+  it("renews the token behind a plain statement load, with nobody asked anything", async () => {
+    // A token inside the safety margin: the page load must fix this itself.
+    await persistTokens(pool, {
+      orgRef,
+      environment: "sandbox",
+      tokens: futureTokens({ expiresAt: new Date(Date.now() + 60_000) }),
+      markConnected: true,
+    });
+    const { calls } = mockRevolut({ refresh: "ok" });
+
+    const statement = await loadRevolutStatement({ pool, orgRef });
+
+    expect(statement.tokenSource).toBe("oauth");
+    expect(statement.reauthorize).toBe(false);
+    expect(statement.error).toBeNull();
+    expect(statement.accounts[0]?.balance).toBe(1843.2);
+    expect(statement.lines[0]?.id).toBe("tx-live");
+    // One refresh, then both reads carried the renewed token.
+    expect(calls.filter((call) => call === "token:refresh_token")).toHaveLength(1);
+    expect(calls.filter((call) => call.includes("at_renewed_1"))).toHaveLength(2);
+
+    const loaded = await readConnection(pool, orgRef, "sandbox");
+    expect(loaded?.connection.status).toBe("active");
+    expect(loaded?.connection.lastSuccessAt).not.toBeNull();
+  });
+
+  it("recovers a mid-read 401 without bothering the owner", async () => {
+    await persistTokens(pool, { orgRef, environment: "sandbox", tokens: futureTokens() });
+    const { calls } = mockRevolut({ refresh: "ok", accountsStatus: [401] });
+
+    const statement = await loadRevolutStatement({ pool, orgRef });
+
+    expect(statement.error).toBeNull();
+    expect(statement.reauthorize).toBe(false);
+    expect(statement.accounts[0]?.id).toBe("acc-1");
+    // Rejected once on the stored token, refreshed once, then accepted.
+    expect(calls.filter((call) => call.startsWith("accounts:"))).toHaveLength(2);
+    expect(calls.filter((call) => call === "token:refresh_token")).toHaveLength(1);
+  });
+
+  it("asks for a reconnect only when the grant itself is gone", async () => {
+    // No manual token in this environment, so a dead grant means no statement.
+    delete process.env.REVOLUT_BUSINESS_TOKEN;
+    await persistTokens(pool, {
+      orgRef,
+      environment: "sandbox",
+      tokens: futureTokens({ expiresAt: new Date(Date.now() - 60_000) }),
+      markConnected: true,
+    });
+    mockRevolut({ refresh: "dead" });
+
+    const statement = await loadRevolutStatement({ pool, orgRef, events });
+
+    expect(statement.hasToken).toBe(false);
+    expect(statement.reauthorize).toBe(true);
+    expect(statement.accounts).toEqual([]);
+
+    const loaded = await readConnection(pool, orgRef, "sandbox");
+    expect(loaded?.connection.status).toBe("action_required");
+    expect(loaded?.credentials.refreshToken).toBeNull();
+
+    // And the reconnect puts it back without any manual token handling.
+    vi.restoreAllMocks();
+    await persistTokens(pool, {
+      orgRef,
+      environment: "sandbox",
+      tokens: futureTokens({ accessToken: "at_reconnected" }),
+      markConnected: true,
+    });
+    mockRevolut({ refresh: "ok" });
+    const again = await loadRevolutStatement({ pool, orgRef });
+    expect(again.hasToken).toBe(true);
+    expect(again.reauthorize).toBe(false);
+    expect(again.tokenSource).toBe("oauth");
+  });
+
+  it("does not reach Revolut at all before the owner has connected", async () => {
+    delete process.env.REVOLUT_BUSINESS_TOKEN;
+    const { calls } = mockRevolut({ refresh: "ok" });
+    const statement = await loadRevolutStatement({ pool, orgRef });
+    expect(statement.hasToken).toBe(false);
+    // Not connected is not an error, and not a reconnect prompt either.
+    expect(statement.reauthorize).toBe(false);
+    expect(calls).toEqual([]);
   });
 });
