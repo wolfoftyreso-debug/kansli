@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
-import { EmptyState, Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
+import { CheckField, EmptyState, Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
 import { listAnalyses } from "@/lib/rita/analyses";
@@ -30,6 +30,7 @@ export default async function RitaPage() {
           Utan <span className="font-mono">RITA_ENGINE_URL</span> + token eller{" "}
           <span className="font-mono">RITA_ENGINE_BINARY</span> lagras analysen som{" "}
           <span className="font-medium text-ink">blocked</span>. Motorn fejkars inte.
+          Demonstrationsbokslutet är en inbyggd textfil, inte en kunduppladdning.
         </Notice>
       </header>
 
@@ -48,7 +49,12 @@ export default async function RitaPage() {
               required
               defaultValue="Exempelbolaget AB"
             />
-            <Field name="orgNumber" label="Organisationsnummer" required defaultValue="556000-0000" />
+            <Field name="orgNumber" label="Organisationsnummer" required defaultValue="556016-0680" />
+            <CheckField
+              name="useDemoDocument"
+              defaultChecked
+              label="Använd demonstrationsbokslut (exempel-bokslut.txt). Inte en kundfil."
+            />
             <Submit>Begär analys</Submit>
           </form>
 

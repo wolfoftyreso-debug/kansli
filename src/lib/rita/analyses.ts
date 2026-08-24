@@ -1,6 +1,13 @@
 import { randomUUID } from "node:crypto";
 import type pg from "pg";
 import type { EventLog } from "@pixdrift/events";
+import {
+  DEMO_DOCUMENT_HTTP_REASON,
+  DEMO_DOCUMENT_MISSING_REASON,
+  NO_DOCUMENTS_REASON,
+  buildEngineRequest,
+  demoDocumentRequest,
+} from "./request.ts";
 import { resolveRitaEngine, ritaEngineUnavailableReason } from "./resolve-engine.ts";
 
 export interface Analysis {
@@ -22,6 +29,7 @@ export async function requestAnalysis(input: {
   companyName: string;
   orgNumber: string;
   requestId: string;
+  useDemoDocument?: boolean;
 }): Promise<Analysis> {
   const id = randomUUID();
   await input.pool.query(
@@ -45,20 +53,29 @@ export async function requestAnalysis(input: {
     return fail(input, id, "engine_unavailable", ritaEngineUnavailableReason());
   }
 
+  if (input.useDemoDocument && resolved.kind === "http") {
+    return fail(input, id, "demo_document_local_only", DEMO_DOCUMENT_HTTP_REASON);
+  }
+
+  const demoDocument = input.useDemoDocument ? demoDocumentRequest() : null;
+  if (input.useDemoDocument && !demoDocument) {
+    return fail(input, id, "demo_document_missing", DEMO_DOCUMENT_MISSING_REASON);
+  }
+  const documents = demoDocument ? [demoDocument] : [];
+  if (documents.length === 0) {
+    return fail(input, id, "no_documents", NO_DOCUMENTS_REASON);
+  }
+
   try {
-    const envelope = await resolved.engine.analyse({
-      analysis_id: id,
-      company: {
-        id: input.orgRef,
-        name: input.companyName,
-        org_number: input.orgNumber,
-        fiscal_year_start: `${new Date().getFullYear()}-01-01`,
-        fiscal_year_end: `${new Date().getFullYear()}-12-31`,
-      },
-      documents: [],
-      accounts_state: "unknown",
-      audience: "company",
-    });
+    const envelope = await resolved.engine.analyse(
+      buildEngineRequest({
+        analysisId: id,
+        orgRef: input.orgRef,
+        companyName: input.companyName,
+        orgNumber: input.orgNumber,
+        documents,
+      }),
+    );
     await input.pool.query(
       `update rita.analyses
           set status = 'completed', result = $2::jsonb, updated_at = now()
@@ -72,7 +89,7 @@ export async function requestAnalysis(input: {
       actorKind: "system",
       subjectRef: `rita:analysis:${id}`,
       requestId: input.requestId,
-      payload: { analysisId: id },
+      payload: { analysisId: id, companyName: input.companyName },
     });
     return (await getAnalysis(input.pool, input.orgRef, id))!;
   } catch (error) {

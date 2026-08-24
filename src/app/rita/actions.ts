@@ -17,6 +17,7 @@ export async function requestRitaAnalysis(formData: FormData) {
     companyName,
     orgNumber,
     requestId: crypto.randomUUID(),
+    useDemoDocument: formData.get("useDemoDocument") === "on",
   });
   revalidatePath("/rita");
   revalidatePath("/britt");

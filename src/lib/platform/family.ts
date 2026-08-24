@@ -54,8 +54,8 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     id: "rita",
     name: "RITA",
     question: "Stämmer räkenskaperna mot regelverket?",
-    does: "Tar emot en analysbeställning, anropar den riktiga Rust-motorn via HTTP eller lokal binär, lagrar fynd eller blocked.",
-    doesNot: "Ingen FakeAnalysisEngine i drift. Utan host eller RITA_ENGINE_BINARY blir status blocked. Avgör inte anbudsrätt.",
+    does: "Tar emot en analysbeställning, anropar den riktiga Rust-motorn via HTTP eller lokal binär, lagrar fynd eller blocked. Lokalt kan demonstrationsbokslutet skickas som underlag.",
+    doesNot: "Ingen FakeAnalysisEngine i drift. Utan host eller RITA_ENGINE_BINARY blir status blocked. Avgör inte anbudsrätt. Ingen kunduppladdning via Blob.",
     owns: "rita.analyses",
     status: "pilot",
   },
@@ -148,7 +148,7 @@ export const FAMILY_LINKS: readonly FamilyLink[] = [
 export const FAMILY_BLOCKED = [
   {
     id: "rita-engine",
-    need: "RITA_ENGINE_URL + RITA_ENGINE_TOKEN mot den riktiga Rust-motorn (skattjakt), eller RITA_ENGINE_BINARY lokalt.",
+    need: "På Vercel: RITA_ENGINE_URL + RITA_ENGINE_TOKEN mot en host som kör skattjakt. Lokalt räcker RITA_ENGINE_BINARY + demonstrationsbokslutet.",
   },
   {
     id: "alva-repo",

@@ -15,6 +15,7 @@ export async function POST(request: Request) {
     const body = (await request.json().catch(() => null)) as {
       companyName?: string;
       orgNumber?: string;
+      useDemoDocument?: boolean;
     } | null;
     if (!body?.companyName?.trim() || !body.orgNumber?.trim()) {
       throw new ApiError("invalid_request", "companyName och orgNumber krävs.");
@@ -27,6 +28,7 @@ export async function POST(request: Request) {
       companyName: body.companyName,
       orgNumber: body.orgNumber,
       requestId,
+      useDemoDocument: body.useDemoDocument === true,
     });
     return json({ analysis }, 201);
   });

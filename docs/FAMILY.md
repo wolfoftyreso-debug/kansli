@@ -55,8 +55,11 @@ BRITT lyssnar. TORA skriver inte i BRITT.
 ### RITA — stämmer räkenskaperna?
 
 Beställning → `HttpAnalysisEngine` eller `SubprocessAnalysisEngine` mot
-Rust-motorn `skattjakt`. Utan host eller `RITA_ENGINE_BINARY` blir status
-`blocked`. Motorn fejkars inte. RITA avgör inte anbudsrätt.
+Rust-motorn `skattjakt`. `company.id` och dokument-id är UUID. Motorn kräver
+minst ett dokument på disk och ett organisationsnummer som klarar
+checksumman. Lokalt kan formuläret skicka `exempel-bokslut.txt`. Utan host
+eller `RITA_ENGINE_BINARY` blir status `blocked`. Motorn fejkars inte. RITA
+avgör inte anbudsrätt. Kunduppladdning via Blob är inte kopplad.
 
 Händelser: `rita.analysis.requested`, sedan `completed` eller `blocked`.
 BRITT lyssnar på de två sista. Fynd läses ur `result.opportunities`.
@@ -97,7 +100,8 @@ väntar på ALVA-repot. Inga fynd, inga protokoll.
 
 ## Vad som inte går att göra i det här repot
 
-- Köra RITA:s Rust-motor utan host eller `RITA_ENGINE_BINARY`
+- Köra RITA:s Rust-motor på Vercel utan HTTP-host. Lokalt: `RITA_ENGINE_BINARY`
+  plus demonstrationsbokslutet.
 - Diagnostisera i ALVA (saknar repo)
 - Kvalificerat e-signera eller lagra filer i IRMA
 - Köra BRITT som full underrättelseprodukt mot livebokföring
