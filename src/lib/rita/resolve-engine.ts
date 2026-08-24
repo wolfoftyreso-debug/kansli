@@ -11,8 +11,8 @@ import { ritaEngineConfig } from "../platform/env.ts";
 
 export type RitaEngineKind = "http" | "subprocess";
 
-/** Local skattjakt + two model passes regularly takes ~3 minutes. */
-export const RITA_SUBPROCESS_TIMEOUT_MS = 240_000;
+/** Two model passes (up to 180s each) plus the rule engine. */
+export const RITA_SUBPROCESS_TIMEOUT_MS = 420_000;
 
 export interface ResolvedRitaEngine {
   kind: RitaEngineKind;

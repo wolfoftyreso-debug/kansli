@@ -96,5 +96,5 @@ liveEngine("RITA requestAnalysis against skattjakt", () => {
       if (previous) process.env.RITA_ENGINE_BINARY = previous;
       else delete process.env.RITA_ENGINE_BINARY;
     }
-  }, 300_000);
+  }, 450_000);
 });

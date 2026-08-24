@@ -17,6 +17,8 @@ describe("subprocessEngineEnv", () => {
     expect(env.SKATTJAKT_MODEL_ID).toBe(DEFAULT_SKATTJAKT_MODEL_ID);
     expect(env.SKATTJAKT_MODEL_PRICES).toContain(DEFAULT_SKATTJAKT_MODEL_ID);
     expect(env.SKATTJAKT_MODEL_FALLBACK).toBe("false");
+    expect(env.SKATTJAKT_MODEL_TIMEOUT_SECS).toBe("180");
+    expect(env.SKATTJAKT_MODEL_MAX_RETRIES).toBe("0");
   });
 
   it("keeps an operator-set model id and price list", () => {

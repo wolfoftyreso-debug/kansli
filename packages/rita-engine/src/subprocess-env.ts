@@ -30,6 +30,12 @@ export const DEFAULT_MODEL_PRICE = {
 
 export const DEFAULT_SKATTJAKT_MODEL_ID = "claude-fable-5";
 
+/** Per-call HTTP timeout. Engine default is 600s; that outlives the parent. */
+export const DEFAULT_MODEL_TIMEOUT_SECS = "180";
+
+/** One attempt. Retries against a hung provider eat the whole analysis. */
+export const DEFAULT_MODEL_MAX_RETRIES = "0";
+
 export function subprocessEngineEnv(
   source: Record<string, string | undefined> = process.env as Record<string, string | undefined>,
   defaults?: { modelId?: string },
@@ -53,6 +59,12 @@ export function subprocessEngineEnv(
       env.SKATTJAKT_MODEL_PRICES = JSON.stringify({ [modelId]: DEFAULT_MODEL_PRICE });
     }
     if (!env.SKATTJAKT_MODEL_FALLBACK) env.SKATTJAKT_MODEL_FALLBACK = "false";
+    if (!env.SKATTJAKT_MODEL_TIMEOUT_SECS) {
+      env.SKATTJAKT_MODEL_TIMEOUT_SECS = DEFAULT_MODEL_TIMEOUT_SECS;
+    }
+    if (!env.SKATTJAKT_MODEL_MAX_RETRIES) {
+      env.SKATTJAKT_MODEL_MAX_RETRIES = DEFAULT_MODEL_MAX_RETRIES;
+    }
   }
 
   return env;
