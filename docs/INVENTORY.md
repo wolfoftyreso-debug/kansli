@@ -53,7 +53,7 @@ faller om en yta saknas.
 | TORA | `tora` | `/tora` | `/api/tora` | pilot |
 | RITA | `rita` | `/rita` | `/api/rita` | pilot |
 | BRITT | `britt` | `/britt` | `/api/britt` | pilot |
-| IRMA | `irma` | `/irma` | `/api/irma` | pilot |
+| IRMA | `irma` | `/irma` | `/api/irma` | pilot (handshake; audit in `docs/irma/`) |
 | ALVA | `alva` | `/alva` | `/api/alva` | deferred |
 
 Produkterna synkar via `platform.events`. De skriver inte i varandras tabeller.
