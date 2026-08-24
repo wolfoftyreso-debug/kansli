@@ -109,6 +109,14 @@ export default async function TyraCasePage({
                   value={publicTyraUrl(issued)}
                   className="mt-2 min-h-11 w-full rounded-md border border-line bg-paper px-3 py-2 font-mono text-sm text-ink"
                 />
+                <p className="mt-2">
+                  <a
+                    href={issued}
+                    className="text-sm underline decoration-line underline-offset-4 hover:text-ink"
+                  >
+                    Öppna kundvyn
+                  </a>
+                </p>
               </StatusBanner>
             ) : null}
 
