@@ -3,7 +3,9 @@ import { handleApi, json } from "@/lib/platform/http";
 import { gatewaySnapshot, listGatewayModels, pingGateway } from "@/lib/platform/ai";
 
 export async function GET() {
-  return handleApi(async () => {
+  return handleApi(async ({ actor }) => {
+    requireActor(actor);
+    requireOrg(actor);
     const snapshot = gatewaySnapshot();
     if (!snapshot.configured) {
       return json({ gateway: { ...snapshot, modelCount: null, models: [] } });

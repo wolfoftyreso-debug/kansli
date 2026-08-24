@@ -46,9 +46,9 @@ på den — det är revision, inte en uppföljningsuppgift.
 ### AI Gateway
 
 Kansli läser `AI_GATEWAY_API_KEY` eller `VERCEL_OIDC_TOKEN` via
-`@pixdrift/ai-core`. `GET /api/platform/ai` listar modeller. `POST` pingar med
-`openai/gpt-4.1-nano`. Health visar bara om credentialen finns. Svaret
-är inferens.
+`@pixdrift/ai-core`. `GET /api/platform/ai` listar modeller (kräver session).
+`POST` pingar med `openai/gpt-4.1-nano`. Health visar bara om credentialen
+finns. Svaret är inferens.
 
 ### Kansli — navet
 

@@ -2,6 +2,9 @@
   "name": "kansli",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "next dev",
     "dev:idp": "pnpm --filter @pixdrift/identity start",
@@ -15,7 +18,9 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "doc:gap": "pnpm --filter @pixdrift/doc-intel gap-report",
-    "db:migrate": "tsx scripts/migrate.ts"
+    "db:migrate": "tsx scripts/migrate.ts",
+    "db:backup": "bash scripts/backup-postgres.sh",
+    "db:restore-drill": "bash scripts/restore-drill.sh"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",

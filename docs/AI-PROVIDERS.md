@@ -119,7 +119,7 @@ pnpm --filter @pixdrift/ai-core models   # kräver token; skriver ut alla slugs
 ```
 
 Programmatiskt: `gatewayFromEnv().listModels()` eller `provider.listModels()`.
-Kansli exponerar `GET /api/platform/ai` (katalog) och `POST /api/platform/ai`
+Kansli exponerar `GET /api/platform/ai` (katalog, kräver session) och `POST /api/platform/ai`
 (ping med `openai/gpt-4.1-nano`). Health bär `gateway.configured` utan att anropa motorn. Gatewayen
 ligger sist i `DEFAULT_FAILOVER_ORDER` (Claude-först direkt-providers
 prioriteras); vill du göra gatewayen primär, sätt bara gateway-credentialen och

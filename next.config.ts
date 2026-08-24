@@ -1,6 +1,11 @@
 import type { NextConfig } from "next";
+import { SECURITY_HEADERS } from "./src/lib/platform/security-headers";
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
+  async headers() {
+    return [{ source: "/:path*", headers: [...SECURITY_HEADERS] }];
+  },
   transpilePackages: [
     "@pixdrift/contracts",
     "@pixdrift/auth-client",
