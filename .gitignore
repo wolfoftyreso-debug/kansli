@@ -40,6 +40,9 @@ yarn-error.log*
 # isolated sibling checkouts (do not dirty kansli)
 .worktrees/
 
+# database dumps (restore-drill writes to /tmp; manual dumps go here)
+/backups/
+
 # vercel
 .vercel
 

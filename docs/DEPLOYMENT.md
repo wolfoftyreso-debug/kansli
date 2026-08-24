@@ -94,6 +94,11 @@ fler datastores utan arkitekturgodkännande (konstitutionen art. 6). IaC (art.
 4/11) byggs när AWS-credentials finns; **backup räknas inte förrän restore är
 testad** (art. 3).
 
+Lokal + CI-övning: `pnpm db:restore-drill` (`scripts/restore-drill.sh`) dumpar
+ägardatabasen, återställer i en tillfällig databas och slänger den. Neon PITR
+på produktion är leverantörens väg — den är inte övad från den här repot förrän
+en person kör restore i Neon-konsolen och antecknar resultatet här.
+
 ## 5. Verifieringschecklista (efter Postgres + env)
 
 | Kontroll | URL/kommando | Förväntat |

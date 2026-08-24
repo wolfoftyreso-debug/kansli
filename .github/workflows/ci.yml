@@ -56,4 +56,9 @@ jobs:
       - run: pnpm typecheck:packages
       - run: pnpm --filter "@pixdrift/tora-adapter" --filter "@pixdrift/rita-adapter" --filter "@pixdrift/irma-adapter" typecheck
       - run: pnpm test
+      - name: Restore drill
+        env:
+          PIXDRIFT_TEST_OWNER_URL: postgres://pixdrift_owner:pixdrift_owner@127.0.0.1:5432/pixdrift_idp_test
+          PIXDRIFT_SUPERUSER_URL: postgres://postgres:postgres@127.0.0.1:5432/postgres
+        run: bash scripts/restore-drill.sh
       - run: pnpm build
