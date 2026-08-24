@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "Anslutningar — Ekonomi" };
 
 const LABELS = {
-  revolut_business: "Revolut Business (matchning, READ)",
+  revolut_business: "Revolut Business (kontoutdrag)",
   revolut_merchant: "Revolut Merchant (kundbetalning)",
   stripe: "Stripe restricted/secret key",
   swish: "Swish payee-alias",
@@ -38,8 +38,8 @@ export default async function AnslutningarPage() {
       </p>
       <h1 className="text-3xl font-semibold tracking-tight">Nycklar</h1>
       <p className="max-w-xl text-ink-soft">
-        Slottar för Revolut och Stripe. Tokenen krypteras med wrap-nyckel och visas aldrig igen —
-        bara sista fyra. Du kan också sätta samma namn i miljön.
+        Vill du se kontoutdraget? Klistra in Revolut Business-token här, öppna Kontoutdrag. Tokenen
+        krypteras och visas aldrig igen — bara sista fyra.
       </p>
       {!session ? (
         <SignInGate next="/ekonomi/anslutningar" title="Logga in för anslutningar">
@@ -48,18 +48,17 @@ export default async function AnslutningarPage() {
       ) : (
         <>
           <Notice>
-            Revolut Business och Merchant är två API:er. Business läser inbetalningar. Merchant tar
-            betalt av kunden.
+            Business-tokenen läser saldo och transaktioner. Merchant tar betalt av kunden. Det är
+            två API:er.
           </Notice>
-          <section className="rounded-xl border border-line bg-surface px-4 py-4">
-            <h2 className="text-lg font-semibold">Omdirigerings-URI för Revolut</h2>
-            <p className="mt-2 text-sm text-ink-soft">
-              Det här fältet i Revoluts certifikatdialog. Inte Pixdrift-inloggningen (
-              <span className="font-mono">/api/auth/callback</span>).
-            </p>
-            <p className="mt-3 break-all font-mono text-sm">{revolutUri}</p>
-            <p className="mt-3 text-sm text-ink-soft">{revolutRedirect.reason}</p>
-          </section>
+          <p>
+            <Link
+              href="/ekonomi/kontoutdrag"
+              className="underline decoration-line underline-offset-4"
+            >
+              Öppna kontoutdrag
+            </Link>
+          </p>
           <ul className="flex flex-col gap-3">
             {slots.map((slot) => (
               <li
@@ -90,6 +89,15 @@ export default async function AnslutningarPage() {
               <Submit>Hämta och matcha</Submit>
             </div>
           </form>
+          <section className="rounded-xl border border-line bg-surface px-4 py-4">
+            <h2 className="text-lg font-semibold">Om du inte har token än</h2>
+            <p className="mt-2 text-sm text-ink-soft">
+              Revoluts certifikatdialog skapar tokenen. Omdirigerings-URI är inte
+              Pixdrift-inloggningen. Den publika https-URI:n är inte live än.
+            </p>
+            <p className="mt-3 break-all font-mono text-sm">{revolutUri}</p>
+            <p className="mt-3 text-sm text-ink-soft">{revolutRedirect.reason}</p>
+          </section>
         </>
       )}
     </AppShell>

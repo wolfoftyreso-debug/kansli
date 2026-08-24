@@ -33,8 +33,8 @@ export default async function EkonomiPage() {
         <h1 className="text-3xl font-semibold tracking-tight">Vad är bokat?</h1>
         <p className="max-w-xl text-ink-soft">
           En bok för hela huset. TYRA, IRMA och de andra skapar fordringar här — de skriver inte i
-          varandras tabeller. Tre spår mot kund: Swish, Stripe, faktura 10 dagar. Revolut matchar
-          inbetalningar när tokenen finns. Utan nyckel händer inget.
+          varandras tabeller. Tre spår mot kund: Swish, Stripe, faktura 10 dagar. Revolut-kontoutdrag
+          och matchning när Business-tokenen finns. Utan token är utdraget tomt.
         </p>
       </header>
 
@@ -79,6 +79,12 @@ export default async function EkonomiPage() {
           </section>
 
           <nav className="flex flex-wrap gap-3 text-sm">
+            <Link
+              className="underline decoration-line underline-offset-4"
+              href="/ekonomi/kontoutdrag"
+            >
+              Kontoutdrag
+            </Link>
             <Link className="underline decoration-line underline-offset-4" href="/ekonomi/fakturor">
               Fakturor
             </Link>

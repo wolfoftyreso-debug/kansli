@@ -70,10 +70,10 @@ export function railSnapshot(env: NodeJS.ProcessEnv = process.env): Record<Payme
       offerable: Boolean(keys.revolutMerchant),
       receivable: Boolean(keys.revolutBusiness || keys.revolutMerchant),
       reason: keys.revolutBusiness
-        ? "Business-token finns. Matchning kan köras. Merchant-order bara om REVOLUT_MERCHANT_SECRET också finns."
+        ? "Business-token finns. Kontoutdrag och matchning kan köras. Merchant-order bara om REVOLUT_MERCHANT_SECRET också finns."
         : keys.revolutMerchant
-          ? "Merchant-secret finns. Business-matchning saknas."
-          : "Ingen Revolut-token. Varken matchning eller kundbetalning.",
+          ? "Merchant-secret finns. Kontoutdrag saknas."
+          : "Ingen Revolut-token. Kontoutdraget är tomt.",
       envKey: "REVOLUT_BUSINESS_TOKEN",
     },
     swish: {

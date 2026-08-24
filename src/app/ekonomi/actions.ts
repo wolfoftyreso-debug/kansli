@@ -11,7 +11,7 @@ import {
   parseInvoiceLinesFromForm,
 } from "@/lib/ekonomi/invoices";
 import { offerPayment, parseRail, recordReceivedPayment } from "@/lib/ekonomi/payments";
-import { syncRevolut } from "@/lib/ekonomi/revolut";
+import { loadRevolutStatement, syncRevolut } from "@/lib/ekonomi/revolut";
 
 function formList(form: FormData, name: string): string[] {
   return form.getAll(name).map((value) => String(value));
@@ -107,6 +107,7 @@ export async function saveConnectorAction(form: FormData) {
     requestId: `ekonomi-conn-${Date.now()}`,
   });
   revalidatePath("/ekonomi/anslutningar");
+  revalidatePath("/ekonomi/kontoutdrag");
 }
 
 export async function syncRevolutAction() {
@@ -123,4 +124,11 @@ export async function syncRevolutAction() {
   });
   revalidatePath("/ekonomi");
   revalidatePath("/ekonomi/anslutningar");
+  revalidatePath("/ekonomi/kontoutdrag");
+}
+
+export async function refreshStatementAction() {
+  const { session, pool } = await requireOrgAction("/ekonomi/kontoutdrag", "invoice:approve");
+  await loadRevolutStatement({ pool, orgRef: session.org.ref });
+  revalidatePath("/ekonomi/kontoutdrag");
 }

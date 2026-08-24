@@ -31,11 +31,16 @@ export function lineTotals(input: {
 }
 
 export function formatSek(ore: number): string {
+  return formatMoney(ore, SEK);
+}
+
+export function formatMoney(ore: number, currency: string): string {
   const sign = ore < 0 ? "−" : "";
   const abs = Math.abs(ore);
-  const kronor = Math.trunc(abs / 100);
+  const major = Math.trunc(abs / 100);
   const rest = String(abs % 100).padStart(2, "0");
-  return `${sign}${kronor.toLocaleString("sv-SE")},${rest} kr`;
+  const suffix = currency === SEK ? "kr" : currency;
+  return `${sign}${major.toLocaleString("sv-SE")},${rest} ${suffix}`;
 }
 
 export function parseVatRateBps(value: unknown): VatRateBps {

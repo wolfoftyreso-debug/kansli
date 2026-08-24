@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatSek, lineTotals, vatOre } from "./money.ts";
+import { formatMoney, formatSek, lineTotals, vatOre } from "./money.ts";
 
 describe("money", () => {
   it("computes Swedish 25 % VAT in öre", () => {
@@ -18,5 +18,6 @@ describe("money", () => {
   it("formats SEK without inventing decimals", () => {
     expect(formatSek(12500)).toBe("125,00 kr");
     expect(formatSek(312_500)).toMatch(/3\s125,00 kr/);
+    expect(formatMoney(-1250, "EUR")).toBe("−12,50 EUR");
   });
 });

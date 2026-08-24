@@ -10,6 +10,7 @@ Inloggad som org, samma IdP som resten av huset.
 | Verifikat | `/ekonomi/verifikat` |
 | Moms / fordringar | `/ekonomi/rapporter` |
 | Nycklar | `/ekonomi/anslutningar` |
+| Revolut-kontoutdrag | `/ekonomi/kontoutdrag` |
 | Revolut OAuth-callback | `/ekonomi/anslutningar/revolut` |
 
 Två olika OAuth:
@@ -44,7 +45,8 @@ EKONOMI_WRAP_KEY=           # annars APP_SESSION_SECRET
 ```
 
 Samma värden kan klistras i `/ekonomi/anslutningar`. De krypteras och visas
-aldrig igen — bara sista fyra tecken.
+aldrig igen — bara sista fyra tecken. Business-tokenen öppnar
+`/ekonomi/kontoutdrag` (GET `/accounts` + GET `/transactions`).
 
 ## Rust-kollen
 

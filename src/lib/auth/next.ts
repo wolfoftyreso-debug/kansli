@@ -17,6 +17,7 @@ export const APP_NEXT_PATHS = [
   "/ekonomi/rapporter",
   "/ekonomi/anslutningar",
   "/ekonomi/anslutningar/revolut",
+  "/ekonomi/kontoutdrag",
   "/platform",
   "/platform/events",
 ] as const;

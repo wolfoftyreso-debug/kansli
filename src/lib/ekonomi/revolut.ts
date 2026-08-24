@@ -18,20 +18,88 @@ export interface RevolutTransaction {
   legs?: Array<{ amount: number; currency: string; description?: string }>;
 }
 
+export interface RevolutAccount {
+  id: string;
+  name?: string;
+  balance: number;
+  currency: string;
+  state?: string;
+}
+
+export interface StatementLine {
+  id: string;
+  type: string;
+  state: string;
+  amountOre: number;
+  currency: string;
+  reference: string | null;
+  bookedAt: string;
+  direction: "in" | "out" | "zero";
+}
+
+export interface RevolutStatement {
+  hasToken: boolean;
+  source: "revolut" | "stored" | "none";
+  accounts: RevolutAccount[];
+  lines: StatementLine[];
+  error: string | null;
+}
+
 export function revolutBaseUrl(env: NodeJS.ProcessEnv = process.env): string {
   return env.REVOLUT_BUSINESS_SANDBOX === "true" ? BUSINESS_SANDBOX : BUSINESS_LIVE;
 }
 
-export function toInbound(tx: RevolutTransaction): InboundTransfer | null {
-  const leg = tx.legs?.find((item) => item.amount > 0);
-  if (!leg || tx.state !== "completed") return null;
+export function toStatementLine(tx: RevolutTransaction): StatementLine | null {
+  const leg = tx.legs?.find((item) => item.amount !== 0) ?? tx.legs?.[0];
+  if (!leg) return null;
+  const amountOre = Math.round(leg.amount * 100);
   return {
-    providerTxId: tx.id,
-    amountOre: Math.round(leg.amount * 100),
+    id: tx.id,
+    type: tx.type,
+    state: tx.state,
+    amountOre,
     currency: leg.currency,
     reference: tx.reference ?? leg.description ?? null,
-    bookedAt: tx.completed_at ?? tx.created_at ?? new Date().toISOString(),
+    bookedAt: tx.completed_at ?? tx.created_at ?? "",
+    direction: amountOre < 0 ? "out" : amountOre > 0 ? "in" : "zero",
   };
+}
+
+export function toInbound(tx: RevolutTransaction): InboundTransfer | null {
+  if (tx.state !== "completed") return null;
+  const line = toStatementLine(tx);
+  if (!line || line.amountOre <= 0) return null;
+  return {
+    providerTxId: line.id,
+    amountOre: line.amountOre,
+    currency: line.currency,
+    reference: line.reference,
+    bookedAt: line.bookedAt || new Date().toISOString(),
+  };
+}
+
+async function revolutGet<T>(
+  token: string,
+  path: string,
+  query: Record<string, string> = {},
+  baseUrl = revolutBaseUrl(),
+): Promise<T> {
+  const url = new URL(`${baseUrl}${path}`);
+  for (const [key, value] of Object.entries(query)) url.searchParams.set(key, value);
+  const response = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+  });
+  if (!response.ok) {
+    throw new Error(`Revolut ${response.status}. Tokenen avvisades eller API:t är otillgängligt.`);
+  }
+  return (await response.json()) as T;
+}
+
+export async function fetchRevolutAccounts(
+  token: string,
+  baseUrl = revolutBaseUrl(),
+): Promise<RevolutAccount[]> {
+  return revolutGet<RevolutAccount[]>(token, "/accounts", {}, baseUrl);
 }
 
 export async function fetchRevolutTransactions(
@@ -39,18 +107,107 @@ export async function fetchRevolutTransactions(
   baseUrl = revolutBaseUrl(),
 ): Promise<RevolutTransaction[]> {
   const to = new Date();
-  const from = new Date(to.getTime() - 14 * 86_400_000);
-  const url = new URL(`${baseUrl}/transactions`);
-  url.searchParams.set("from", from.toISOString());
-  url.searchParams.set("to", to.toISOString());
-  url.searchParams.set("count", "100");
-  const response = await fetch(url, {
-    headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
-  });
-  if (!response.ok) {
-    throw new Error(`Revolut ${response.status}. Tokenen avvisades eller API:t är otillgängligt.`);
+  const from = new Date(to.getTime() - 90 * 86_400_000);
+  return revolutGet<RevolutTransaction[]>(
+    token,
+    "/transactions",
+    { from: from.toISOString(), to: to.toISOString(), count: "1000" },
+    baseUrl,
+  );
+}
+
+export function statementFromTransactions(raw: RevolutTransaction[]): StatementLine[] {
+  return raw
+    .map(toStatementLine)
+    .filter((line): line is StatementLine => Boolean(line))
+    .sort((a, b) => (a.bookedAt < b.bookedAt ? 1 : a.bookedAt > b.bookedAt ? -1 : 0));
+}
+
+async function persistStatementLines(
+  pool: pg.Pool,
+  orgRef: string,
+  raw: RevolutTransaction[],
+): Promise<void> {
+  for (const tx of raw) {
+    const line = toStatementLine(tx);
+    if (!line) continue;
+    await pool.query(
+      `insert into ekonomi.inbound_transfers
+         (id, org_ref, provider, provider_tx_id, amount_ore, currency, reference, booked_at, raw)
+       values ($1,$2,'revolut',$3,$4,$5,$6,$7,$8::jsonb)
+       on conflict (org_ref, provider, provider_tx_id) do update
+         set amount_ore = excluded.amount_ore,
+             currency = excluded.currency,
+             reference = excluded.reference,
+             booked_at = excluded.booked_at,
+             raw = excluded.raw
+       where ekonomi.inbound_transfers.match_status = 'unmatched'`,
+      [
+        crypto.randomUUID(),
+        orgRef,
+        line.id,
+        line.amountOre,
+        line.currency,
+        line.reference,
+        line.bookedAt || null,
+        JSON.stringify(tx),
+      ],
+    );
   }
-  return (await response.json()) as RevolutTransaction[];
+}
+
+export async function listStoredStatement(
+  pool: pg.Pool,
+  orgRef: string,
+): Promise<StatementLine[]> {
+  const { rows } = await pool.query<{ raw: RevolutTransaction }>(
+    `select raw from ekonomi.inbound_transfers
+      where org_ref = $1 and provider = 'revolut'
+      order by booked_at desc nulls last`,
+    [orgRef],
+  );
+  return statementFromTransactions(rows.map((row) => row.raw));
+}
+
+export async function loadRevolutStatement(input: {
+  pool: pg.Pool;
+  orgRef: string;
+  fetchAccounts?: (token: string) => Promise<RevolutAccount[]>;
+  fetchTx?: (token: string) => Promise<RevolutTransaction[]>;
+}): Promise<RevolutStatement> {
+  const token = await readConnectorSecret(input.pool, input.orgRef, "revolut_business");
+  const stored = await listStoredStatement(input.pool, input.orgRef);
+  if (!token) {
+    return {
+      hasToken: false,
+      source: stored.length > 0 ? "stored" : "none",
+      accounts: [],
+      lines: stored,
+      error: null,
+    };
+  }
+  try {
+    const [accounts, raw] = await Promise.all([
+      (input.fetchAccounts ?? fetchRevolutAccounts)(token),
+      (input.fetchTx ?? fetchRevolutTransactions)(token),
+    ]);
+    await persistStatementLines(input.pool, input.orgRef, raw);
+    return {
+      hasToken: true,
+      source: "revolut",
+      accounts,
+      lines: statementFromTransactions(raw),
+      error: null,
+    };
+  } catch (error) {
+    return {
+      hasToken: true,
+      source: stored.length > 0 ? "stored" : "none",
+      accounts: [],
+      lines: stored,
+      error: error instanceof Error ? error.message : "Revolut svarade inte.",
+    };
+  }
 }
 
 export async function syncRevolut(input: {
@@ -89,6 +246,7 @@ export async function syncRevolut(input: {
   }
 
   const raw = await (input.fetchTx ?? fetchRevolutTransactions)(token);
+  await persistStatementLines(input.pool, input.orgRef, raw);
   const open = (await listInvoices(input.pool, input.orgRef))
     .filter((invoice) => invoice.status === "issued" || invoice.status === "part_paid")
     .map((invoice) => ({
@@ -103,22 +261,6 @@ export async function syncRevolut(input: {
   for (const tx of raw) {
     const inbound = toInbound(tx);
     if (!inbound) continue;
-    await input.pool.query(
-      `insert into ekonomi.inbound_transfers
-         (id, org_ref, provider, provider_tx_id, amount_ore, currency, reference, booked_at, raw)
-       values ($1,$2,'revolut',$3,$4,$5,$6,$7,$8::jsonb)
-       on conflict (org_ref, provider, provider_tx_id) do nothing`,
-      [
-        crypto.randomUUID(),
-        input.orgRef,
-        inbound.providerTxId,
-        inbound.amountOre,
-        inbound.currency,
-        inbound.reference,
-        inbound.bookedAt,
-        JSON.stringify(tx),
-      ],
-    );
     const verdict = matchInbound(inbound, open);
     if (verdict.status === "matched") {
       await recordReceivedPayment({
