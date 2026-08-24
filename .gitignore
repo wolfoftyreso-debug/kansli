@@ -37,6 +37,9 @@ yarn-error.log*
 .env*
 !.env.example
 
+# isolated sibling checkouts (do not dirty kansli)
+.worktrees/
+
 # vercel
 .vercel
 
