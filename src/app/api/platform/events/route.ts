@@ -1,10 +1,11 @@
 import { isEventKind, isSystemId } from "@pixdrift/events";
-import { ApiError, requireActor } from "@pixdrift/api-core";
+import { ApiError, requireActor, requireOrg } from "@pixdrift/api-core";
 import { handleApi, json } from "@/lib/platform/http";
 
 export async function GET(request: Request) {
   return handleApi(async ({ actor, events }) => {
     requireActor(actor);
+    const org = requireOrg(actor);
     const url = new URL(request.url);
     const system = url.searchParams.get("system") ?? undefined;
     const kind = url.searchParams.get("kind") ?? undefined;
@@ -16,7 +17,7 @@ export async function GET(request: Request) {
       after,
       system: system as never,
       kind: kind as never,
-      orgRef: actor?.orgRef ?? undefined,
+      orgRef: org.orgRef,
       limit: Number(url.searchParams.get("limit") ?? 50),
       order,
     });

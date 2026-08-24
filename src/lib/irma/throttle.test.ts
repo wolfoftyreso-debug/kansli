@@ -14,7 +14,8 @@ describe("irma token throttle", () => {
 
   it("blocks after 20 failures in the window", () => {
     const key = irmaThrottleKey("abc123456789xxxx");
-    expect(key).toBe("abc123456789");
+    expect(key).toMatch(/^[0-9a-f]{64}$/);
+    expect(key).not.toContain("abc123456789xxxx");
     for (let i = 0; i < 19; i += 1) noteIrmaTokenFailure(key);
     expect(irmaTokenBlocked(key)).toBe(false);
     noteIrmaTokenFailure(key);

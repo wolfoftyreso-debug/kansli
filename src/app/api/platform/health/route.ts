@@ -6,6 +6,10 @@ import { ritaEngineSnapshot } from "@/lib/rita/resolve-engine";
 export async function GET() {
   return handleApi(async ({ pool }) => {
     await pool.query("select 1");
+    const hardened = process.env.APP_ENV === "prod" || process.env.APP_ENV === "production";
+    if (hardened) {
+      return json({ ok: true, database: "up" });
+    }
     const gateway = gatewaySnapshot();
     const rita = ritaEngineSnapshot();
     return json({

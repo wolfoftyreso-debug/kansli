@@ -8,6 +8,8 @@ describe("SECURITY_HEADERS", () => {
     expect(map["X-Content-Type-Options"]).toBe("nosniff");
     expect(map["Referrer-Policy"]).toBe("strict-origin-when-cross-origin");
     expect(map["Cross-Origin-Opener-Policy"]).toBe("same-origin");
+    expect(map["Cross-Origin-Resource-Policy"]).toBe("same-origin");
     expect(map["Permissions-Policy"]).toContain("camera=()");
+    expect(map["Content-Security-Policy-Report-Only"]).toContain("frame-ancestors 'none'");
   });
 });

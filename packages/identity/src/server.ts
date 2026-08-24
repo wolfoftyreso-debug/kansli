@@ -72,22 +72,22 @@ function loginPage(
   ).join("\n      ");
   const emailValue = demo ? ` value="${esc(demo.email)}"` : "";
   const passwordValue = demo ? ` value="${esc(demo.password)}"` : "";
+  const hint = demo ? `<p class="hint">Demo: ${esc(demo.email)} / ${esc(demo.password)}</p>` : "";
   return `<!doctype html>
 <html lang="sv"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Logga in · Pixdrift</title>
 <style>
-  :root{color-scheme:light dark}
-  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;margin:0;min-height:100vh;display:grid;place-items:center;background:#f4f4f5}
-  .card{background:#fff;padding:2rem;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.08);width:min(92vw,360px)}
+  body{font-family:ui-sans-serif,system-ui,sans-serif;margin:0;min-height:100vh;display:grid;place-items:center;background:#f6f3ee;color:#1c1917}
+  .card{background:#fffdf8;padding:2rem;border-radius:16px;border:1px solid #e7e0d6;width:min(92vw,360px)}
   .brand{display:flex;align-items:center;gap:.6rem;margin-bottom:1.25rem}
-  .mark{width:36px;height:36px;border-radius:10px;background:#4f46e5;color:#fff;display:grid;place-items:center;font-weight:700}
+  .mark{width:36px;height:36px;border-radius:10px;background:#1f4b8f;color:#fff;display:grid;place-items:center;font-weight:700}
   h1{font-size:1.15rem;margin:0}
-  label{display:block;font-size:.8rem;color:#52525b;margin:.75rem 0 .25rem}
-  input[type=email],input[type=password]{width:100%;box-sizing:border-box;padding:.6rem .7rem;border:1px solid #d4d4d8;border-radius:9px;font-size:1rem}
-  button{margin-top:1.25rem;width:100%;padding:.65rem;border:0;border-radius:9px;background:#4f46e5;color:#fff;font-weight:600;font-size:1rem;cursor:pointer}
-  .err{margin-top:.75rem;color:#dc2626;font-size:.85rem}
-  .hint{margin-top:1rem;font-size:.75rem;color:#71717a}
+  label{display:block;font-size:.8rem;color:#57534e;margin:.75rem 0 .25rem}
+  input[type=email],input[type=password]{width:100%;box-sizing:border-box;padding:.6rem .7rem;border:1px solid #e7e0d6;border-radius:9px;font-size:1rem;background:#fffdf8}
+  button{margin-top:1.25rem;width:100%;padding:.65rem;border:0;border-radius:9px;background:#1f4b8f;color:#fff;font-weight:600;font-size:1rem;cursor:pointer}
+  .err{margin-top:.75rem;color:#9f1239;font-size:.85rem}
+  .hint{margin-top:1rem;font-size:.75rem;color:#78716c}
 </style></head>
 <body>
   <form class="card" method="post" action="${esc(action)}">
@@ -99,7 +99,7 @@ function loginPage(
     <input id="password" name="password" type="password" autocomplete="current-password" required${passwordValue}>
     ${error ? `<p class="err">${esc(error)}</p>` : ""}
     <button type="submit">Logga in</button>
-    <p class="hint">Demo: demo@exempelbolaget.se / demo-losenord-1234</p>
+    ${hint}
   </form>
 </body></html>`;
 }

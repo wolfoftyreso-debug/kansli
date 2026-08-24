@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+
 const WINDOW_MS = 15 * 60_000;
 const MAX_FAILURES = 20;
 const failures = new Map<string, { count: number; resetAt: number }>();
@@ -27,5 +29,7 @@ export function noteIrmaTokenSuccess(key: string): void {
 }
 
 export function irmaThrottleKey(token: string): string {
-  return token.trim().slice(0, 12) || "empty";
+  const trimmed = token.trim();
+  if (!trimmed) return "empty";
+  return createHash("sha256").update(trimmed).digest("hex");
 }
