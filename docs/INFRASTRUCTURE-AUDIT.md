@@ -120,22 +120,24 @@ det här jobbet i drift, utan att vi låtsas?* 100 % = uttalat jobb, restore
 
 | System | Katalogstatus | % | Vad som faktiskt går | Vad som saknas |
 | --- | --- | ---: | --- | --- |
-| Identity | operational | **78** | OIDC live, JWKS, demo-SSO, durable store | Nyckel i KMS, delad rate-limit, multi-region |
-| Kansli | operational | **72** | Session, uppgifter, plattforms-API, chrome | Inte ett kontors-OS |
-| Händelsebok | — | **80** | Append-only, org-scope, BRITT lyssnar | Ingen separat worker-kö |
-| API-core / auth-core | — | **82** | En felmodell, en authz | — |
+| Identity | operational | **82** | OIDC live, JWKS, demo-SSO, durable store, prod-fail-closed BFF | Nyckel i KMS, delad rate-limit, multi-region |
+| Kansli | operational | **76** | Session, uppgifter, plattforms-API, chrome i tokens | Inte ett kontors-OS |
+| Händelsebok | — | **84** | Append-only, org-scope även i events-API | Ingen separat worker-kö |
+| API-core / auth-core | — | **82** | En felmodell, en authz | `requirePermission` oanvänd i routes |
 | AI-core | — | **68** | Failover + gateway | Används som verktyg, inte produkt |
 | Publik sajt | — | **86** | Tokens, katalog, ärlig copy | — |
-| TORA | pilot | **58** | Motor i processen, GET utvärderar, POST sparar | Inte hela upphandlingsaffären |
-| IRMA | pilot | **52** | Avtalsflöde L0–L1 i navet | Filarkiv, högre nivåer, WAF |
-| TYRA | pilot | **42** | Ärende + hub + CRM-domän | Live-lager/offert/SMS |
-| RITA | pilot | **48** | Skattjakt hittar skattefynd lokalt | HTTP-host på Vercel, kund-upload |
-| BRITT | pilot | **38** | Inbox + demo-tal | Livebokföring, full underrättelse |
-| ALVA | deferred | **18** | Fallet ägs | Guidning och protokoll (ALVA-repot) |
+| TORA | pilot | **58** | Motor i processen, GET utvärderar, POST sparar | Alltid Exempelbolaget |
+| IRMA | pilot | **60** | Handslag L0–L1, återutfärda, export, immutability | Filarkiv, högre nivåer, WAF |
+| TYRA | pilot | **50** | Ärende + hub + kundkort + hjulset-rad | Live-lager/offert/SMS, inspektionsskrivning |
+| RITA | pilot | **56** | Skattjakt + fyndkort (kategori, regel, disclaimer) | HTTP-host på Vercel, kund-upload |
+| BRITT | pilot | **46** | Inbox med djuplänk och uppdragskarta | Livebokföring, observationsstatus |
+| ALVA | deferred | **26** | Intag + detalj, ingen diagnos | Guidning och protokoll (ALVA-repot) |
 | Backup / DR | — | **35** | Lokal+CI restore-drill | Neon-restore i produktion inte övad |
-| Säkerhetsställning | — | **65** | OIDC, httpOnly, headers, cron-hemlighet | WAF, KMS, delad throttle |
+| Säkerhetsställning | — | **70** | OIDC, httpOnly, headers, CSP report-only, org-scope | WAF, KMS, delad throttle |
 
-**Familjen som driftad plattform: 52 %.**
+**Familjen som driftad plattform: 56 %.**
+
+Hårdaste genomgången: `docs/CRITICAL-REVISION.md`.
 
 Kärnan (identity + nav + eventlogg) bär. Produkterna är skivor, inte färdiga
 affärssystem. Det är det ärliga läget.
@@ -269,6 +271,9 @@ på motorer.
 4. Restore-drill + CI-steg.
 5. Saknade env-namn i `.env.example`.
 6. Den här filen + ritningen.
+7. Events-API org-scope, prod-hemligheter, CSP report-only, hashad IRMA-throttle.
+8. TYRA hjulset + kundkort, IRMA återutfärda, RITA-fyndkort, ALVA-intag,
+   BRITT-djuplänkar. Se `docs/CRITICAL-REVISION.md`.
 
 Inte byggt (medvetet): SMS-adapter, live-pris, ALVA-diagnos, BankID, Redis,
 AWS-IaC, fejkad RITA på Vercel.

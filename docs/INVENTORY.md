@@ -87,4 +87,5 @@ pnpm dev          # nav + /idp på :3000
 ```
 
 Infrastrukturrevision (vad som finns, mognad, luckor):
-`docs/INFRASTRUCTURE-AUDIT.md`. Enkel ritning: `docs/architecture/hur-det-fungerar.html`.
+`docs/INFRASTRUCTURE-AUDIT.md`. Hårdaste genomgången: `docs/CRITICAL-REVISION.md`.
+Enkel ritning: `docs/architecture/hur-det-fungerar.html`.

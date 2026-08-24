@@ -38,7 +38,7 @@ Browser → Next.js (kansli)
 | Method | Path | Auth |
 | --- | --- | --- |
 | GET | `/api/platform/health` | no |
-| GET | `/api/platform/systems` | no |
+| GET | `/api/platform/systems` | yes |
 | GET | `/api/platform/me` | yes |
 | GET | `/api/platform/events` | yes (scoped to active org) |
 | GET | `/api/tora/market` | no (demo) / yes (tier). Evaluate only — does not persist or publish. |

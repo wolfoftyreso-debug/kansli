@@ -21,6 +21,7 @@ Innan du ändrar något i familjen, läs och följ:
   DEPRECATE/DELETE/UNKNOWN; `UNKNOWN` utreds, gissas aldrig).
 - `docs/INVENTORY.md` — exakt kodinventering (paket, adaptrar, endpoints, tester).
 - `docs/INFRASTRUCTURE-AUDIT.md` — vad som finns, hur det hänger, mognad, luckor.
+- `docs/CRITICAL-REVISION.md` — hårdaste genomgången av luckor och vad som medvetet inte byggts.
 
 Kärnregler i korthet: explicit dataägande; ingen modul skriver i en annans data;
 kontrakt/events, inte delade tabeller; testad restore; audit på allt viktigt;
