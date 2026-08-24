@@ -1,11 +1,13 @@
 import { ApiError } from "@pixdrift/api-core";
 import { handleApi, json } from "@/lib/platform/http";
 import { loadToraOpportunity, parseTier } from "@/lib/tora/market";
+import { resolveCompany } from "@/lib/tora/profile";
 
 export async function GET(_request: Request, context: { params: Promise<{ id: string }> }) {
-  return handleApi(async ({ actor }) => {
+  return handleApi(async ({ actor, pool }) => {
     const { id } = await context.params;
-    const detail = loadToraOpportunity(parseTier(actor?.tier), id);
+    const company = await resolveCompany(pool, actor?.orgRef ?? null);
+    const detail = loadToraOpportunity(parseTier(actor?.tier), id, company);
     if (!detail) throw new ApiError("not_found", "Möjligheten finns inte i underlaget.");
     return json({ product: "tora", opportunity: detail });
   });

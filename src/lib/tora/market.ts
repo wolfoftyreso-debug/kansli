@@ -1,4 +1,11 @@
-import { createLocalApi, demoCompany, demoGraph, DEMO_TODAY, type Tier } from "@pixdrift/tora";
+import {
+  createLocalApi,
+  demoCompany,
+  demoGraph,
+  DEMO_TODAY,
+  type Company,
+  type Tier,
+} from "@pixdrift/tora";
 
 const TIERS = new Set<Tier>(["free", "pro", "professional", "enterprise"]);
 
@@ -9,26 +16,30 @@ export function parseTier(value: string | null | undefined): Tier {
 
 const api = () => createLocalApi(demoGraph);
 
-export function loadToraMarket(tier: Tier) {
+export function loadToraMarket(tier: Tier, company: Company = demoCompany) {
   return api().getMarket({
-    company: demoCompany,
+    company,
     tier,
     today: DEMO_TODAY,
   });
 }
 
-export function loadToraOpportunity(tier: Tier, opportunityId: string) {
+export function loadToraOpportunity(
+  tier: Tier,
+  opportunityId: string,
+  company: Company = demoCompany,
+) {
   return api().getOpportunity({
-    company: demoCompany,
+    company,
     tier,
     today: DEMO_TODAY,
     opportunityId,
   });
 }
 
-export function loadToraCalendar(tier: Tier) {
+export function loadToraCalendar(tier: Tier, company: Company = demoCompany) {
   return api().getCalendar({
-    company: demoCompany,
+    company,
     tier,
     today: DEMO_TODAY,
   });

@@ -3,7 +3,9 @@ import type { CalendarEntryView } from "@pixdrift/tora";
 import { AppShell } from "@/components/app/AppShell";
 import { EmptyState, Notice } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
+import { tryRuntime } from "@/lib/platform/page";
 import { loadToraCalendar, parseTier } from "@/lib/tora/market";
+import { resolveCompany } from "@/lib/tora/profile";
 import { opportunityHref } from "@/lib/tora/view";
 
 export const metadata = {
@@ -21,7 +23,9 @@ const KIND_LABEL: Record<CalendarEntryView["kind"], string> = {
 export default async function ToraCalendarPage() {
   const session = await readSession();
   const tier = parseTier(session?.org?.tier);
-  const calendar = loadToraCalendar(tier);
+  const runtime = tryRuntime();
+  const company = await resolveCompany(runtime?.pool ?? null, session?.org?.ref ?? null);
+  const calendar = loadToraCalendar(tier, company);
 
   return (
     <AppShell current="tora" session={session}>

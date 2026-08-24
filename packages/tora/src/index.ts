@@ -23,3 +23,4 @@ export {
   type Locked,
 } from "./engine/entitlement";
 export { demoCompany, demoGraph, DEMO_TODAY } from "./data/seed";
+export type { Company } from "./domain/ontology";

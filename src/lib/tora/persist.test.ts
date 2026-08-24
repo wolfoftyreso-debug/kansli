@@ -2,6 +2,7 @@ import { afterAll, describe, expect, it } from "vitest";
 import { createPool, migrateWorkspace } from "@pixdrift/db";
 import { EventLog } from "@pixdrift/events";
 import { evaluateMarket, listSnapshots, persistSnapshot } from "./persist.ts";
+import { upsertCompanyProfile } from "./profile.ts";
 
 describe("evaluateMarket", () => {
   it("runs the engine without a database", () => {
@@ -52,5 +53,28 @@ live("persistSnapshot (live Postgres)", () => {
 
     const listed = await events.list({ orgRef, kind: "tora.market.evaluated" });
     expect(listed.some((event) => event.subjectRef === `tora:snapshot:${stored.id}`)).toBe(true);
+    expect(snapshots[0]?.companyName).not.toBe("Pilotkund El AB");
+
+    await upsertCompanyProfile({
+      pool,
+      orgRef,
+      name: "Pilotkund El AB",
+      employees: 12,
+      servesAreas: ["0138"],
+      capabilities: ["el.installation"],
+      certifications: ["iso9001"],
+      registrations: ["f_tax"],
+    });
+    const named = await persistSnapshot({
+      pool,
+      events,
+      orgRef,
+      tier: "enterprise",
+      actorRef: "user-test",
+      requestId: "req-profile",
+    });
+    expect(named.company).toBe("Pilotkund El AB");
+    const latest = await listSnapshots(pool, orgRef);
+    expect(latest[0]?.companyName).toBe("Pilotkund El AB");
   });
 });

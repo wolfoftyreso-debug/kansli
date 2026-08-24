@@ -1,7 +1,8 @@
-import { requireOrg } from "@pixdrift/api-core";
+import { requirePermission } from "@pixdrift/api-core";
 import { handleApi, json } from "@/lib/platform/http";
 import { parseTier } from "@/lib/tora/market";
 import { evaluateMarket, persistSnapshot } from "@/lib/tora/persist";
+import { resolveCompany } from "@/lib/tora/profile";
 
 function marketBody(
   evaluated: ReturnType<typeof evaluateMarket>,
@@ -26,15 +27,16 @@ function marketBody(
  * the family — that flooded platform.events and BRITT on every page load.
  */
 export async function GET() {
-  return handleApi(async ({ actor }) => {
-    return json(marketBody(evaluateMarket(parseTier(actor?.tier))));
+  return handleApi(async ({ actor, pool }) => {
+    const company = await resolveCompany(pool, actor?.orgRef ?? null);
+    return json(marketBody(evaluateMarket(parseTier(actor?.tier), company)));
   });
 }
 
 /** Persist the current evaluation and publish `tora.market.evaluated`. */
 export async function POST() {
   return handleApi(async ({ actor, pool, events, requestId }) => {
-    const present = requireOrg(actor);
+    const present = requirePermission(actor, "profile:write");
     const stored = await persistSnapshot({
       pool,
       events,

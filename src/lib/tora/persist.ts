@@ -1,8 +1,9 @@
 import { randomUUID } from "node:crypto";
 import type pg from "pg";
 import type { EventLog } from "@pixdrift/events";
-import { demoCompany } from "@pixdrift/tora";
+import { demoCompany, type Company } from "@pixdrift/tora";
 import { loadToraMarket, parseTier } from "./market";
+import { resolveCompany } from "./profile";
 
 export interface MarketSnapshot {
   id: string;
@@ -17,10 +18,10 @@ export interface MarketSnapshot {
   evaluatedAt: string;
 }
 
-export function evaluateMarket(tier: string) {
+export function evaluateMarket(tier: string, company: Company = demoCompany) {
   const parsed = parseTier(tier);
-  const market = loadToraMarket(parsed);
-  return { market, company: demoCompany.name, tier: parsed };
+  const market = loadToraMarket(parsed, company);
+  return { market, company: company.name, tier: parsed };
 }
 
 export async function persistSnapshot(input: {
@@ -31,7 +32,8 @@ export async function persistSnapshot(input: {
   actorRef?: string | null;
   requestId: string;
 }) {
-  const { market, company, tier } = evaluateMarket(input.tier);
+  const resolved = await resolveCompany(input.pool, input.orgRef);
+  const { market, company, tier } = evaluateMarket(input.tier, resolved);
   const id = randomUUID();
   await input.pool.query(
     `insert into tora.market_snapshots

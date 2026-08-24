@@ -1,14 +1,14 @@
 import Link from "next/link";
-import { demoCompany } from "@pixdrift/tora";
 import { AppShell } from "@/components/app/AppShell";
 import { OpportunityCard } from "@/components/app/OpportunityCard";
-import { EmptyState, Notice, Submit } from "@/components/app/SignInGate";
+import { EmptyState, Field, Notice, Submit } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
 import { loadToraMarket, parseTier } from "@/lib/tora/market";
 import { listSnapshots } from "@/lib/tora/persist";
+import { getCompanyProfile, resolveCompany } from "@/lib/tora/profile";
 import { sek } from "@/lib/tora/view";
-import { publishToraMarket } from "./actions";
+import { publishToraMarket, saveToraProfile } from "./actions";
 
 export const metadata = {
   title: "TORA — Pixdrift",
@@ -18,11 +18,15 @@ export const metadata = {
 export default async function ToraPage() {
   const session = await readSession();
   const tier = parseTier(session?.org?.tier);
-  const market = loadToraMarket(tier);
-  const { summary } = market;
   const runtime = tryRuntime();
+  const company = await resolveCompany(runtime?.pool ?? null, session?.org?.ref ?? null);
+  const profile =
+    session?.org?.ref && runtime ? await getCompanyProfile(runtime.pool, session.org.ref) : null;
+  const market = loadToraMarket(tier, company);
+  const { summary } = market;
   const snapshots =
     session?.org?.ref && runtime ? await listSnapshots(runtime.pool, session.org.ref) : [];
+  const usingDemoCompany = !profile;
 
   return (
     <AppShell current="tora" session={session}>
@@ -30,12 +34,15 @@ export default async function ToraPage() {
         <p className="pd-label text-faint">PIXDRIFT / TORA</p>
         <h1 className="text-3xl font-semibold tracking-tight">TORA</h1>
         <p className="text-ink-soft">
-          Upphandlingsrätt och rekommenderad åtgärd för {demoCompany.name}. Motorn körs server-side;
-          det en nivå inte får se når aldrig klienten. Inte RITA.
+          Upphandlingsrätt och rekommenderad åtgärd för {company.name}. Motorn körs server-side; det
+          en nivå inte får se når aldrig klienten. Inte RITA.
         </p>
         <Notice>
-          Demonstrationsdata. Upphandlingarna, beloppen och datumen är påhittade. Nivå:{" "}
-          <span className="font-medium text-ink">{tier}</span>
+          Upphandlingarna i underlaget är demonstrationsdata. Bolagsfakta är{" "}
+          {usingDemoCompany
+            ? "fortfarande demonstrationsbolaget — spara er profil nedan."
+            : `er sparade profil (${company.name}).`}{" "}
+          Nivå: <span className="font-medium text-ink">{tier}</span>
           {session ? ` · ${session.email}` : " · inte inloggad (gratisnivå)"}
         </Notice>
         <p className="text-sm">
@@ -54,6 +61,47 @@ export default async function ToraPage() {
         <Stat label="Bevakning" value={String(summary.watchCount)} />
         <Stat label="Publicerat värde" value={sek(summary.knownValueSek)} />
       </section>
+
+      {session?.org ? (
+        <form
+          action={saveToraProfile}
+          className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
+        >
+          <h2 className="text-lg font-semibold">Ert bolag i motorn</h2>
+          <p className="text-sm text-ink-soft">
+            Utan profil utvärderas Exempelbolaget. Marknadsnotiserna är fortfarande demo.
+          </p>
+          <Field
+            name="name"
+            label="Bolagsnamn"
+            required
+            defaultValue={profile?.name ?? session.org.name}
+          />
+          <Field
+            name="employees"
+            label="Anställda"
+            defaultValue={profile?.employees != null ? String(profile.employees) : ""}
+          />
+          <Field
+            name="capabilities"
+            label="Förmågor (kommaseparerade)"
+            defaultValue={(profile?.capabilities ?? []).join(", ")}
+            placeholder="el.installation, el.service"
+          />
+          <Field
+            name="servesAreas"
+            label="Områdeskoder (kommaseparerade)"
+            defaultValue={(profile?.servesAreas ?? []).join(", ")}
+            placeholder="0138, 0182"
+          />
+          <Field
+            name="certifications"
+            label="Certifieringar (kommaseparerade)"
+            defaultValue={(profile?.certifications ?? []).join(", ")}
+          />
+          <Submit>Spara bolagsprofil</Submit>
+        </form>
+      ) : null}
 
       {session?.org ? (
         <form action={publishToraMarket} className="rounded-xl border border-line bg-surface p-4">

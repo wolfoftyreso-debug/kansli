@@ -4,7 +4,9 @@ import type { OpportunityDetailResponse } from "@pixdrift/tora";
 import { AppShell } from "@/components/app/AppShell";
 import { Notice } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
+import { tryRuntime } from "@/lib/platform/page";
 import { loadToraOpportunity, parseTier } from "@/lib/tora/market";
+import { resolveCompany } from "@/lib/tora/profile";
 import { displayField, evaluationKindText, legalBasisText, sek } from "@/lib/tora/view";
 
 export const metadata = {
@@ -15,7 +17,9 @@ export default async function ToraOpportunityPage({ params }: { params: Promise<
   const { id } = await params;
   const session = await readSession();
   const tier = parseTier(session?.org?.tier);
-  const detail = loadToraOpportunity(tier, decodeURIComponent(id));
+  const runtime = tryRuntime();
+  const company = await resolveCompany(runtime?.pool ?? null, session?.org?.ref ?? null);
+  const detail = loadToraOpportunity(tier, decodeURIComponent(id), company);
   if (!detail) notFound();
 
   const view = detail.view;
