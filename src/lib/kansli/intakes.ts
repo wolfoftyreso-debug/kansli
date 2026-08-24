@@ -74,11 +74,51 @@ export interface IntakeDraft {
   houseOrgRef: string;
 }
 
+const STOCKHOLM = "Europe/Stockholm";
+
+function stockholmParts(date: Date) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: STOCKHOLM,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+  const num = (type: string) => Number(parts.find((part) => part.type === type)?.value);
+  return { year: num("year"), month: num("month"), day: num("day") };
+}
+
+/** 10:00 Europe/Stockholm on the calendar day `days` after `now`. */
+function stockholmAt(year: number, month: number, day: number, hour: number, minute: number): Date {
+  let guess = new Date(Date.UTC(year, month - 1, day, hour, minute, 0));
+  const fmt = new Intl.DateTimeFormat("en-GB", {
+    timeZone: STOCKHOLM,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+  for (let i = 0; i < 4; i += 1) {
+    const seen = fmt.formatToParts(guess);
+    const num = (type: string) => Number(seen.find((part) => part.type === type)?.value);
+    const delta =
+      Date.UTC(year, month - 1, day, hour, minute) -
+      Date.UTC(num("year"), num("month") - 1, num("day"), num("hour"), num("minute"));
+    if (delta === 0) break;
+    guess = new Date(guess.getTime() + delta);
+  }
+  return guess;
+}
+
 export function meetingAtFrom(now: Date, days = MEETING_DELAY_DAYS): Date {
   if (!Number.isInteger(days) || days < 1) {
     throw new Error("mötesförskjutning måste vara ett heltal ≥ 1 dag.");
   }
-  return new Date(now.getTime() + days * 86_400_000);
+  const start = stockholmParts(now);
+  const wall = new Date(Date.UTC(start.year, start.month - 1, start.day));
+  wall.setUTCDate(wall.getUTCDate() + days);
+  return stockholmAt(wall.getUTCFullYear(), wall.getUTCMonth() + 1, wall.getUTCDate(), 10, 0);
 }
 
 export function parseDemoModules(values: unknown[]): DemoModule[] {

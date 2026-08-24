@@ -35,7 +35,7 @@ export function formatSek(ore: number): string {
   const abs = Math.abs(ore);
   const kronor = Math.trunc(abs / 100);
   const rest = String(abs % 100).padStart(2, "0");
-  return `${sign}${kronor.toLocaleString("sv-SE")} ${rest} kr`;
+  return `${sign}${kronor.toLocaleString("sv-SE")},${rest} kr`;
 }
 
 export function parseVatRateBps(value: unknown): VatRateBps {

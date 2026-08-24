@@ -16,6 +16,7 @@ describe("money", () => {
   });
 
   it("formats SEK without inventing decimals", () => {
-    expect(formatSek(12500)).toMatch(/125\s00 kr/);
+    expect(formatSek(12500)).toBe("125,00 kr");
+    expect(formatSek(312_500)).toMatch(/3\s125,00 kr/);
   });
 });

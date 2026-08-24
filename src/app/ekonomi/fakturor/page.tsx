@@ -4,6 +4,7 @@ import { Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
 import { INVOICE_STATUS_LABELS, listInvoices } from "@/lib/ekonomi/invoices";
 import { formatSek, vatLabel } from "@/lib/ekonomi/money";
 import { readSession } from "@/lib/auth/session";
+import { formatSwedishDate } from "@/lib/format/datetime";
 import { tryRuntime } from "@/lib/platform/page";
 import { createInvoiceAction } from "../actions";
 
@@ -38,6 +39,28 @@ export default async function FakturorPage() {
         </SignInGate>
       ) : (
         <>
+          <ul className="flex flex-col gap-3">
+            {invoices.length === 0 ? (
+              <p className="text-sm text-muted">Inga fakturor ännu.</p>
+            ) : null}
+            {invoices.map((invoice) => (
+              <li key={invoice.id} className="rounded-xl border border-line bg-surface px-4 py-4">
+                <p className="text-xs uppercase tracking-wide text-accent">
+                  {INVOICE_STATUS_LABELS[invoice.status]}
+                </p>
+                <p className="mt-1 text-lg font-medium">
+                  <Link href={`/ekonomi/fakturor/${invoice.id}`} className="hover:underline">
+                    {invoice.number}
+                  </Link>
+                </p>
+                <p className="text-sm text-ink-soft">
+                  {invoice.customerName} · {formatSek(invoice.grossOre)}
+                  {invoice.dueAt ? ` · förfaller ${formatSwedishDate(invoice.dueAt)}` : ""}
+                </p>
+              </li>
+            ))}
+          </ul>
+
           <form
             action={createInvoiceAction}
             className="flex flex-col gap-4 rounded-xl border border-line bg-surface px-4 py-4"
@@ -45,12 +68,12 @@ export default async function FakturorPage() {
             <h2 className="text-lg font-semibold">Ny fordran</h2>
             <Field name="customerName" label="Kund" required />
             <Field name="customerRef" label="Kundreferens (valfritt)" />
-            <Field name="sourceSystem" label="Källsystem (tyra, irma, alva…)" placeholder="tyra" />
+            <Field name="sourceSystem" label="Källsystem (valfritt)" />
             <Field name="sourceRef" label="Källid (valfritt)" />
             <div className="grid gap-3 sm:grid-cols-2">
-              <Field name="description" label="Rad 1" required placeholder="Hjulskifte" />
+              <Field name="description" label="Rad 1" required placeholder="Onboarding" />
               <Field name="quantity" label="Antal" defaultValue="1" />
-              <Field name="unitNetOre" label="Á-pris netto, öre" required placeholder="10000" />
+              <Field name="unitNetOre" label="Á-pris netto, öre" required placeholder="250000" />
               <label className="flex flex-col gap-1">
                 <span className="text-sm text-ink-soft">Moms</span>
                 <select
@@ -79,28 +102,6 @@ export default async function FakturorPage() {
             <Notice>Belopp i öre. 10 000 = 100 kr. Inga kommatecken.</Notice>
             <Submit>Spara utkast</Submit>
           </form>
-
-          <ul className="flex flex-col gap-3">
-            {invoices.length === 0 ? (
-              <p className="text-sm text-muted">Inga fakturor ännu.</p>
-            ) : null}
-            {invoices.map((invoice) => (
-              <li key={invoice.id} className="rounded-xl border border-line bg-surface px-4 py-4">
-                <p className="text-xs uppercase tracking-wide text-accent">
-                  {INVOICE_STATUS_LABELS[invoice.status]}
-                </p>
-                <p className="mt-1 text-lg font-medium">
-                  <Link href={`/ekonomi/fakturor/${invoice.id}`} className="hover:underline">
-                    {invoice.number}
-                  </Link>
-                </p>
-                <p className="text-sm text-ink-soft">
-                  {invoice.customerName} · {formatSek(invoice.grossOre)}
-                  {invoice.dueAt ? ` · förfaller ${invoice.dueAt.slice(0, 10)}` : ""}
-                </p>
-              </li>
-            ))}
-          </ul>
         </>
       )}
     </AppShell>

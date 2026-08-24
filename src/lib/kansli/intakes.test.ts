@@ -9,7 +9,7 @@ import { ownerDatabaseUrl } from "../platform/env.ts";
 describe("koncernupphandling domain", () => {
   it("books the meeting ten days after now", () => {
     const now = new Date("2026-08-24T12:00:00.000Z");
-    expect(meetingAtFrom(now).toISOString()).toBe("2026-09-03T12:00:00.000Z");
+    expect(meetingAtFrom(now).toISOString()).toBe("2026-09-03T08:00:00.000Z");
   });
 
   it("refuses a form that skips the honesty box", () => {
