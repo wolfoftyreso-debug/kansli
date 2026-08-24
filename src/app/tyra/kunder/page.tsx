@@ -16,8 +16,7 @@ export default async function TyraCustomersPage() {
   const runtime = tryRuntime();
   const cards =
     session?.org?.ref && runtime ? await listCustomerCards(runtime.pool, session.org.ref) : [];
-  const cases =
-    session?.org?.ref && runtime ? await listCases(runtime.pool, session.org.ref) : [];
+  const cases = session?.org?.ref && runtime ? await listCases(runtime.pool, session.org.ref) : [];
 
   return (
     <AppShell current="tyra" session={session}>

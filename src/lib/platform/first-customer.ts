@@ -42,18 +42,12 @@ export function evaluateFirstCustomerGates(input: {
       id: "database",
       title: "Postgres svarar",
       state: input.databaseUp ? "ready" : "blocked",
-      detail: input.databaseUp
-        ? "Navet har en databas."
-        : "Ingen runtime. Sätt DATABASE_URL.",
+      detail: input.databaseUp ? "Navet har en databas." : "Ingen runtime. Sätt DATABASE_URL.",
     },
     {
       id: "secrets",
       title: "Hemligheter i drift",
-      state: !hardened
-        ? "open"
-        : input.sessionSecretSet
-          ? "ready"
-          : "blocked",
+      state: !hardened ? "open" : input.sessionSecretSet ? "ready" : "blocked",
       detail: !hardened
         ? `APP_ENV=${input.appEnv || "dev"} — fail-closed gäller först i prod.`
         : input.sessionSecretSet
@@ -131,8 +125,7 @@ export function evaluateFirstCustomerGates(input: {
   ];
 
   const blockingPilot = gates.filter(
-    (gate) =>
-      (gate.id === "database" || gate.id === "secrets") && gate.state === "blocked",
+    (gate) => (gate.id === "database" || gate.id === "secrets") && gate.state === "blocked",
   );
   const pilotOfferable = blockingPilot.length === 0;
   return {
