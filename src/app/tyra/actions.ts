@@ -12,7 +12,12 @@ import {
 } from "@/lib/tyra/cases";
 import { issueHubLink } from "@/lib/tyra/hub";
 import { setIssuedHubLink } from "@/lib/tyra/issued-link";
-import { buildReminderMessage, chooseChannel, enqueueReminder } from "@/lib/tyra/reminders";
+import {
+  buildReminderMessage,
+  chooseChannel,
+  enqueueReminder,
+  processDueOutbox,
+} from "@/lib/tyra/reminders";
 
 export async function createTyraCase(formData: FormData) {
   const { session, pool, events } = await requireOrgAction("/tyra");
@@ -133,6 +138,12 @@ export async function enqueueTyraReminder(formData: FormData) {
     recipient: route.recipient,
     subject: message.subject,
     body: message.body,
+    requestId: crypto.randomUUID(),
+  });
+  await processDueOutbox({
+    pool,
+    events,
+    orgRef: session.org.ref,
     requestId: crypto.randomUUID(),
   });
   revalidatePath("/tyra");
