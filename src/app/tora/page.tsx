@@ -105,6 +105,14 @@ export default async function ToraPage() {
             defaultValue={(profile?.registrations ?? []).join(", ")}
             placeholder="f_tax, vat"
           />
+          {profile ? (
+            <p className="text-sm text-ink-soft">
+              Sparat:{" "}
+              {profile.registrations.length > 0
+                ? profile.registrations.join(", ")
+                : "inga registreringar"}
+            </p>
+          ) : null}
           <Submit>Spara bolagsprofil</Submit>
         </form>
       ) : null}

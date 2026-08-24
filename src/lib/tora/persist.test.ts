@@ -2,7 +2,7 @@ import { afterAll, describe, expect, it } from "vitest";
 import { createPool, migrateWorkspace } from "@pixdrift/db";
 import { EventLog } from "@pixdrift/events";
 import { evaluateMarket, listSnapshots, persistSnapshot } from "./persist.ts";
-import { upsertCompanyProfile } from "./profile.ts";
+import { getCompanyProfile, upsertCompanyProfile } from "./profile.ts";
 
 describe("evaluateMarket", () => {
   it("runs the engine without a database", () => {
@@ -63,8 +63,10 @@ live("persistSnapshot (live Postgres)", () => {
       servesAreas: ["0138"],
       capabilities: ["el.installation"],
       certifications: ["iso9001"],
-      registrations: ["f_tax"],
+      registrations: ["f_tax", "vat"],
     });
+    const savedProfile = await getCompanyProfile(pool, orgRef);
+    expect(savedProfile?.registrations).toEqual(["f_tax", "vat"]);
     const named = await persistSnapshot({
       pool,
       events,
