@@ -2,6 +2,22 @@ import { randomUUID } from "node:crypto";
 import type pg from "pg";
 import type { EventLog } from "@pixdrift/events";
 
+export const CASE_STATUSES = ["open", "in_progress", "closed"] as const;
+export type CaseStatus = (typeof CASE_STATUSES)[number];
+
+export const CASE_STATUS_LABELS: Record<CaseStatus, string> = {
+  open: "Öppet",
+  in_progress: "Pågår",
+  closed: "Stängt",
+};
+
+export function parseCaseStatus(value: unknown): CaseStatus | null {
+  if (typeof value === "string" && (CASE_STATUSES as readonly string[]).includes(value)) {
+    return value as CaseStatus;
+  }
+  return null;
+}
+
 export interface DiagnosisCase {
   id: string;
   complaint: string;
@@ -9,13 +25,16 @@ export interface DiagnosisCase {
   area: string | null;
   mileageKm: number | null;
   desiredOutcome: string | null;
+  technicianNotes: string;
   status: string;
   createdAt: string;
+  updatedAt: string;
 }
 
 export async function listCases(pool: pg.Pool, orgRef: string): Promise<DiagnosisCase[]> {
   const { rows } = await pool.query(
-    `select id, complaint, vehicle_ref, area, mileage_km, desired_outcome, status, created_at
+    `select id, complaint, vehicle_ref, area, mileage_km, desired_outcome,
+            technician_notes, status, created_at, updated_at
        from alva.cases
       where org_ref = $1 order by created_at desc`,
     [orgRef],
@@ -29,7 +48,8 @@ export async function getCase(
   id: string,
 ): Promise<DiagnosisCase | null> {
   const { rows } = await pool.query(
-    `select id, complaint, vehicle_ref, area, mileage_km, desired_outcome, status, created_at
+    `select id, complaint, vehicle_ref, area, mileage_km, desired_outcome,
+            technician_notes, status, created_at, updated_at
        from alva.cases
       where org_ref = $1 and id = $2 limit 1`,
     [orgRef, id],
@@ -84,9 +104,41 @@ export async function createCase(input: {
     area,
     mileageKm,
     desiredOutcome,
+    technicianNotes: "",
     status: "open",
     createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   };
+}
+
+export async function setCaseStatus(input: {
+  pool: pg.Pool;
+  orgRef: string;
+  caseId: string;
+  status: CaseStatus;
+}): Promise<void> {
+  const updated = await input.pool.query(
+    `update alva.cases
+        set status = $3, updated_at = now()
+      where org_ref = $1 and id = $2`,
+    [input.orgRef, input.caseId, input.status],
+  );
+  if ((updated.rowCount ?? 0) === 0) throw new Error("Fallet saknas.");
+}
+
+export async function setCaseNotes(input: {
+  pool: pg.Pool;
+  orgRef: string;
+  caseId: string;
+  notes: string;
+}): Promise<void> {
+  const updated = await input.pool.query(
+    `update alva.cases
+        set technician_notes = $3, updated_at = now()
+      where org_ref = $1 and id = $2`,
+    [input.orgRef, input.caseId, input.notes.trim() || null],
+  );
+  if ((updated.rowCount ?? 0) === 0) throw new Error("Fallet saknas.");
 }
 
 function toCase(row: {
@@ -96,8 +148,10 @@ function toCase(row: {
   area?: string | null;
   mileage_km?: number | null;
   desired_outcome?: string | null;
+  technician_notes?: string | null;
   status: string;
   created_at: Date;
+  updated_at?: Date | null;
 }): DiagnosisCase {
   return {
     id: row.id,
@@ -106,7 +160,9 @@ function toCase(row: {
     area: row.area ?? null,
     mileageKm: row.mileage_km ?? null,
     desiredOutcome: row.desired_outcome ?? null,
+    technicianNotes: row.technician_notes ?? "",
     status: row.status,
     createdAt: new Date(row.created_at).toISOString(),
+    updatedAt: new Date(row.updated_at ?? row.created_at).toISOString(),
   };
 }

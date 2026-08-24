@@ -1,7 +1,8 @@
 import { afterAll, describe, expect, it } from "vitest";
 import { createPool, migrateWorkspace } from "@pixdrift/db";
 import { EventLog } from "@pixdrift/events";
-import { createCase, getCase, listCases } from "./cases.ts";
+import { createCase, getCase, listCases, setCaseNotes, setCaseStatus } from "./cases.ts";
+import { recordProtocolMeasurement, recordProtocolObservation } from "./protocol.ts";
 
 const OWNER = process.env.PIXDRIFT_TEST_OWNER_URL ?? process.env.PIXDRIFT_DB_OWNER_URL;
 const APP = process.env.PIXDRIFT_TEST_DATABASE_URL ?? process.env.DATABASE_URL;
@@ -50,5 +51,38 @@ live("alva.cases (live Postgres)", () => {
     expect(published[0]?.payload["note"]).toMatch(/ALVA-repot/);
     expect(published[0]?.payload["complaintExcerpt"]).toMatch(/Oljud/);
     expect(published[0]?.payload).not.toHaveProperty("diagnosis");
+
+    await setCaseNotes({
+      pool,
+      orgRef,
+      caseId: created.id,
+      notes: "Kallstart vid -4 C.",
+    });
+    await setCaseStatus({ pool, orgRef, caseId: created.id, status: "in_progress" });
+    const observed = await recordProtocolObservation({
+      pool,
+      orgRef,
+      actorRef: "user-test",
+      caseId: created.id,
+      label: "Oljud reproducerbart",
+      value: "yes",
+    });
+    const measured = await recordProtocolMeasurement({
+      pool,
+      orgRef,
+      actorRef: "user-test",
+      caseId: created.id,
+      name: "Kylvätska",
+      value: 92,
+      unit: "C",
+    });
+    expect(observed).not.toHaveProperty("diagnosis");
+    expect(measured.value).toBe(92);
+
+    const updated = await getCase(pool, orgRef, created.id);
+    expect(updated?.technicianNotes).toBe("Kallstart vid -4 C.");
+    expect(updated?.status).toBe("in_progress");
+    expect(updated).not.toHaveProperty("diagnosis");
+    expect(updated).not.toHaveProperty("findings");
   });
 });

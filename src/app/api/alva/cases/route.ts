@@ -19,6 +19,9 @@ export async function POST(request: Request) {
     const body = (await request.json().catch(() => null)) as {
       complaint?: string;
       vehicleRef?: string;
+      area?: string;
+      mileageKm?: number;
+      desiredOutcome?: string;
     } | null;
     if (!body?.complaint?.trim()) throw new ApiError("invalid_request", "complaint krävs.");
     const item = await createCase({
@@ -28,6 +31,9 @@ export async function POST(request: Request) {
       actorRef: present.sub,
       complaint: body.complaint,
       vehicleRef: body.vehicleRef,
+      area: body.area,
+      mileageKm: body.mileageKm,
+      desiredOutcome: body.desiredOutcome,
       requestId,
     });
     return json({ case: item, engine: "deferred" }, 201);

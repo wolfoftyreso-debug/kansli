@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
 import { EmptyState, Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
-import { listCases } from "@/lib/alva/cases";
+import { CASE_STATUS_LABELS, listCases, parseCaseStatus } from "@/lib/alva/cases";
 import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
 import { registerAlvaCase } from "./actions";
@@ -26,7 +26,10 @@ export default async function AlvaPage() {
           följa. I navet registreras fallet redan. Guidningen kopplas när ALVA-repot är inne — den
           låtsas inte fram.
         </p>
-        <Notice>Diagnosmotorn är deferred. Inga påhittade fynd, inga påhittade protokoll.</Notice>
+        <Notice>
+          Diagnosmotorn är deferred. Ni kan fylla en protokolltom med egna fakta. Inga påhittade
+          fynd.
+        </Notice>
       </header>
 
       {!session?.org ? (
@@ -57,7 +60,7 @@ export default async function AlvaPage() {
                 {cases.map((item) => (
                   <li key={item.id} className="rounded-xl border border-line bg-surface p-4">
                     <p className="text-xs font-medium uppercase tracking-wide text-accent">
-                      {item.status}
+                      {CASE_STATUS_LABELS[parseCaseStatus(item.status) ?? "open"]}
                     </p>
                     <p className="mt-2 font-medium">
                       <Link href={`/alva/${item.id}`} className="hover:underline">

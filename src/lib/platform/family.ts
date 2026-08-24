@@ -141,10 +141,10 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     mission:
       "Guidad diagnosprocess med full dokumentation — tid och feljakt sparas för verkstad, kund och försäkring.",
     question: "Vad sa kunden, och hur tar vi oss till ett protokoll alla kan följa?",
-    does: "Registrerar fallet (klagomål, ev. fordon) i alva.cases så motorn har något att äga.",
+    does: "Registrerar fallet och en protokolltom: status, anteckning, kontrollerade fakta och inmatade mätvärden. Ingen slutsats från systemet.",
     doesNot:
-      "Guidningen och protokollet väntar på ALVA-repot. Inga påhittade fynd i navet. Motorn kopplas, den låtsas inte fram.",
-    owns: "alva.cases",
+      "Guidningen och diagnosmotorn väntar på ALVA-repot. Inga påhittade fynd. Motorn kopplas, den låtsas inte fram.",
+    owns: "alva.cases, alva.case_observations, alva.case_measurements",
     status: "deferred",
   },
 ];

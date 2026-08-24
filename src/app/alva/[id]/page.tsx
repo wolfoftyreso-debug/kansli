@@ -1,10 +1,22 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app/AppShell";
-import { Notice, SignInGate } from "@/components/app/SignInGate";
-import { getCase } from "@/lib/alva/cases";
+import { Notice, SignInGate, Submit } from "@/components/app/SignInGate";
+import { CASE_STATUS_LABELS, getCase, parseCaseStatus } from "@/lib/alva/cases";
+import {
+  PROTOCOL_CHECKS,
+  listProtocolMeasurements,
+  listProtocolObservations,
+  observationValueLabel,
+} from "@/lib/alva/protocol";
 import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
+import {
+  recordAlvaMeasurement,
+  recordAlvaObservation,
+  saveAlvaCaseNotes,
+  saveAlvaCaseStatus,
+} from "../actions";
 
 export const metadata = {
   title: "Fall — ALVA — Pixdrift",
@@ -16,7 +28,16 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
   const runtime = tryRuntime();
   const item =
     session?.org?.ref && runtime ? await getCase(runtime.pool, session.org.ref, id) : null;
+  const observations =
+    session?.org?.ref && runtime && item
+      ? await listProtocolObservations(runtime.pool, session.org.ref, id)
+      : [];
+  const measurements =
+    session?.org?.ref && runtime && item
+      ? await listProtocolMeasurements(runtime.pool, session.org.ref, id)
+      : [];
   if (session?.org && runtime && !item) notFound();
+  const status = item ? (parseCaseStatus(item.status) ?? "open") : "open";
 
   return (
     <AppShell current="alva" session={session}>
@@ -31,11 +52,14 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
         </SignInGate>
       ) : item ? (
         <>
-          <h1 className="text-3xl font-semibold tracking-tight">Registrerat fall</h1>
-          <p className="text-xs font-medium uppercase tracking-wide text-accent">{item.status}</p>
+          <h1 className="text-3xl font-semibold tracking-tight">Protokolltom</h1>
+          <p className="text-xs font-medium uppercase tracking-wide text-accent">
+            {CASE_STATUS_LABELS[status]}
+          </p>
           <Notice>
-            Diagnosmotorn saknas. Det här är intag — inte ett protokoll och inte en diagnos.
+            Det här är fakta ni fyller i själva. Ingen diagnosmotor. Ingen slutsats från systemet.
           </Notice>
+
           <dl className="flex flex-col gap-3">
             <div>
               <dt className="text-sm text-ink-soft">Kundens beskrivning</dt>
@@ -65,11 +89,135 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
                 <dd className="mt-1">{item.desiredOutcome}</dd>
               </div>
             ) : null}
-            <div>
-              <dt className="text-sm text-ink-soft">Registrerat</dt>
-              <dd className="mt-1 font-mono text-xs text-faint">{item.createdAt}</dd>
-            </div>
           </dl>
+
+          <form
+            action={saveAlvaCaseStatus}
+            className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
+          >
+            <h2 className="text-lg font-semibold">Arbetsflöde</h2>
+            <p className="text-sm text-ink-soft">Öppet / pågår / stängt. Inte diagnostiserat.</p>
+            <input type="hidden" name="id" value={id} />
+            <label className="flex flex-col gap-1">
+              <span className="text-sm text-ink-soft">Status</span>
+              <select
+                name="status"
+                defaultValue={status}
+                className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
+              >
+                <option value="open">Öppet</option>
+                <option value="in_progress">Pågår</option>
+                <option value="closed">Stängt</option>
+              </select>
+            </label>
+            <Submit>Spara status</Submit>
+          </form>
+
+          <form
+            action={saveAlvaCaseNotes}
+            className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
+          >
+            <h2 className="text-lg font-semibold">Verkstadsanteckning</h2>
+            <input type="hidden" name="id" value={id} />
+            <textarea
+              name="notes"
+              rows={3}
+              defaultValue={item.technicianNotes}
+              className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
+            />
+            <Submit>Spara anteckning</Submit>
+          </form>
+
+          <section className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4">
+            <h2 className="text-lg font-semibold">Kontrollerade fakta</h2>
+            <p className="text-sm text-ink-soft">Ja / nej / okänt. Inte pass/fail-diagnos.</p>
+            <form action={recordAlvaObservation} className="grid gap-3 sm:grid-cols-3">
+              <input type="hidden" name="id" value={id} />
+              <label className="flex flex-col gap-1 sm:col-span-2">
+                <span className="text-sm text-ink-soft">Kontroll</span>
+                <select
+                  name="label"
+                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
+                >
+                  {PROTOCOL_CHECKS.map((label) => (
+                    <option key={label} value={label}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-sm text-ink-soft">Utfall</span>
+                <select
+                  name="value"
+                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
+                >
+                  <option value="yes">Ja</option>
+                  <option value="no">Nej</option>
+                  <option value="unknown">Okänt</option>
+                </select>
+              </label>
+              <div className="sm:col-span-3">
+                <Submit>Spara kontroll</Submit>
+              </div>
+            </form>
+            {observations.length > 0 ? (
+              <ul className="flex flex-col gap-2">
+                {observations.map((row) => (
+                  <li key={row.id} className="text-sm text-ink-soft">
+                    {row.label}: {observationValueLabel(row.value)}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </section>
+
+          <section className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4">
+            <h2 className="text-lg font-semibold">Mätvärden</h2>
+            <p className="text-sm text-ink-soft">Namn, värde, enhet. Inte tolkade av systemet.</p>
+            <form action={recordAlvaMeasurement} className="grid gap-3 sm:grid-cols-3">
+              <input type="hidden" name="id" value={id} />
+              <label className="flex flex-col gap-1">
+                <span className="text-sm text-ink-soft">Namn</span>
+                <input
+                  name="name"
+                  required
+                  placeholder="Kylvätska"
+                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
+                />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-sm text-ink-soft">Värde</span>
+                <input
+                  name="value"
+                  required
+                  inputMode="decimal"
+                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
+                />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-sm text-ink-soft">Enhet</span>
+                <input
+                  name="unit"
+                  required
+                  placeholder="°C"
+                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
+                />
+              </label>
+              <div className="sm:col-span-3">
+                <Submit>Spara mätning</Submit>
+              </div>
+            </form>
+            {measurements.length > 0 ? (
+              <ul className="flex flex-col gap-2">
+                {measurements.map((row) => (
+                  <li key={row.id} className="text-sm text-ink-soft">
+                    {row.name}: {row.value} {row.unit}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </section>
         </>
       ) : null}
     </AppShell>
