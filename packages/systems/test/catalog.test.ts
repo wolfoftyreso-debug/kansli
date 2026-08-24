@@ -6,9 +6,9 @@ describe("system catalog", () => {
     const ids = SYSTEM_MODULES.map((m) => m.id);
     expect(new Set(ids).size).toBe(ids.length);
     expect(ids).toEqual(["identity", "kansli", "tora", "rita", "britt", "irma", "alva"]);
-    for (const module of SYSTEM_MODULES) {
-      if (module.id === "identity") expect(module.schema).toBeNull();
-      else expect(module.schema).toBe(module.id === "kansli" ? "kansli" : module.id);
+    for (const entry of SYSTEM_MODULES) {
+      if (entry.id === "identity") expect(entry.schema).toBeNull();
+      else expect(entry.schema).toBe(entry.id === "kansli" ? "kansli" : entry.id);
     }
   });
 
@@ -26,9 +26,9 @@ describe("system catalog", () => {
     expect(getModule("britt")?.basePath).toBe("/britt");
     expect(getModule("irma")?.basePath).toBe("/irma");
     expect(getModule("alva")?.basePath).toBe("/alva");
-    for (const module of SYSTEM_MODULES) {
-      if (module.id === "identity") continue;
-      expect(module.basePath.startsWith("/api")).toBe(false);
+    for (const entry of SYSTEM_MODULES) {
+      if (entry.id === "identity") continue;
+      expect(entry.basePath.startsWith("/api")).toBe(false);
     }
   });
 });
