@@ -3,10 +3,7 @@ import { handleApi, json } from "@/lib/platform/http";
 import { ACKNOWLEDGEMENT_DECLARATION } from "@/lib/irma/clauses";
 import { acknowledgeAgreement, openAgreementByToken } from "@/lib/irma/agreements";
 
-export async function GET(
-  _request: Request,
-  context: { params: Promise<{ token: string }> },
-) {
+export async function GET(_request: Request, context: { params: Promise<{ token: string }> }) {
   return handleApi(async ({ pool, events, requestId }) => {
     const { token } = await context.params;
     const agreement = await openAgreementByToken({ pool, events, token, requestId });
@@ -15,10 +12,7 @@ export async function GET(
   });
 }
 
-export async function POST(
-  request: Request,
-  context: { params: Promise<{ token: string }> },
-) {
+export async function POST(request: Request, context: { params: Promise<{ token: string }> }) {
   return handleApi(async ({ pool, events, requestId }) => {
     const { token } = await context.params;
     const body = (await request.json().catch(() => null)) as { signerName?: string } | null;

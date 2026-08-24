@@ -9,7 +9,9 @@ describe("evaluateMetrics", () => {
       "liquidity_runway",
       "customer_concentration",
     ]);
-    expect(findings.find((item) => item.fingerprint === "revenue_below_plan")?.severity).toBe("high");
+    expect(findings.find((item) => item.fingerprint === "revenue_below_plan")?.severity).toBe(
+      "high",
+    );
     expect(findings.find((item) => item.fingerprint === "liquidity_runway")?.severity).toBe("high");
     expect(findings.find((item) => item.fingerprint === "customer_concentration")?.severity).toBe(
       "medium",

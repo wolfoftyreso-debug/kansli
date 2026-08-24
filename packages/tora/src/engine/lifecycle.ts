@@ -168,9 +168,7 @@ export function predictNextProcurement(
   const organization = indexBy(graph.organizations, (o) => o.id).get(contract.organizationId);
   const buyerName = organization?.name ?? "Organisationen";
 
-  const basis: string[] = [
-    `${buyerName} har avtalet ${contract.title} till ${contract.endDate}.`,
-  ];
+  const basis: string[] = [`${buyerName} har avtalet ${contract.title} till ${contract.endDate}.`];
 
   const undecided = contract.options.filter((o) => o.exercised === undefined);
   if (undecided.length > 0) {

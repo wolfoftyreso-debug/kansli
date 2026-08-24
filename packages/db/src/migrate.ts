@@ -71,7 +71,9 @@ export async function loadMigrations(dir: string): Promise<MigrationFile[]> {
   for (const filename of files) {
     const { version, name } = parseMigrationFilename(filename);
     if (seen.has(version)) {
-      throw new MigrationError(`två migrationsfiler delar version ${String(version).padStart(4, "0")}`);
+      throw new MigrationError(
+        `två migrationsfiler delar version ${String(version).padStart(4, "0")}`,
+      );
     }
     seen.add(version);
     const sql = await readFile(path.join(dir, filename), "utf8");

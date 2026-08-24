@@ -254,9 +254,7 @@ export function assessContractValue(contract: Contract, companyId?: string): Val
  */
 export function assessProcurementValue(procurement: Procurement): ValueBreakdown {
   const hasTerm = Boolean(procurement.contractStart && procurement.contractEnd);
-  const baseMonths = hasTerm
-    ? termMonths(procurement.contractStart!, procurement.contractEnd!)
-    : 0;
+  const baseMonths = hasTerm ? termMonths(procurement.contractStart!, procurement.contractEnd!) : 0;
 
   const annual =
     procurement.estimatedValueSek !== undefined && baseMonths > 0

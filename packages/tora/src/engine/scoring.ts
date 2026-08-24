@@ -80,7 +80,9 @@ export function scoreOpportunity(
   const score =
     knownWeight === 0
       ? 0
-      : Math.round((known.reduce((sum, f) => sum + f.weight * (f.value as number), 0) / knownWeight) * 100);
+      : Math.round(
+          (known.reduce((sum, f) => sum + f.weight * (f.value as number), 0) / knownWeight) * 100,
+        );
 
   const confidence = totalWeight === 0 ? 0 : knownWeight / totalWeight;
 
@@ -91,7 +93,11 @@ export function scoreOpportunity(
 /* Factors                                                             */
 /* ------------------------------------------------------------------ */
 
-function geographyFactor(procurement: Procurement, company: Company, ctx: ScoringContext): ScoreFactor {
+function geographyFactor(
+  procurement: Procurement,
+  company: Company,
+  ctx: ScoringContext,
+): ScoreFactor {
   const covered = areaCovers(ctx.areas, company.servesAreas, procurement.areas);
   return {
     key: "geography",
@@ -104,7 +110,11 @@ function geographyFactor(procurement: Procurement, company: Company, ctx: Scorin
   };
 }
 
-function serviceMatchFactor(procurement: Procurement, company: Company, ctx: ScoringContext): ScoreFactor {
+function serviceMatchFactor(
+  procurement: Procurement,
+  company: Company,
+  ctx: ScoringContext,
+): ScoreFactor {
   if (procurement.capabilities.length === 0) {
     return {
       key: "service",
@@ -275,7 +285,13 @@ function accessFactor(access: AccessStatus | undefined): ScoreFactor {
     case "unknown":
       return { key: "access", label, weight, explanation: "Förfarandet är inte fastställt." };
     case "granted":
-      return { key: "access", label, weight, value: 1, explanation: "Gällande avtal ger tillgång till uppdraget." };
+      return {
+        key: "access",
+        label,
+        weight,
+        value: 1,
+        explanation: "Gällande avtal ger tillgång till uppdraget.",
+      };
     case "open":
       return { key: "access", label, weight, value: 1, explanation: "Öppet för ansökan nu." };
     case "competitive":
@@ -292,7 +308,8 @@ function accessFactor(access: AccessStatus | undefined): ScoreFactor {
         label,
         weight,
         value: 0.55,
-        explanation: "Vägen till uppdraget finns, men beslutet ligger hos den upphandlande organisationen.",
+        explanation:
+          "Vägen till uppdraget finns, men beslutet ligger hos den upphandlande organisationen.",
       };
     case "blocked":
       return {
@@ -300,7 +317,8 @@ function accessFactor(access: AccessStatus | undefined): ScoreFactor {
         label,
         weight,
         value: 0,
-        explanation: "Uppdraget är inte åtkomligt — avtal, tilldelning eller passerad deadline stänger det.",
+        explanation:
+          "Uppdraget är inte åtkomligt — avtal, tilldelning eller passerad deadline stänger det.",
       };
   }
 }
@@ -329,7 +347,9 @@ function explain(score: number, confidence: number, factors: ScoreFactor[]): str
   );
 
   if (weakest.value < 0.75) {
-    parts.push(`Störst osäkerhet: ${weakest.label.toLowerCase()} — ${lowerFirst(weakest.explanation)}`);
+    parts.push(
+      `Störst osäkerhet: ${weakest.label.toLowerCase()} — ${lowerFirst(weakest.explanation)}`,
+    );
   }
 
   if (unknown.length > 0) {

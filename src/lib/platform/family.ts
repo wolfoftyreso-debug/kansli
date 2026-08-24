@@ -55,7 +55,8 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     name: "RITA",
     question: "Stämmer räkenskaperna mot regelverket?",
     does: "Tar emot en analysbeställning, anropar den riktiga Rust-motorn via HTTP eller lokal binär, lagrar fynd eller blocked. Lokalt kan demonstrationsbokslutet skickas som underlag.",
-    doesNot: "Ingen FakeAnalysisEngine i drift. Utan host eller RITA_ENGINE_BINARY blir status blocked. Avgör inte anbudsrätt. Ingen kunduppladdning via Blob.",
+    doesNot:
+      "Ingen FakeAnalysisEngine i drift. Utan host eller RITA_ENGINE_BINARY blir status blocked. Avgör inte anbudsrätt. Ingen kunduppladdning via Blob.",
     owns: "rita.analyses",
     status: "pilot",
   },
@@ -64,7 +65,8 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     name: "BRITT",
     question: "Vad har hänt som någon behöver följa upp?",
     does: "Observationsinkorg plus deterministisk demonstrationsanalys (omsättning, likviditet, koncentration). Skriver bara i britt-schemat.",
-    doesNot: "Inte Fortnox, Revolut eller hela underrättelseprodukten. Ingen läsning av TORA/RITA-tabeller.",
+    doesNot:
+      "Inte Fortnox, Revolut eller hela underrättelseprodukten. Ingen läsning av TORA/RITA-tabeller.",
     owns: "britt.observations, britt.findings, britt.metric_snapshots, britt.analysis_runs",
     status: "pilot",
   },
@@ -99,7 +101,8 @@ export const FAMILY_LINKS: readonly FamilyLink[] = [
     from: "identity",
     to: "platform.events",
     via: "identity.session.started",
-    meaning: "Lyckad inloggning skrivs i loggen. BRITT lyssnar inte — det är revision, inte en uppföljningsuppgift.",
+    meaning:
+      "Lyckad inloggning skrivs i loggen. BRITT lyssnar inte — det är revision, inte en uppföljningsuppgift.",
   },
   {
     from: "tora",
@@ -135,7 +138,8 @@ export const FAMILY_LINKS: readonly FamilyLink[] = [
     from: "britt",
     to: "britt",
     via: "britt.finding.recorded",
-    meaning: "Höga fynd från demonstrationsanalysen blir observationer. Medel och låg stannar i findings.",
+    meaning:
+      "Höga fynd från demonstrationsanalysen blir observationer. Medel och låg stannar i findings.",
   },
   {
     from: "britt",

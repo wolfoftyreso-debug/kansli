@@ -29,7 +29,11 @@ import {
   type Verdict,
 } from "../domain/verdicts";
 import { assessProcurementAccess, type AccessContext, type AccessResult } from "./access";
-import { assessQualification, type EligibilityContext, type QualificationResult } from "./eligibility";
+import {
+  assessQualification,
+  type EligibilityContext,
+  type QualificationResult,
+} from "./eligibility";
 import {
   predictedProcurement,
   predictNextProcurement,
@@ -151,7 +155,13 @@ export function buildOpportunity(
       ...decision.caveats,
       ...qualificationCaveats(procurement),
     ]),
-    recommendedActions: recommendActions(procurement, qualification, decision.verdict, prediction, today),
+    recommendedActions: recommendActions(
+      procurement,
+      qualification,
+      decision.verdict,
+      prediction,
+      today,
+    ),
     prediction,
     sources: procurement.sources,
   };
@@ -162,7 +172,11 @@ function timingBucket(
   prediction: LifecyclePrediction | undefined,
   today: IsoDate,
 ): TimingBucket {
-  if (procurement.status === "awarded" || procurement.status === "cancelled" || procurement.status === "closed") {
+  if (
+    procurement.status === "awarded" ||
+    procurement.status === "cancelled" ||
+    procurement.status === "closed"
+  ) {
     return "closed";
   }
   if (procurement.deadlineAt && procurement.deadlineAt < today) return "closed";
@@ -327,7 +341,11 @@ function dedupeCaveats(caveats: Caveat[]): Caveat[] {
  * overlap counts implied capabilities and subcontractor reach, and a shared CPV
  * code is enough on its own.
  */
-export function isRelevant(procurement: Procurement, company: Company, graph: ProcurementGraph): boolean {
+export function isRelevant(
+  procurement: Procurement,
+  company: Company,
+  graph: ProcurementGraph,
+): boolean {
   const reach = expandCapabilities(graph.capabilities, [
     ...company.capabilities,
     ...(company.subcontractorCapabilities ?? []),
@@ -338,7 +356,10 @@ export function isRelevant(procurement: Procurement, company: Company, graph: Pr
 
   // Geography does not exclude — a company may well want to know about work just
   // outside its stated area — but it must at least be in the same region.
-  return areaCovers(graph.areas, company.servesAreas, procurement.areas) || sameRegion(procurement, company, graph);
+  return (
+    areaCovers(graph.areas, company.servesAreas, procurement.areas) ||
+    sameRegion(procurement, company, graph)
+  );
 }
 
 function sameRegion(procurement: Procurement, company: Company, graph: ProcurementGraph): boolean {
@@ -362,7 +383,9 @@ export function buildOpportunities(company: Company, ctx: OpportunityContext): O
   // A contract with a successor notice already published is not a prediction any
   // more; showing both would double-count the same future work.
   const alreadySucceeded = new Set(
-    graph.procurements.map((p) => p.predecessorContractId).filter((id): id is string => Boolean(id)),
+    graph.procurements
+      .map((p) => p.predecessorContractId)
+      .filter((id): id is string => Boolean(id)),
   );
 
   const predicted = upcomingRenewals(graph, today)
@@ -383,11 +406,20 @@ export function buildOpportunities(company: Company, ctx: OpportunityContext): O
  * information too.
  */
 export function compareOpportunities(a: Opportunity, b: Opportunity): number {
-  const bucketRank: Record<TimingBucket, number> = { open_now: 0, upcoming: 1, watch: 2, closed: 3 };
+  const bucketRank: Record<TimingBucket, number> = {
+    open_now: 0,
+    upcoming: 1,
+    watch: 2,
+    closed: 3,
+  };
   const byBucket = bucketRank[a.timing] - bucketRank[b.timing];
   if (byBucket !== 0) return byBucket;
 
-  if (a.timing === "open_now" && a.daysUntilDeadline !== undefined && b.daysUntilDeadline !== undefined) {
+  if (
+    a.timing === "open_now" &&
+    a.daysUntilDeadline !== undefined &&
+    b.daysUntilDeadline !== undefined
+  ) {
     const byDeadline = a.daysUntilDeadline - b.daysUntilDeadline;
     if (byDeadline !== 0) return byDeadline;
   }

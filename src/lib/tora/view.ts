@@ -24,9 +24,11 @@ export function evaluationKindText(kind: string): string {
   return EVALUATION_KIND[kind] ?? kind;
 }
 
-export function legalBasisText(
-  field: Locked<{ contractId: string; reason: string } | undefined>,
-): { locked: boolean; reason: string; contractId?: string } {
+export function legalBasisText(field: Locked<{ contractId: string; reason: string } | undefined>): {
+  locked: boolean;
+  reason: string;
+  contractId?: string;
+} {
   if (field.state === "locked") return { locked: true, reason: field.teaser };
   if (!field.value) return { locked: false, reason: "Ingen rättslig grund i underlaget." };
   return { locked: false, reason: field.value.reason, contractId: field.value.contractId };

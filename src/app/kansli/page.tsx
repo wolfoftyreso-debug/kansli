@@ -34,8 +34,8 @@ export default async function KansliHub() {
         <p className="pd-label text-faint">PIXDRIFT / Kansli</p>
         <h1 className="text-3xl font-semibold tracking-tight">Kansli</h1>
         <p className="text-ink-soft">
-          Navet. Samma identitet i alla system. Uppgiftstavlan är kansliets egen data — inte
-          TORA, inte RITA.
+          Navet. Samma identitet i alla system. Uppgiftstavlan är kansliets egen data — inte TORA,
+          inte RITA.
         </p>
       </header>
 
@@ -58,24 +58,26 @@ export default async function KansliHub() {
           <section className="flex flex-col gap-3">
             <h2 className="text-lg font-semibold">Familjen</h2>
             <div className="grid gap-2 sm:grid-cols-2">
-              {FAMILY_SYSTEMS.filter((system) => system.id !== "identity" && system.id !== "kansli").map(
-                (system) => (
-                  <Link
-                    key={system.id}
-                    href={HREF[system.id] ?? "/platform"}
-                    className="rounded-xl border border-line bg-surface px-4 py-3 hover:border-line-strong"
-                  >
-                    <p className="font-medium">{system.name}</p>
-                    <p className="mt-1 text-sm text-ink-soft">{system.question}</p>
-                  </Link>
-                ),
-              )}
+              {FAMILY_SYSTEMS.filter(
+                (system) => system.id !== "identity" && system.id !== "kansli",
+              ).map((system) => (
+                <Link
+                  key={system.id}
+                  href={HREF[system.id] ?? "/platform"}
+                  className="rounded-xl border border-line bg-surface px-4 py-3 hover:border-line-strong"
+                >
+                  <p className="font-medium">{system.name}</p>
+                  <p className="mt-1 text-sm text-ink-soft">{system.question}</p>
+                </Link>
+              ))}
               <Link
                 href="/platform"
                 className="rounded-xl border border-line bg-surface px-4 py-3 hover:border-line-strong"
               >
                 <p className="font-medium">Kartan</p>
-                <p className="mt-1 text-sm text-ink-soft">Vad varje system gör, och hur de hänger ihop.</p>
+                <p className="mt-1 text-sm text-ink-soft">
+                  Vad varje system gör, och hur de hänger ihop.
+                </p>
               </Link>
             </div>
           </section>
@@ -99,7 +101,9 @@ export default async function KansliHub() {
             </section>
           ) : null}
 
-          <Notice>Uppgifter skrivs i kansli.tasks. BRITT får en observation när en uppgift skapas.</Notice>
+          <Notice>
+            Uppgifter skrivs i kansli.tasks. BRITT får en observation när en uppgift skapas.
+          </Notice>
           <TaskBoard />
         </>
       )}

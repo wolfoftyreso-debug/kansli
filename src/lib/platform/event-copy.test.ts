@@ -11,9 +11,9 @@ describe("eventHeadline", () => {
   });
 
   it("falls back to subject then kind", () => {
-    expect(eventLine({ kind: "rita.analysis.completed", payload: {}, subjectRef: "rita:analysis:1" })).toBe(
-      "rita:analysis:1",
-    );
+    expect(
+      eventLine({ kind: "rita.analysis.completed", payload: {}, subjectRef: "rita:analysis:1" }),
+    ).toBe("rita:analysis:1");
     expect(eventLine({ kind: "rita.analysis.completed", payload: {}, subjectRef: null })).toBe(
       "rita.analysis.completed",
     );

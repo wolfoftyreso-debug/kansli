@@ -36,7 +36,9 @@ export default async function RitaAnalysisPage({ params }: { params: Promise<{ i
         <>
           <h1 className="text-3xl font-semibold tracking-tight">{analysis.companyName}</h1>
           <p className="font-mono text-sm text-faint">{analysis.orgNumber}</p>
-          <p className="text-xs font-medium uppercase tracking-wide text-accent">{analysis.status}</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-accent">
+            {analysis.status}
+          </p>
           {analysis.blockedReason ? (
             <Notice>
               Blockerad: {analysis.blockedReason}. Motorn fejkars inte. Koppla{" "}
@@ -70,7 +72,9 @@ export default async function RitaAnalysisPage({ params }: { params: Promise<{ i
           ) : analysis.status === "completed" ? (
             <EmptyState>Inga fynd i resultatobjektet. Motorn har kört; listan är tom.</EmptyState>
           ) : analysis.status !== "blocked" ? (
-            <p className="text-sm text-muted">Inget resultatobjekt. Det är avsiktligt när status är blocked.</p>
+            <p className="text-sm text-muted">
+              Inget resultatobjekt. Det är avsiktligt när status är blocked.
+            </p>
           ) : null}
 
           {analysis.result != null ? (

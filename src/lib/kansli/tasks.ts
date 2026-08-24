@@ -69,7 +69,13 @@ export async function deleteTask(pool: pg.Pool, orgRef: string, id: string): Pro
   return (rowCount ?? 0) > 0;
 }
 
-function toTask(row: { id: string; title: string; owner: string; done: boolean; created_at: Date }): Task {
+function toTask(row: {
+  id: string;
+  title: string;
+  owner: string;
+  done: boolean;
+  created_at: Date;
+}): Task {
   return {
     id: row.id,
     title: row.title,

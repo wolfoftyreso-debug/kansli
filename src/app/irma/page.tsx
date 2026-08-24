@@ -55,11 +55,19 @@ export default async function IrmaPage({
         </SignInGate>
       ) : (
         <>
-          <form action={createIrmaAgreement} className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4">
+          <form
+            action={createIrmaAgreement}
+            className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
+          >
             <h2 className="text-lg font-semibold">Nytt avtal</h2>
             <Field name="title" label="Titel" required />
             <Field name="counterparty" label="Motpart" required />
-            <Field name="body" label="Brödtext" multiline placeholder="Valfri text som motparten ser." />
+            <Field
+              name="body"
+              label="Brödtext"
+              multiline
+              placeholder="Valfri text som motparten ser."
+            />
             <Submit>Skapa och visa länk</Submit>
           </form>
 

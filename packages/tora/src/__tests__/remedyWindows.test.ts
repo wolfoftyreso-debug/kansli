@@ -133,10 +133,7 @@ describe("utan ankardatum räknas ingenting", () => {
   });
 
   it("redovisar regeln i stället för en gissad dag", () => {
-    const w = win(
-      buildRemedyOutlook("p1", graph([award("2026-08-20")]), "2026-08-22"),
-      "damages",
-    );
+    const w = win(buildRemedyOutlook("p1", graph([award("2026-08-20")]), "2026-08-22"), "damages");
     expect(w.basis).toContain("Fristen gäller ändå");
     expect(w.remedy.deadline.rule).toContain("ett år");
   });
@@ -167,13 +164,16 @@ describe("informerar, rekommenderar inte", () => {
     graph([]),
   ];
 
-  it.each(cases.map((g, i) => [i, g] as const))("ger aldrig ett råd om att processa (%i)", (_, g) => {
-    const result = buildRemedyOutlook("p1", g, "2026-08-22");
-    const text = `${result.summary} ${result.windows.map((w) => w.basis).join(" ")}`;
-    expect(text).not.toMatch(
-      /du bör (ansöka|överklaga|överpröva)|vi rekommenderar|du har grund|det finns grund|du kan vinna/i,
-    );
-  });
+  it.each(cases.map((g, i) => [i, g] as const))(
+    "ger aldrig ett råd om att processa (%i)",
+    (_, g) => {
+      const result = buildRemedyOutlook("p1", g, "2026-08-22");
+      const text = `${result.summary} ${result.windows.map((w) => w.basis).join(" ")}`;
+      expect(text).not.toMatch(
+        /du bör (ansöka|överklaga|överpröva)|vi rekommenderar|du har grund|det finns grund|du kan vinna/i,
+      );
+    },
+  );
 
   it("säger rakt ut att den inte bedömer om något gått fel", () => {
     const result = buildRemedyOutlook("p1", graph([award("2026-08-14")]), "2026-08-22");

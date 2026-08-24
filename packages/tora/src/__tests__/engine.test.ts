@@ -23,7 +23,11 @@ import {
   type DirectAwardThreshold,
 } from "../domain/regulations";
 import { assessQualification, assessRequirement } from "../engine/eligibility";
-import { assessContractAccess, assessProcurementAccess, findGoverningContract } from "../engine/access";
+import {
+  assessContractAccess,
+  assessProcurementAccess,
+  findGoverningContract,
+} from "../engine/access";
 import {
   MIN_OBSERVATIONS_FOR_LEAD_TIME,
   effectiveEndRange,
@@ -108,11 +112,15 @@ describe("verdict guard", () => {
   });
 
   it("puts a definitive requirement failure ahead of everything else", () => {
-    expect(decideVerdict({ access: "granted", qualification: "failed" }).verdict).toBe("NOT_ELIGIBLE");
+    expect(decideVerdict({ access: "granted", qualification: "failed" }).verdict).toBe(
+      "NOT_ELIGIBLE",
+    );
   });
 
   it("reports UNKNOWN rather than guessing when facts are missing", () => {
-    expect(decideVerdict({ access: "competitive", qualification: "unknown" }).verdict).toBe("UNKNOWN");
+    expect(decideVerdict({ access: "competitive", qualification: "unknown" }).verdict).toBe(
+      "UNKNOWN",
+    );
   });
 
   /**
@@ -206,7 +214,11 @@ describe("eligibility", () => {
       (r) => r.id === "req:nacka:iso14001",
     )!;
 
-    const silent = assessRequirement(requirement, { ...demoCompany, certifications: [] }, eligibilityCtx);
+    const silent = assessRequirement(
+      requirement,
+      { ...demoCompany, certifications: [] },
+      eligibilityCtx,
+    );
     expect(silent.status).toBe("unknown");
 
     const stated = assessRequirement(requirement, demoCompany, eligibilityCtx);
@@ -344,7 +356,11 @@ describe("kravlistan som ingen har läst", () => {
     const unread = assessQualification([], demoCompany, eligibilityCtx);
     expect(unread.explanation).toBeDefined();
     expect(
-      decideVerdict({ access: "open", qualification: "unknown", qualificationExplanation: unread.explanation }).rationale,
+      decideVerdict({
+        access: "open",
+        qualification: "unknown",
+        qualificationExplanation: unread.explanation,
+      }).rationale,
     ).toBe(unread.explanation);
   });
 
@@ -519,7 +535,11 @@ describe("förutsedd efterträdare ärver inte avtalet", () => {
 
 describe("access", () => {
   it("grants access to the rank-1 supplier on a live framework, with a basis", () => {
-    const result = assessContractAccess(contract("contract:tyresobostader-fastighetsel"), demoCompany, ctx);
+    const result = assessContractAccess(
+      contract("contract:tyresobostader-fastighetsel"),
+      demoCompany,
+      ctx,
+    );
     expect(result.status).toBe("granted");
     expect(result.legalBasis?.contractId).toBe("contract:tyresobostader-fastighetsel");
   });
@@ -541,7 +561,12 @@ describe("access", () => {
     const organization = demoGraph.organizations.find((o) => o.id === "org:tyreso")!;
     // el.laddinfra implies el.installation, but the charging framework must not
     // therefore appear to lock up general electrical service.
-    const governing = findGoverningContract(organization, ["el.service", "el.installation"], ["0138"], ctx);
+    const governing = findGoverningContract(
+      organization,
+      ["el.service", "el.installation"],
+      ["0138"],
+      ctx,
+    );
     expect(governing?.id).toBe("contract:tyreso-elservice");
   });
 
@@ -553,7 +578,11 @@ describe("access", () => {
   });
 
   it("keeps a DPS open for admission", () => {
-    const result = assessProcurementAccess(procurement("proc:region-dis-laddinfra"), demoCompany, ctx);
+    const result = assessProcurementAccess(
+      procurement("proc:region-dis-laddinfra"),
+      demoCompany,
+      ctx,
+    );
     expect(result.status).toBe("open");
     expect(result.caveats.map((c) => c.key)).toContain("dpsAdmissionStaysOpen");
   });
@@ -697,7 +726,11 @@ describe("lifecycle", () => {
   });
 
   it("explains its prediction and stays under full confidence", () => {
-    const prediction = predictNextProcurement(contract("contract:tyreso-elservice"), demoGraph, DEMO_TODAY);
+    const prediction = predictNextProcurement(
+      contract("contract:tyreso-elservice"),
+      demoGraph,
+      DEMO_TODAY,
+    );
     expect(prediction.leadTimeSource).toBe("observed");
     expect(prediction.expectedAnnouncement.from < prediction.effectiveEnd.earliest).toBe(true);
     expect(prediction.confidence).toBeLessThan(1);
@@ -714,7 +747,11 @@ describe("lifecycle", () => {
     expect(rhythm?.intervals).toBe(1);
     expect(rhythm?.sufficient).toBe(false);
 
-    const prediction = predictNextProcurement(contract("contract:tyreso-elservice"), thin, DEMO_TODAY);
+    const prediction = predictNextProcurement(
+      contract("contract:tyreso-elservice"),
+      thin,
+      DEMO_TODAY,
+    );
     expect(prediction.basis.join(" ")).toContain("För få för att fastställa en upphandlingsrytm");
   });
 
@@ -742,7 +779,11 @@ describe("lifecycle", () => {
 
   it("marks a lead time below the evidence floor as weak, and still uses it", () => {
     const thin = withFewLeadTimes("org:tyreso");
-    const prediction = predictNextProcurement(contract("contract:tyreso-elservice"), thin, DEMO_TODAY);
+    const prediction = predictNextProcurement(
+      contract("contract:tyreso-elservice"),
+      thin,
+      DEMO_TODAY,
+    );
     expect(prediction.leadTimeSource).toBe("observed_weak");
     // The observation is used rather than discarded for a generic default.
     expect(prediction.leadTimeDays).not.toBe(150);
@@ -754,7 +795,11 @@ describe("lifecycle", () => {
       ...withFewLeadTimes("org:tyreso"),
       contracts: demoGraph.contracts.filter((c) => c.id !== "contract:tyreso-elservice-2015"),
     };
-    const strong = predictNextProcurement(contract("contract:tyreso-elservice"), demoGraph, DEMO_TODAY);
+    const strong = predictNextProcurement(
+      contract("contract:tyreso-elservice"),
+      demoGraph,
+      DEMO_TODAY,
+    );
     const weak = predictNextProcurement(contract("contract:tyreso-elservice"), thin, DEMO_TODAY);
     expect(weak.confidence).toBeLessThan(strong.confidence);
   });
@@ -927,7 +972,9 @@ describe("radar and calendar", () => {
     const radar = buildRadar(demoCompany, opportunities, demoGraph);
     expect(radar.totalHistorical).toBeGreaterThan(0);
     expect(radar.totalRelevant).toBe(opportunities.length - radar.totalHistorical);
-    expect(radar.totalRelevant).toBe(radar.openNow.length + radar.upcoming.length + radar.watch.length);
+    expect(radar.totalRelevant).toBe(
+      radar.openNow.length + radar.upcoming.length + radar.watch.length,
+    );
   });
 
   it("keeps the verdict breakdown consistent with the live count", () => {
@@ -981,7 +1028,9 @@ describe("alerts", () => {
       o.procurementId === "proc:region-dis-laddinfra" ? { ...o, verdict: "ELIGIBLE" as const } : o,
     );
     const after = current.map((o) =>
-      o.procurementId === "proc:region-dis-laddinfra" ? { ...o, verdict: "NOT_ELIGIBLE" as const } : o,
+      o.procurementId === "proc:region-dis-laddinfra"
+        ? { ...o, verdict: "NOT_ELIGIBLE" as const }
+        : o,
     );
 
     const alerts = diffOpportunities(before, after, DEMO_TODAY);
@@ -1017,7 +1066,10 @@ describe("price intelligence", () => {
   });
 
   it("reports observed award values with the compliance notice attached", () => {
-    const result = analysePrices({ capabilities: ["el.service", "el.installation"], areas: ["01"] }, demoGraph);
+    const result = analysePrices(
+      { capabilities: ["el.service", "el.installation"], areas: ["01"] },
+      demoGraph,
+    );
     expect(result.status).toBe("ok");
     if (result.status !== "ok") return;
 
@@ -1030,7 +1082,10 @@ describe("price intelligence", () => {
   });
 
   it("discloses that some awards published no value", () => {
-    const result = analysePrices({ capabilities: ["el.service", "el.installation"], areas: ["01"] }, demoGraph);
+    const result = analysePrices(
+      { capabilities: ["el.service", "el.installation"], areas: ["01"] },
+      demoGraph,
+    );
     if (result.status !== "ok") throw new Error("expected data");
     expect(result.valueCoverage).toBeLessThan(1);
     expect(describePriceIntelligence(result)).toMatch(/saknar publicerat värde/);
@@ -1039,7 +1094,9 @@ describe("price intelligence", () => {
   it("offers no recommended price anywhere in its output", () => {
     const result = analysePrices({ capabilities: ["el.service"], areas: ["01"] }, demoGraph);
     const serialised = JSON.stringify(result).toLowerCase();
-    expect(serialised).not.toMatch(/rekommenderat pris|recommendedprice|suggestedprice|targetprice/);
+    expect(serialised).not.toMatch(
+      /rekommenderat pris|recommendedprice|suggestedprice|targetprice/,
+    );
   });
 });
 
@@ -1141,17 +1198,32 @@ describe("freemium gating", () => {
     const api = createLocalApi(demoGraph);
     const id = `opp:${demoCompany.id}:proc:nacka-elservice`;
 
-    const free = api.getOpportunity({ company: demoCompany, tier: "free", today: DEMO_TODAY, opportunityId: id });
+    const free = api.getOpportunity({
+      company: demoCompany,
+      tier: "free",
+      today: DEMO_TODAY,
+      opportunityId: id,
+    });
     expect(free?.prices.state).toBe("locked");
 
-    const pro = api.getOpportunity({ company: demoCompany, tier: "pro", today: DEMO_TODAY, opportunityId: id });
+    const pro = api.getOpportunity({
+      company: demoCompany,
+      tier: "pro",
+      today: DEMO_TODAY,
+      opportunityId: id,
+    });
     expect(pro?.prices.state).toBe("unlocked");
   });
 
   it("returns undefined for an opportunity that does not exist", () => {
     const api = createLocalApi(demoGraph);
     expect(
-      api.getOpportunity({ company: demoCompany, tier: "pro", today: DEMO_TODAY, opportunityId: "opp:nope" }),
+      api.getOpportunity({
+        company: demoCompany,
+        tier: "pro",
+        today: DEMO_TODAY,
+        opportunityId: "opp:nope",
+      }),
     ).toBeUndefined();
   });
 

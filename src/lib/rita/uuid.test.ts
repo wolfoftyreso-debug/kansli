@@ -1,8 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { uuidFromSeed } from "./uuid.ts";
 
-const UUID_V4 =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
+const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 
 describe("uuidFromSeed", () => {
   it("is stable and UUID-shaped", () => {

@@ -60,9 +60,7 @@ function channelsFor(severity: AlertSeverity): AlertChannel[] {
   }
 }
 
-function alert(
-  partial: Omit<Alert, "channels" | "id"> & { id: string },
-): Alert {
+function alert(partial: Omit<Alert, "channels" | "id"> & { id: string }): Alert {
   return { ...partial, channels: channelsFor(partial.severity) };
 }
 
@@ -103,7 +101,9 @@ export function diffOpportunities(
       // A brand-new opportunity is only worth interrupting someone for when they
       // could actually act on it.
       const actionable =
-        opportunity.verdict !== "NOT_ELIGIBLE" && opportunity.timing !== "closed" && opportunity.timing !== "watch";
+        opportunity.verdict !== "NOT_ELIGIBLE" &&
+        opportunity.timing !== "closed" &&
+        opportunity.timing !== "watch";
       alerts.push(
         alert({
           id: `alert:new:${opportunity.id}`,

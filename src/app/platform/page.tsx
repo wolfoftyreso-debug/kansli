@@ -62,7 +62,10 @@ export default async function PlatformPage() {
         <h2 className="text-lg font-semibold">Hur de hänger ihop</h2>
         <ul className="flex flex-col gap-2">
           {FAMILY_LINKS.map((link) => (
-            <li key={`${link.from}-${link.via}`} className="rounded-xl border border-line bg-surface px-4 py-3">
+            <li
+              key={`${link.from}-${link.via}`}
+              className="rounded-xl border border-line bg-surface px-4 py-3"
+            >
               <p className="font-mono text-xs text-accent">{link.via}</p>
               <p className="mt-1 text-sm font-medium">
                 {link.from} → {link.to}
@@ -77,7 +80,10 @@ export default async function PlatformPage() {
         <h2 className="text-lg font-semibold">Väntar på underlag utanför det här repot</h2>
         <ul className="flex flex-col gap-2">
           {FAMILY_BLOCKED.map((item) => (
-            <li key={item.id} className="rounded-xl border border-line bg-surface px-4 py-3 text-sm text-ink-soft">
+            <li
+              key={item.id}
+              className="rounded-xl border border-line bg-surface px-4 py-3 text-sm text-ink-soft"
+            >
               {item.need}
             </li>
           ))}

@@ -1,6 +1,13 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
-import { CheckField, EmptyState, Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
+import {
+  CheckField,
+  EmptyState,
+  Field,
+  Notice,
+  SignInGate,
+  Submit,
+} from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
 import { listAnalyses } from "@/lib/rita/analyses";
@@ -23,8 +30,8 @@ export default async function RitaPage() {
         <p className="pd-label text-faint">PIXDRIFT / RITA</p>
         <h1 className="text-3xl font-semibold tracking-tight">RITA</h1>
         <p className="text-ink-soft">
-          Verifierar räkenskaper mot ett regelverk. Det är inte TORA — TORA avgör om ett bolag
-          får lämna anbud.
+          Verifierar räkenskaper mot ett regelverk. Det är inte TORA — TORA avgör om ett bolag får
+          lämna anbud.
         </p>
         <Notice>
           Utan <span className="font-mono">RITA_ENGINE_URL</span> + token eller{" "}
@@ -36,12 +43,15 @@ export default async function RitaPage() {
 
       {!session?.org ? (
         <SignInGate next="/rita" title="Logga in för att begära analys">
-          Analysen skrivs i RITA:s eget schema. BRITT får veta via händelseloggen när något
-          slutar eller blockeras.
+          Analysen skrivs i RITA:s eget schema. BRITT får veta via händelseloggen när något slutar
+          eller blockeras.
         </SignInGate>
       ) : (
         <>
-          <form action={requestRitaAnalysis} className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4">
+          <form
+            action={requestRitaAnalysis}
+            className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
+          >
             <h2 className="text-lg font-semibold">Ny analys</h2>
             <Field
               name="companyName"
@@ -49,7 +59,12 @@ export default async function RitaPage() {
               required
               defaultValue="Exempelbolaget AB"
             />
-            <Field name="orgNumber" label="Organisationsnummer" required defaultValue="556016-0680" />
+            <Field
+              name="orgNumber"
+              label="Organisationsnummer"
+              required
+              defaultValue="556016-0680"
+            />
             <CheckField
               name="useDemoDocument"
               defaultChecked

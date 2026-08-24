@@ -21,8 +21,8 @@ export default async function AlvaPage() {
         <p className="pd-label text-faint">PIXDRIFT / ALVA</p>
         <h1 className="text-3xl font-semibold tracking-tight">ALVA</h1>
         <p className="text-ink-soft">
-          Registrerar ett diagnostiskt fall. Själva diagnosmotorn väntar på ALVA-repot — fallet
-          får status open, inte en påhittad slutsats.
+          Registrerar ett diagnostiskt fall. Själva diagnosmotorn väntar på ALVA-repot — fallet får
+          status open, inte en påhittad slutsats.
         </p>
         <Notice>Diagnosmotorn är deferred. Inga fynd, inga protokoll, ingen AI-sanning.</Notice>
       </header>
@@ -33,7 +33,10 @@ export default async function AlvaPage() {
         </SignInGate>
       ) : (
         <>
-          <form action={registerAlvaCase} className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4">
+          <form
+            action={registerAlvaCase}
+            className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
+          >
             <h2 className="text-lg font-semibold">Nytt fall</h2>
             <Field name="complaint" label="Kundens beskrivning" required multiline />
             <Field name="vehicleRef" label="Fordonsreferens (valfritt)" />

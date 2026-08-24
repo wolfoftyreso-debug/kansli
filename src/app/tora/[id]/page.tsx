@@ -11,11 +11,7 @@ export const metadata = {
   title: "Möjlighet — TORA — Pixdrift",
 };
 
-export default async function ToraOpportunityPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function ToraOpportunityPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await readSession();
   const tier = parseTier(session?.org?.tier);
@@ -55,7 +51,8 @@ export default async function ToraOpportunityPage({
         <p className="text-sm text-muted">{displayField(view.accessExplanation)}</p>
         <p className="text-sm text-muted">
           Sista anbudsdag: {displayField(view.deadlineAt)}
-          {view.estimatedValueSek.state === "unlocked" && typeof view.estimatedValueSek.value === "number"
+          {view.estimatedValueSek.state === "unlocked" &&
+          typeof view.estimatedValueSek.value === "number"
             ? ` · ${sek(view.estimatedValueSek.value)}`
             : ""}
         </p>
@@ -66,7 +63,10 @@ export default async function ToraOpportunityPage({
           <h2 className="text-lg font-semibold">Förbehåll</h2>
           <ul className="flex flex-col gap-2">
             {view.caveats.map((caveat) => (
-              <li key={caveat.key} className="rounded-xl border border-line bg-surface px-4 py-3 text-sm text-ink-soft">
+              <li
+                key={caveat.key}
+                className="rounded-xl border border-line bg-surface px-4 py-3 text-sm text-ink-soft"
+              >
                 {caveat.text}
               </li>
             ))}
@@ -108,7 +108,9 @@ function ValueBlock({ detail }: { detail: OpportunityDetailResponse }) {
       <p className="text-sm text-ink-soft">{value.explanation}</p>
       <p className="font-mono text-xs text-faint">
         {value.securedMonths} säkrade månader
-        {value.undecidedOptionMonths > 0 ? ` · ${value.undecidedOptionMonths} oavgjorda optionsmånader` : ""}
+        {value.undecidedOptionMonths > 0
+          ? ` · ${value.undecidedOptionMonths} oavgjorda optionsmånader`
+          : ""}
         {typeof value.totalValueSek === "number" ? ` · ${sek(value.totalValueSek)} publicerat` : ""}
         {typeof value.annualValueSek === "number" ? ` · ${sek(value.annualValueSek)} / år` : ""}
       </p>
@@ -136,7 +138,10 @@ function EvaluationBlock({ detail }: { detail: OpportunityDetailResponse }) {
       {evaluation.criteria.length > 0 ? (
         <ul className="flex flex-col gap-2">
           {evaluation.criteria.map((criterion) => (
-            <li key={criterion.name} className="rounded-xl border border-line bg-surface px-4 py-3 text-sm">
+            <li
+              key={criterion.name}
+              className="rounded-xl border border-line bg-surface px-4 py-3 text-sm"
+            >
               {criterion.name}
               <span className="ml-2 font-mono text-xs text-faint">{criterion.weightPct} %</span>
             </li>
@@ -183,7 +188,9 @@ function WalkthroughBlock({ detail }: { detail: OpportunityDetailResponse }) {
       <ol className="flex flex-col gap-2">
         {walkthrough.stages.map((entry) => (
           <li key={entry.stage.id} className="rounded-xl border border-line bg-surface px-4 py-3">
-            <p className="text-xs font-medium uppercase tracking-wide text-accent">{entry.position}</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-accent">
+              {entry.position}
+            </p>
             <p className="mt-1 font-medium">{entry.stage.title}</p>
             {entry.date ? <p className="font-mono text-xs text-faint">{entry.date}</p> : null}
             {entry.dateUnknownReason ? (
@@ -205,10 +212,17 @@ function DocumentsBlock({ detail }: { detail: OpportunityDetailResponse }) {
       {docs.status === "ready" ? (
         <ul className="flex flex-col gap-2">
           {docs.items.map((item) => (
-            <li key={item.evidence.id} className="rounded-xl border border-line bg-surface px-4 py-3">
-              <p className="text-xs font-medium uppercase tracking-wide text-accent">{item.urgency}</p>
+            <li
+              key={item.evidence.id}
+              className="rounded-xl border border-line bg-surface px-4 py-3"
+            >
+              <p className="text-xs font-medium uppercase tracking-wide text-accent">
+                {item.urgency}
+              </p>
               <p className="mt-1 font-medium">{item.evidence.title}</p>
-              {item.startBy ? <p className="font-mono text-xs text-faint">börja senast {item.startBy}</p> : null}
+              {item.startBy ? (
+                <p className="font-mono text-xs text-faint">börja senast {item.startBy}</p>
+              ) : null}
             </li>
           ))}
         </ul>
@@ -224,7 +238,10 @@ function RemediesBlock({ detail }: { detail: OpportunityDetailResponse }) {
       <p className="text-sm text-ink-soft">{detail.remedies.summary}</p>
       <ul className="flex flex-col gap-2">
         {detail.remedies.windows.map((window) => (
-          <li key={window.remedy.key} className="rounded-xl border border-line bg-surface px-4 py-3">
+          <li
+            key={window.remedy.key}
+            className="rounded-xl border border-line bg-surface px-4 py-3"
+          >
             <p className="font-medium">{window.remedy.title}</p>
             <p className="mt-1 text-sm text-ink-soft">{window.basis}</p>
             {window.closesOn ? (
@@ -247,7 +264,9 @@ function QuestionsBlock({ detail }: { detail: OpportunityDetailResponse }) {
         <ul className="flex flex-col gap-2">
           {plan.questions.map((question) => (
             <li key={question.id} className="rounded-xl border border-line bg-surface px-4 py-3">
-              <p className="text-xs font-medium uppercase tracking-wide text-accent">{question.kind}</p>
+              <p className="text-xs font-medium uppercase tracking-wide text-accent">
+                {question.kind}
+              </p>
               <p className="mt-1 font-medium">{question.subject}</p>
               <p className="mt-1 text-sm text-ink-soft">{question.draft}</p>
             </li>

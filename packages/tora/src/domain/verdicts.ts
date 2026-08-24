@@ -150,8 +150,7 @@ export function decideVerdict(input: VerdictInput): VerdictDecision {
       rationale:
         access === "unknown"
           ? (accessExplanation ?? "Förfarande eller tidplan är inte fastställd.")
-          : (qualificationExplanation ??
-            "Uppgifter saknas för att avgöra om kraven är uppfyllda."),
+          : (qualificationExplanation ?? "Uppgifter saknas för att avgöra om kraven är uppfyllda."),
       caveats,
     };
   }

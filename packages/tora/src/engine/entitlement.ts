@@ -167,17 +167,29 @@ export function redactOpportunity(
     caveats: opportunity.caveats,
     organizationKindHint,
 
-    organizationName: identify(opportunity.organizationName, "Lås upp för att se vilken organisation."),
+    organizationName: identify(
+      opportunity.organizationName,
+      "Lås upp för att se vilken organisation.",
+    ),
     title: identify(opportunity.title, "Lås upp för att se vilken upphandling."),
-    rationale: detail(opportunity.rationale, "Lås upp för att se varför systemet matchat möjligheten."),
-    accessExplanation: detail(opportunity.access.explanation, "Lås upp för den procedurmässiga bedömningen."),
+    rationale: detail(
+      opportunity.rationale,
+      "Lås upp för att se varför systemet matchat möjligheten.",
+    ),
+    accessExplanation: detail(
+      opportunity.access.explanation,
+      "Lås upp för den procedurmässiga bedömningen.",
+    ),
     legalBasis: detail(opportunity.legalBasis, "Lås upp för den rättsliga grunden."),
     score: detail(opportunity.score, "Lås upp för exakt poäng och faktorunderlag."),
     deadlineAt: detail(opportunity.deadlineAt, "Lås upp för sista anbudsdag."),
     daysUntilDeadline: detail(opportunity.daysUntilDeadline, "Lås upp för tid kvar."),
     estimatedValueSek: detail(opportunity.estimatedValueSek, "Lås upp för beräknat värde."),
     qualification: detail(opportunity.qualification, "Lås upp för fullständig kravanalys."),
-    recommendedActions: detail(opportunity.recommendedActions, "Lås upp för rekommenderade åtgärder."),
+    recommendedActions: detail(
+      opportunity.recommendedActions,
+      "Lås upp för rekommenderade åtgärder.",
+    ),
     prediction: detail(opportunity.prediction, "Lås upp för tidplan och prognosunderlag."),
     sources: detail(opportunity.sources, "Lås upp för källor och dokument."),
   };
@@ -189,7 +201,11 @@ export function redactOpportunities(
   organizationKindHints: Map<string, string> = new Map(),
 ): OpportunityView[] {
   return opportunities.map((o) =>
-    redactOpportunity(o, tier, organizationKindHints.get(o.organizationId) ?? "offentlig organisation"),
+    redactOpportunity(
+      o,
+      tier,
+      organizationKindHints.get(o.organizationId) ?? "offentlig organisation",
+    ),
   );
 }
 

@@ -95,7 +95,13 @@ describe("avtalsspärren", () => {
   it("finns i varje annonserat förfarande", () => {
     // Direktupphandling och avrop saknar den med rätta; de annonserade får den
     // aldrig tappas ur.
-    const announced: ProcedureKind[] = ["open", "selective", "negotiated", "simplified", "concession"];
+    const announced: ProcedureKind[] = [
+      "open",
+      "selective",
+      "negotiated",
+      "simplified",
+      "concession",
+    ];
     for (const kind of announced) {
       const ids = PROCEDURE_GUIDES[kind].stages.map((s) => s.id);
       expect(ids, `${kind}`).toContain("standstill");
@@ -207,7 +213,13 @@ describe("placerar upphandlingen i processen", () => {
 describe("ordlistan", () => {
   it("förklarar de ord systemet självt använder", () => {
     const terms = GLOSSARY.map((e) => e.term.toLowerCase()).join(" ");
-    for (const word of ["avtalsspärr", "överprövning", "avrop", "rangordning", "utvärderingspris"]) {
+    for (const word of [
+      "avtalsspärr",
+      "överprövning",
+      "avrop",
+      "rangordning",
+      "utvärderingspris",
+    ]) {
       expect(terms, word).toContain(word);
     }
   });

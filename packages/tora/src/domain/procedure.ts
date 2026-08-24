@@ -477,8 +477,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   },
   {
     term: "Utvärderingspris",
-    plain:
-      "Det belopp anbuden faktiskt jämförs med, efter att kvalitet räknats om till kronor.",
+    plain: "Det belopp anbuden faktiskt jämförs med, efter att kvalitet räknats om till kronor.",
     whyItMatters:
       "Skiljer sig från anbudspriset i en mervärdesmodell. Det är därför ett dyrare anbud kan " +
       "vinna.",
@@ -499,8 +498,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   },
   {
     term: "Överprövning",
-    plain:
-      "Att be förvaltningsrätten pröva om upphandlingen gått rätt till, innan avtal tecknas.",
+    plain: "Att be förvaltningsrätten pröva om upphandlingen gått rätt till, innan avtal tecknas.",
     whyItMatters:
       "Ansökan ska ha kommit in innan avtalsspärren löper ut. Att den skickats i tid räcker inte.",
   },
@@ -521,8 +519,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   },
   {
     term: "Rangordning",
-    plain:
-      "En ordning mellan ramavtalsleverantörerna. Den först rangordnade tillfrågas först.",
+    plain: "En ordning mellan ramavtalsleverantörerna. Den först rangordnade tillfrågas först.",
     whyItMatters:
       "Är du rangordnad etta för ett behov har du en verklig rätt till avropet — en av få " +
       "situationer där ordet rätt är befogat.",
@@ -540,10 +537,8 @@ export const GLOSSARY: GlossaryEntry[] = [
   },
   {
     term: "Direktupphandling",
-    plain:
-      "Ett köp utan annonsering, tillåtet under en beloppsgräns eller i vissa särskilda fall.",
-    whyItMatters:
-      "Ingen leverantör kan kräva en direktupphandling. Det är alltid köparens beslut.",
+    plain: "Ett köp utan annonsering, tillåtet under en beloppsgräns eller i vissa särskilda fall.",
+    whyItMatters: "Ingen leverantör kan kräva en direktupphandling. Det är alltid köparens beslut.",
   },
   {
     term: "Direktupphandlingsgräns",
@@ -554,8 +549,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   },
   {
     term: "Kvalificering",
-    plain:
-      "Prövningen av leverantören som sådan: ekonomi, kapacitet, erfarenhet, tillstånd.",
+    plain: "Prövningen av leverantören som sådan: ekonomi, kapacitet, erfarenhet, tillstånd.",
     whyItMatters:
       "Skiljer sig från utvärderingen av anbudet. Man kan vara kvalificerad och ändå förlora, " +
       "och okvalificerad även med det bästa priset.",

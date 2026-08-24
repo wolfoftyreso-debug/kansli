@@ -150,7 +150,10 @@ export function assessContractAccess(
     explanation:
       `Behovet omfattas av ${contract.title} (till ${contract.endDate}) där företaget inte är part. ` +
       "Nästa möjlighet uppstår när avtalet löper ut eller när en ny upphandling annonseras.",
-    caveats: [doctrineCaveat("frameworkGovernsPurchase"), doctrineCaveat("noEntitlementFromScarcity")],
+    caveats: [
+      doctrineCaveat("frameworkGovernsPurchase"),
+      doctrineCaveat("noEntitlementFromScarcity"),
+    ],
   };
 }
 
@@ -160,12 +163,19 @@ export function assessProcurementAccess(
   company: Company,
   ctx: AccessContext,
 ): AccessResult {
-  const organization = indexBy(ctx.graph.organizations, (o) => o.id).get(procurement.organizationId);
+  const organization = indexBy(ctx.graph.organizations, (o) => o.id).get(
+    procurement.organizationId,
+  );
 
   // A live contract outranks the notice: if something already routes this
   // purchase, that is the situation the company is actually in.
   if (organization && procurement.status !== "announced") {
-    const governing = findGoverningContract(organization, procurement.capabilities, procurement.areas, ctx);
+    const governing = findGoverningContract(
+      organization,
+      procurement.capabilities,
+      procurement.areas,
+      ctx,
+    );
     if (governing) {
       const result = assessContractAccess(governing, company, ctx);
 
@@ -182,7 +192,10 @@ export function assessProcurementAccess(
       // den som sitter på avtalet är just den förväxlingen den dyraste produkten
       // kan producera: ett blått kort där svaret är att börja förbereda ett nytt
       // anbud.
-      if (procurement.status === "predicted" && procurement.predecessorContractId === governing.id) {
+      if (
+        procurement.status === "predicted" &&
+        procurement.predecessorContractId === governing.id
+      ) {
         const incumbent = result.status !== "blocked";
         return {
           status: "unknown",
@@ -255,7 +268,11 @@ export function assessProcurementAccess(
       const open =
         procurement.admissionOpenUntil === undefined || procurement.admissionOpenUntil >= ctx.today;
       if (!open) {
-        return { status: "blocked", explanation: "Det dynamiska inköpssystemets giltighetstid har löpt ut.", caveats: [] };
+        return {
+          status: "blocked",
+          explanation: "Det dynamiska inköpssystemets giltighetstid har löpt ut.",
+          caveats: [],
+        };
       }
       return {
         status: "open",
@@ -279,12 +296,14 @@ export function assessProcurementAccess(
           caveats,
         };
       }
-      if (threshold.verification === "unverified") caveats.push(unverifiedThresholdCaveat(threshold));
+      if (threshold.verification === "unverified")
+        caveats.push(unverifiedThresholdCaveat(threshold));
 
       if (procurement.estimatedValueSek === undefined) {
         return {
           status: "unknown",
-          explanation: "Uppskattat värde saknas, så det går inte att bedöma om direktupphandling är möjlig.",
+          explanation:
+            "Uppskattat värde saknas, så det går inte att bedöma om direktupphandling är möjlig.",
           caveats,
         };
       }

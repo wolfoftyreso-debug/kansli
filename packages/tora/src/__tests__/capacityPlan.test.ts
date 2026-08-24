@@ -83,10 +83,7 @@ describe("delar upp luckorna efter vad regeln tillåter", () => {
   it("lämnar uppfyllda och obesvarade krav utanför", () => {
     // Ett krav som är uppfyllt är ingen lucka. Ett okänt är inte heller det —
     // att uppgift saknas är inte samma sak som att något fattas.
-    const plan = buildCapacityPlan([
-      gap("r1", "revenue", "met"),
-      gap("r2", "revenue", "unknown"),
-    ]);
+    const plan = buildCapacityPlan([gap("r1", "revenue", "met"), gap("r2", "revenue", "unknown")]);
     expect(plan.bridgeable).toHaveLength(0);
     expect(plan.yours).toHaveLength(0);
     expect(plan.unclear).toHaveLength(0);
@@ -124,7 +121,9 @@ describe("solidariskt ansvar", () => {
 describe("reglerna som alltid följer med", () => {
   it("säger att det alls är tillåtet", () => {
     const plan = buildCapacityPlan([]);
-    expect(plan.rules.some((r) => r.rule.includes("får för ett visst kontrakt åberopa"))).toBe(true);
+    expect(plan.rules.some((r) => r.rule.includes("får för ett visst kontrakt åberopa"))).toBe(
+      true,
+    );
   });
 
   it("skiljer åberopad kapacitet från underleverantör", () => {
@@ -205,6 +204,8 @@ describe("lovar aldrig ett utfall", () => {
 
   it("säger aldrig att kravet därmed är uppfyllt", () => {
     const plan = buildCapacityPlan([gap("r1", "revenue"), gap("r2", "reference")]);
-    expect(plan.summary).not.toMatch(/då är kravet uppfyllt|du klarar kravet|godkänd|räcker för att/i);
+    expect(plan.summary).not.toMatch(
+      /då är kravet uppfyllt|du klarar kravet|godkänd|räcker för att/i,
+    );
   });
 });

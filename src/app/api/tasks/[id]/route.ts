@@ -2,10 +2,7 @@ import { ApiError, requireOrg } from "@pixdrift/api-core";
 import { handleApi, json } from "@/lib/platform/http";
 import { deleteTask, toggleTask } from "@/lib/kansli/tasks";
 
-export async function PATCH(
-  _request: Request,
-  context: { params: Promise<{ id: string }> },
-) {
+export async function PATCH(_request: Request, context: { params: Promise<{ id: string }> }) {
   return handleApi(async ({ actor, pool, events, requestId }) => {
     const present = requireOrg(actor);
     const { id } = await context.params;
@@ -25,10 +22,7 @@ export async function PATCH(
   });
 }
 
-export async function DELETE(
-  _request: Request,
-  context: { params: Promise<{ id: string }> },
-) {
+export async function DELETE(_request: Request, context: { params: Promise<{ id: string }> }) {
   return handleApi(async ({ actor, pool }) => {
     const present = requireOrg(actor);
     const { id } = await context.params;

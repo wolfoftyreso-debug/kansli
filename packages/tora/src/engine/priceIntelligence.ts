@@ -137,7 +137,8 @@ export function analysePrices(scope: PriceScope, graph: ProcurementGraph): Price
     const existing = competitorMap.get(award.supplierName);
     if (existing) {
       existing.wins += 1;
-      existing.lastWonAt = award.awardedAt > existing.lastWonAt ? award.awardedAt : existing.lastWonAt;
+      existing.lastWonAt =
+        award.awardedAt > existing.lastWonAt ? award.awardedAt : existing.lastWonAt;
       if (award.valueSek !== undefined) {
         existing.totalValueSek = (existing.totalValueSek ?? 0) + award.valueSek;
       }
@@ -154,7 +155,8 @@ export function analysePrices(scope: PriceScope, graph: ProcurementGraph): Price
   return {
     status: "ok",
     awardValues: describe(values, distinctSuppliers),
-    bidCounts: bidCounts.length >= MIN_AWARDS_FOR_RANGE ? describe(bidCounts, distinctSuppliers) : undefined,
+    bidCounts:
+      bidCounts.length >= MIN_AWARDS_FOR_RANGE ? describe(bidCounts, distinctSuppliers) : undefined,
     competitors: [...competitorMap.values()].sort((a, b) => b.wins - a.wins),
     valueCoverage: values.length / inScope.length,
     compliance: DOCTRINE.noPriceCoordination,

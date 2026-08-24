@@ -472,7 +472,9 @@ export function areaLineage(areas: Area[], code: AreaCode): AreaCode[] {
  */
 export function areaCovers(areas: Area[], served: AreaCode[], required: AreaCode[]): boolean {
   const servedSet = new Set(served);
-  return required.some((code) => areaLineage(areas, code).some((ancestor) => servedSet.has(ancestor)));
+  return required.some((code) =>
+    areaLineage(areas, code).some((ancestor) => servedSet.has(ancestor)),
+  );
 }
 
 /**
@@ -504,7 +506,9 @@ export function daysBetween(from: IsoDate, to: IsoDate): number {
 export function addMonths(date: IsoDate, months: number): IsoDate {
   const [y, m, d] = date.split("-").map(Number);
   const target = new Date(Date.UTC(y, m - 1 + months, 1));
-  const lastDay = new Date(Date.UTC(target.getUTCFullYear(), target.getUTCMonth() + 1, 0)).getUTCDate();
+  const lastDay = new Date(
+    Date.UTC(target.getUTCFullYear(), target.getUTCMonth() + 1, 0),
+  ).getUTCDate();
   target.setUTCDate(Math.min(d, lastDay));
   return target.toISOString().slice(0, 10);
 }

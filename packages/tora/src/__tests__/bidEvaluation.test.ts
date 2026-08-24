@@ -50,7 +50,10 @@ describe("vägrar räkna när något avgörande saknas", () => {
     // Det här är demodatans faktiska form: "Pris 60 %" utan ett ord om hur
     // kronor blir poäng. Att gissa den vanligaste modellen vore att uppfinna
     // hälften av svaret.
-    const model: EvaluationModel = { kind: "best_price_quality_ratio", criteria: PRICE_AND_QUALITY };
+    const model: EvaluationModel = {
+      kind: "best_price_quality_ratio",
+      criteria: PRICE_AND_QUALITY,
+    };
     const result = unknown(evaluateBid(model, { priceSek: 500_000 }));
     expect(result.missing).toContain("prisets poängformel");
     // Viktningen vi *har* ska stå i klartext, så svaret inte blir ett tomt nej.
@@ -269,7 +272,10 @@ describe("doktrin", () => {
       criteria: PRICE_ONLY,
       priceModel: { kind: "lowest_price_wins" },
     };
-    const withoutFormula: EvaluationModel = { kind: "best_price_quality_ratio", criteria: PRICE_AND_QUALITY };
+    const withoutFormula: EvaluationModel = {
+      kind: "best_price_quality_ratio",
+      criteria: PRICE_AND_QUALITY,
+    };
 
     for (const result of [
       evaluateBid(withFormula, { priceSek: 450_000 }),

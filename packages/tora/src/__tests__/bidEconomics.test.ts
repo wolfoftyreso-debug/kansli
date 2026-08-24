@@ -154,7 +154,13 @@ describe("räknar, rekommenderar inte", () => {
   const cases = [
     { hours: 40, hourlyCostSek: 800, contractValueSek: 200_000, marginPct: 10 },
     { hours: 40, hourlyCostSek: 800, contractValueSek: 5_000_000, marginPct: 15 },
-    { hours: 40, hourlyCostSek: 800, contractValueSek: 1_000_000, marginPct: 10, winProbabilityPct: 5 },
+    {
+      hours: 40,
+      hourlyCostSek: 800,
+      contractValueSek: 1_000_000,
+      marginPct: 10,
+      winProbabilityPct: 5,
+    },
   ];
 
   it.each(cases)("säger aldrig lämna eller avstå (%#)", (input) => {

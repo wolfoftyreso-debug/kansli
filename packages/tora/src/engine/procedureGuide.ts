@@ -22,11 +22,7 @@
  */
 
 import type { IsoDate, Procurement } from "../domain/ontology";
-import {
-  PROCEDURE_GUIDES,
-  type ProcedureGuide,
-  type ProcedureStage,
-} from "../domain/procedure";
+import { PROCEDURE_GUIDES, type ProcedureGuide, type ProcedureStage } from "../domain/procedure";
 
 export type StagePosition = "done" | "current" | "upcoming" | "unknown";
 
@@ -169,10 +165,9 @@ function positionOf(
 export function buildWalkthrough(procurement: Procurement, today: IsoDate): Walkthrough {
   const guide = PROCEDURE_GUIDES[procurement.procedure];
   const currentId = currentStageId(procurement, today);
-  const currentIndex = currentId
-    ? guide.stages.findIndex((s) => s.id === currentId)
-    : undefined;
-  const resolvedCurrent = currentIndex !== undefined && currentIndex >= 0 ? currentIndex : undefined;
+  const currentIndex = currentId ? guide.stages.findIndex((s) => s.id === currentId) : undefined;
+  const resolvedCurrent =
+    currentIndex !== undefined && currentIndex >= 0 ? currentIndex : undefined;
 
   const stages: WalkthroughStage[] = guide.stages.map((stage, index) => {
     const { date, reason } = dateFor(stage, procurement);
@@ -203,14 +198,11 @@ function describePosition(
   const current = stages[currentIndex];
   const remaining = stages.length - currentIndex - 1;
   const tail =
-    remaining > 0
-      ? ` Därefter återstår ${remaining} steg.`
-      : " Det här är processens sista steg.";
+    remaining > 0 ? ` Därefter återstår ${remaining} steg.` : " Det här är processens sista steg.";
 
   if (current.daysUntil !== undefined && current.daysUntil >= 0) {
     const days = current.daysUntil;
-    const when =
-      days === 0 ? "i dag" : days === 1 ? "om en dag" : `om ${days} dagar`;
+    const when = days === 0 ? "i dag" : days === 1 ? "om en dag" : `om ${days} dagar`;
     return `Pågående steg: ${current.stage.title}. Det löper ut ${when} (${current.date}).${tail}`;
   }
 

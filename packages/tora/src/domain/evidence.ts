@@ -87,7 +87,8 @@ const UHM_ESPD: SourceRef = {
 };
 
 const UHM_TAX_EVIDENCE: SourceRef = {
-  document: "Upphandlingsmyndigheten — hämta in bevis om obetalda skatter och socialförsäkringsavgifter",
+  document:
+    "Upphandlingsmyndigheten — hämta in bevis om obetalda skatter och socialförsäkringsavgifter",
   url: "https://www.upphandlingsmyndigheten.se/inkopsprocessen/genomfor-upphandlingen/att-hamta-in-bevis-om-obetalda-skatter-och-socialforsakringsavgifter/",
   retrievedAt: "2026-08-22",
 };
@@ -188,14 +189,12 @@ export const EVIDENCE: Record<string, EvidenceItem> = {
     title: "Kontroll av uteslutningsgrunder",
     proves: "Att inget av de förhållanden som tvingar eller tillåter uteslutning föreligger.",
     issuer: "buyer",
-    where:
-      "Köparen ska kontrollera detta innan kontrakt tilldelas. Din del är den egna försäkran.",
+    where: "Köparen ska kontrollera detta innan kontrakt tilldelas. Din del är den egna försäkran.",
     pitfall:
       "Grunderna gäller även företrädare för företaget, inte bara bolaget. Ett förhållande hos en " +
       "styrelseledamot kan alltså träffa anbudet.",
     basis: {
-      rule:
-        "Uteslutningsgrunderna finns i 13 kap. LOU och ska kontrolleras innan kontrakt tilldelas.",
+      rule: "Uteslutningsgrunderna finns i 13 kap. LOU och ska kontrolleras innan kontrakt tilldelas.",
       source: UHM_EXCLUSION,
       verification: "verified",
     },
@@ -206,7 +205,8 @@ export const EVIDENCE: Record<string, EvidenceItem> = {
     title: "Årsredovisning eller årsbokslut",
     proves: "Företagets omsättning och ekonomiska ställning för ett räkenskapsår.",
     issuer: "accountant",
-    where: "Din egen bokföring, din redovisningsbyrå, eller Bolagsverket för inlämnade årsredovisningar.",
+    where:
+      "Din egen bokföring, din redovisningsbyrå, eller Bolagsverket för inlämnade årsredovisningar.",
     typicalLeadTimeDays: 3,
     pitfall:
       "Omsättningskrav mäts på räkenskapsår. Ett ungt företag kan sakna det år kravet pekar på — " +

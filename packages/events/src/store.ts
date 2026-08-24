@@ -144,7 +144,9 @@ function toEvent(row: {
   request_id: string | null;
 }): StoredEvent {
   const payload =
-    typeof row.payload === "string" ? (JSON.parse(row.payload) as Record<string, unknown>) : row.payload;
+    typeof row.payload === "string"
+      ? (JSON.parse(row.payload) as Record<string, unknown>)
+      : row.payload;
   return {
     id: row.id,
     occurredAt: new Date(row.occurred_at).toISOString(),

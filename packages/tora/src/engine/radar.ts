@@ -127,7 +127,9 @@ export function buildRadar(
     watch: byBucket("watch"),
     closed: byBucket("closed"),
     organizations: [...orgMap.values()].sort((a, b) => b.opportunityCount - a.opportunityCount),
-    capabilityAreas: [...capabilityMap.values()].sort((a, b) => b.opportunityCount - a.opportunityCount),
+    capabilityAreas: [...capabilityMap.values()].sort(
+      (a, b) => b.opportunityCount - a.opportunityCount,
+    ),
     verdictCounts,
     knownValueSek: withValue.reduce((sum, o) => sum + (o.estimatedValueSek ?? 0), 0),
     opportunitiesWithoutValue: live.length - withValue.length,

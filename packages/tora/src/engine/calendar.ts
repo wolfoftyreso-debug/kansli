@@ -10,11 +10,7 @@ import { daysBetween, type IsoDate } from "../domain/ontology";
 import type { Opportunity } from "./opportunity";
 
 export type CalendarEntryKind =
-  | "deadline"
-  | "admission_deadline"
-  | "expected_announcement"
-  | "contract_end"
-  | "action";
+  "deadline" | "admission_deadline" | "expected_announcement" | "contract_end" | "action";
 
 export interface CalendarEntry {
   date: IsoDate;

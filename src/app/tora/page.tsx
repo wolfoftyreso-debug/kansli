@@ -30,8 +30,8 @@ export default async function ToraPage() {
         <p className="pd-label text-faint">PIXDRIFT / TORA</p>
         <h1 className="text-3xl font-semibold tracking-tight">TORA</h1>
         <p className="text-ink-soft">
-          Upphandlingsrätt och rekommenderad åtgärd för {demoCompany.name}. Motorn körs
-          server-side; det en nivå inte får se når aldrig klienten. Inte RITA.
+          Upphandlingsrätt och rekommenderad åtgärd för {demoCompany.name}. Motorn körs server-side;
+          det en nivå inte får se når aldrig klienten. Inte RITA.
         </p>
         <Notice>
           Demonstrationsdata. Upphandlingarna, beloppen och datumen är påhittade. Nivå:{" "}
@@ -78,7 +78,11 @@ export default async function ToraPage() {
         </p>
       )}
 
-      <MarketSection title="Aktuellt" empty="Inga öppna möjligheter i demonstrationsunderlaget." items={market.openNow} />
+      <MarketSection
+        title="Aktuellt"
+        empty="Inga öppna möjligheter i demonstrationsunderlaget."
+        items={market.openNow}
+      />
       <MarketSection title="Kommande" empty="Inga kommande möjligheter." items={market.upcoming} />
       <MarketSection title="Bevakning" empty="Inget att bevaka." items={market.watch} />
       <MarketSection title="Historik" empty="Ingen historik i underlaget." items={market.history} />

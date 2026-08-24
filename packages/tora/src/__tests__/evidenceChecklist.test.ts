@@ -134,7 +134,11 @@ describe("baslinjen", () => {
     // läsas om och inte som rutin.
     const p = procurement({
       requirements: [
-        requirement({ id: "reg", kind: "registration", registration: "f_tax" } as Partial<Requirement>),
+        requirement({
+          id: "reg",
+          kind: "registration",
+          registration: "f_tax",
+        } as Partial<Requirement>),
       ],
     });
     const result = ready(build(p, [assessment("reg", "unknown")]));
@@ -151,13 +155,17 @@ describe("kravens bedömning styr angelägenheten", () => {
 
   it("markerar ett krav som inte är uppfyllt som en lucka", () => {
     const result = ready(build(withInsurance, [assessment("ins", "unmet")]));
-    expect(result.items.find((i) => i.evidence.id === "insurance_certificate")?.urgency).toBe("gap");
+    expect(result.items.find((i) => i.evidence.id === "insurance_certificate")?.urgency).toBe(
+      "gap",
+    );
   });
 
   it("räknar ett åtgärdbart krav som en lucka och inte som klart", () => {
     // "Går att åtgärda" är fortfarande arbete som ska göras före deadline.
     const result = ready(build(withInsurance, [assessment("ins", "remediable")]));
-    expect(result.items.find((i) => i.evidence.id === "insurance_certificate")?.urgency).toBe("gap");
+    expect(result.items.find((i) => i.evidence.id === "insurance_certificate")?.urgency).toBe(
+      "gap",
+    );
   });
 
   it("skiljer saknad uppgift från krav som brister", () => {
@@ -180,8 +188,16 @@ describe("kravens bedömning styr angelägenheten", () => {
     // mildra bilden vore att dölja arbetet bakom ett medelvärde.
     const p = procurement({
       requirements: [
-        requirement({ id: "c1", kind: "certification", certification: "a" } as Partial<Requirement>),
-        requirement({ id: "c2", kind: "certification", certification: "b" } as Partial<Requirement>),
+        requirement({
+          id: "c1",
+          kind: "certification",
+          certification: "a",
+        } as Partial<Requirement>),
+        requirement({
+          id: "c2",
+          kind: "certification",
+          certification: "b",
+        } as Partial<Requirement>),
       ],
     });
     const result = ready(build(p, [assessment("c1", "met"), assessment("c2", "unmet")]));
@@ -226,11 +242,17 @@ describe("tid", () => {
     const p = procurement({
       requirements: [
         requirement({ id: "ins" }),
-        requirement({ id: "cert", kind: "certification", certification: "x" } as Partial<Requirement>),
+        requirement({
+          id: "cert",
+          kind: "certification",
+          certification: "x",
+        } as Partial<Requirement>),
       ],
     });
     const result = ready(build(p, [assessment("ins", "unknown"), assessment("cert", "unknown")]));
-    const lead = result.items.map((i) => i.evidence.typicalLeadTimeDays ?? Number.POSITIVE_INFINITY);
+    const lead = result.items.map(
+      (i) => i.evidence.typicalLeadTimeDays ?? Number.POSITIVE_INFINITY,
+    );
     expect(lead).toEqual([...lead].sort((a, b) => b - a));
     // Certifikatet, 10 dagar, ska stå före försäkringsbeviset, 5 dagar.
     const ids = result.items.map((i) => i.evidence.id);
@@ -249,7 +271,11 @@ describe("tid", () => {
   it("pekar ut den ledtid som avgör när arbetet måste börja", () => {
     const p = procurement({
       requirements: [
-        requirement({ id: "cert", kind: "certification", certification: "x" } as Partial<Requirement>),
+        requirement({
+          id: "cert",
+          kind: "certification",
+          certification: "x",
+        } as Partial<Requirement>),
       ],
     });
     const result = ready(build(p, [assessment("cert", "unmet")]));
@@ -349,6 +375,8 @@ describe("listan är inte underlaget", () => {
     const p = procurement({ requirements: [requirement({ id: "ins" })] });
     const result = ready(build(p, [assessment("ins", "met")]));
     const text = `${result.explanation} ${result.items.map((i) => i.evidence.proves).join(" ")}`;
-    expect(text).not.toMatch(/då är du godkänd|garanterar|du kommer att vinna|räcker för att vinna/i);
+    expect(text).not.toMatch(
+      /då är du godkänd|garanterar|du kommer att vinna|räcker för att vinna/i,
+    );
   });
 });

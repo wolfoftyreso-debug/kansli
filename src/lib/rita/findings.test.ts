@@ -31,9 +31,13 @@ describe("findingsFromAnalysis", () => {
         category: "vat",
       },
     ]);
-    expect(analysisSummary({
-      result: { summary: { identified_opportunities: 1, high_priority_count: 1, found_nothing: false } },
-    })).toMatch(/1 fynd/);
+    expect(
+      analysisSummary({
+        result: {
+          summary: { identified_opportunities: 1, high_priority_count: 1, found_nothing: false },
+        },
+      }),
+    ).toMatch(/1 fynd/);
   });
 
   it("returns nothing for blocked or empty results", () => {

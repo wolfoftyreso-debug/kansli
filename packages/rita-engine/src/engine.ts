@@ -46,11 +46,7 @@ export class EngineError extends Error {
 }
 
 export type EngineErrorCode =
-  | "engineMissing"
-  | "engineTimeout"
-  | "engineFailed"
-  | "engineUnreadable"
-  | "contractMismatch";
+  "engineMissing" | "engineTimeout" | "engineFailed" | "engineUnreadable" | "contractMismatch";
 
 // ---------------------------------------------------------------------------
 // Subprocess
@@ -142,7 +138,8 @@ export class SubprocessAnalysisEngine implements AnalysisEngine {
     return new Promise((resolve, reject) => {
       const child = spawn(this.options.binaryPath, [...args], {
         cwd: this.options.cwd,
-        env: this.options.env ?? ({ PATH: process.env["PATH"] ?? "" } as unknown as NodeJS.ProcessEnv),
+        env:
+          this.options.env ?? ({ PATH: process.env["PATH"] ?? "" } as unknown as NodeJS.ProcessEnv),
         stdio: ["pipe", "pipe", "pipe"],
       }) as ChildProcessWithoutNullStreams;
 
@@ -187,10 +184,7 @@ export class SubprocessAnalysisEngine implements AnalysisEngine {
         clearTimeout(timer);
         signal?.removeEventListener("abort", onAbort);
         reject(
-          new EngineError(
-            `analysmotorn kunde inte startas: ${error.message}`,
-            "engineMissing",
-          ),
+          new EngineError(`analysmotorn kunde inte startas: ${error.message}`, "engineMissing"),
         );
       });
 
@@ -390,7 +384,11 @@ export class HttpAnalysisEngine implements AnalysisEngine {
       try {
         return JSON.parse(text) as unknown;
       } catch {
-        throw new EngineError("motorn svarade med något som inte är JSON", "engineUnreadable", text.slice(0, 2_000));
+        throw new EngineError(
+          "motorn svarade med något som inte är JSON",
+          "engineUnreadable",
+          text.slice(0, 2_000),
+        );
       }
     } catch (error) {
       if (error instanceof EngineError) throw error;

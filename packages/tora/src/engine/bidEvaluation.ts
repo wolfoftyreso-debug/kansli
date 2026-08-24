@@ -259,7 +259,9 @@ function byPriceModel(
           (input.priceSek < bestPriceSek
             ? ` Priset ligger under den bästa gränsen; poängen är kapad till ${maxPoints}.`
             : "") +
-          (input.priceSek > worstPriceSek ? " Priset ligger över den sämsta gränsen: noll poäng." : ""),
+          (input.priceSek > worstPriceSek
+            ? " Priset ligger över den sämsta gränsen: noll poäng."
+            : ""),
         restsOnAssumption: false,
         caveats: [noCoordination],
       };
@@ -384,7 +386,8 @@ function withQuality(
   const quality = round2(input.qualityPoints);
   steps.push({
     label: "Kvalitetspoäng",
-    formula: `egen bedömning ${quality}` + (model.qualityPointsMax ? ` av ${model.qualityPointsMax}` : ""),
+    formula:
+      `egen bedömning ${quality}` + (model.qualityPointsMax ? ` av ${model.qualityPointsMax}` : ""),
     value: quality,
     unit: "poäng",
   });

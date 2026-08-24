@@ -21,8 +21,7 @@ function listen(
       }
       resolve({
         url: `http://127.0.0.1:${addr.port}`,
-        close: () =>
-          new Promise((done, fail) => server.close((err) => (err ? fail(err) : done()))),
+        close: () => new Promise((done, fail) => server.close((err) => (err ? fail(err) : done()))),
       });
     });
   });

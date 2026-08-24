@@ -12,7 +12,10 @@ export async function GET() {
 export async function POST(request: Request) {
   return handleApi(async ({ actor, pool, events, requestId }) => {
     const present = requireOrg(actor);
-    const body = (await request.json().catch(() => null)) as { title?: string; owner?: string } | null;
+    const body = (await request.json().catch(() => null)) as {
+      title?: string;
+      owner?: string;
+    } | null;
     if (!body?.title?.trim()) throw new ApiError("invalid_request", "Titeln får inte vara tom.");
     const task = await addTask(pool, {
       orgRef: present.orgRef,

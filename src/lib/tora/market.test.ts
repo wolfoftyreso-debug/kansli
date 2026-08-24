@@ -28,7 +28,12 @@ describe("TORA loaders", () => {
     const paid = loadToraCalendar("enterprise");
     expect(free.alerts.state).toBe("locked");
     expect(paid.alerts.state).toBe("unlocked");
-    const identified = [...paid.thisWeek, ...paid.next30Days, ...paid.next90Days, ...paid.next12Months];
+    const identified = [
+      ...paid.thisWeek,
+      ...paid.next30Days,
+      ...paid.next90Days,
+      ...paid.next12Months,
+    ];
     expect(identified.some((entry) => entry.opportunityId)).toBe(true);
   });
 

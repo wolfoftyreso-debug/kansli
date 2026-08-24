@@ -109,8 +109,7 @@ export function assessRequirement(
           gap:
             `Omsättningskravet ${formatSek(required)} är mer än ${CAPACITY_RELIANCE_MAX_MULTIPLE} gånger ` +
             `företagets omsättning ${formatSek(company.annualRevenueSek)}.`,
-          remedy:
-            "Redovisa åtagandet från det företag vars ekonomiska kapacitet ni åberopar.",
+          remedy: "Redovisa åtagandet från det företag vars ekonomiska kapacitet ni åberopar.",
         });
       }
       return {
@@ -128,7 +127,11 @@ export function assessRequirement(
 
     case "employees": {
       if (company.employees === undefined) {
-        return { ...base, status: "unknown", explanation: "Antal anställda saknas i företagsprofilen." };
+        return {
+          ...base,
+          status: "unknown",
+          explanation: "Antal anställda saknas i företagsprofilen.",
+        };
       }
       if (company.employees >= requirement.minEmployees) {
         return {
@@ -161,7 +164,11 @@ export function assessRequirement(
 
     case "certification": {
       if (company.certifications.length === 0) {
-        return { ...base, status: "unknown", explanation: "Certifieringar är inte angivna i profilen." };
+        return {
+          ...base,
+          status: "unknown",
+          explanation: "Certifieringar är inte angivna i profilen.",
+        };
       }
       if (company.certifications.includes(requirement.certification)) {
         const label = certificationLabel(ctx, requirement.certification);
@@ -184,7 +191,11 @@ export function assessRequirement(
 
     case "reference": {
       if (company.references.length === 0) {
-        return { ...base, status: "unknown", explanation: "Referensuppdrag är inte angivna i profilen." };
+        return {
+          ...base,
+          status: "unknown",
+          explanation: "Referensuppdrag är inte angivna i profilen.",
+        };
       }
       const matching = company.references.filter((ref) => {
         if (requirement.capability) {
@@ -226,7 +237,11 @@ export function assessRequirement(
 
     case "geography": {
       if (areaCovers(ctx.areas, company.servesAreas, requirement.areas)) {
-        return { ...base, status: "met", explanation: "Företagets serviceområde täcker uppdragets område." };
+        return {
+          ...base,
+          status: "met",
+          explanation: "Företagets serviceområde täcker uppdragets område.",
+        };
       }
       // Same county is a plausible expansion; further away is treated as unmet
       // rather than dressed up as an easy fix.
@@ -245,8 +260,12 @@ export function assessRequirement(
       return {
         ...base,
         status: "remediable",
-        explanation: "Uppdragets område ligger utanför angivet serviceområde men inom samma region.",
-        remediation: { action: "Utöka serviceområdet i profilen, eller säkra lokal underleverantör.", effort: "medium" },
+        explanation:
+          "Uppdragets område ligger utanför angivet serviceområde men inom samma region.",
+        remediation: {
+          action: "Utöka serviceområdet i profilen, eller säkra lokal underleverantör.",
+          effort: "medium",
+        },
       };
     }
 
@@ -266,13 +285,20 @@ export function assessRequirement(
         ...base,
         status: "remediable",
         explanation: `Ansvarsförsäkring ${formatSek(cover)} understiger kravet på ${formatSek(requirement.minLiabilityCoverSek)}.`,
-        remediation: { action: "Höj försäkringsbeloppet hos ditt försäkringsbolag.", effort: "low" },
+        remediation: {
+          action: "Höj försäkringsbeloppet hos ditt försäkringsbolag.",
+          effort: "low",
+        },
       };
     }
 
     case "registration": {
       if (company.registrations.length === 0) {
-        return { ...base, status: "unknown", explanation: "Registreringar är inte angivna i profilen." };
+        return {
+          ...base,
+          status: "unknown",
+          explanation: "Registreringar är inte angivna i profilen.",
+        };
       }
       const registration = registrationLabel(requirement.registration);
       if (company.registrations.includes(requirement.registration)) {
@@ -289,7 +315,11 @@ export function assessRequirement(
     case "capability": {
       const own = expandCapabilities(ctx.capabilities, company.capabilities);
       if (own.has(requirement.capability)) {
-        return { ...base, status: "met", explanation: `Företaget utför ${capabilityLabel(ctx, requirement.capability)}.` };
+        return {
+          ...base,
+          status: "met",
+          explanation: `Företaget utför ${capabilityLabel(ctx, requirement.capability)}.`,
+        };
       }
       const viaSub = expandCapabilities(ctx.capabilities, company.subcontractorCapabilities ?? []);
       if (viaSub.has(requirement.capability)) {
@@ -297,7 +327,10 @@ export function assessRequirement(
           ...base,
           status: "remediable",
           explanation: `Kompetensen finns hos underleverantör, inte i egen regi.`,
-          remediation: { action: "Redovisa underleverantören och bifoga åtagande.", effort: "medium" },
+          remediation: {
+            action: "Redovisa underleverantören och bifoga åtagande.",
+            effort: "medium",
+          },
         };
       }
       return {

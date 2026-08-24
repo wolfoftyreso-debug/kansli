@@ -35,6 +35,8 @@ describe("authz", () => {
   it("checks permissions including wildcards", () => {
     expect(() => requirePermission(actor, "scan:run")).toThrow(/Saknar/);
     expect(requirePermission(actor, "scan:read").sub).toBe(actor.sub);
-    expect(requirePermission({ ...actor, permissions: ["scan:*"] }, "scan:run").sub).toBe(actor.sub);
+    expect(requirePermission({ ...actor, permissions: ["scan:*"] }, "scan:run").sub).toBe(
+      actor.sub,
+    );
   });
 });

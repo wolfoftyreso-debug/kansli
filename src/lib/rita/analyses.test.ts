@@ -58,43 +58,39 @@ liveEngine("RITA requestAnalysis against skattjakt", () => {
     await pool.end();
   });
 
-  it(
-    "completes with findings from the demo bokslut",
-    async () => {
-      await migrateWorkspace({ ownerUrl: OWNER!, root: process.cwd(), appRole: "pixdrift_app" });
-      const events = new EventLog(pool);
-      registerSyncHandlers(events, pool);
-      const orgRef = `pixdrift:org:rita-engine-${Date.now()}`;
-      const previous = process.env.RITA_ENGINE_BINARY;
-      process.env.RITA_ENGINE_BINARY = BINARY!;
-      try {
-        const analysis = await requestAnalysis({
-          pool,
-          events,
-          orgRef,
-          actorRef: "user-test",
-          companyName: "Exempelbolaget AB",
-          orgNumber: DEMO_ORG_NUMBER,
-          requestId: "req-engine",
-          useDemoDocument: true,
-        });
-        expect(analysis.status).toBe("completed");
-        expect(analysis.blockedReason).toBeNull();
-        const findings = findingsFromAnalysis(analysis.result);
-        expect(findings.length).toBeGreaterThanOrEqual(1);
-        const completed = await events.list({ orgRef, kind: "rita.analysis.completed" });
-        expect(completed).toHaveLength(1);
-        expect(completed[0]?.payload["companyName"]).toBe("Exempelbolaget AB");
-        const observations = await pool.query(
-          `select title from britt.observations where org_ref = $1 and source_system = 'rita'`,
-          [orgRef],
-        );
-        expect(observations.rows.map((row) => row.title)).toContain("RITA har slutfört en analys");
-      } finally {
-        if (previous) process.env.RITA_ENGINE_BINARY = previous;
-        else delete process.env.RITA_ENGINE_BINARY;
-      }
-    },
-    120_000,
-  );
+  it("completes with findings from the demo bokslut", async () => {
+    await migrateWorkspace({ ownerUrl: OWNER!, root: process.cwd(), appRole: "pixdrift_app" });
+    const events = new EventLog(pool);
+    registerSyncHandlers(events, pool);
+    const orgRef = `pixdrift:org:rita-engine-${Date.now()}`;
+    const previous = process.env.RITA_ENGINE_BINARY;
+    process.env.RITA_ENGINE_BINARY = BINARY!;
+    try {
+      const analysis = await requestAnalysis({
+        pool,
+        events,
+        orgRef,
+        actorRef: "user-test",
+        companyName: "Exempelbolaget AB",
+        orgNumber: DEMO_ORG_NUMBER,
+        requestId: "req-engine",
+        useDemoDocument: true,
+      });
+      expect(analysis.status).toBe("completed");
+      expect(analysis.blockedReason).toBeNull();
+      const findings = findingsFromAnalysis(analysis.result);
+      expect(findings.length).toBeGreaterThanOrEqual(1);
+      const completed = await events.list({ orgRef, kind: "rita.analysis.completed" });
+      expect(completed).toHaveLength(1);
+      expect(completed[0]?.payload["companyName"]).toBe("Exempelbolaget AB");
+      const observations = await pool.query(
+        `select title from britt.observations where org_ref = $1 and source_system = 'rita'`,
+        [orgRef],
+      );
+      expect(observations.rows.map((row) => row.title)).toContain("RITA har slutfört en analys");
+    } finally {
+      if (previous) process.env.RITA_ENGINE_BINARY = previous;
+      else delete process.env.RITA_ENGINE_BINARY;
+    }
+  }, 120_000);
 });

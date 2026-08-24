@@ -105,7 +105,10 @@ export default async function BrittPage() {
             )}
           </section>
 
-          <form action={recordObservation} className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4">
+          <form
+            action={recordObservation}
+            className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
+          >
             <h2 className="text-lg font-semibold">Ny observation</h2>
             <Field name="title" label="Rubrik" required />
             <Field name="body" label="Anteckning" multiline />

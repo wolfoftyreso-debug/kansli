@@ -258,7 +258,9 @@ export const systems: PixSystem[] = [
       {
         no: "06",
         title: "Applications",
-        body: ["Pilot surface at /tora on the PIXDRIFT hub. Standalone SPA remains at tora-hypbit.vercel.app."],
+        body: [
+          "Pilot surface at /tora on the PIXDRIFT hub. Standalone SPA remains at tora-hypbit.vercel.app.",
+        ],
       },
       { no: "07", title: "Integrations", body: [sharedIdentityIntegration] },
       {
@@ -268,7 +270,11 @@ export const systems: PixSystem[] = [
           "Redaction is enforcement on the server, not a UI filter. A right requires an explicit legal basis. Demo data is labelled as such.",
         ],
       },
-      { no: "09", title: "Documentation", body: ["Technical notes under Consolidation and the migration ledger."] },
+      {
+        no: "09",
+        title: "Documentation",
+        body: ["Technical notes under Consolidation and the migration ledger."],
+      },
       { no: "10", title: "Availability", body: ["Pilot. Europe."] },
     ],
   },

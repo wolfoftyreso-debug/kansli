@@ -24,12 +24,7 @@
  */
 
 import type { IsoDate, ProcurementGraph } from "../domain/ontology";
-import {
-  ANCHOR_LABEL,
-  type DeadlineAnchor,
-  type Remedy,
-  REMEDIES,
-} from "../domain/remedies";
+import { ANCHOR_LABEL, type DeadlineAnchor, type Remedy, REMEDIES } from "../domain/remedies";
 import { daysBetween } from "./procedureGuide";
 
 /* ------------------------------------------------------------------ */
@@ -98,9 +93,7 @@ interface Anchors {
 function anchorsFor(procurementId: string, graph: ProcurementGraph): Anchors {
   const award = graph.awards.find((a) => a.procurementId === procurementId);
   return {
-    award_notice_sent: award
-      ? { date: award.awardedAt, certainty: "approximated" }
-      : undefined,
+    award_notice_sent: award ? { date: award.awardedAt, certainty: "approximated" } : undefined,
     contract_concluded: undefined,
   };
 }
@@ -217,9 +210,7 @@ export function buildRemedyOutlook(
     );
   }
   if (open.length > 0) {
-    parts.push(
-      `${open.length} av ${windows.length} vägar är öppna utifrån de datum vi har.`,
-    );
+    parts.push(`${open.length} av ${windows.length} vägar är öppna utifrån de datum vi har.`);
   }
   if (closed.length > 0) {
     parts.push(

@@ -83,7 +83,10 @@ function Bucket({ title, entries }: { title: string; entries: CalendarEntryView[
               </p>
               <p className="mt-1 font-medium">
                 {entry.identified && entry.opportunityId ? (
-                  <Link href={opportunityHref({ id: entry.opportunityId })} className="hover:underline">
+                  <Link
+                    href={opportunityHref({ id: entry.opportunityId })}
+                    className="hover:underline"
+                  >
                     {entry.title || "Möjlighet"}
                   </Link>
                 ) : (

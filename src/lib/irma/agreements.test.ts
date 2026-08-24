@@ -54,7 +54,9 @@ live("IRMA magic link (live Postgres)", () => {
     expect(rows[0]?.token_hash).toBe(hashIrmaToken(token));
     expect(rows[0]?.token_hash).not.toBe(token);
 
-    expect(await openAgreementByToken({ pool, events, token: "fel", requestId: "req-bad" })).toBeNull();
+    expect(
+      await openAgreementByToken({ pool, events, token: "fel", requestId: "req-bad" }),
+    ).toBeNull();
 
     const first = await openAgreementByToken({ pool, events, token, requestId: "req-2" });
     expect(first?.status).toBe("viewed");

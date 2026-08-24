@@ -43,17 +43,9 @@ import {
   redactChecklistDates,
   type EvidenceChecklist,
 } from "./evidenceChecklist";
-import {
-  buildRemedyOutlook,
-  redactRemedyDates,
-  type RemedyOutlook,
-} from "./remedyWindows";
+import { buildRemedyOutlook, redactRemedyDates, type RemedyOutlook } from "./remedyWindows";
 import { buildCapacityPlan, type CapacityPlan } from "./capacityPlan";
-import {
-  buildQuestionPlan,
-  redactQuestionDate,
-  type QuestionPlan,
-} from "./questionPlan";
+import { buildQuestionPlan, redactQuestionDate, type QuestionPlan } from "./questionPlan";
 import { assessProcurementValue, type ValueBreakdown } from "./contractValue";
 import type { Alert } from "./alerts";
 import { deadlineAlerts } from "./alerts";
@@ -192,7 +184,9 @@ export interface CalendarResponse {
 
 export interface OpportunityApi {
   getMarket(request: ApiRequest): MarketResponse;
-  getOpportunity(request: ApiRequest & { opportunityId: string }): OpportunityDetailResponse | undefined;
+  getOpportunity(
+    request: ApiRequest & { opportunityId: string },
+  ): OpportunityDetailResponse | undefined;
   getCalendar(request: ApiRequest): CalendarResponse;
 }
 
@@ -201,7 +195,8 @@ export function createLocalApi(graph: ProcurementGraph): OpportunityApi {
   const procurementIndex = indexBy(graph.procurements, (p) => p.id);
 
   const kindHint = (organizationId: string) =>
-    ORGANIZATION_KIND_LABEL[organizationIndex.get(organizationId)?.kind ?? ""] ?? "Offentlig organisation";
+    ORGANIZATION_KIND_LABEL[organizationIndex.get(organizationId)?.kind ?? ""] ??
+    "Offentlig organisation";
 
   const redact = (opportunity: Opportunity, tier: Tier) =>
     redactOpportunity(opportunity, tier, kindHint(opportunity.organizationId));

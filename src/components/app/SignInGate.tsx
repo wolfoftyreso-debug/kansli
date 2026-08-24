@@ -88,7 +88,13 @@ export function CheckField({
 }) {
   return (
     <label className="flex items-start gap-2 text-sm text-ink-soft">
-      <input type="checkbox" name={name} value="on" defaultChecked={defaultChecked} className="mt-1" />
+      <input
+        type="checkbox"
+        name={name}
+        value="on"
+        defaultChecked={defaultChecked}
+        className="mt-1"
+      />
       <span>{label}</span>
     </label>
   );

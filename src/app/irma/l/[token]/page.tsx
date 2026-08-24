@@ -61,7 +61,10 @@ export default async function IrmaLinkPage({ params }: { params: Promise<{ token
             <span className="break-all font-mono text-xs">{agreement.artifactSha256}</span>
           </Notice>
         ) : (
-          <form action={acknowledgeIrmaAgreement} className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4">
+          <form
+            action={acknowledgeIrmaAgreement}
+            className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
+          >
             <h2 className="text-lg font-semibold">Bekräfta underlaget</h2>
             <p className="text-sm text-ink-soft">{ACKNOWLEDGEMENT_DECLARATION}</p>
             <input type="hidden" name="token" value={token} />
