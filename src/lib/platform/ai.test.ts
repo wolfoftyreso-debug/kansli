@@ -1,8 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { FLAGSHIP_MODELS } from "@pixdrift/ai-core";
-import { GATEWAY_BASE_URL, gatewayAuthKind, gatewaySnapshot } from "./ai.ts";
+import { GATEWAY_BASE_URL, GATEWAY_PING_MODEL, gatewayAuthKind, gatewaySnapshot } from "./ai.ts";
 
 describe("gatewaySnapshot", () => {
+  it("pings a free-tier OpenAI nano slug", () => {
+    expect(GATEWAY_PING_MODEL).toBe("openai/gpt-4.1-nano");
+  });
+
   it("is missing without a credential", () => {
     expect(gatewaySnapshot({})).toEqual({
       configured: false,

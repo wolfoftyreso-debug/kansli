@@ -66,7 +66,7 @@ verify).
 | Co-located `/idp` mount | Verified | discovery/JWKS/health + full flow |
 | Public PIXDRIFT site | Verified | `verify-env.sh` all 200; prior visual QA |
 | AI Core (heaviest model, Claude-first failover) | Verified | unit + runtime demo |
-| AI Gateway (100+ models) | Ready, unverified live | needs `AI_GATEWAY_API_KEY`/OIDC token |
+| AI Gateway (100+ models) | Verified live | `AI_GATEWAY_API_KEY`; ping `openai/gpt-4.1-nano` |
 | Documentation Intelligence / Product Demo engines | Verified (kernel) | gap reports + tests |
 
 ## Gaps, risks and honest limitations

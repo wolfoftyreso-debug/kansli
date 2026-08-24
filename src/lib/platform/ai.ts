@@ -1,8 +1,8 @@
 import { FLAGSHIP_MODELS, gatewayFromEnv } from "@pixdrift/ai-core";
 
 export const GATEWAY_BASE_URL = "https://ai-gateway.vercel.sh/v1";
-/** Cheap model for a connectivity ping. Flagship stays on FLAGSHIP_MODELS.gateway. */
-export const GATEWAY_PING_MODEL = "anthropic/claude-haiku-4.5";
+/** Free-tier-safe ping. Flagship stays on FLAGSHIP_MODELS.gateway. */
+export const GATEWAY_PING_MODEL = "openai/gpt-4.1-nano";
 
 export type GatewayAuth = "api_key" | "oidc" | "none";
 
