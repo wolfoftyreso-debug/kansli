@@ -101,7 +101,14 @@ function ValueBlock({ detail }: { detail: OpportunityDetailResponse }) {
     );
   }
   const value = field.value;
-  if (!value) return null;
+  if (!value) {
+    return (
+      <section>
+        <h2 className="text-lg font-semibold">Värde</h2>
+        <p className="mt-2 text-sm text-muted">Inget värdeberäkning i underlaget.</p>
+      </section>
+    );
+  }
   return (
     <section className="flex flex-col gap-2">
       <h2 className="text-lg font-semibold">Värde</h2>
@@ -130,7 +137,14 @@ function EvaluationBlock({ detail }: { detail: OpportunityDetailResponse }) {
     );
   }
   const evaluation = field.value;
-  if (!evaluation) return null;
+  if (!evaluation) {
+    return (
+      <section>
+        <h2 className="text-lg font-semibold">Utvärdering</h2>
+        <p className="mt-2 text-sm text-muted">Ingen utvärderingsmodell i underlaget.</p>
+      </section>
+    );
+  }
   return (
     <section className="flex flex-col gap-2">
       <h2 className="text-lg font-semibold">Utvärdering</h2>
