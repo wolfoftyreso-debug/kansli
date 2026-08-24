@@ -10,6 +10,14 @@ Inloggad som org, samma IdP som resten av huset.
 | Verifikat | `/ekonomi/verifikat` |
 | Moms / fordringar | `/ekonomi/rapporter` |
 | Nycklar | `/ekonomi/anslutningar` |
+| Revolut OAuth-callback | `/ekonomi/anslutningar/revolut` |
+
+Två olika OAuth:
+
+| Flöde | URI | Vart den klistras |
+| --- | --- | --- |
+| Inloggning i Pixdrift | `{APP_BASE_URL}/api/auth/callback` | Pixdrift Identity. Inte Revolut. |
+| Revolut Business-certifikat | `{APP_BASE_URL}/ekonomi/anslutningar/revolut` | Revoluts fält *Omdirigerings-URI för OAuth*. Publik https. Inte localhost. |
 
 JSON:
 
@@ -29,6 +37,8 @@ STRIPE_SECRET_KEY=          # eller STRIPE_RESTRICTED_KEY
 REVOLUT_BUSINESS_TOKEN=
 REVOLUT_MERCHANT_SECRET=
 REVOLUT_BUSINESS_SANDBOX=true   # valfritt
+REVOLUT_REDIRECT_URI=           # publik https-URI, samma som i Revoluts certifikat
+APP_BASE_URL=                   # origin; callback blir ${APP_BASE_URL}/ekonomi/anslutningar/revolut
 SWISH_PAYEE_ALIAS=
 EKONOMI_WRAP_KEY=           # annars APP_SESSION_SECRET
 ```

@@ -3,6 +3,7 @@ import { AppShell } from "@/components/app/AppShell";
 import { Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
 import { listConnectorSlots } from "@/lib/ekonomi/connectors";
 import { railSnapshot } from "@/lib/ekonomi/rails";
+import { revolutOAuthRedirectUri, revolutRedirectStatus } from "@/lib/ekonomi/revolut-oauth";
 import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
 import { saveConnectorAction, syncRevolutAction } from "../actions";
@@ -23,6 +24,8 @@ export default async function AnslutningarPage() {
   const slots =
     session?.org?.ref && runtime ? await listConnectorSlots(runtime.pool, session.org.ref) : [];
   const rails = railSnapshot();
+  const revolutRedirect = revolutRedirectStatus();
+  const revolutUri = revolutOAuthRedirectUri();
 
   return (
     <AppShell current="ekonomi" session={session}>
@@ -45,10 +48,18 @@ export default async function AnslutningarPage() {
       ) : (
         <>
           <Notice>
-            Revolut Business och Merchant är två API:er. Business `GET /transactions` matchar
-            inbetalningar. Merchant Orders tar betalt av kunden. Swish Handel kräver bankcertifikat
-            — alias räcker inte.
+            Revolut Business och Merchant är två API:er. Business läser inbetalningar. Merchant tar
+            betalt av kunden.
           </Notice>
+          <section className="rounded-xl border border-line bg-surface px-4 py-4">
+            <h2 className="text-lg font-semibold">Omdirigerings-URI för Revolut</h2>
+            <p className="mt-2 text-sm text-ink-soft">
+              Det här fältet i Revoluts certifikatdialog. Inte Pixdrift-inloggningen (
+              <span className="font-mono">/api/auth/callback</span>).
+            </p>
+            <p className="mt-3 break-all font-mono text-sm">{revolutUri}</p>
+            <p className="mt-3 text-sm text-ink-soft">{revolutRedirect.reason}</p>
+          </section>
           <ul className="flex flex-col gap-3">
             {slots.map((slot) => (
               <li
