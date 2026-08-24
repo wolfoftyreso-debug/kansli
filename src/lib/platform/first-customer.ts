@@ -120,7 +120,7 @@ export function evaluateFirstCustomerGates(input: {
       title: "Koncernupphandling är ett formulär",
       state: "ready",
       detail:
-        "Intaget på /upphandling ger stack, miljö, kontakt, konto och faktura 10 dagar. Mötet är nu + 10 dagar. Det är inte ett sålt Bilia-avtal. Anpassningen byggs när ni vet deras hus.",
+        "Intaget på /upphandling samlar stack, miljö och kontakt, skapar konto och utfärdar faktura med tio dagars betalning. Mötet läggs klockan 10:00 tio kalenderdagar senare.",
     },
     {
       id: "honesty",
