@@ -166,6 +166,30 @@ Att leverera de raderna som “klara” vore att fuska för Volkswagen.
 
 ---
 
+## Första kund — när, utan kalender
+
+Inte ett datum. En lista grindar. Volkswagen rullar inte ut “alla system”
+först. De rullar ut det som är sant.
+
+**Kan rullas ut till en första *pilotkund* nu, med kontraktet skrivet:**
+
+- Identity + Kansli: inloggning och nav
+- IRMA L0–L1: handslag, inte e-sign / inte BankID
+- TYRA: ärende, kundkort, hjulset, verifierad inspektion, offertutkast. Inte SMS. Inte live-pris
+- TORA: er bolagsprofil mot demonstrationsmarknad. Inte TED/HILMA
+- BRITT: inbox och klarmarkering
+- RITA: bara om skattjakt-host eller lokal binär finns
+
+**Kan inte rullas ut som “alla system klara” förrän:**
+
+- ALVA-repot levererar diagnosmotorn
+- RITA har HTTP-host om drift är Vercel
+- TYRA har sändadapter *om* kunden kräver SMS/mejl som faktiskt går iväg
+- Neon-restore är övad och daterad
+- Kunden skriver under vad produkten *inte* är
+
+Tills de grindarna är stängda är “alla system klara” ett löfte, inte ett läge.
+
 ## Nästa tiondel (samma regel)
 
 1. Neon-restore i produktion, daterad.
