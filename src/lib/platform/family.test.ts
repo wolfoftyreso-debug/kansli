@@ -11,6 +11,10 @@ describe("family map", () => {
     const tora = FAMILY_SYSTEMS.find((s) => s.id === "tora")!;
     expect(rita.does).not.toEqual(tora.does);
     expect(rita.question).not.toEqual(tora.question);
+    for (const system of FAMILY_SYSTEMS) {
+      expect(system.mission.length).toBeGreaterThan(8);
+    }
+    expect(rita.mission.toLowerCase()).toMatch(/skatte/);
   });
 
   it("describes the stack this repo actually runs", () => {

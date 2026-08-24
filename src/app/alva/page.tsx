@@ -7,7 +7,7 @@ import { registerAlvaCase } from "./actions";
 
 export const metadata = {
   title: "ALVA — Pixdrift",
-  description: "Strukturerad fordonsdiagnos. Motorn anländer med ALVA-repot.",
+  description: "Guidad diagnos och full dokumentation. Motorn anländer med ALVA-repot.",
 };
 
 export default async function AlvaPage() {
@@ -21,10 +21,11 @@ export default async function AlvaPage() {
         <p className="pd-label text-faint">PIXDRIFT / ALVA</p>
         <h1 className="text-3xl font-semibold tracking-tight">ALVA</h1>
         <p className="text-ink-soft">
-          Registrerar ett diagnostiskt fall. Själva diagnosmotorn väntar på ALVA-repot — fallet får
-          status open, inte en påhittad slutsats.
+          ALVA är den guidade diagnosprocessen: från kundens ord till ett protokoll alla parter kan
+          följa. I navet registreras fallet redan. Guidningen kopplas när ALVA-repot är inne — den
+          låtsas inte fram.
         </p>
-        <Notice>Diagnosmotorn är deferred. Inga fynd, inga protokoll, ingen AI-sanning.</Notice>
+        <Notice>Diagnosmotorn är deferred. Inga påhittade fynd, inga påhittade protokoll.</Notice>
       </header>
 
       {!session?.org ? (

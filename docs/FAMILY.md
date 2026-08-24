@@ -8,8 +8,9 @@ beskrivningen, inte en andra id-lista.
 ## Princip
 
 Systemen delar **identitet** och en **append-only händelselogg**. De delar
-**aldrig tabeller**. RITA verifierar räkenskaper. TORA avgör om ett bolag får
-lämna anbud. De är inte samma sak.
+**aldrig tabeller**. RITA jagar skattemässiga besparingar. TORA avgör om ett
+bolag får lämna anbud. De är inte samma sak. Fler moduler tas in i samma hus
+när de har eget schema, UI, API och events.
 
 ```
 Browser
@@ -62,16 +63,21 @@ Upphandlingsrätt, behörighet, rekommenderad åtgärd. Motorn körs i processen
 motor. **POST publicerar** en ögonblicksbild och `tora.market.evaluated`.
 BRITT lyssnar. TORA skriver inte i BRITT.
 
-### RITA — stämmer räkenskaperna?
+### RITA — skattemässiga besparingar
 
-Beställning → `HttpAnalysisEngine` eller `SubprocessAnalysisEngine` mot
-Rust-motorn `skattjakt`. Subprocessen får bara en allowlist (Anthropic +
-`SKATTJAKT_*`), aldrig databaslösen. Utan `ANTHROPIC_API_KEY` kör motorn
-bara regelverket. `company.id` och dokument-id är UUID. Motorn kräver minst
-ett dokument på disk och ett organisationsnummer som klarar checksumman.
-Lokalt kan formuläret skicka `exempel-bokslut.txt`. Utan host eller
-`RITA_ENGINE_BINARY` blir status `blocked`. Motorn fejkars inte. RITA
-avgör inte anbudsrätt. Kunduppladdning via Blob är inte kopplad.
+**Uppdraget:** hitta pengar som sitter i böckerna — avdrag, moms, K10,
+pensionsutrymme, FoU. Motorn heter `skattjakt` av den anledningen. Fynd är
+preliminära, inte skatteråd.
+
+**I navet:** beställning → `HttpAnalysisEngine` eller
+`SubprocessAnalysisEngine` mot Rust-motorn. Subprocessen får bara en
+allowlist (Anthropic + `SKATTJAKT_*`), aldrig databaslösen. Utan
+`ANTHROPIC_API_KEY` kör motorn bara regelverket. `company.id` och
+dokument-id är UUID. Motorn kräver minst ett dokument på disk och ett
+organisationsnummer som klarar checksumman. Lokalt kan formuläret skicka
+`exempel-bokslut.txt`. Utan host eller `RITA_ENGINE_BINARY` blir status
+`blocked`. Motorn fejkars inte. RITA avgör inte anbudsrätt. Kunduppladdning
+via Blob är inte kopplad.
 
 Händelser: `rita.analysis.requested`, sedan `completed` eller `blocked`.
 `completed` bär `companyName`, `findingCount` och `modelConfigured`. BRITT
@@ -105,28 +111,38 @@ mot plan, likviditet, kundkoncentration). BRITT är den enda som skriver
 Det är inte hela underrättelseprodukten från BRITT-repot. Inga Fortnox- eller
 Revolut-kopplingar.
 
-### IRMA — underlag till någon utanför
+### IRMA — verksamhetens avtalshantering
 
-Avtal med klausuler + hashad magic link (14 dagar, kan återkallas).
-Klartext-token visas en gång i en httpOnly-cookie, inte i query-strängen.
-Motparten öppnar `/irma/l/<token>` utan konto. Första öppning sätter
-`viewed` och `irma.agreement.viewed`. Bekräftelse (nivå 1) sätter `signed`,
-en SHA-256-artefakt och `irma.agreement.signed`. Nivå 0 är informationsunderlag
-utan bekräftelse. Innehålls- och artefakthash kan räknas om. Inte BankID.
-Inte kvalificerad e-signatur. Ingen fillagring. Ingen OCR. Nivå 2–5 finns inte.
+**Uppdraget:** digitalisera hur en organisation ger ut, följer och stänger
+avtal. Ett flöde. Koll på varje avtal. Motparten utan internt konto. Det är
+där tiden och pappersjakten sitter.
 
-### TYRA — däckärendet, inte hela verkstads-OS
+**I navet:** avtal med klausuler + hashad magic link (14 dagar, kan
+återkallas). Klartext-token visas en gång i en httpOnly-cookie. Motparten
+öppnar `/irma/l/<token>` utan konto. Första öppning = `viewed`. Bekräftelse
+(nivå 1) = `signed` + SHA-256-artefakt. Nivå 0 är information. Lista och sök
+finns. Inte BankID. Inte kvalificerad e-signatur. Ingen fillagring. Ingen OCR.
+Nivå 2–5 finns inte. Det är handslaget, inte hela dokument-OS:et.
 
-Öppnar ett ärende mot `tyra.*` med PIXDRIFT-session. Stegen kompileras av
-`resolveWorkflow`. Hub-token hashas; kunden öppnar `/tyra/hub/<token>` utan
-konto. Påminnelser köas i outbox och blir `BLOCKED` utan sändadapter.
-Leverantörssök svarar `NOT_CONFIGURED`. Ingen NextAuth. Ingen live-pris.
-Se `docs/tyra/README.md`.
+### TYRA — däckhotellets administration
 
-### ALVA — fallet, inte diagnosen
+**Uppdraget:** modern däckhotell-drift — CRM, offert, lager, ärende och
+kundflöde i en pärm. Inte ännu ett DMS med en anteckning per säsong.
 
-Registrerar klagomål och ev. fordonsreferens. Status `open`. Diagnosmotorn
-väntar på ALVA-repot. Inga fynd, inga protokoll.
+**I navet:** ärende mot `tyra.*`, kund/fordon, `resolveWorkflow`, work card,
+hashad kundhub. CRM-kortet (nästa åtgärd) finns i domänen. Påminnelser köas
+och blir `BLOCKED` utan sändadapter. Leverantörssök svarar `NOT_CONFIGURED`.
+Ingen NextAuth. Ingen live-pris. Se `docs/tyra/README.md`.
+
+### ALVA — guidad diagnos
+
+**Uppdraget:** ta klagomålet genom en guidad process och lämna ett protokoll
+alla parter kan följa. Tid och feljakt sparas för verkstad, kund och nästa
+led.
+
+**I navet:** fallet registreras (klagomål, ev. fordon), status `open`.
+Diagnosmotorn väntar på ALVA-repot. Inga påhittade fynd, inga påhittade
+protokoll.
 
 ## Vad som inte går att göra i det här repot
 

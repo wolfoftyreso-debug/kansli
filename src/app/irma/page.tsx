@@ -17,7 +17,7 @@ import { createIrmaAgreement } from "./actions";
 
 export const metadata = {
   title: "IRMA — Pixdrift",
-  description: "Avtal och överlämning till personer utanför organisationen.",
+  description: "Digital avtalshantering. Ett flöde, koll på varje avtal.",
 };
 
 function needsAttention(item: Agreement): boolean {
@@ -61,10 +61,11 @@ export default async function IrmaPage({
     <AppShell current="irma" session={session}>
       <header className="flex flex-col gap-4 pt-4 sm:pt-8">
         <p className="pd-label text-faint">IRMA</p>
-        <h1 className="max-w-xl text-4xl font-semibold tracking-tight">Vad ska motparten läsa?</h1>
+        <h1 className="max-w-xl text-4xl font-semibold tracking-tight">Vilket avtal ska ut?</h1>
         <p className="max-w-xl text-ink-soft">
-          Skicka ett underlag. Motparten öppnar länken utan konto. Bekräftelsen är nivå 1 — en
-          hashad förklaring, inte BankID.
+          IRMA digitaliserar avtalshanteringen: ett flöde, status på varje avtal, motparten utan
+          konto. I navet nu är handslaget — klausuler, länk, sett, bekräftat, återkallat. Inte
+          BankID. Inte hela dokumentarkivet än.
         </p>
       </header>
 

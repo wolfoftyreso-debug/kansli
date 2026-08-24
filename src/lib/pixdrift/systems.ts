@@ -136,19 +136,20 @@ export const systems: PixSystem[] = [
     index: "02",
     slug: "alva",
     name: "ALVA",
-    purpose: "Structured vehicle diagnosis, from the customer's own words to a clear protocol.",
+    purpose:
+      "Guided diagnosis with a full protocol — time saved for workshop, customer and insurer.",
     stewardship: "MANAGED_PRODUCT",
     category: "Operational software",
     status: "Development",
     regions: ["Europe"],
     summary:
-      "Turns a customer complaint into a structured, evidence-based diagnostic case and a protocol everyone can understand.",
+      "A guided path from the customer's words to a protocol every party can follow. The engine arrives with the ALVA repo; the nav already owns the case.",
     sections: [
       {
         no: "01",
         title: "Purpose",
         body: [
-          "Give a workshop a structured way to move from a customer complaint to an evidence-based root cause and a clear diagnosis protocol.",
+          "Take a complaint through a guided diagnosis and leave a complete record — so the workshop stops hunting, the customer sees the same facts, and the next party does not start over.",
         ],
       },
       {
@@ -182,19 +183,19 @@ export const systems: PixSystem[] = [
     index: "03",
     slug: "rita",
     name: "RITA",
-    purpose: "Verification and findings across financial and operational records.",
+    purpose: "Find tax savings sitting in the books — deductions, VAT, K10, pensions, R&D.",
     stewardship: "MANAGED_PRODUCT",
     category: "Verification software",
     status: "Development",
     regions: ["Europe"],
     summary:
-      "Applies rules to records and produces findings, keeping the model's suggestions separate from the numbers the system computes.",
+      "Skattjakt reads the accounts against Swedish tax rules and surfaces savings opportunities. Findings stay findings — not a tax ruling.",
     sections: [
       {
         no: "01",
         title: "Purpose",
         body: [
-          "Verify records against rules and surface findings, so the outcome is deterministic and the reasoning is auditable.",
+          "Hunt for tax savings in the company's own records: unused deductions, VAT treatment, K10 salary requirements, pension space, R&D relief. The engine is skattjakt. Suggestions stay separate from computed numbers.",
         ],
       },
       forthcoming("02", "Problem"),
@@ -282,19 +283,19 @@ export const systems: PixSystem[] = [
     index: "05",
     slug: "irma",
     name: "IRMA",
-    purpose: "Secure exchange of information with people outside the organization.",
+    purpose: "Digital contract handling for the whole organisation — one flow, every agreement.",
     stewardship: "MANAGED_PRODUCT",
     category: "Operational software",
     status: "Development",
     regions: ["Europe"],
     summary:
-      "Handles the handovers to external recipients — the small, exception-prone steps that fall between internal systems.",
+      "Replaces the paper chase: every agreement in one flow, counterparties without an account, status you can see. The nav holds the handshake slice today.",
     sections: [
       {
         no: "01",
         title: "Purpose",
         body: [
-          "Move specific information to and from external recipients safely, without giving them an internal account.",
+          "Digitise how an organisation issues, tracks and closes agreements so nobody hunts mail and folders for the current version. The counterparty does not need an internal login.",
         ],
       },
       forthcoming("02", "Problem"),
@@ -342,19 +343,19 @@ export const systems: PixSystem[] = [
     index: "07",
     slug: "tyra",
     name: "TYRA",
-    purpose: "Workshop operations for tire hotels: cases, steps, and a customer hub.",
+    purpose: "Modern tire-hotel administration: CRM, quotes, storage and the customer flow.",
     stewardship: "MANAGED_PRODUCT",
     category: "Operational software",
     status: "Development",
     regions: ["Europe"],
     summary:
-      "Takes a vehicle and a set of canonical operations, compiles a work card, and can issue a hashed customer hub link. No NextAuth. No live supplier prices in this repo yet.",
+      "One place for the hotel: who the customer is, which set is in, what to quote, what the customer sees. The nav holds the case and hub slice today.",
     sections: [
       {
         no: "01",
         title: "Purpose",
         body: [
-          "Give a tire workshop one place to open a case, see the next step, and show the customer what is known — only verified inspection data.",
+          "Run a tire hotel as one operation — CRM, quote, storage and workshop card — instead of notes, SMS and a separate system for each season.",
         ],
       },
       {

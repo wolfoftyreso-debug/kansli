@@ -6,6 +6,7 @@ import { readSession } from "@/lib/auth/session";
 import { gatewaySnapshot } from "@/lib/platform/ai";
 import {
   FAMILY_BLOCKED,
+  FAMILY_INCOMING,
   FAMILY_LINKS,
   FAMILY_PRINCIPLE,
   FAMILY_STACK,
@@ -99,8 +100,9 @@ export default async function PlatformPage() {
               </h2>
               <p className="font-mono text-xs text-faint">{system.status}</p>
             </div>
-            <p className="mt-2 text-sm font-medium text-ink">{system.question}</p>
-            <p className="mt-2 text-sm text-ink-soft">{system.does}</p>
+            <p className="mt-2 text-sm font-medium text-ink">{system.mission}</p>
+            <p className="mt-1 text-sm text-ink-soft">{system.question}</p>
+            <p className="mt-2 text-sm text-ink-soft">I navet: {system.does}</p>
             <p className="mt-2 text-sm text-muted">{system.doesNot}</p>
             <p className="mt-3 font-mono text-xs text-faint">äger {system.owns}</p>
           </article>
@@ -123,6 +125,11 @@ export default async function PlatformPage() {
             </li>
           ))}
         </ul>
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-semibold">Fler moduler</h2>
+        <p className="text-sm text-ink-soft">{FAMILY_INCOMING}</p>
       </section>
 
       <section className="flex flex-col gap-3">

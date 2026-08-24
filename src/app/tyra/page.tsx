@@ -16,7 +16,7 @@ import { createTyraCase } from "./actions";
 
 export const metadata = {
   title: "TYRA — Pixdrift",
-  description: "Däckärenden, arbetssteg och kundhub. Ingen NextAuth, ingen live-pris.",
+  description: "Däckhotell: CRM, ärende, kundhub. Offert och lager byggs i samma pärm.",
 };
 
 function caseTone(status: string) {
@@ -37,8 +37,8 @@ export default async function TyraPage() {
         <p className="pd-label text-faint">TYRA</p>
         <h1 className="max-w-xl text-4xl font-semibold tracking-tight">Vilket fordon ska in?</h1>
         <p className="max-w-xl text-ink-soft">
-          Öppna ett ärende. Stegen kommer från de åtgärder du väljer — inte från en påhittad motor.
-          Kunden kan få en hub-länk utan konto.
+          TYRA är däckhotellets administration: kund, fordon, ärende, nästa steg och det kunden får
+          se. Offert och lager hör till samma pärm — de låtsas inte vara live förrän adaptern finns.
         </p>
       </header>
 

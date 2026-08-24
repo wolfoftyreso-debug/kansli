@@ -8,6 +8,8 @@ import type { SystemId, SystemStatus } from "@pixdrift/systems";
 export interface FamilySystem {
   id: SystemId;
   name: string;
+  /** Why the product exists. Not the same as the slice in this nav. */
+  mission: string;
   question: string;
   does: string;
   doesNot: string;
@@ -23,7 +25,7 @@ export interface FamilyLink {
 }
 
 export const FAMILY_PRINCIPLE =
-  "Systemen delar identitet och en händelselogg. De delar aldrig tabeller. RITA verifierar räkenskaper. TORA avgör om ett bolag får lämna anbud. De är inte samma sak.";
+  "Systemen delar identitet och en händelselogg. De delar aldrig tabeller. RITA jagar skattemässiga besparingar. TORA avgör om ett bolag får lämna anbud. De är inte samma sak.";
 
 /** What this nav repo actually runs. Not the target architecture. */
 export const FAMILY_STACK: readonly { layer: string; runs: string }[] = [
@@ -61,6 +63,7 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
   {
     id: "identity",
     name: "PIXDRIFT Identity",
+    mission: "En nyckel till hela huset.",
     question: "Vem är du, och för vilken organisation?",
     does: "OIDC-inloggning (Authorization Code + PKCE), JWKS, användare, organisationer och medlemskap. Kansli tar emot koden och sätter en BFF-cookie (kansli_session).",
     doesNot: "Ingen produkt-UI. Ingen MFA. Ingen billing.",
@@ -70,6 +73,7 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
   {
     id: "kansli",
     name: "Kansli",
+    mission: "Receptionen. Inte fabriken.",
     question: "Var loggar jag in, och vad ska vi göra internt?",
     does: "Navet: session, plattforms-API:er, intern uppgiftstavla. Samma process som hostar /idp och alla produkt-API:er.",
     doesNot: "Ingen produktlogik. Inga andras tabeller.",
@@ -79,6 +83,7 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
   {
     id: "tora",
     name: "TORA",
+    mission: "Ska vi lägga tid på den här upphandlingen?",
     question: "Får det här bolaget lämna anbud — på vilken rättslig grund, och vad gör vi nu?",
     does: "Kör upphandlingsmotorn i processen. GET utvärderar och redigerar efter nivå. Marknad, detalj, kalender. POST (Publicera) skriver en ögonblicksbild och en händelse.",
     doesNot: "Verifierar inte räkenskaper. Det är RITA.",
@@ -88,16 +93,18 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
   {
     id: "rita",
     name: "RITA",
-    question: "Stämmer räkenskaperna mot regelverket?",
-    does: "Tar emot en analysbeställning, anropar den riktiga Rust-motorn via HTTP eller lokal binär, lagrar fynd eller blocked. Lokalt kan demonstrationsbokslutet skickas som underlag.",
+    mission: "Hitta skattemässiga besparingar i underlaget — avdrag, moms, K10, pension, FoU.",
+    question: "Vilka skatteutrymmen sitter i böckerna, och vad ska vi kolla?",
+    does: "Skattjakt läser bokslutet mot svenska skatteregler och lämnar fynd (category tax och närliggande avdrag). HTTP eller lokal binär. Utan motor: blocked. Fynd är preliminära — inte skatteråd.",
     doesNot:
-      "Ingen FakeAnalysisEngine i drift. Utan host eller RITA_ENGINE_BINARY blir status blocked. Avgör inte anbudsrätt. Ingen kunduppladdning via Blob.",
+      "Ingen FakeAnalysisEngine i drift. Utan host eller RITA_ENGINE_BINARY blir status blocked. Avgör inte anbudsrätt. Ingen kunduppladdning via Blob. Ingen garanti om återbäring.",
     owns: "rita.analyses",
     status: "pilot",
   },
   {
     id: "britt",
     name: "BRITT",
+    mission: "Vad ska någon göra nu, utifrån det som faktiskt hänt?",
     question: "Vad har hänt som någon behöver följa upp?",
     does: "Observationsinkorg plus deterministisk demonstrationsanalys (omsättning, likviditet, koncentration). Skriver bara i britt-schemat.",
     doesNot:
@@ -108,29 +115,35 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
   {
     id: "irma",
     name: "IRMA",
-    question: "Hur lämnar vi ett underlag till någon utanför organisationen?",
-    does: "Skapar ett avtal med klausuler, hashar en tidsbegränsad magic link (14 dagar), motparten öppnar /irma/l/<token> och kan bekräfta. Första öppning = viewed. Bekräftelse = signed + SHA-256-artefakt. Länken kan återkallas. Integritet räknas om mot hash.",
+    mission:
+      "Digitalisera verksamhetens avtalshantering: ett flöde, koll på varje avtal, slut på pappersjakten.",
+    question: "Vilket avtal ska ut, vem ska läsa det, och var är det nu?",
+    does: "Skapar ett avtal med klausuler, hashar en tidsbegränsad magic link (14 dagar), motparten öppnar /irma/l/<token> och kan bekräfta. Första öppning = viewed. Bekräftelse = signed + SHA-256-artefakt. Länken kan återkallas. Integritet räknas om mot hash. Lista och sök i orgens avtal.",
     doesNot:
-      "Ingen kvalificerad e-signatur. Ingen BankID. Ingen extern e-signleverantör. Ingen fillagring. Ingen OCR. Inga anrop utanför våra API-vendorer.",
+      "Inte hela dokument-OS:et än. Ingen kvalificerad e-signatur. Ingen BankID. Ingen fillagring. Ingen OCR. Nivå 2–5 finns inte. Starkare nivåer byggs här, inte mot en e-sign-SaaS.",
     owns: "irma.agreements",
     status: "pilot",
   },
   {
     id: "tyra",
     name: "TYRA",
-    question: "Vilket ärende är nästa, och vad ska kunden se?",
-    does: "Skapar ett däckärende med kanoniska åtgärder, kompilerar arbetssteg via resolveWorkflow, visar work card och ger kunden en hashad hub-länk. Token lagras bara som SHA-256. Påminnelser kan köas i outbox. Utan sändadapter blir de BLOCKED. Leverantörssök svarar NOT_CONFIGURED.",
+    mission: "Modern däckhotell-administration: CRM, offert, lager och kundflöde i ett.",
+    question: "Vilket fordon, vilken kund, vilket lager — och vad är nästa steg?",
+    does: "Ärende, kund/fordon, resolveWorkflow, work card, hashad kundhub. CRM-kortet (nästa åtgärd) finns i domänen. Påminnelse-outbox. Leverantörsinterface utan live-pris.",
     doesNot:
-      "Ingen NextAuth. Ingen egen signup. Ingen Fortnox. Ingen BankID. Ingen live-pris. Ingen SMS/e-postleverans. Demo-leverantör är borttagen.",
+      "Full lager/offert-UI och live-leverantör är inte inkopplade i navet än. Ingen NextAuth. Ingen Fortnox. Ingen BankID. Ingen SMS/e-postleverans. Demo-leverantör är borttagen.",
     owns: "tyra.customers, tyra.vehicles, tyra.tire_cases, tyra.customer_hub_links, tyra.reminder_outbox, tyra.tenant_supplier_accounts",
     status: "pilot",
   },
   {
     id: "alva",
     name: "ALVA",
-    question: "Vad sa kunden, och vilket fall ska diagnostiseras?",
-    does: "Registrerar ett diagnostiskt fall (klagomål, ev. fordon).",
-    doesNot: "Ingen diagnosmotor, inga fynd, inga protokoll. Motorn anländer med ALVA-repot.",
+    mission:
+      "Guidad diagnosprocess med full dokumentation — tid och feljakt sparas för verkstad, kund och försäkring.",
+    question: "Vad sa kunden, och hur tar vi oss till ett protokoll alla kan följa?",
+    does: "Registrerar fallet (klagomål, ev. fordon) i alva.cases så motorn har något att äga.",
+    doesNot:
+      "Guidningen och protokollet väntar på ALVA-repot. Inga påhittade fynd i navet. Motorn kopplas, den låtsas inte fram.",
     owns: "alva.cases",
     status: "deferred",
   },
@@ -201,6 +214,10 @@ export const FAMILY_LINKS: readonly FamilyLink[] = [
     meaning: "Varje observation är själv en händelse, så loggen är komplett.",
   },
 ];
+
+/** Produkter som tas in som första-klass när de har schema, UI, API och events. */
+export const FAMILY_INCOMING =
+  "Fler moduler är på väg in i samma hus: samma inloggning, egen pärm, lappar i händelseboken. De namnges när de har kontrakt — inte före.";
 
 export const FAMILY_BLOCKED = [
   {

@@ -16,7 +16,7 @@ import { requestRitaAnalysis } from "./actions";
 
 export const metadata = {
   title: "RITA — Pixdrift",
-  description: "Verifiering av räkenskaper mot ett regelverk.",
+  description: "Skattemässiga besparingar i underlaget. Motorn är skattjakt.",
 };
 
 export default async function RitaPage() {
@@ -32,8 +32,9 @@ export default async function RitaPage() {
         <p className="pd-label text-faint">PIXDRIFT / RITA</p>
         <h1 className="text-3xl font-semibold tracking-tight">RITA</h1>
         <p className="text-ink-soft">
-          Verifierar räkenskaper mot ett regelverk. Det är inte TORA — TORA avgör om ett bolag får
-          lämna anbud.
+          RITA jagar skattemässiga besparingar i böckerna: avdrag, moms, K10, pension, FoU. Motorn
+          är skattjakt. Fynden är preliminära — inte ett skatteråd. TORA avgör anbud; det är en
+          annan fråga.
         </p>
         <Notice>
           {engine.available

@@ -127,11 +127,11 @@ det här jobbet i drift, utan att vi låtsas?* 100 % = uttalat jobb, restore
 | AI-core | — | **68** | Failover + gateway | Används som verktyg, inte produkt |
 | Publik sajt | — | **86** | Tokens, katalog, ärlig copy | — |
 | TORA | pilot | **58** | Motor i processen, GET utvärderar, POST sparar | Inte hela upphandlingsaffären |
-| IRMA | pilot | **52** | Handshake L0–L1, hashad länk, återkallelse | Fil, kvalificerad signatur, WAF |
-| TYRA | pilot | **42** | Ärende, steg, hub, outbox `BLOCKED` | SMS/e-post, live-pris, full ops |
-| RITA | pilot | **48** | Riktig motor lokalt | HTTP-host på Vercel, kund-upload |
+| IRMA | pilot | **52** | Avtalsflöde L0–L1 i navet | Filarkiv, högre nivåer, WAF |
+| TYRA | pilot | **42** | Ärende + hub + CRM-domän | Live-lager/offert/SMS |
+| RITA | pilot | **48** | Skattjakt hittar skattefynd lokalt | HTTP-host på Vercel, kund-upload |
 | BRITT | pilot | **38** | Inbox + demo-tal | Livebokföring, full underrättelse |
-| ALVA | deferred | **18** | Fall registreras | Diagnosmotor (ALVA-repot) |
+| ALVA | deferred | **18** | Fallet ägs | Guidning och protokoll (ALVA-repot) |
 | Backup / DR | — | **35** | Lokal+CI restore-drill | Neon-restore i produktion inte övad |
 | Säkerhetsställning | — | **65** | OIDC, httpOnly, headers, cron-hemlighet | WAF, KMS, delad throttle |
 

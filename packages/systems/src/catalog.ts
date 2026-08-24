@@ -96,7 +96,7 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
   {
     id: "rita",
     name: "RITA",
-    purpose: "Verification and findings against financial records.",
+    purpose: "Find tax savings in the books. The engine is skattjakt.",
     status: "pilot",
     schema: "rita",
     basePath: "/rita",
@@ -120,7 +120,7 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
   {
     id: "irma",
     name: "IRMA",
-    purpose: "Agreements and handovers to people outside the organisation.",
+    purpose: "Digital contract handling: one flow, every agreement, no paper chase.",
     status: "pilot",
     schema: "irma",
     basePath: "/irma",
@@ -145,7 +145,7 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
   {
     id: "tyra",
     name: "TYRA",
-    purpose: "Däckverkstad: ärenden, arbetssteg och kundhub.",
+    purpose: "Tire-hotel administration: CRM, quotes, storage and the work card.",
     status: "pilot",
     schema: "tyra",
     basePath: "/tyra",
@@ -163,7 +163,7 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
   {
     id: "alva",
     name: "ALVA",
-    purpose: "Structured vehicle diagnosis. Domain engine arrives with the ALVA repo.",
+    purpose: "Guided vehicle diagnosis and a protocol every party can follow.",
     status: "deferred",
     schema: "alva",
     basePath: "/alva",
