@@ -6,7 +6,7 @@ import { runIntel } from "@/lib/britt/intel";
 import { addObservation, setObservationStatus } from "@/lib/britt/observations";
 
 export async function recordObservation(formData: FormData) {
-  const { session, pool, events } = await requireOrgAction("/britt");
+  const { session, pool, events } = await requireOrgAction("/britt", "finding:read");
   const title = String(formData.get("title") ?? "").trim();
   const body = String(formData.get("body") ?? "").trim();
   if (!title) return;
@@ -38,7 +38,7 @@ export async function closeObservation(formData: FormData) {
 }
 
 export async function runBrittIntel() {
-  const { session, pool, events } = await requireOrgAction("/britt");
+  const { session, pool, events } = await requireOrgAction("/britt", "finding:read");
   await runIntel({
     pool,
     events,

@@ -34,7 +34,7 @@ export async function createIrmaAgreement(formData: FormData) {
 }
 
 export async function reissueIrmaAgreement(formData: FormData) {
-  const { session, pool, events } = await requireOrgAction("/irma");
+  const { session, pool, events } = await requireOrgAction("/irma", "document:upload");
   const id = String(formData.get("id") ?? "").trim();
   if (!id) return;
   const agreement = await reissueAgreementToken({
@@ -55,7 +55,7 @@ export async function reissueIrmaAgreement(formData: FormData) {
 }
 
 export async function revokeIrmaAgreement(formData: FormData) {
-  const { session, pool, events } = await requireOrgAction("/irma");
+  const { session, pool, events } = await requireOrgAction("/irma", "document:upload");
   const id = String(formData.get("id") ?? "").trim();
   if (!id) return;
   await revokeAgreement({

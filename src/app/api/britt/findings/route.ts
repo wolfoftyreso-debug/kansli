@@ -1,4 +1,4 @@
-import { requireOrg } from "@pixdrift/api-core";
+import { requireOrg, requirePermission } from "@pixdrift/api-core";
 import { handleApi, json } from "@/lib/platform/http";
 import { listFindings, runIntel } from "@/lib/britt/intel";
 
@@ -11,7 +11,7 @@ export async function GET() {
 
 export async function POST() {
   return handleApi(async ({ actor, pool, events, requestId }) => {
-    const present = requireOrg(actor);
+    const present = requirePermission(actor, "finding:read");
     const result = await runIntel({
       pool,
       events,

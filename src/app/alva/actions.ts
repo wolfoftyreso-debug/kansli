@@ -5,7 +5,7 @@ import { requireOrgAction } from "@/lib/platform/actions";
 import { createCase } from "@/lib/alva/cases";
 
 export async function registerAlvaCase(formData: FormData) {
-  const { session, pool, events } = await requireOrgAction("/alva");
+  const { session, pool, events } = await requireOrgAction("/alva", "arende:write");
   const complaint = String(formData.get("complaint") ?? "").trim();
   const vehicleRef = String(formData.get("vehicleRef") ?? "").trim();
   const area = String(formData.get("area") ?? "").trim();

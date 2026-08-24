@@ -1,10 +1,10 @@
-import { ApiError, requireOrg } from "@pixdrift/api-core";
+import { ApiError, requirePermission } from "@pixdrift/api-core";
 import { handleApi, json } from "@/lib/platform/http";
 import { issueHubLink } from "@/lib/tyra/hub";
 
 export async function POST(request: Request) {
   return handleApi(async ({ actor, pool, events, requestId }) => {
-    const present = requireOrg(actor);
+    const present = requirePermission(actor, "arende:write");
     const body = (await request.json().catch(() => null)) as { customerId?: string } | null;
     if (!body?.customerId?.trim()) throw new ApiError("invalid_request", "customerId krävs.");
     const issued = await issueHubLink({
