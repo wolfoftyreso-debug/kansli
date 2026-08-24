@@ -43,6 +43,7 @@ export function Field({
   defaultValue,
   placeholder,
   multiline,
+  large,
 }: {
   name: string;
   label: string;
@@ -50,8 +51,11 @@ export function Field({
   defaultValue?: string;
   placeholder?: string;
   multiline?: boolean;
+  large?: boolean;
 }) {
-  const cls = "rounded-md border border-line bg-paper px-3 py-2 text-sm";
+  const cls = large
+    ? "min-h-12 rounded-lg border border-line bg-paper px-4 py-3 text-base"
+    : "rounded-md border border-line bg-paper px-3 py-2 text-sm";
   return (
     <label className="flex flex-col gap-1">
       <span className="text-sm text-ink-soft">{label}</span>
@@ -100,11 +104,15 @@ export function CheckField({
   );
 }
 
-export function Submit({ children }: { children: ReactNode }) {
+export function Submit({ children, large }: { children: ReactNode; large?: boolean }) {
   return (
     <button
       type="submit"
-      className="self-start rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper hover:bg-ink-soft"
+      className={
+        large
+          ? "min-h-12 w-full rounded-lg bg-ink px-4 py-3 text-base font-medium text-paper hover:bg-ink-soft"
+          : "self-start rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper hover:bg-ink-soft"
+      }
     >
       {children}
     </button>

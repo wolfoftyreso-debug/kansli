@@ -2,10 +2,11 @@ import { ApiError, requireOrg } from "@pixdrift/api-core";
 import { handleApi, json } from "@/lib/platform/http";
 import { createAgreement, listAgreements } from "@/lib/irma/agreements";
 
-export async function GET() {
+export async function GET(request: Request) {
   return handleApi(async ({ actor, pool }) => {
     const present = requireOrg(actor);
-    return json({ agreements: await listAgreements(pool, present.orgRef) });
+    const query = new URL(request.url).searchParams.get("q") ?? undefined;
+    return json({ agreements: await listAgreements(pool, present.orgRef, query) });
   });
 }
 
@@ -16,6 +17,7 @@ export async function POST(request: Request) {
       title?: string;
       counterparty?: string;
       body?: string;
+      verificationLevel?: 0 | 1;
     } | null;
     if (!body?.title?.trim() || !body.counterparty?.trim()) {
       throw new ApiError("invalid_request", "title och counterparty krävs.");
@@ -28,6 +30,7 @@ export async function POST(request: Request) {
       title: body.title,
       counterparty: body.counterparty,
       body: body.body,
+      verificationLevel: body.verificationLevel,
       requestId,
     });
     return json({ agreement }, 201);

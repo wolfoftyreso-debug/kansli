@@ -47,9 +47,10 @@ Browser → Next.js (kansli)
 | GET/POST | `/api/rita/analyses` | yes. Completed events carry `findingCount` and `modelConfigured`. |
 | GET/POST | `/api/britt/observations` | yes |
 | GET/POST | `/api/britt/findings` | yes. Demo metrics analysis; high findings become observations. |
-| GET/POST | `/api/irma/agreements` | yes |
-| GET | `/api/irma/l/:token` | no (hashed magic link). First open → `viewed`. |
-| POST | `/api/irma/l/:token` | no. Hashed acknowledgement → `signed` + artifact SHA-256. |
+| GET/POST | `/api/irma/agreements` | yes. GET accepts `?q=` (title/counterparty). POST may set `verificationLevel` 0\|1. |
+| GET/POST | `/api/irma/agreements/:id` | yes (org-scoped). GET returns integrity recompute. POST `{action:revoke}` cancels an unsigned link. |
+| GET | `/api/irma/l/:token` | no (hashed magic link, 14-day TTL, `Cache-Control: no-store`). First open → `viewed`. Expired/revoked → 404. |
+| POST | `/api/irma/l/:token` | no. Level 1 hashed acknowledgement → `signed` + artifact SHA-256. Level 0 rejected. |
 | GET/POST | `/api/alva/cases` | yes |
 | GET/POST | `/api/kansli/tasks` | yes |
 | GET/POST/PATCH/DELETE | `/api/tasks` | yes (alias till `/api/kansli/tasks`) |
@@ -65,8 +66,9 @@ Browser → Next.js (kansli)
 | `/rita` | Analysis requests (blocked without engine host or binary) |
 | `/rita/[id]` | Findings from `result.opportunities` |
 | `/britt` | Demo findings + observations inbox |
-| `/irma` | Agreements + one-time magic link |
-| `/irma/l/:token` | Counterparty view. First open marks `viewed`. Acknowledge marks `signed`. |
+| `/irma` | Agreements, search, create. Issued link is a 120s httpOnly cookie (`?issued=1`), not `?link=`. |
+| `/irma/:id` | Org-scoped detail, integrity, revoke. |
+| `/irma/l/:token` | Guest view. First open marks `viewed`. Level 1 acknowledge marks `signed`. |
 | `/alva` | Case registration (engine deferred) |
 | `/platform` | Module catalog |
 | `/platform/events` | Org-scoped event log |

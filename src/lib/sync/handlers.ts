@@ -118,6 +118,16 @@ export function registerSyncHandlers(events: EventLog, pool: pg.Pool): void {
     );
   });
 
+  events.subscribe("irma.agreement.cancelled", async (event) => {
+    await record(
+      event.orgRef,
+      "irma",
+      "IRMA-länken är återkallad",
+      String(event.payload["title"] ?? "Motparten kan inte längre öppna underlaget."),
+      event.subjectRef,
+    );
+  });
+
   events.subscribe("alva.case.created", async (event) => {
     await record(
       event.orgRef,

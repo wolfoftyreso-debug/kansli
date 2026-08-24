@@ -8,6 +8,13 @@ import {
   type AgreementClause,
 } from "./clauses.ts";
 
+import {
+  IRMA_TOKEN_TTL_MS,
+  effectiveStatus,
+  parseVerificationLevel,
+  type VerificationLevel,
+} from "./status.ts";
+
 export interface Agreement {
   id: string;
   title: string;
@@ -19,6 +26,10 @@ export interface Agreement {
   signedAt: string | null;
   signerName: string | null;
   artifactSha256: string | null;
+  contentSha256: string | null;
+  verificationLevel: VerificationLevel;
+  tokenExpiresAt: string | null;
+  viewedAt: string | null;
   magicLink?: string;
 }
 
@@ -54,6 +65,29 @@ export function hashArtifact(canonical: string): string {
   return createHash("sha256").update(canonical).digest("hex");
 }
 
+export function contentPayload(input: {
+  title: string;
+  counterparty: string;
+  body: string;
+  clauses: AgreementClause[];
+}): string {
+  return JSON.stringify({
+    title: input.title,
+    counterparty: input.counterparty,
+    body: input.body,
+    clauses: input.clauses,
+  });
+}
+
+export function hashContent(input: {
+  title: string;
+  counterparty: string;
+  body: string;
+  clauses: AgreementClause[];
+}): string {
+  return hashArtifact(contentPayload(input));
+}
+
 export function hashSignature(input: {
   agreementId: string;
   signerName: string;
@@ -66,17 +100,44 @@ export function hashSignature(input: {
 }
 
 const AGREEMENT_COLUMNS = `id, title, counterparty, status, body, clauses, created_at,
-       signed_at, signer_name, artifact_sha256`;
+       signed_at, signer_name, artifact_sha256, content_sha256, verification_level,
+       token_expires_at, token_revoked_at, viewed_at`;
 const AGREEMENT_BY_TOKEN = `id, org_ref, title, counterparty, status, body, clauses, created_at,
-       signed_at, signer_name, artifact_sha256`;
+       signed_at, signer_name, artifact_sha256, content_sha256, verification_level,
+       token_expires_at, token_revoked_at, viewed_at`;
 
-export async function listAgreements(pool: pg.Pool, orgRef: string): Promise<Agreement[]> {
-  const { rows } = await pool.query(
-    `select ${AGREEMENT_COLUMNS} from irma.agreements
-      where org_ref = $1 order by created_at desc`,
-    [orgRef],
-  );
+export async function listAgreements(
+  pool: pg.Pool,
+  orgRef: string,
+  query?: string,
+): Promise<Agreement[]> {
+  const q = query?.trim().replace(/[%_]/g, "");
+  const { rows } = q
+    ? await pool.query(
+        `select ${AGREEMENT_COLUMNS} from irma.agreements
+          where org_ref = $1
+            and (title ilike $2 or counterparty ilike $2)
+          order by created_at desc`,
+        [orgRef, `%${q}%`],
+      )
+    : await pool.query(
+        `select ${AGREEMENT_COLUMNS} from irma.agreements
+          where org_ref = $1 order by created_at desc`,
+        [orgRef],
+      );
   return rows.map(toAgreement);
+}
+
+export async function getAgreement(
+  pool: pg.Pool,
+  orgRef: string,
+  id: string,
+): Promise<Agreement | null> {
+  const { rows } = await pool.query(
+    `select ${AGREEMENT_COLUMNS} from irma.agreements where id = $1 and org_ref = $2`,
+    [id, orgRef],
+  );
+  return rows[0] ? toAgreement(rows[0]) : null;
 }
 
 export async function createAgreement(input: {
@@ -89,6 +150,7 @@ export async function createAgreement(input: {
   requestId: string;
   body?: string;
   clauses?: AgreementClause[];
+  verificationLevel?: VerificationLevel;
 }): Promise<Agreement> {
   const id = randomUUID();
   const token = randomBytes(24).toString("base64url");
@@ -97,11 +159,26 @@ export async function createAgreement(input: {
   const counterparty = input.counterparty.trim();
   const body = (input.body ?? "").trim();
   const clauses = input.clauses?.length ? input.clauses : [...DEFAULT_CLAUSES];
+  const verificationLevel = parseVerificationLevel(input.verificationLevel);
+  const contentSha256 = hashContent({ title, counterparty, body, clauses });
+  const tokenExpiresAt = new Date(Date.now() + IRMA_TOKEN_TTL_MS).toISOString();
   await input.pool.query(
     `insert into irma.agreements
-       (id, org_ref, title, counterparty, status, token_hash, body, clauses)
-     values ($1,$2,$3,$4,'draft',$5,$6,$7::jsonb)`,
-    [id, input.orgRef, title, counterparty, tokenHash, body, JSON.stringify(clauses)],
+       (id, org_ref, title, counterparty, status, token_hash, body, clauses,
+        verification_level, content_sha256, token_expires_at)
+     values ($1,$2,$3,$4,'draft',$5,$6,$7::jsonb,$8,$9,$10::timestamptz)`,
+    [
+      id,
+      input.orgRef,
+      title,
+      counterparty,
+      tokenHash,
+      body,
+      JSON.stringify(clauses),
+      verificationLevel,
+      contentSha256,
+      tokenExpiresAt,
+    ],
   );
   await input.events.publish({
     system: "irma",
@@ -111,7 +188,7 @@ export async function createAgreement(input: {
     actorRef: input.actorRef,
     subjectRef: `irma:agreement:${id}`,
     requestId: input.requestId,
-    payload: { title },
+    payload: { title, counterparty, verificationLevel },
   });
   return {
     id,
@@ -124,6 +201,10 @@ export async function createAgreement(input: {
     signedAt: null,
     signerName: null,
     artifactSha256: null,
+    contentSha256,
+    verificationLevel,
+    tokenExpiresAt,
+    viewedAt: null,
     magicLink: irmaLinkPath(token),
   };
 }
@@ -142,17 +223,29 @@ export async function openAgreementByToken(input: {
   if (!row) return null;
 
   if (row.status === "draft") {
-    await input.pool.query(`update irma.agreements set status = 'viewed' where id = $1`, [row.id]);
-    row.status = "viewed";
-    await input.events.publish({
-      system: "irma",
-      kind: "irma.agreement.viewed",
-      orgRef: row.org_ref,
-      actorKind: "system",
-      subjectRef: `irma:agreement:${row.id}`,
-      requestId: input.requestId,
-      payload: { title: row.title },
-    });
+    const viewedAt = new Date().toISOString();
+    const updated = await input.pool.query(
+      `update irma.agreements set status = 'viewed', viewed_at = $2::timestamptz
+        where id = $1 and status = 'draft'
+        returning viewed_at`,
+      [row.id, viewedAt],
+    );
+    if ((updated.rowCount ?? 0) > 0) {
+      row.status = "viewed";
+      row.viewed_at = viewedAt;
+      await input.events.publish({
+        system: "irma",
+        kind: "irma.agreement.viewed",
+        orgRef: row.org_ref,
+        actorKind: "system",
+        subjectRef: `irma:agreement:${row.id}`,
+        requestId: input.requestId,
+        payload: { title: row.title },
+      });
+    } else {
+      const current = await loadByToken(input.pool, input.token);
+      return current ? toAgreement(current) : null;
+    }
   }
 
   return toAgreement(row);
@@ -170,6 +263,7 @@ export async function acknowledgeAgreement(input: {
   if (!signerName) return null;
   const row = await loadByToken(input.pool, input.token);
   if (!row) return null;
+  if (parseVerificationLevel(row.verification_level) === 0) return toAgreement(row);
   if (row.status === "signed") return toAgreement(row);
 
   const signedAt = new Date().toISOString();
@@ -192,40 +286,73 @@ export async function acknowledgeAgreement(input: {
     signedAt,
   });
 
-  await input.pool.query(
+  const updated = await input.pool.query(
     `update irma.agreements
         set status = 'signed',
             signed_at = $2::timestamptz,
             signer_name = $3,
             signature_hash = $4,
             artifact_sha256 = $5
-      where id = $1 and status <> 'signed'`,
+      where id = $1 and status <> 'signed' and token_revoked_at is null
+      returning ${AGREEMENT_BY_TOKEN}`,
     [row.id, signedAt, signerName, signatureHash, artifactSha256],
   );
 
-  const updated = await loadByToken(input.pool, input.token);
-  if (!updated) return null;
+  if (updated.rowCount === 0) {
+    const current = await loadByToken(input.pool, input.token);
+    return current ? toAgreement(current) : null;
+  }
 
+  const saved = updated.rows[0] as AgreementRow;
   await input.events.publish({
     system: "irma",
     kind: "irma.agreement.signed",
-    orgRef: updated.org_ref,
+    orgRef: saved.org_ref,
     actorKind: "system",
-    subjectRef: `irma:agreement:${updated.id}`,
+    subjectRef: `irma:agreement:${saved.id}`,
     requestId: input.requestId,
     payload: {
-      title: updated.title,
+      title: saved.title,
       signerName,
       artifactSha256,
     },
   });
 
-  return {
-    ...toAgreement(updated),
-    signedAt,
-    signerName,
-    artifactSha256,
-  };
+  return toAgreement(saved);
+}
+
+export async function revokeAgreement(input: {
+  pool: pg.Pool;
+  events: EventLog;
+  orgRef: string;
+  id: string;
+  actorRef: string;
+  requestId: string;
+}): Promise<Agreement | null> {
+  const existing = await getAgreement(input.pool, input.orgRef, input.id);
+  if (!existing) return null;
+  if (existing.status === "signed" || existing.status === "cancelled") return existing;
+
+  const result = await input.pool.query(
+    `update irma.agreements
+        set status = 'cancelled', token_revoked_at = now()
+      where id = $1 and org_ref = $2 and status not in ('signed', 'cancelled')
+      returning id`,
+    [input.id, input.orgRef],
+  );
+  if ((result.rowCount ?? 0) > 0) {
+    await input.events.publish({
+      system: "irma",
+      kind: "irma.agreement.cancelled",
+      orgRef: input.orgRef,
+      actorKind: "user",
+      actorRef: input.actorRef,
+      subjectRef: `irma:agreement:${input.id}`,
+      requestId: input.requestId,
+      payload: { title: existing.title },
+    });
+  }
+  return getAgreement(input.pool, input.orgRef, input.id);
 }
 
 async function loadByToken(pool: pg.Pool, token: string): Promise<AgreementRow | null> {
@@ -236,7 +363,13 @@ async function loadByToken(pool: pg.Pool, token: string): Promise<AgreementRow |
        from irma.agreements where token_hash = $1`,
     [hashIrmaToken(trimmed)],
   );
-  return (rows[0] as AgreementRow | undefined) ?? null;
+  const row = (rows[0] as AgreementRow | undefined) ?? null;
+  if (!row) return null;
+  if (row.token_revoked_at) return null;
+  if (row.status !== "signed" && row.token_expires_at && new Date(row.token_expires_at) <= new Date()) {
+    return null;
+  }
+  return row;
 }
 
 interface AgreementRow {
@@ -251,6 +384,11 @@ interface AgreementRow {
   signed_at: Date | string | null;
   signer_name: string | null;
   artifact_sha256: string | null;
+  content_sha256: string | null;
+  verification_level: number;
+  token_expires_at: Date | string | null;
+  token_revoked_at?: Date | string | null;
+  viewed_at: Date | string | null;
 }
 
 function toAgreement(row: {
@@ -264,17 +402,32 @@ function toAgreement(row: {
   signed_at?: Date | string | null;
   signer_name?: string | null;
   artifact_sha256?: string | null;
+  content_sha256?: string | null;
+  verification_level?: number;
+  token_expires_at?: Date | string | null;
+  token_revoked_at?: Date | string | null;
+  viewed_at?: Date | string | null;
 }): Agreement {
+  const tokenExpiresAt = row.token_expires_at ? new Date(row.token_expires_at).toISOString() : null;
+  const tokenRevokedAt = row.token_revoked_at ? new Date(row.token_revoked_at).toISOString() : null;
   return {
     id: row.id,
     title: row.title,
     counterparty: row.counterparty,
-    status: row.status,
+    status: effectiveStatus({
+      status: row.status,
+      tokenExpiresAt,
+      tokenRevokedAt,
+    }),
     body: row.body ?? "",
     clauses: parseClauses(row.clauses),
     createdAt: new Date(row.created_at).toISOString(),
     signedAt: row.signed_at ? new Date(row.signed_at).toISOString() : null,
     signerName: row.signer_name ?? null,
     artifactSha256: row.artifact_sha256 ?? null,
+    contentSha256: row.content_sha256 ?? null,
+    verificationLevel: parseVerificationLevel(row.verification_level),
+    tokenExpiresAt,
+    viewedAt: row.viewed_at ? new Date(row.viewed_at).toISOString() : null,
   };
 }

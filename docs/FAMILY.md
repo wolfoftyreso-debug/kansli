@@ -91,6 +91,7 @@ mot plan, likviditet, kundkoncentration). BRITT är den enda som skriver
 | `irma.agreement.created` | Ett avtal väntar på motparten |
 | `irma.agreement.viewed` | Motparten har öppnat länken |
 | `irma.agreement.signed` | Motparten har bekräftat underlaget |
+| `irma.agreement.cancelled` | Länken är återkallad |
 | `alva.case.created` | Ett fall är registrerat |
 | `kansli.task.created` | Intern uppgift |
 | `britt.finding.recorded` (high) | Ett högt fynd från analysen |
@@ -100,11 +101,13 @@ Revolut-kopplingar.
 
 ### IRMA — underlag till någon utanför
 
-Avtal med klausuler + hashad magic link. Klartext-token visas en gång som
-`/irma/l/<token>`. Motparten öppnar utan konto. Första öppning sätter
-`viewed` och `irma.agreement.viewed`. Bekräftelse sätter `signed`, en
-SHA-256-artefakt och `irma.agreement.signed`. Inte BankID. Inte kvalificerad
-e-signatur. Ingen fillagring.
+Avtal med klausuler + hashad magic link (14 dagar, kan återkallas).
+Klartext-token visas en gång i en httpOnly-cookie, inte i query-strängen.
+Motparten öppnar `/irma/l/<token>` utan konto. Första öppning sätter
+`viewed` och `irma.agreement.viewed`. Bekräftelse (nivå 1) sätter `signed`,
+en SHA-256-artefakt och `irma.agreement.signed`. Nivå 0 är informationsunderlag
+utan bekräftelse. Innehålls- och artefakthash kan räknas om. Inte BankID.
+Inte kvalificerad e-signatur. Ingen fillagring. Ingen OCR. Nivå 2–5 finns inte.
 
 ### ALVA — fallet, inte diagnosen
 

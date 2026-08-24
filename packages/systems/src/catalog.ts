@@ -16,6 +16,7 @@ export const EVENT_KINDS = [
   "irma.agreement.created",
   "irma.agreement.viewed",
   "irma.agreement.signed",
+  "irma.agreement.cancelled",
   "alva.case.created",
 ] as const;
 export type EventKind = (typeof EVENT_KINDS)[number];
@@ -111,8 +112,21 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
     basePath: "/irma",
     apiBase: "/api/irma",
     domainDir: "src/lib/irma",
-    eventKinds: ["irma.agreement.created", "irma.agreement.viewed", "irma.agreement.signed"],
-    capabilities: ["agreements", "magic-link", "link-consume", "acknowledge"],
+    eventKinds: [
+      "irma.agreement.created",
+      "irma.agreement.viewed",
+      "irma.agreement.signed",
+      "irma.agreement.cancelled",
+    ],
+    capabilities: [
+      "agreements",
+      "magic-link",
+      "link-consume",
+      "acknowledge",
+      "revoke",
+      "integrity-check",
+      "title-search",
+    ],
   },
   {
     id: "alva",

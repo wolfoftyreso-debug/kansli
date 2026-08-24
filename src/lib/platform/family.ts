@@ -109,8 +109,8 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     id: "irma",
     name: "IRMA",
     question: "Hur lämnar vi ett underlag till någon utanför organisationen?",
-    does: "Skapar ett avtal med klausuler, hashar en magic link, motparten öppnar /irma/l/<token> och kan bekräfta. Första öppning = viewed. Bekräftelse = signed + SHA-256-artefakt.",
-    doesNot: "Ingen kvalificerad e-signatur. Ingen BankID. Ingen fillagring (Blob/R2).",
+    does: "Skapar ett avtal med klausuler, hashar en tidsbegränsad magic link (14 dagar), motparten öppnar /irma/l/<token> och kan bekräfta. Första öppning = viewed. Bekräftelse = signed + SHA-256-artefakt. Länken kan återkallas. Integritet räknas om mot hash.",
+    doesNot: "Ingen kvalificerad e-signatur. Ingen BankID. Ingen fillagring. Ingen OCR eller dokumentmotor. Nivå 2–5 är inte implementerade.",
     owns: "irma.agreements",
     status: "pilot",
   },
@@ -155,8 +155,8 @@ export const FAMILY_LINKS: readonly FamilyLink[] = [
   {
     from: "irma",
     to: "britt",
-    via: "irma.agreement.created | irma.agreement.viewed | irma.agreement.signed",
-    meaning: "Avtal skapat, öppnat och bekräftat.",
+    via: "irma.agreement.created | irma.agreement.viewed | irma.agreement.signed | irma.agreement.cancelled",
+    meaning: "Avtal skapat, öppnat, bekräftat eller återkallat.",
   },
   {
     from: "alva",

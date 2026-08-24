@@ -2,13 +2,17 @@ import { afterAll, describe, expect, it } from "vitest";
 import { createPool, migrateWorkspace } from "@pixdrift/db";
 import { EventLog } from "@pixdrift/events";
 import { ACKNOWLEDGEMENT_DECLARATION } from "./clauses.ts";
+import { verifyAgreementIntegrity } from "./integrity.ts";
 import {
   acknowledgeAgreement,
   createAgreement,
+  getAgreement,
   hashArtifact,
   hashIrmaToken,
   hashSignature,
+  listAgreements,
   openAgreementByToken,
+  revokeAgreement,
 } from "./agreements.ts";
 
 describe("hashIrmaToken", () => {
@@ -125,5 +129,108 @@ live("IRMA magic link (live Postgres)", () => {
     const signedEvents = await events.list({ orgRef, kind: "irma.agreement.signed" });
     expect(signedEvents).toHaveLength(1);
     expect(hashArtifact("x")).toMatch(/^[0-9a-f]{64}$/);
+
+    const integrity = verifyAgreementIntegrity({
+      id: first!.id,
+      title: first!.title,
+      counterparty: first!.counterparty,
+      body: first!.body,
+      clauses: first!.clauses,
+      contentSha256: first!.contentSha256,
+      signerName: first!.signerName,
+      signedAt: first!.signedAt,
+      artifactSha256: first!.artifactSha256,
+    });
+    expect(integrity).toEqual({ contentMatches: true, artifactMatches: true });
+  });
+
+  it("does not sign a level-0 information sheet", async () => {
+    await migrateWorkspace({ ownerUrl: OWNER!, root: process.cwd(), appRole: "pixdrift_app" });
+    const events = new EventLog(pool);
+    const orgRef = `pixdrift:org:irma-l0-${Date.now()}`;
+    const created = await createAgreement({
+      pool,
+      events,
+      orgRef,
+      actorRef: "user-test",
+      title: "Info",
+      counterparty: "Läsare",
+      verificationLevel: 0,
+      requestId: "req-l0-1",
+    });
+    expect(created.verificationLevel).toBe(0);
+    const token = created.magicLink!.slice("/irma/l/".length);
+    await openAgreementByToken({ pool, events, token, requestId: "req-l0-2" });
+    const ack = await acknowledgeAgreement({
+      pool,
+      events,
+      token,
+      signerName: "Läsare",
+      requestId: "req-l0-3",
+    });
+    expect(ack?.status).toBe("viewed");
+    expect(ack?.artifactSha256).toBeNull();
+    expect(await events.list({ orgRef, kind: "irma.agreement.signed" })).toHaveLength(0);
+  });
+
+  it("rejects expired and revoked tokens and scopes reads to the org", async () => {
+    await migrateWorkspace({ ownerUrl: OWNER!, root: process.cwd(), appRole: "pixdrift_app" });
+    const events = new EventLog(pool);
+    const orgRef = `pixdrift:org:irma-sec-${Date.now()}`;
+    const created = await createAgreement({
+      pool,
+      events,
+      orgRef,
+      actorRef: "user-test",
+      title: "Sekretessunderlag",
+      counterparty: "Utomstående",
+      requestId: "req-sec-1",
+    });
+    const token = created.magicLink!.slice("/irma/l/".length);
+
+    expect(await getAgreement(pool, "pixdrift:org:other", created.id)).toBeNull();
+    expect(await getAgreement(pool, orgRef, created.id)).not.toBeNull();
+
+    const found = await listAgreements(pool, orgRef, "Sekretess%");
+    expect(found).toHaveLength(1);
+    const miss = await listAgreements(pool, orgRef, "finns-inte");
+    expect(miss).toHaveLength(0);
+
+    await pool.query(`update irma.agreements set token_expires_at = now() - interval '1 hour' where id = $1`, [
+      created.id,
+    ]);
+    expect(await openAgreementByToken({ pool, events, token, requestId: "req-sec-2" })).toBeNull();
+    expect((await getAgreement(pool, orgRef, created.id))?.status).toBe("expired");
+
+    const live = await createAgreement({
+      pool,
+      events,
+      orgRef,
+      actorRef: "user-test",
+      title: "Att återkalla",
+      counterparty: "Utomstående",
+      requestId: "req-sec-3",
+    });
+    const liveToken = live.magicLink!.slice("/irma/l/".length);
+    const revoked = await revokeAgreement({
+      pool,
+      events,
+      orgRef,
+      id: live.id,
+      actorRef: "user-test",
+      requestId: "req-sec-4",
+    });
+    expect(revoked?.status).toBe("cancelled");
+    expect(await openAgreementByToken({ pool, events, token: liveToken, requestId: "req-sec-5" })).toBeNull();
+    const again = await revokeAgreement({
+      pool,
+      events,
+      orgRef,
+      id: live.id,
+      actorRef: "user-test",
+      requestId: "req-sec-6",
+    });
+    expect(again?.status).toBe("cancelled");
+    expect(await events.list({ orgRef, kind: "irma.agreement.cancelled" })).toHaveLength(1);
   });
 });

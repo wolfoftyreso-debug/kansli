@@ -1,8 +1,17 @@
+import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
-import { EmptyState, Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
-import { authConfig } from "@/lib/auth/config";
+import {
+  CheckField,
+  EmptyState,
+  Field,
+  Notice,
+  SignInGate,
+  Submit,
+} from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { listAgreements } from "@/lib/irma/agreements";
+import { publicIrmaUrl, takeIssuedLink } from "@/lib/irma/issued-link";
+import { statusLabel } from "@/lib/irma/status";
 import { tryRuntime } from "@/lib/platform/page";
 import { createIrmaAgreement } from "./actions";
 
@@ -14,13 +23,17 @@ export const metadata = {
 export default async function IrmaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ issued?: string; link?: string }>;
+  searchParams: Promise<{ issued?: string; q?: string }>;
 }) {
   const session = await readSession();
   const runtime = tryRuntime();
-  const agreements =
-    session?.org?.ref && runtime ? await listAgreements(runtime.pool, session.org.ref) : [];
   const params = await searchParams;
+  const query = params.q?.trim() ?? "";
+  const agreements =
+    session?.org?.ref && runtime
+      ? await listAgreements(runtime.pool, session.org.ref, query || undefined)
+      : [];
+  const issued = params.issued === "1" ? await takeIssuedLink() : null;
 
   return (
     <AppShell current="irma" session={session}>
@@ -28,30 +41,30 @@ export default async function IrmaPage({
         <p className="pd-label text-faint">PIXDRIFT / IRMA</p>
         <h1 className="text-3xl font-semibold tracking-tight">IRMA</h1>
         <p className="text-ink-soft">
-          Avtal, klausuler och en engångslänk till motparten. Token hashas; klartext visas bara när
-          avtalet skapas. Motparten kan bekräfta med en hashad förklaring — inte BankID.
+          Skicka ett underlag till någon utanför organisationen. Motparten öppnar länken utan konto
+          och kan bekräfta att hen har läst det.
         </p>
         <Notice>
-          Ingen kvalificerad e-signatur och ingen fillagring. Artefakten är SHA-256 av det
-          bekräftade underlaget.
+          Bekräftelsen är nivå 1: en hashad förklaring. Inte BankID. Inte kvalificerad e-signatur.
+          Ingen fillagring.
         </Notice>
       </header>
 
-      {params.issued && params.link ? (
+      {issued ? (
         <Notice>
-          Länk till motparten (visas en gång):{" "}
+          Länk till motparten — visas bara den här gången. Kopiera den nu.{" "}
           <a
-            href={params.link}
+            href={issued}
             className="break-all font-mono text-ink underline decoration-line underline-offset-4"
           >
-            {params.link.startsWith("http") ? params.link : `${authConfig.baseUrl}${params.link}`}
+            {publicIrmaUrl(issued)}
           </a>
         </Notice>
       ) : null}
 
       {!session?.org ? (
         <SignInGate next="/irma" title="Logga in för att skapa avtal">
-          Länken till motparten returneras en gång. I databasen ligger bara hash.
+          Länken till motparten visas en gång. I databasen ligger bara en hash.
         </SignInGate>
       ) : (
         <>
@@ -59,37 +72,56 @@ export default async function IrmaPage({
             action={createIrmaAgreement}
             className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
           >
-            <h2 className="text-lg font-semibold">Nytt avtal</h2>
+            <h2 className="text-lg font-semibold">Nytt underlag</h2>
             <Field name="title" label="Titel" required />
             <Field name="counterparty" label="Motpart" required />
             <Field
               name="body"
-              label="Brödtext"
+              label="Vad motparten ska läsa"
               multiline
-              placeholder="Valfri text som motparten ser."
+              placeholder="Valfri text. Klausuler läggs till automatiskt."
+            />
+            <CheckField
+              name="requireAck"
+              defaultChecked
+              label="Kräv bekräftelse (nivå 1). Avmarkera för rent informationsunderlag."
             />
             <Submit>Skapa och visa länk</Submit>
           </form>
 
           <section className="flex flex-col gap-3">
             <h2 className="text-lg font-semibold">Avtal</h2>
+            <form className="flex gap-2" action="/irma" method="get">
+              <input
+                name="q"
+                defaultValue={query}
+                placeholder="Sök titel eller motpart"
+                className="min-h-11 flex-1 rounded-md border border-line bg-paper px-3 py-2 text-base"
+              />
+              <button
+                type="submit"
+                className="rounded-md border border-line px-3 text-sm text-ink-soft"
+              >
+                Sök
+              </button>
+            </form>
             {agreements.length === 0 ? (
-              <EmptyState>Inga avtal ännu.</EmptyState>
+              <EmptyState>
+                {query ? "Inget matchade sökningen." : "Inga avtal ännu."}
+              </EmptyState>
             ) : (
               <ul className="flex flex-col gap-3">
                 {agreements.map((item) => (
                   <li key={item.id} className="rounded-xl border border-line bg-surface p-4">
                     <p className="text-xs font-medium uppercase tracking-wide text-accent">
-                      {item.status}
+                      {statusLabel(item.status)}
                     </p>
-                    <p className="mt-2 font-medium">{item.title}</p>
+                    <p className="mt-2 font-medium">
+                      <Link href={`/irma/${item.id}`} className="hover:underline">
+                        {item.title}
+                      </Link>
+                    </p>
                     <p className="text-sm text-ink-soft">{item.counterparty}</p>
-                    {item.body ? <p className="mt-1 text-sm text-muted">{item.body}</p> : null}
-                    {item.artifactSha256 ? (
-                      <p className="mt-2 break-all font-mono text-xs text-faint">
-                        artefakt {item.artifactSha256}
-                      </p>
-                    ) : null}
                     <p className="mt-2 font-mono text-xs text-faint">{item.createdAt}</p>
                   </li>
                 ))}
