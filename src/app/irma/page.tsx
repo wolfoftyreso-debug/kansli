@@ -52,12 +52,20 @@ export default async function IrmaPage({
 
       {issued ? (
         <Notice>
-          Länk till motparten — visas bara den här gången. Kopiera den nu.{" "}
+          Länk till motparten — giltig två minuter i den här webbläsaren. Kopiera den nu.
+          <label className="mt-2 flex flex-col gap-1">
+            <span className="sr-only">Länk till motparten</span>
+            <input
+              readOnly
+              value={publicIrmaUrl(issued)}
+              className="w-full min-h-11 rounded-md border border-line bg-paper px-3 py-2 font-mono text-sm text-ink"
+            />
+          </label>
           <a
             href={issued}
-            className="break-all font-mono text-ink underline decoration-line underline-offset-4"
+            className="mt-2 inline-block font-medium text-ink underline decoration-line underline-offset-4"
           >
-            {publicIrmaUrl(issued)}
+            Öppna länken
           </a>
         </Notice>
       ) : null}

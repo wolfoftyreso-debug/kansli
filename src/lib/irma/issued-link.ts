@@ -1,25 +1,27 @@
 import { cookies } from "next/headers";
 import { authConfig } from "@/lib/auth/config";
+import { issuedPathFromCookie, tokenFromIssuedPath } from "./issued-path.ts";
 
 export const IRMA_ISSUED_COOKIE = "irma_issued";
+export { issuedPathFromCookie, tokenFromIssuedPath };
 
 export async function setIssuedLink(path: string): Promise<void> {
+  const token = tokenFromIssuedPath(path);
+  if (!token) return;
   const jar = await cookies();
-  jar.set(IRMA_ISSUED_COOKIE, path, {
+  jar.set(IRMA_ISSUED_COOKIE, token, {
     httpOnly: true,
     sameSite: "lax",
     secure: authConfig.cookieSecure,
-    path: "/irma",
+    path: "/",
     maxAge: 120,
   });
 }
 
-/** Read-only. Deleting cookies from a Server Component throws in Next.js. The cookie expires in 120s. */
+/** Read-only. Cookie writes are not allowed from the /irma Server Component. */
 export async function peekIssuedLink(): Promise<string | null> {
   const jar = await cookies();
-  const value = jar.get(IRMA_ISSUED_COOKIE)?.value?.trim() ?? "";
-  if (!value.startsWith("/irma/l/")) return null;
-  return value;
+  return issuedPathFromCookie(jar.get(IRMA_ISSUED_COOKIE)?.value ?? "");
 }
 
 export function publicIrmaUrl(path: string): string {
