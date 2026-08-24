@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
 import { Notice, SignInGate } from "@/components/app/SignInGate";
+import { eventLine } from "@/lib/platform/event-copy";
 import { FAMILY_SYSTEMS } from "@/lib/platform/family";
 import { readSession } from "@/lib/auth/session";
+import { tryRuntime } from "@/lib/platform/page";
 import TaskBoard from "../TaskBoard";
 
 export const metadata = {
@@ -20,6 +22,11 @@ const HREF: Record<string, string> = {
 
 export default async function KansliHub() {
   const session = await readSession();
+  const runtime = tryRuntime();
+  const events =
+    session?.org?.ref && runtime
+      ? await runtime.events.list({ orgRef: session.org.ref, limit: 8, order: "desc" })
+      : [];
 
   return (
     <AppShell current="kansli" session={session}>
@@ -72,6 +79,25 @@ export default async function KansliHub() {
               </Link>
             </div>
           </section>
+
+          {events.length > 0 ? (
+            <section className="flex flex-col gap-3">
+              <div className="flex items-baseline justify-between gap-3">
+                <h2 className="text-lg font-semibold">Senaste händelser</h2>
+                <Link href="/platform/events" className="text-sm text-ink-soft hover:underline">
+                  Alla
+                </Link>
+              </div>
+              <ol className="flex flex-col gap-2">
+                {events.map((event) => (
+                  <li key={event.id} className="rounded-xl border border-line bg-surface px-4 py-3">
+                    <p className="font-mono text-xs text-accent">{event.kind}</p>
+                    <p className="mt-1 text-sm text-ink-soft">{eventLine(event)}</p>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          ) : null}
 
           <Notice>Uppgifter skrivs i kansli.tasks. BRITT får en observation när en uppgift skapas.</Notice>
           <TaskBoard />

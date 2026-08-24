@@ -1,6 +1,7 @@
 import { AppShell } from "@/components/app/AppShell";
 import { EmptyState, Notice, SignInGate } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
+import { eventHeadline } from "@/lib/platform/event-copy";
 import { tryRuntime } from "@/lib/platform/page";
 
 export const metadata = {
@@ -36,18 +37,22 @@ export default async function EventsPage() {
         <EmptyState>Inga händelser ännu. Publicera från TORA eller skapa något i RITA.</EmptyState>
       ) : (
         <ol className="flex flex-col gap-2">
-          {events.map((event) => (
-            <li key={event.id} className="rounded-xl border border-line bg-surface px-4 py-3">
-              <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <p className="font-mono text-xs text-accent">{event.kind}</p>
-                <p className="font-mono text-xs text-faint">{event.occurredAt}</p>
-              </div>
-              <p className="mt-1 text-sm text-ink-soft">
-                {event.system}
-                {event.subjectRef ? ` · ${event.subjectRef}` : ""}
-              </p>
-            </li>
-          ))}
+          {events.map((event) => {
+            const headline = eventHeadline(event.payload);
+            return (
+              <li key={event.id} className="rounded-xl border border-line bg-surface px-4 py-3">
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <p className="font-mono text-xs text-accent">{event.kind}</p>
+                  <p className="font-mono text-xs text-faint">{event.occurredAt}</p>
+                </div>
+                {headline ? <p className="mt-1 text-sm text-ink">{headline}</p> : null}
+                <p className="mt-1 text-sm text-ink-soft">
+                  {event.system}
+                  {event.subjectRef ? ` · ${event.subjectRef}` : ""}
+                </p>
+              </li>
+            );
+          })}
         </ol>
       )}
     </AppShell>
