@@ -59,6 +59,7 @@ export default async function IrmaPage({
             <h2 className="text-lg font-semibold">Nytt avtal</h2>
             <Field name="title" label="Titel" required />
             <Field name="counterparty" label="Motpart" required />
+            <Field name="body" label="Brödtext" multiline placeholder="Valfri text som motparten ser." />
             <Submit>Skapa och visa länk</Submit>
           </form>
 
@@ -75,6 +76,7 @@ export default async function IrmaPage({
                     </p>
                     <p className="mt-2 font-medium">{item.title}</p>
                     <p className="text-sm text-ink-soft">{item.counterparty}</p>
+                    {item.body ? <p className="mt-1 text-sm text-muted">{item.body}</p> : null}
                     {item.artifactSha256 ? (
                       <p className="mt-2 break-all font-mono text-xs text-faint">
                         artefakt {item.artifactSha256}
