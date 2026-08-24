@@ -72,12 +72,24 @@ export default function TaskBoard({ highlightId }: { highlightId?: string | null
   }
 
   async function toggle(id: string) {
-    await fetch(`/api/kansli/tasks/${id}`, { method: "PATCH" });
+    setError(null);
+    const res = await fetch(`/api/kansli/tasks/${id}`, { method: "PATCH" });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setError(typeof data.error === "string" ? data.error : "Kunde inte uppdatera uppgiften.");
+      return;
+    }
     await refresh();
   }
 
   async function remove(id: string) {
-    await fetch(`/api/kansli/tasks/${id}`, { method: "DELETE" });
+    setError(null);
+    const res = await fetch(`/api/kansli/tasks/${id}`, { method: "DELETE" });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setError(typeof data.error === "string" ? data.error : "Kunde inte ta bort uppgiften.");
+      return;
+    }
     await refresh();
   }
 

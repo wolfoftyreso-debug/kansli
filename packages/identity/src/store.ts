@@ -155,6 +155,7 @@ export const SEED_ROLES: StoredRole[] = [
       "profile:write",
       "watchlist:read",
       "watchlist:write",
+      "task:write",
     ],
   },
   {
@@ -170,6 +171,7 @@ export const SEED_ROLES: StoredRole[] = [
       "opportunity:read",
       "profile:read",
       "watchlist:read",
+      "task:write",
     ],
   },
   {

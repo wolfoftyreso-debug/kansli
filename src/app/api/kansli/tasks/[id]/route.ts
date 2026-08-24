@@ -1,10 +1,10 @@
-import { ApiError, requireOrg } from "@pixdrift/api-core";
+import { ApiError, requirePermission } from "@pixdrift/api-core";
 import { handleApi, json } from "@/lib/platform/http";
 import { deleteTask, toggleTask } from "@/lib/kansli/tasks";
 
 export async function PATCH(_request: Request, context: { params: Promise<{ id: string }> }) {
   return handleApi(async ({ actor, pool, events, requestId }) => {
-    const present = requireOrg(actor);
+    const present = requirePermission(actor, "task:write");
     const { id } = await context.params;
     const task = await toggleTask(pool, present.orgRef, id);
     if (!task) throw new ApiError("not_found", "Uppgiften hittades inte.");
@@ -24,7 +24,7 @@ export async function PATCH(_request: Request, context: { params: Promise<{ id: 
 
 export async function DELETE(_request: Request, context: { params: Promise<{ id: string }> }) {
   return handleApi(async ({ actor, pool, events, requestId }) => {
-    const present = requireOrg(actor);
+    const present = requirePermission(actor, "task:write");
     const { id } = await context.params;
     const ok = await deleteTask(pool, present.orgRef, id);
     if (!ok) throw new ApiError("not_found", "Uppgiften hittades inte.");

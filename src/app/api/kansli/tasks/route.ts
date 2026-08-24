@@ -1,4 +1,4 @@
-import { ApiError, requireOrg } from "@pixdrift/api-core";
+import { ApiError, requireOrg, requirePermission } from "@pixdrift/api-core";
 import { handleApi, json } from "@/lib/platform/http";
 import { addTask, listTasks } from "@/lib/kansli/tasks";
 
@@ -11,7 +11,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   return handleApi(async ({ actor, pool, events, requestId }) => {
-    const present = requireOrg(actor);
+    const present = requirePermission(actor, "task:write");
     const body = (await request.json().catch(() => null)) as {
       title?: string;
       owner?: string;
