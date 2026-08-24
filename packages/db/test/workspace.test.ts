@@ -21,4 +21,12 @@ live("migrateWorkspace", () => {
       expect(second[schema]?.applied).toEqual([]);
     }
   });
+
+  it("does not fail when several callers migrate at once", async () => {
+    await Promise.all([
+      migrateWorkspace({ ownerUrl: OWNER!, root: process.cwd() }),
+      migrateWorkspace({ ownerUrl: OWNER!, root: process.cwd() }),
+      migrateWorkspace({ ownerUrl: OWNER!, root: process.cwd() }),
+    ]);
+  });
 });

@@ -1,5 +1,10 @@
 import path from "node:path";
+import pg from "pg";
 import { migrate, type MigrateResult, type SchemaGrant } from "./migrate.ts";
+import { poolConfig } from "./pool.ts";
+
+/** Session advisory lock so parallel tests do not GRANT the same catalog row. */
+const WORKSPACE_MIGRATE_LOCK = "pixdrift.workspace.migrate";
 
 /**
  * The schemas this workspace owns. Directory name under `db/migrations`
@@ -29,16 +34,26 @@ export async function migrateWorkspace(
 ): Promise<Record<string, MigrateResult>> {
   const results: Record<string, MigrateResult> = {};
   const appRole = opts.appRole ?? "pixdrift_app";
+  const lockPool = new pg.Pool({ ...poolConfig(opts.ownerUrl), max: 1 });
+  const lockClient = await lockPool.connect();
 
-  for (const entry of WORKSPACE_SCHEMAS) {
-    results[entry.schema] = await migrate({
-      connectionString: opts.ownerUrl,
-      dir: path.join(opts.root, "db/migrations", entry.schema),
-      schema: entry.schema,
-      appRole,
-      grant: entry.grant as SchemaGrant,
-    });
+  try {
+    await lockClient.query("select pg_advisory_lock(hashtext($1::text))", [WORKSPACE_MIGRATE_LOCK]);
+    for (const entry of WORKSPACE_SCHEMAS) {
+      results[entry.schema] = await migrate({
+        connectionString: opts.ownerUrl,
+        dir: path.join(opts.root, "db/migrations", entry.schema),
+        schema: entry.schema,
+        appRole,
+        grant: entry.grant as SchemaGrant,
+      });
+    }
+    return results;
+  } finally {
+    await lockClient
+      .query("select pg_advisory_unlock(hashtext($1::text))", [WORKSPACE_MIGRATE_LOCK])
+      .catch(() => undefined);
+    lockClient.release();
+    await lockPool.end();
   }
-
-  return results;
 }

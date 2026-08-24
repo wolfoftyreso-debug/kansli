@@ -7,6 +7,7 @@ import { poolConfig } from "../src/pool.ts";
 import {
   checksumSql,
   loadMigrations,
+  isConcurrentCatalogUpdate,
   migrate,
   MigrationError,
   parseMigrationFilename,
@@ -28,6 +29,13 @@ describe("parseMigrationFilename", () => {
     expect(() => parseMigrationFilename("foundation.sql")).toThrow(MigrationError);
     expect(() => parseMigrationFilename("1_foundation.sql")).toThrow(MigrationError);
     expect(() => parseMigrationFilename("0001_Foundation.sql")).toThrow(MigrationError);
+  });
+});
+
+describe("isConcurrentCatalogUpdate", () => {
+  it("matches the Postgres catalog race from parallel GRANT", () => {
+    expect(isConcurrentCatalogUpdate(new Error("tuple concurrently updated"))).toBe(true);
+    expect(isConcurrentCatalogUpdate(new Error("duplicate key"))).toBe(false);
   });
 });
 

@@ -167,7 +167,9 @@ export async function migrate(opts: MigrateOptions): Promise<MigrateResult> {
     }
 
     if (opts.appRole && opts.schema) {
-      await grantSchemaAccess(pool, opts.schema, opts.appRole, opts.grant ?? "readwrite");
+      await withCatalogRetry(() =>
+        grantSchemaAccess(pool, opts.schema!, opts.appRole!, opts.grant ?? "readwrite"),
+      );
     }
 
     return { applied, already };
@@ -190,4 +192,22 @@ export async function grantSchemaAccess(
   await pool.query(`grant usage on schema ${s} to ${appRole}`);
   await pool.query(`grant ${dml} on all tables in schema ${s} to ${appRole}`);
   await pool.query(`grant usage, select on all sequences in schema ${s} to ${appRole}`);
+}
+
+export function isConcurrentCatalogUpdate(error: unknown): boolean {
+  return error instanceof Error && /tuple concurrently updated/i.test(error.message);
+}
+
+async function withCatalogRetry<T>(fn: () => Promise<T>, attempts = 6): Promise<T> {
+  let last: unknown;
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    try {
+      return await fn();
+    } catch (error) {
+      last = error;
+      if (!isConcurrentCatalogUpdate(error) || attempt === attempts - 1) throw error;
+      await new Promise((resolve) => setTimeout(resolve, 20 * 2 ** attempt));
+    }
+  }
+  throw last;
 }

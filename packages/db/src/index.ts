@@ -14,6 +14,7 @@ export {
   parseMigrationFilename,
   checksumSql,
   grantSchemaAccess,
+  isConcurrentCatalogUpdate,
   quoteIdent,
   MIGRATION_FILENAME,
   MigrationError,
