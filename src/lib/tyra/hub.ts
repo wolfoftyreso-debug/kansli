@@ -30,6 +30,8 @@ export type HubView = {
   positions: HubPositionView[];
   setWarnings: TireWarning[];
   commercialNote: string;
+  storageCode: string | null;
+  wheelStatus: string | null;
 };
 
 export async function issueHubLink(input: {
@@ -116,11 +118,18 @@ export async function getHubViewByToken(pool: pg.Pool, token: string): Promise<H
       positions: [],
       setWarnings: [],
       commercialNote: "Inget fordon är kopplat ännu.",
+      storageCode: null,
+      wheelStatus: null,
     };
   }
 
-  const wsRes = await pool.query<{ id: string; season: string }>(
-    `select id, season from tyra.wheel_sets
+  const wsRes = await pool.query<{
+    id: string;
+    season: string;
+    status: string;
+    storage_code: string | null;
+  }>(
+    `select id, season, status, storage_code from tyra.wheel_sets
       where org_ref = $1 and vehicle_id = $2
       order by case when status = 'MOUNTED' then 0 else 1 end, updated_at desc
       limit 1`,
@@ -128,6 +137,8 @@ export async function getHubViewByToken(pool: pg.Pool, token: string): Promise<H
   );
   const wheelSetId = wsRes.rows[0]?.id ?? null;
   const mountedSeason = wsRes.rows[0]?.season ?? null;
+  const storageCode = wsRes.rows[0]?.storage_code?.trim() || null;
+  const wheelStatus = wsRes.rows[0]?.status ?? null;
 
   const posRows = wheelSetId
     ? await pool.query<{
@@ -241,6 +252,8 @@ export async function getHubViewByToken(pool: pg.Pool, token: string): Promise<H
     },
     positions,
     setWarnings: warnings.setWarnings,
+    storageCode,
+    wheelStatus,
     commercialNote: blocked
       ? "Åtgärd behövs — verkstaden har markerat att däcken inte är i gott skick."
       : attention

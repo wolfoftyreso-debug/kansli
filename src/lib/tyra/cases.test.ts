@@ -245,6 +245,17 @@ live("TYRA cases + hub (live Postgres)", () => {
     expect(cards[0]?.vehicles[0]?.wheelSets[0]?.storageCode).toBe("B-04");
     expect(cards[0]?.customer.name).toBe("Lisa Berg");
 
+    const hub = await issueHubLink({
+      pool,
+      events,
+      orgRef,
+      actorRef: "user-test",
+      customerId: created.customerId,
+      requestId: "req-tyra-hub-bay",
+    });
+    const hubView = await getHubViewByToken(pool, hub.token);
+    expect(hubView?.storageCode).toBe("B-04");
+
     await cancelCase({ pool, orgRef, tireCaseId: created.id });
     const cancelled = await getCaseWorkCard(pool, orgRef, created.id);
     expect(cancelled?.caseStatus).toBe("CANCELLED");

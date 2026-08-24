@@ -35,6 +35,15 @@ export default async function TyraHubPage({ params }: { params: Promise<{ token:
 
       <StatusBanner tone="neutral">{view.commercialNote}</StatusBanner>
 
+      {view.storageCode ? (
+        <p className="text-sm text-ink-soft">
+          Lagerplats {view.storageCode}
+          {view.wheelStatus ? ` · ${view.wheelStatus}` : ""}
+        </p>
+      ) : (
+        <p className="text-sm text-muted">Ingen lagerplats är sparad ännu.</p>
+      )}
+
       {view.setWarnings.length > 0 ? (
         <ul className="flex flex-col gap-2">
           {view.setWarnings.map((warning) => (
