@@ -5,7 +5,7 @@ describe("system catalog", () => {
   it("registers every product once, with explicit data ownership", () => {
     const ids = SYSTEM_MODULES.map((m) => m.id);
     expect(new Set(ids).size).toBe(ids.length);
-    expect(ids).toEqual(["identity", "kansli", "tora", "rita", "britt", "irma", "alva"]);
+    expect(ids).toEqual(["identity", "kansli", "tora", "rita", "britt", "irma", "tyra", "alva"]);
     for (const entry of SYSTEM_MODULES) {
       if (entry.id === "identity") expect(entry.schema).toBeNull();
       else expect(entry.schema).toBe(entry.id === "kansli" ? "kansli" : entry.id);
@@ -25,6 +25,7 @@ describe("system catalog", () => {
     expect(getModule("rita")?.basePath).toBe("/rita");
     expect(getModule("britt")?.basePath).toBe("/britt");
     expect(getModule("irma")?.basePath).toBe("/irma");
+    expect(getModule("tyra")?.basePath).toBe("/tyra");
     expect(getModule("alva")?.basePath).toBe("/alva");
     for (const entry of SYSTEM_MODULES) {
       if (entry.id === "identity") continue;

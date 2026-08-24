@@ -7,7 +7,7 @@ const live = OWNER ? describe : describe.skip;
 describe("WORKSPACE_SCHEMAS", () => {
   it("covers every product schema exactly once", () => {
     const names = WORKSPACE_SCHEMAS.map((entry) => entry.schema);
-    expect(names).toEqual(["platform", "kansli", "tora", "rita", "britt", "irma", "alva"]);
+    expect(names).toEqual(["platform", "kansli", "tora", "rita", "britt", "irma", "tyra", "alva"]);
     expect(WORKSPACE_SCHEMAS.find((e) => e.schema === "platform")?.grant).toBe("append");
   });
 });

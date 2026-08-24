@@ -1,4 +1,13 @@
-export const SYSTEM_IDS = ["identity", "kansli", "tora", "rita", "britt", "irma", "alva"] as const;
+export const SYSTEM_IDS = [
+  "identity",
+  "kansli",
+  "tora",
+  "rita",
+  "britt",
+  "irma",
+  "tyra",
+  "alva",
+] as const;
 export type SystemId = (typeof SYSTEM_IDS)[number];
 
 export type SystemStatus = "operational" | "pilot" | "deferred";
@@ -17,6 +26,9 @@ export const EVENT_KINDS = [
   "irma.agreement.viewed",
   "irma.agreement.signed",
   "irma.agreement.cancelled",
+  "tyra.case.created",
+  "tyra.case.completed",
+  "tyra.hub.link.issued",
   "alva.case.created",
 ] as const;
 export type EventKind = (typeof EVENT_KINDS)[number];
@@ -127,6 +139,18 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
       "integrity-check",
       "title-search",
     ],
+  },
+  {
+    id: "tyra",
+    name: "TYRA",
+    purpose: "Däckverkstad: ärenden, arbetssteg och kundhub.",
+    status: "pilot",
+    schema: "tyra",
+    basePath: "/tyra",
+    apiBase: "/api/tyra",
+    domainDir: "src/lib/tyra",
+    eventKinds: ["tyra.case.created", "tyra.case.completed", "tyra.hub.link.issued"],
+    capabilities: ["cases", "workflow", "hub"],
   },
   {
     id: "alva",

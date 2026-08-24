@@ -20,6 +20,7 @@ const HREF: Record<string, string> = {
   rita: "/rita",
   britt: "/britt",
   irma: "/irma",
+  tyra: "/tyra",
   alva: "/alva",
 };
 

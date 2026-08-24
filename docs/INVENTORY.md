@@ -14,12 +14,12 @@ kansli/
 ├─ src/app/
 │  ├─ (site)/                 publik sajt
 │  ├─ idp/                    OIDC-mount
-│  ├─ kansli tora rita britt irma alva platform
-│  └─ api/{kansli,tora,rita,britt,irma,alva,platform,auth}
-├─ src/lib/{kansli,tora,rita,britt,irma,alva,platform,auth,sync}
+│  ├─ kansli tora rita britt irma tyra alva platform
+│  └─ api/{kansli,tora,rita,britt,irma,tyra,alva,platform,auth}
+├─ src/lib/{kansli,tora,rita,britt,irma,tyra,alva,platform,auth,sync}
 ├─ packages/                  @pixdrift/*
 ├─ integrations/              OIDC-adaptrar till fristående produktrepon
-├─ db/migrations/{platform,kansli,tora,rita,britt,irma,alva}/
+├─ db/migrations/{platform,kansli,tora,rita,britt,irma,tyra,alva}/
 └─ .github/workflows/ci.yml
 ```
 
@@ -54,6 +54,7 @@ faller om en yta saknas.
 | RITA | `rita` | `/rita` | `/api/rita` | pilot |
 | BRITT | `britt` | `/britt` | `/api/britt` | pilot |
 | IRMA | `irma` | `/irma` | `/api/irma` | pilot (handshake; audit in `docs/irma/`) |
+| TYRA | `tyra` | `/tyra` | `/api/tyra` | pilot (slice 1; `docs/tyra/`) |
 | ALVA | `alva` | `/alva` | `/api/alva` | deferred |
 
 Produkterna synkar via `platform.events`. De skriver inte i varandras tabeller.

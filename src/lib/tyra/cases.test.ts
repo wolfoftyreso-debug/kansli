@@ -1,0 +1,130 @@
+import { afterAll, describe, expect, it } from "vitest";
+import { createPool, migrateWorkspace } from "@pixdrift/db";
+import { EventLog } from "@pixdrift/events";
+import { hashTyraToken, tyraHubPath } from "./tokens.ts";
+import { createCase, getCaseWorkCard, listCases, setStepStatus } from "./cases.ts";
+import { getHubViewByToken, issueHubLink } from "./hub.ts";
+
+describe("hashTyraToken", () => {
+  it("is stable and does not echo the token", () => {
+    const token = "secret-hub-token";
+    expect(hashTyraToken(token)).toMatch(/^[0-9a-f]{64}$/);
+    expect(hashTyraToken(token)).toBe(hashTyraToken(token));
+    expect(hashTyraToken(token)).not.toContain(token);
+  });
+});
+
+const OWNER = process.env.PIXDRIFT_TEST_OWNER_URL ?? process.env.PIXDRIFT_DB_OWNER_URL;
+const APP = process.env.PIXDRIFT_TEST_DATABASE_URL ?? process.env.DATABASE_URL;
+const live = OWNER && APP ? describe : describe.skip;
+
+live("TYRA cases + hub (live Postgres)", () => {
+  const pool = createPool(APP!, { applicationName: "tyra-cases-test", max: 2 });
+
+  afterAll(async () => {
+    await pool.end();
+  });
+
+  it("creates a case, compiles workflow steps, and issues a hashed hub link", async () => {
+    await migrateWorkspace({ ownerUrl: OWNER!, root: process.cwd(), appRole: "pixdrift_app" });
+    const events = new EventLog(pool);
+    const orgRef = `pixdrift:org:tyra-${Date.now()}`;
+
+    const created = await createCase({
+      pool,
+      events,
+      orgRef,
+      actorRef: "user-test",
+      customerName: "Anna Andersson",
+      registrationNumber: "abc 123",
+      make: "Volvo",
+      model: "XC60",
+      intent: "TIRE_SWAP_APPOINTMENT",
+      operations: ["TIRE_SWAP_FROM_STORAGE", "WHEEL_WASH", "WHEEL_BALANCE"],
+      requestId: "req-tyra-1",
+    });
+
+    const listed = await listCases(pool, orgRef);
+    expect(listed).toHaveLength(1);
+    expect(listed[0]?.registrationNumber).toBe("ABC123");
+    expect(listed[0]?.customerName).toBe("Anna Andersson");
+
+    const otherOrg = await listCases(pool, `${orgRef}-other`);
+    expect(otherOrg).toHaveLength(0);
+
+    const card = await getCaseWorkCard(pool, orgRef, created.id);
+    expect(card?.headline).toBe("VOLVO XC60 — ABC123");
+    expect(card?.steps.map((step) => step.kind)).toEqual([
+      "INSPECT_WHEELS",
+      "BALANCE",
+      "SWAP_ON_VEHICLE",
+      "WASH",
+    ]);
+    expect(card?.nextBestAction?.stepKind).toBe("INSPECT_WHEELS");
+
+    const createdEvents = await events.list({ orgRef, kind: "tyra.case.created" });
+    expect(createdEvents).toHaveLength(1);
+
+    const hub = await issueHubLink({
+      pool,
+      events,
+      orgRef,
+      actorRef: "user-test",
+      customerId: created.customerId,
+      requestId: "req-tyra-hub",
+    });
+    expect(hub.path).toBe(tyraHubPath(hub.token));
+
+    const { rows } = await pool.query<{ token_hash: string }>(
+      `select token_hash from tyra.customer_hub_links where org_ref = $1 and customer_id = $2`,
+      [orgRef, created.customerId],
+    );
+    expect(rows[0]?.token_hash).toBe(hashTyraToken(hub.token));
+    expect(rows[0]?.token_hash).not.toBe(hub.token);
+
+    expect(await getHubViewByToken(pool, "fel-token")).toBeNull();
+    const view = await getHubViewByToken(pool, hub.token);
+    expect(view?.customerName).toBe("Anna Andersson");
+    expect(view?.vehicle?.registrationNumber).toBe("ABC123");
+    expect(view?.positions).toEqual([]);
+    expect(view?.commercialNote).toMatch(/ingen verifierad inspektion/i);
+
+    const issued = await events.list({ orgRef, kind: "tyra.hub.link.issued" });
+    expect(issued).toHaveLength(1);
+  });
+
+  it("marks the case done when every required step is done", async () => {
+    await migrateWorkspace({ ownerUrl: OWNER!, root: process.cwd(), appRole: "pixdrift_app" });
+    const events = new EventLog(pool);
+    const orgRef = `pixdrift:org:tyra-done-${Date.now()}`;
+    const created = await createCase({
+      pool,
+      events,
+      orgRef,
+      actorRef: "user-test",
+      customerName: "Erik",
+      registrationNumber: "XYZ999",
+      intent: "STORE_ONLY",
+      operations: ["STORAGE_IN"],
+      requestId: "req-tyra-done-1",
+    });
+    const card = await getCaseWorkCard(pool, orgRef, created.id);
+    expect(card?.steps.length).toBeGreaterThan(0);
+    for (const step of card!.steps) {
+      await setStepStatus({
+        pool,
+        events,
+        orgRef,
+        actorRef: "user-test",
+        tireCaseId: created.id,
+        stepKind: step.kind,
+        status: "DONE",
+        requestId: `req-step-${step.kind}`,
+      });
+    }
+    const done = await getCaseWorkCard(pool, orgRef, created.id);
+    expect(done?.caseStatus).toBe("DONE");
+    const completed = await events.list({ orgRef, kind: "tyra.case.completed" });
+    expect(completed).toHaveLength(1);
+  });
+});

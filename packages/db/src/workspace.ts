@@ -13,6 +13,7 @@ export const WORKSPACE_SCHEMAS = [
   { schema: "rita", grant: "readwrite" as const },
   { schema: "britt", grant: "readwrite" as const },
   { schema: "irma", grant: "readwrite" as const },
+  { schema: "tyra", grant: "readwrite" as const },
   { schema: "alva", grant: "readwrite" as const },
 ] as const;
 

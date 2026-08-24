@@ -41,7 +41,7 @@ export const FAMILY_STACK: readonly { layer: string; runs: string }[] = [
   },
   {
     layer: "Data",
-    runs: "PostgreSQL 16 via pg. Owner kör migreringar, app-rollen kör runtime. Scheman: public, platform, kansli, tora, rita, britt, irma, alva.",
+    runs: "PostgreSQL 16 via pg. Owner kör migreringar, app-rollen kör runtime. Scheman: public, platform, kansli, tora, rita, britt, irma, tyra, alva.",
   },
   {
     layer: "Motorer",
@@ -116,6 +116,16 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     status: "pilot",
   },
   {
+    id: "tyra",
+    name: "TYRA",
+    question: "Vilket ärende är nästa, och vad ska kunden se?",
+    does: "Skapar ett däckärende med kanoniska åtgärder, kompilerar arbetssteg via resolveWorkflow, visar work card och ger kunden en hashad hub-länk. Token lagras bara som SHA-256. Hubben visar verifierad inspektion om den finns — annars inga mätvärden.",
+    doesNot:
+      "Ingen NextAuth. Ingen egen signup. Ingen Fortnox. Ingen BankID. Ingen live-pris/leverantörsgateway. Ingen cron/outbox. Det kommer från TYRA-repot som senare slices, inte som låtsasfunktion här.",
+    owns: "tyra.customers, tyra.vehicles, tyra.tire_cases, tyra.customer_hub_links",
+    status: "pilot",
+  },
+  {
     id: "alva",
     name: "ALVA",
     question: "Vad sa kunden, och vilket fall ska diagnostiseras?",
@@ -158,6 +168,12 @@ export const FAMILY_LINKS: readonly FamilyLink[] = [
     to: "britt",
     via: "irma.agreement.created | irma.agreement.viewed | irma.agreement.signed | irma.agreement.cancelled",
     meaning: "Avtal skapat, öppnat, bekräftat eller återkallat.",
+  },
+  {
+    from: "tyra",
+    to: "britt",
+    via: "tyra.case.created | tyra.case.completed | tyra.hub.link.issued",
+    meaning: "Ett däckärende är skapat, avslutat, eller en kundhub-länk är utfärdad.",
   },
   {
     from: "alva",

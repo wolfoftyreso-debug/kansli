@@ -127,6 +127,36 @@ export function registerSyncHandlers(events: EventLog, pool: pg.Pool): void {
     );
   });
 
+  events.subscribe("tyra.case.created", async (event) => {
+    await record(
+      event.orgRef,
+      "tyra",
+      "TYRA har ett nytt ärende",
+      String(event.payload["registrationNumber"] ?? "Ett däckärende är skapat."),
+      event.subjectRef,
+    );
+  });
+
+  events.subscribe("tyra.case.completed", async (event) => {
+    await record(
+      event.orgRef,
+      "tyra",
+      "TYRA-ärendet är klart",
+      "Alla obligatoriska steg är markerade som klara.",
+      event.subjectRef,
+    );
+  });
+
+  events.subscribe("tyra.hub.link.issued", async (event) => {
+    await record(
+      event.orgRef,
+      "tyra",
+      "TYRA har skickat en kundhub-länk",
+      "Token visas en gång. Bara hashen ligger i databasen.",
+      event.subjectRef,
+    );
+  });
+
   events.subscribe("alva.case.created", async (event) => {
     await record(
       event.orgRef,

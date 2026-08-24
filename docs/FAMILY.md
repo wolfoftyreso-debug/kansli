@@ -16,7 +16,7 @@ Browser
   → Next.js (en process)
        /idp                 Identity (OIDC)
        /kansli              Nav + uppgifter
-       /tora /rita /britt /irma /alva
+       /tora /rita /britt /irma /tyra /alva
        /platform            Den här kartan
        /api/platform/*      health, me, systems, events
        /api/{system}/*
@@ -28,6 +28,7 @@ Browser
        rita       analyses
        britt      observations, findings, metric_snapshots, analysis_runs
        irma       agreements
+       tyra       customers, vehicles, tire_cases, customer_hub_links
        alva       cases
 ```
 
@@ -92,6 +93,9 @@ mot plan, likviditet, kundkoncentration). BRITT är den enda som skriver
 | `irma.agreement.viewed` | Motparten har öppnat länken |
 | `irma.agreement.signed` | Motparten har bekräftat underlaget |
 | `irma.agreement.cancelled` | Länken är återkallad |
+| `tyra.case.created` | Ett däckärende är skapat |
+| `tyra.case.completed` | Alla obligatoriska steg är klara |
+| `tyra.hub.link.issued` | En kundhub-länk är utfärdad |
 | `alva.case.created` | Ett fall är registrerat |
 | `kansli.task.created` | Intern uppgift |
 | `britt.finding.recorded` (high) | Ett högt fynd från analysen |
@@ -108,6 +112,13 @@ Motparten öppnar `/irma/l/<token>` utan konto. Första öppning sätter
 en SHA-256-artefakt och `irma.agreement.signed`. Nivå 0 är informationsunderlag
 utan bekräftelse. Innehålls- och artefakthash kan räknas om. Inte BankID.
 Inte kvalificerad e-signatur. Ingen fillagring. Ingen OCR. Nivå 2–5 finns inte.
+
+### TYRA — däckärendet, inte hela verkstads-OS
+
+Öppnar ett ärende mot `tyra.*` med PIXDRIFT-session. Stegen kompileras av
+`resolveWorkflow` från de åtgärder som valts. Hub-token hashas; kunden öppnar
+`/tyra/hub/<token>` utan konto. Ingen NextAuth. Ingen live-pris. Ingen cron.
+Port från TYRA-repot, slice 1. Se `docs/tyra/README.md`.
 
 ### ALVA — fallet, inte diagnosen
 

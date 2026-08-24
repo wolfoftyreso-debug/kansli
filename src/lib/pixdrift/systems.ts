@@ -338,6 +338,48 @@ export const systems: PixSystem[] = [
       { no: "10", title: "Availability", body: ["In development. Europe."] },
     ],
   },
+  {
+    index: "07",
+    slug: "tyra",
+    name: "TYRA",
+    purpose: "Workshop operations for tire hotels: cases, steps, and a customer hub.",
+    stewardship: "MANAGED_PRODUCT",
+    category: "Operational software",
+    status: "Development",
+    regions: ["Europe"],
+    summary:
+      "Takes a vehicle and a set of canonical operations, compiles a work card, and can issue a hashed customer hub link. No NextAuth. No live supplier prices in this repo yet.",
+    sections: [
+      {
+        no: "01",
+        title: "Purpose",
+        body: [
+          "Give a tire workshop one place to open a case, see the next step, and show the customer what is known — only verified inspection data.",
+        ],
+      },
+      {
+        no: "02",
+        title: "Problem",
+        body: [
+          "Seasonal tire work is split across DMS notes, SMS and memory. The customer rarely sees the same facts the workshop uses.",
+        ],
+      },
+      {
+        no: "03",
+        title: "System",
+        body: [
+          "A first-party Pixdrift module: tyra schema, OIDC session, resolveWorkflow, hashed hub tokens. Ported from the TYRA repo domain, not from NextAuth.",
+        ],
+      },
+      forthcoming("04", "How it works"),
+      forthcoming("05", "Architecture"),
+      forthcoming("06", "Applications"),
+      { no: "07", title: "Integrations", body: [sharedIdentityIntegration] },
+      forthcoming("08", "Security"),
+      { no: "09", title: "Documentation", body: ["Technical notes under docs/tyra."] },
+      { no: "10", title: "Availability", body: ["Pilot in the kansli nav. Europe."] },
+    ],
+  },
 ];
 
 export function getSystem(slug: string): PixSystem | undefined {

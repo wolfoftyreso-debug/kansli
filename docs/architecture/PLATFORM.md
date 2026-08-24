@@ -16,6 +16,7 @@ Browser → Next.js (kansli)
                  rita       analyses
                  britt      observations, findings, metric_snapshots, analysis_runs
                  irma       agreements
+                 tyra       tire cases + hub
                  alva       diagnosis cases
 ```
 
@@ -51,6 +52,9 @@ Browser → Next.js (kansli)
 | GET/POST | `/api/irma/agreements/:id` | yes (org-scoped). GET returns integrity recompute. POST `{action:revoke}` cancels an unsigned link. |
 | GET | `/api/irma/l/:token` | no (hashed magic link, 14-day TTL, `Cache-Control: no-store`). First open → `viewed`. Expired/revoked → 404. |
 | POST | `/api/irma/l/:token` | no. Level 1 hashed acknowledgement → `signed` + artifact SHA-256. Level 0 rejected. |
+| GET/POST | `/api/tyra/cases` | yes |
+| GET | `/api/tyra/cases/:id` | yes |
+| POST | `/api/tyra/hub/link` | yes. Returns plaintext token once. |
 | GET/POST | `/api/alva/cases` | yes |
 | GET/POST | `/api/kansli/tasks` | yes |
 | GET/POST/PATCH/DELETE | `/api/tasks` | yes (alias till `/api/kansli/tasks`) |
@@ -69,6 +73,9 @@ Browser → Next.js (kansli)
 | `/irma` | Agreements, search, create. Issued link is a 120s httpOnly cookie (`?issued=1`), not `?link=`. |
 | `/irma/:id` | Org-scoped detail, integrity, revoke. |
 | `/irma/l/:token` | Guest view. First open marks `viewed`. Level 1 acknowledge marks `signed`. |
+| `/tyra` | Tire cases, create + list |
+| `/tyra/cases/:id` | Work card + hub link |
+| `/tyra/hub/:token` | Guest hub (hashed token, no account) |
 | `/alva` | Case registration (engine deferred) |
 | `/platform` | Module catalog |
 | `/platform/events` | Org-scoped event log |
