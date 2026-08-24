@@ -7,6 +7,8 @@ import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
 import TaskBoard from "../TaskBoard";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Kansli — Pixdrift",
   description: "Navet: identitet, uppgifter och ingång till familjen.",

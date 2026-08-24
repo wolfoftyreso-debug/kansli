@@ -23,6 +23,7 @@ export async function createIrmaAgreement(formData: FormData) {
   });
   revalidatePath("/irma");
   revalidatePath("/britt");
+  revalidatePath("/kansli");
   revalidatePath("/platform/events");
   const link = agreement.magicLink ?? "";
   redirect(`/irma?issued=${encodeURIComponent(agreement.id)}&link=${encodeURIComponent(link)}`);

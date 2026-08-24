@@ -19,5 +19,6 @@ export async function registerAlvaCase(formData: FormData) {
     requestId: crypto.randomUUID(),
   });
   revalidatePath("/alva");
+  revalidatePath("/kansli");
   revalidatePath("/platform/events");
 }

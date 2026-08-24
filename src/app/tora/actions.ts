@@ -16,5 +16,6 @@ export async function publishToraMarket() {
   });
   revalidatePath("/tora");
   revalidatePath("/britt");
+  revalidatePath("/kansli");
   revalidatePath("/platform/events");
 }

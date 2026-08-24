@@ -21,5 +21,6 @@ export async function requestRitaAnalysis(formData: FormData) {
   });
   revalidatePath("/rita");
   revalidatePath("/britt");
+  revalidatePath("/kansli");
   revalidatePath("/platform/events");
 }

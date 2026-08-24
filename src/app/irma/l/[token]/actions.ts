@@ -22,6 +22,7 @@ export async function acknowledgeIrmaAgreement(formData: FormData) {
   });
   revalidatePath("/irma");
   revalidatePath("/britt");
+  revalidatePath("/kansli");
   revalidatePath("/platform/events");
   redirect(irmaLinkPath(token));
 }

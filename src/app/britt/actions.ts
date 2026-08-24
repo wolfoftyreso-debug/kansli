@@ -20,6 +20,7 @@ export async function recordObservation(formData: FormData) {
     requestId: crypto.randomUUID(),
   });
   revalidatePath("/britt");
+  revalidatePath("/kansli");
   revalidatePath("/platform/events");
 }
 
@@ -33,5 +34,6 @@ export async function runBrittIntel() {
     requestId: crypto.randomUUID(),
   });
   revalidatePath("/britt");
+  revalidatePath("/kansli");
   revalidatePath("/platform/events");
 }
