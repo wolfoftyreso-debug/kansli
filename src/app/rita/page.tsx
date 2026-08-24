@@ -9,6 +9,7 @@ import {
   Submit,
 } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
+import { formatSwedishDateTime } from "@/lib/format/datetime";
 import { tryRuntime } from "@/lib/platform/page";
 import { ANALYSIS_STATUS_LABELS, listAnalyses } from "@/lib/rita/analyses";
 import { findingsFromAnalysis } from "@/lib/rita/findings";
@@ -71,18 +72,16 @@ export default async function RitaPage({
               className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
             >
               <h2 className="text-lg font-semibold">Ny analys</h2>
-              <Field
-                name="companyName"
-                label="Bolagsnamn"
-                required
-                defaultValue="Exempelbolaget AB"
-              />
+              <Field name="companyName" label="Bolagsnamn" required placeholder="Ert bolagsnamn" />
               <Field
                 name="orgNumber"
                 label="Organisationsnummer"
                 required
-                defaultValue="556016-0680"
+                placeholder="556xxx-xxxx"
               />
+              <p className="text-sm text-ink-soft">
+                Subprocessen kan ta upp till 7 minuter. Det är inte 240000 ms i UI:t.
+              </p>
               {engine.kind === "http" ? (
                 <p className="text-sm text-ink-soft">
                   HTTP-motorn tar inte demonstrationsfilen. Ladda upp hos hosten, eller kör
@@ -152,7 +151,9 @@ export default async function RitaPage({
                     {item.blockedReason ? (
                       <p className="mt-2 text-sm text-muted">{item.blockedReason}</p>
                     ) : null}
-                    <p className="mt-2 font-mono text-xs text-faint">{item.createdAt}</p>
+                    <p className="mt-2 text-xs text-faint">
+                      {formatSwedishDateTime(item.createdAt)}
+                    </p>
                   </li>
                 ))}
               </ul>

@@ -44,6 +44,16 @@ export default async function ToraCalendarPage() {
           {calendar.alertCount} aviseringar.{" "}
           {calendar.alerts.state === "locked" ? calendar.alerts.teaser : "Innehållet följer nivån."}
         </Notice>
+        {calendar.thisWeek.length +
+          calendar.next30Days.length +
+          calendar.next90Days.length +
+          calendar.next12Months.length ===
+        0 ? (
+          <Notice>
+            Inga händelser i fönstret. Det är inte noll anställningar som en siffra — det är en tom
+            demo-marknad, inte TED/HILMA.
+          </Notice>
+        ) : null}
       </header>
 
       <Bucket title="Den här veckan" entries={calendar.thisWeek} />

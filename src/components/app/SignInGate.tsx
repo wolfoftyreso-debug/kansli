@@ -44,6 +44,7 @@ export function Field({
   placeholder,
   multiline,
   large,
+  type = "text",
 }: {
   name: string;
   label: string;
@@ -52,13 +53,18 @@ export function Field({
   placeholder?: string;
   multiline?: boolean;
   large?: boolean;
+  type?: "text" | "email" | "tel";
 }) {
   const cls = large
     ? "min-h-12 rounded-lg border border-line bg-paper px-4 py-3 text-base"
     : "rounded-md border border-line bg-paper px-3 py-2 text-sm";
+  const mark = required ? " *" : "";
   return (
     <label className="flex flex-col gap-1">
-      <span className="text-sm text-ink-soft">{label}</span>
+      <span className="text-sm text-ink-soft">
+        {label}
+        {mark}
+      </span>
       {multiline ? (
         <textarea
           name={name}
@@ -71,6 +77,7 @@ export function Field({
       ) : (
         <input
           name={name}
+          type={type}
           required={required}
           defaultValue={defaultValue}
           placeholder={placeholder}
@@ -85,18 +92,23 @@ export function CheckField({
   name,
   label,
   defaultChecked,
+  value = "on",
+  required,
 }: {
   name: string;
   label: string;
   defaultChecked?: boolean;
+  value?: string;
+  required?: boolean;
 }) {
   return (
     <label className="flex items-start gap-2 text-sm text-ink-soft">
       <input
         type="checkbox"
         name={name}
-        value="on"
+        value={value}
         defaultChecked={defaultChecked}
+        required={required}
         className="mt-1"
       />
       <span>{label}</span>

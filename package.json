@@ -28,6 +28,7 @@
     "@pixdrift/ai-core": "workspace:*",
     "@pixdrift/api-core": "workspace:*",
     "@pixdrift/auth-client": "workspace:*",
+    "@pixdrift/auth-core": "workspace:*",
     "@pixdrift/contracts": "workspace:*",
     "@pixdrift/db": "workspace:*",
     "@pixdrift/events": "workspace:*",

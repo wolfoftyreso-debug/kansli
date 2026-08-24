@@ -23,6 +23,9 @@ importers:
       '@pixdrift/auth-client':
         specifier: workspace:*
         version: link:packages/auth-client
+      '@pixdrift/auth-core':
+        specifier: workspace:*
+        version: link:packages/auth-core
       '@pixdrift/contracts':
         specifier: workspace:*
         version: link:packages/contracts

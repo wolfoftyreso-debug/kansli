@@ -54,16 +54,16 @@ export default function HomePage() {
             <p className="pd-label">{brand.secondaryTagline}</p>
             <div className="flex flex-wrap items-center gap-4">
               <Link
-                href="/systems"
+                href="/upphandling"
                 className="bg-ink px-5 py-3 text-sm font-medium text-paper transition-colors hover:bg-ink-soft"
               >
-                Explore our systems →
+                Group procurement brief →
               </Link>
               <Link
-                href="/company"
+                href="/systems"
                 className="px-5 py-3 text-sm font-medium text-ink underline-offset-4 hover:underline"
               >
-                About {brand.name}
+                Explore our systems
               </Link>
             </div>
           </div>

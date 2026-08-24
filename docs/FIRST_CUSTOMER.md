@@ -6,6 +6,8 @@
 
 **En första kund kan rulla ut nu** — om kunden är en verkstad (eller en dokumentkedja) som **skriver under vad produkten inte är**.
 
+**Koncernupphandling är ett formulär**, inte ett nej. `/upphandling` samlar stack, miljö och kontakt, skapar konto när owner-URL finns, utfärdar faktura 10 dagar och håller ett möte **nu + 10 dagar**. Anpassningen byggs när vi sitter i deras hus. Det är inte ett sålt Bilia-avtal.
+
 **Alla sex system samtidigt, till en kund som kräver sanning i varje ruta**, är **inte** klara. Det är inte en tidsfråga i den här branchen. Det är tre saker som inte finns i det här huset:
 
 1. **ALVA-diagnosmotorn** (bor i ALVA-repot). Utan den är ALVA ett intag.

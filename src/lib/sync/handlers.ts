@@ -188,6 +188,26 @@ export function registerSyncHandlers(events: EventLog, pool: pg.Pool): void {
     );
   });
 
+  events.subscribe("kansli.intake.received", async (event) => {
+    await record(
+      event.orgRef,
+      "kansli",
+      "Koncernupphandling inkommen",
+      String(event.payload["title"] ?? "Ett intag väntar. Möte om 10 dagar."),
+      event.subjectRef,
+    );
+  });
+
+  events.subscribe("kansli.account.provisioned", async (event) => {
+    await record(
+      event.orgRef,
+      "kansli",
+      "Verkstadskonto skapat för demo",
+      String(event.payload["title"] ?? "Kontot finns. Lösenordet visades en gång."),
+      event.subjectRef,
+    );
+  });
+
   events.subscribe("kansli.task.created", async (event) => {
     await record(
       event.orgRef,

@@ -24,15 +24,18 @@ export function AppShell({
   return (
     <div className="min-h-full bg-paper text-ink">
       <header className="border-b border-line bg-paper/90 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-4 px-6 py-3">
-          <div className="flex min-w-0 items-center gap-6">
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-6 py-3">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-6 gap-y-2">
             <Link
               href={session ? "/kansli" : "/"}
               className="shrink-0 text-sm font-semibold tracking-[0.18em]"
             >
               PIXDRIFT
             </Link>
-            <nav aria-label="Produkter" className="hidden items-center gap-4 md:flex">
+            <nav
+              aria-label="Produkter"
+              className="hidden flex-wrap items-center gap-x-4 gap-y-1 md:flex"
+            >
               {NAV.map((item) => (
                 <Link
                   key={item.id}
@@ -57,6 +60,17 @@ export function AppShell({
                 aria-current={current === "events" ? "page" : undefined}
               >
                 Händelser
+              </Link>
+              <Link
+                href="/kansli/upphandling"
+                className={
+                  current === "upphandling"
+                    ? "text-sm font-medium text-ink"
+                    : "text-sm text-ink-soft hover:text-ink"
+                }
+                aria-current={current === "upphandling" ? "page" : undefined}
+              >
+                Upphandling
               </Link>
             </nav>
           </div>
@@ -103,6 +117,12 @@ export function AppShell({
                   className="block px-3 py-2 text-sm text-ink-soft hover:bg-paper hover:text-ink"
                 >
                   Händelser
+                </Link>
+                <Link
+                  href="/kansli/upphandling"
+                  className="block px-3 py-2 text-sm text-ink-soft hover:bg-paper hover:text-ink"
+                >
+                  Upphandling
                 </Link>
               </nav>
             </details>

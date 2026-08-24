@@ -116,11 +116,18 @@ export function evaluateFirstCustomerGates(input: {
       detail: "Motorn bor i ALVA-repot. Intag i det här huset är inte diagnos.",
     },
     {
+      id: "upphandling",
+      title: "Koncernupphandling är ett formulär",
+      state: "ready",
+      detail:
+        "Intaget på /upphandling ger stack, miljö, kontakt, konto och faktura 10 dagar. Mötet är nu + 10 dagar. Det är inte ett sålt Bilia-avtal. Anpassningen byggs när ni vet deras hus.",
+    },
+    {
       id: "honesty",
       title: "Kunden skriver under vad produkten inte är",
       state: "open",
       detail:
-        "Inte BankID. Inte live-däckpriser. Inte SMS SENT. Inte TED/HILMA. Inte ALVA-diagnos. Inte Fortnox. Stripe/Revolut bara med nyckel. Papper, inte en knapp här.",
+        "Inte BankID. Inte live-däckpriser. Inte SMS SENT. Inte TED/HILMA. Inte ALVA-diagnos. Inte Fortnox. Stripe/Revolut bara med nyckel. Kryssas i upphandlingsformuläret.",
     },
   ];
 

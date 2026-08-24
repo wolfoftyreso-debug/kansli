@@ -10,6 +10,8 @@ export const APP_NEXT_PATHS = [
   "/tyra/integrations",
   "/tyra/kunder",
   "/kansli/beredskap",
+  "/kansli/upphandling",
+  "/upphandling",
   "/ekonomi/fakturor",
   "/ekonomi/verifikat",
   "/ekonomi/rapporter",

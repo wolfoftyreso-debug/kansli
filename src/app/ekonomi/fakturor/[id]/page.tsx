@@ -9,6 +9,7 @@ import { getTransactionEntries } from "@/lib/ekonomi/journal";
 import { railSnapshot } from "@/lib/ekonomi/rails";
 import { invoiceDocument } from "@/lib/ekonomi/reports";
 import { readSession } from "@/lib/auth/session";
+import { formatSwedishDate } from "@/lib/format/datetime";
 import { tryRuntime } from "@/lib/platform/page";
 import { issueInvoiceAction, offerPaymentAction, recordPaymentAction } from "../../actions";
 
@@ -50,7 +51,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
           <h1 className="text-3xl font-semibold tracking-tight">{invoice.number}</h1>
           <p className="text-ink-soft">
             {invoice.customerName}
-            {invoice.dueAt ? ` · förfaller ${invoice.dueAt.slice(0, 10)}` : ""}
+            {invoice.dueAt ? ` · förfaller ${formatSwedishDate(invoice.dueAt)}` : ""}
           </p>
 
           <section className="rounded-xl border border-line bg-surface px-4 py-4">

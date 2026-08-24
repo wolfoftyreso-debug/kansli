@@ -22,6 +22,7 @@ describe("evaluateFirstCustomerGates", () => {
     expect(board.allSystemsReady).toBe(false);
     expect(board.gates.find((g) => g.id === "alva")?.state).toBe("blocked");
     expect(board.gates.find((g) => g.id === "rita")?.state).toBe("blocked");
+    expect(board.gates.find((g) => g.id === "upphandling")?.state).toBe("ready");
   });
 
   it("blocks the pilot when Postgres is down", () => {

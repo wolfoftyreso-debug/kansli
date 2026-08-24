@@ -137,6 +137,12 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
           <section className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4">
             <h2 className="text-lg font-semibold">Kontrollerade fakta</h2>
             <p className="text-sm text-ink-soft">Ja / nej / okänt. Inte pass/fail-diagnos.</p>
+            {observations.length === 0 && measurements.length === 0 ? (
+              <Notice>
+                Protokollet är tomt tills ni fyller i kontroller eller mätvärden. Diagnosmotorn är
+                inte inkopplad.
+              </Notice>
+            ) : null}
             <form action={recordAlvaObservation} className="grid gap-3 sm:grid-cols-3">
               <input type="hidden" name="id" value={id} />
               <label className="flex flex-col gap-1 sm:col-span-2">

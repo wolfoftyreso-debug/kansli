@@ -88,6 +88,7 @@ function loginPage(
   button{margin-top:1.25rem;width:100%;padding:.65rem;border:0;border-radius:9px;background:#1f4b8f;color:#fff;font-weight:600;font-size:1rem;cursor:pointer}
   .err{margin-top:.75rem;color:#9f1239;font-size:.85rem}
   .hint{margin-top:1rem;font-size:.75rem;color:#78716c}
+  .hint a{color:#1c1917}
 </style></head>
 <body>
   <form class="card" method="post" action="${esc(action)}">
@@ -100,6 +101,7 @@ function loginPage(
     ${error ? `<p class="err">${esc(error)}</p>` : ""}
     <button type="submit">Logga in</button>
     ${hint}
+    <p class="hint">Inget konto? <a href="/upphandling">Fyll i koncernupphandling</a> — möte om 10 dagar. Ingen Google-inloggning.</p>
   </form>
 </body></html>`;
 }

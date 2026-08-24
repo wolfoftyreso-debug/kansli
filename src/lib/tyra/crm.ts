@@ -99,7 +99,12 @@ export function buildCustomerCard(input: {
         ? { kind: "pick", label: "Plocka hjul" }
         : hasCheckIn
           ? { kind: "check_in", label: "Checka in" }
-          : { kind: "none", label: "Ingen åtgärd" };
+          : {
+              kind: "none",
+              label: input.wheelSets.some((ws) => ws.storageStatus === "STORED")
+                ? "Inlagda hjul — ingen öppen åtgärd"
+                : "Inget att göra just nu",
+            };
 
   return {
     customer: input.customer,

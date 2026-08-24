@@ -75,9 +75,10 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     name: "Kansli",
     mission: "Receptionen. Inte fabriken.",
     question: "Var loggar jag in, och vad ska vi göra internt?",
-    does: "Navet: session, plattforms-API:er, intern uppgiftstavla. Samma process som hostar /idp och alla produkt-API:er.",
-    doesNot: "Ingen produktlogik. Inga andras tabeller.",
-    owns: "kansli.tasks",
+    does: "Navet: session, plattforms-API:er, intern uppgiftstavla, koncernupphandling. Samma process som hostar /idp och alla produkt-API:er.",
+    doesNot:
+      "Ingen produktlogik. Inga andras tabeller. Upphandlingen är ett intag, inte ett sålt koncernavtal.",
+    owns: "kansli.tasks, kansli.intakes",
     status: "operational",
   },
   {
@@ -222,6 +223,12 @@ export const FAMILY_LINKS: readonly FamilyLink[] = [
     to: "britt",
     via: "kansli.task.created",
     meaning: "Intern uppgift syns som observation. Kansli äger fortfarande tasks-raden.",
+  },
+  {
+    from: "kansli",
+    to: "britt",
+    via: "kansli.intake.received | kansli.account.provisioned",
+    meaning: "Koncernupphandling inkommen, eller ett verkstadskonto skapat för demoförberedelse.",
   },
   {
     from: "britt",

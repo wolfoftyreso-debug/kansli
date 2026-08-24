@@ -3,6 +3,7 @@ import { AppShell } from "@/components/app/AppShell";
 import { EmptyState, Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
 import { CASE_STATUS_LABELS, listCases, parseCaseStatus } from "@/lib/alva/cases";
 import { readSession } from "@/lib/auth/session";
+import { formatSwedishDateTime } from "@/lib/format/datetime";
 import { tryRuntime } from "@/lib/platform/page";
 import { registerAlvaCase } from "./actions";
 
@@ -70,7 +71,9 @@ export default async function AlvaPage() {
                     {item.vehicleRef ? (
                       <p className="font-mono text-xs text-faint">{item.vehicleRef}</p>
                     ) : null}
-                    <p className="mt-2 font-mono text-xs text-faint">{item.createdAt}</p>
+                    <p className="mt-2 text-xs text-faint">
+                      {formatSwedishDateTime(item.createdAt)}
+                    </p>
                   </li>
                 ))}
               </ul>

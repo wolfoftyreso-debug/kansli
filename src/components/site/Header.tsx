@@ -35,6 +35,9 @@ export function Header() {
           <span className="pd-label" aria-label="Language: English">
             EN
           </span>
+          <Link href="/upphandling" className="text-sm text-ink-soft hover:text-ink">
+            Group procurement
+          </Link>
           <Link href="/company#contact" className="text-sm text-ink-soft hover:text-ink">
             Contact
           </Link>
@@ -66,6 +69,12 @@ export function Header() {
                 </Link>
               ))}
               <hr className="pd-hr my-2" />
+              <Link
+                href="/upphandling"
+                className="px-3 py-2 text-sm text-ink-soft hover:bg-paper hover:text-ink"
+              >
+                Group procurement
+              </Link>
               <Link
                 href="/company#contact"
                 className="px-3 py-2 text-sm text-ink-soft hover:bg-paper hover:text-ink"

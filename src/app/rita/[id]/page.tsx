@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app/AppShell";
 import { EmptyState, Notice, SignInGate } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
+import { formatSwedishDateTime } from "@/lib/format/datetime";
 import { tryRuntime } from "@/lib/platform/page";
 import { getAnalysis } from "@/lib/rita/analyses";
 import {
@@ -118,7 +119,7 @@ export default async function RitaAnalysisPage({ params }: { params: Promise<{ i
               </pre>
             </details>
           ) : null}
-          <p className="font-mono text-xs text-faint">{analysis.createdAt}</p>
+          <p className="text-xs text-faint">{formatSwedishDateTime(analysis.createdAt)}</p>
         </>
       ) : null}
     </AppShell>

@@ -5,6 +5,7 @@ import { observationHref, sourceLabel } from "@/lib/britt/links";
 import { listFindings, listRuns, listSnapshots } from "@/lib/britt/intel";
 import { listObservations, type Observation } from "@/lib/britt/observations";
 import { readSession } from "@/lib/auth/session";
+import { formatSwedishDateTime } from "@/lib/format/datetime";
 import { tryRuntime } from "@/lib/platform/page";
 import {
   assignObservationToMe,
@@ -70,30 +71,14 @@ export default async function BrittPage({
         </SignInGate>
       ) : (
         <>
-          {latest ? (
-            <section className="flex flex-col gap-3">
-              <h2 className="text-lg font-semibold">Senaste ögonblicksbild · {latest.period}</h2>
-              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                <MetricCard label="Omsättning" value={kr(latest.revenue)} />
-                <MetricCard label="Plan" value={kr(latest.planRevenue)} />
-                <MetricCard label="Kassa" value={kr(latest.cash)} />
-                <MetricCard label="Månadsförbränning" value={kr(latest.monthlyBurn)} />
-                <MetricCard
-                  label="Största kund"
-                  value={`${Math.round(latest.topCustomerShare * 100)} %`}
-                />
-              </div>
-            </section>
-          ) : null}
-
           <form action={runBrittIntel} className="rounded-xl border border-line bg-surface p-4">
             <h2 className="text-lg font-semibold">Demonstrationsanalys</h2>
             <p className="mt-1 text-sm text-ink-soft">
               Kör omsättning mot plan, likviditet och kundkoncentration mot seedade fakta.
             </p>
             {runs[0] ? (
-              <p className="mt-1 font-mono text-xs text-faint">
-                {runs[0].findingCount} fynd · {runs[0].createdAt}
+              <p className="mt-1 text-xs text-faint">
+                {runs[0].findingCount} fynd · {formatSwedishDateTime(runs[0].createdAt)}
               </p>
             ) : null}
             <div className="mt-3">
@@ -195,11 +180,11 @@ export default async function BrittPage({
                               </Link>
                             </p>
                           ) : null}
-                          <p className="mt-2 font-mono text-xs text-faint">
+                          <p className="mt-2 text-xs text-faint">
                             {item.status}
-                            {item.assigneeRef ? ` · ${item.assigneeRef}` : " · ingen ansvarig"}
+                            {item.assigneeRef ? " · tilldelad" : " · ingen ansvarig"}
                             {" · "}
-                            {item.createdAt}
+                            {formatSwedishDateTime(item.createdAt)}
                           </p>
                           <div className="mt-2 flex flex-wrap gap-2">
                             {item.status !== "done" ? (
@@ -228,6 +213,27 @@ export default async function BrittPage({
               ))
             )}
           </section>
+
+          {latest ? (
+            <details className="rounded-xl border border-line bg-surface px-4 py-3">
+              <summary className="cursor-pointer text-sm font-medium">
+                Visa demonstrationssiffror · {latest.period}
+              </summary>
+              <p className="mt-2 text-sm text-ink-soft">
+                Seed för Exempelbolaget. Inte Fortnox. Inte livekassa.
+              </p>
+              <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                <MetricCard label="Omsättning" value={kr(latest.revenue)} />
+                <MetricCard label="Plan" value={kr(latest.planRevenue)} />
+                <MetricCard label="Kassa" value={kr(latest.cash)} />
+                <MetricCard label="Månadsförbränning" value={kr(latest.monthlyBurn)} />
+                <MetricCard
+                  label="Största kund"
+                  value={`${Math.round(latest.topCustomerShare * 100)} %`}
+                />
+              </div>
+            </details>
+          ) : null}
         </>
       )}
     </AppShell>

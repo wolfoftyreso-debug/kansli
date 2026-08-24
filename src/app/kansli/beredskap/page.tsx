@@ -59,6 +59,13 @@ export default async function BeredskapPage() {
               Alla sex system klara:{" "}
               {board.allSystemsReady ? "ja." : "nej. ALVA-diagnos och RITA-host är andra rum."}
             </p>
+            <p className="mt-3 text-sm">
+              <Link href="/upphandling" className="underline decoration-line underline-offset-4">
+                Koncernupphandling är formuläret
+              </Link>
+              {" — "}
+              demo och möte om 10 dagar. Inte ett sålt Bilia-avtal.
+            </p>
           </section>
 
           <ol className="flex flex-col gap-2">

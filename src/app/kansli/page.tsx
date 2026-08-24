@@ -78,6 +78,13 @@ export default async function KansliHub({
               >
                 Första kunden — grindar, inte datum
               </Link>
+              {" · "}
+              <Link
+                href="/kansli/upphandling"
+                className="underline decoration-line underline-offset-4 hover:text-ink"
+              >
+                Koncernupphandling
+              </Link>
             </p>
           </section>
 
