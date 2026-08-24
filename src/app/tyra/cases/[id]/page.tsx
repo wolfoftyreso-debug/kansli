@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app/AppShell";
-import { SignInGate } from "@/components/app/SignInGate";
+import { SignInGate, Submit } from "@/components/app/SignInGate";
 import { Button } from "@/components/tyra/Button";
 import { StatusBanner } from "@/components/tyra/Status";
 import { TaskRow } from "@/components/tyra/Rows";
@@ -10,8 +10,16 @@ import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
 import { CASE_STATUS_LABELS, STEP_STATUS_LABELS, getCaseWorkCard } from "@/lib/tyra/cases";
 import { listCaseEvents } from "@/lib/tyra/hotel";
+import { INSPECTION_POSITIONS } from "@/lib/tyra/inspections";
 import { peekIssuedHubLink, publicTyraUrl } from "@/lib/tyra/issued-link";
-import { enqueueTyraReminder, issueTyraHubLink, updateTyraStep } from "../../actions";
+import { formatSekFromOre, listQuoteDrafts } from "@/lib/tyra/quotes";
+import {
+  enqueueTyraReminder,
+  issueTyraHubLink,
+  recordTyraInspection,
+  saveTyraQuote,
+  updateTyraStep,
+} from "../../actions";
 
 export const metadata = {
   title: "Ärende — TYRA",
@@ -48,6 +56,10 @@ export default async function TyraCasePage({
   const timeline =
     session?.org?.ref && runtime && card
       ? await listCaseEvents(runtime.pool, session.org.ref, id)
+      : [];
+  const quotes =
+    session?.org?.ref && runtime && card
+      ? await listQuoteDrafts(runtime.pool, session.org.ref, id)
       : [];
   if (session?.org && !card) notFound();
   const issued = query.issued === "1" ? await peekIssuedHubLink() : null;
@@ -158,6 +170,102 @@ export default async function TyraCasePage({
               </li>
             ))}
           </ol>
+
+          <section className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4">
+            <h2 className="text-lg font-semibold">Verifierad inspektion</h2>
+            <p className="text-sm text-ink-soft">
+              Fyra mönsterdjup, tekniker-verifierade. Det är det kunden får se i hubben. Ingen AI.
+            </p>
+            <form action={recordTyraInspection} className="grid gap-3 sm:grid-cols-4">
+              <input type="hidden" name="id" value={id} />
+              {INSPECTION_POSITIONS.map((position) => (
+                <label key={position} className="flex flex-col gap-1">
+                  <span className="text-sm text-ink-soft">{position} mm</span>
+                  <input
+                    name={`tread_${position}`}
+                    required
+                    inputMode="decimal"
+                    placeholder="5.5"
+                    className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
+                  />
+                </label>
+              ))}
+              <div className="sm:col-span-4">
+                <Submit>Spara inspektion</Submit>
+              </div>
+            </form>
+          </section>
+
+          <section className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4">
+            <h2 className="text-lg font-semibold">Offertutkast</h2>
+            <p className="text-sm text-ink-soft">
+              Verkstadens egna belopp. Inte live-leverantör, inte skickad.
+            </p>
+            <form action={saveTyraQuote} className="grid gap-3 sm:grid-cols-2">
+              <input type="hidden" name="id" value={id} />
+              <label className="flex flex-col gap-1 sm:col-span-2">
+                <span className="text-sm text-ink-soft">Rubrik</span>
+                <input
+                  name="title"
+                  defaultValue="Däck + montering"
+                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
+                />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-sm text-ink-soft">Antal</span>
+                <input
+                  name="quantity"
+                  defaultValue="4"
+                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
+                />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-sm text-ink-soft">Inköp per däck (kr)</span>
+                <input
+                  name="unitCostSek"
+                  defaultValue="1200"
+                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
+                />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-sm text-ink-soft">Påslag %</span>
+                <input
+                  name="markupPercent"
+                  defaultValue="20"
+                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
+                />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-sm text-ink-soft">Montering per däck (kr)</span>
+                <input
+                  name="installationSek"
+                  defaultValue="150"
+                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
+                />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-sm text-ink-soft">Miljöavgift per däck (kr)</span>
+                <input
+                  name="environmentalSek"
+                  defaultValue="25"
+                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
+                />
+              </label>
+              <div className="sm:col-span-2">
+                <Submit>Beräkna utkast</Submit>
+              </div>
+            </form>
+            {quotes.length > 0 ? (
+              <ul className="flex flex-col gap-2">
+                {quotes.map((quote) => (
+                  <li key={quote.id} className="text-sm text-ink-soft">
+                    {quote.title}: {formatSekFromOre(quote.snapshot.totalCustomerPriceOre)} ·{" "}
+                    {quote.createdAt}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </section>
 
           {timeline.length > 0 ? (
             <section className="flex flex-col gap-3">

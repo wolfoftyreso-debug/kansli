@@ -5,6 +5,8 @@ import { hashTyraToken, tyraHubPath } from "./tokens.ts";
 import { createCase, getCaseWorkCard, listCases, setStepStatus } from "./cases.ts";
 import { listCaseEvents, listCustomerCards } from "./hotel.ts";
 import { getHubViewByToken, issueHubLink } from "./hub.ts";
+import { recordVerifiedInspection } from "./inspections.ts";
+import { listQuoteDrafts, saveQuoteDraft } from "./quotes.ts";
 
 describe("hashTyraToken", () => {
   it("is stable and does not echo the token", () => {
@@ -143,5 +145,43 @@ live("TYRA cases + hub (live Postgres)", () => {
     expect((await listCaseEvents(pool, orgRef, created.id)).length).toBeGreaterThan(0);
     const completed = await events.list({ orgRef, kind: "tyra.case.completed" });
     expect(completed).toHaveLength(1);
+
+    await recordVerifiedInspection({
+      pool,
+      orgRef,
+      actorRef: "user-test",
+      tireCaseId: created.id,
+      readings: [
+        { position: "LF", treadDepthMm: 6 },
+        { position: "RF", treadDepthMm: 6 },
+        { position: "LR", treadDepthMm: 5.5 },
+        { position: "RR", treadDepthMm: 5.5 },
+      ],
+    });
+    const quote = await saveQuoteDraft({
+      pool,
+      orgRef,
+      tireCaseId: created.id,
+      title: "Vinterdäck",
+      quantity: 4,
+      unitCostOre: 120_000,
+      installationOrePerTyre: 15_000,
+      environmentalOrePerTyre: 2_500,
+      markupPercent: 20,
+    });
+    expect(quote.snapshot.totalCustomerPriceOre).toBeGreaterThan(0);
+    expect((await listQuoteDrafts(pool, orgRef, created.id))[0]?.id).toBe(quote.id);
+
+    const hub = await issueHubLink({
+      pool,
+      events,
+      orgRef,
+      actorRef: "user-test",
+      customerId: created.customerId,
+      requestId: "req-tyra-hub-inspect",
+    });
+    const view = await getHubViewByToken(pool, hub.token);
+    expect(view?.positions).toHaveLength(4);
+    expect(view?.commercialNote).not.toMatch(/Ingen verifierad inspektion/);
   });
 });

@@ -121,8 +121,8 @@ export async function getHubViewByToken(pool: pg.Pool, token: string): Promise<H
 
   const wsRes = await pool.query<{ id: string; season: string }>(
     `select id, season from tyra.wheel_sets
-      where org_ref = $1 and vehicle_id = $2 and status = 'MOUNTED'
-      order by updated_at desc
+      where org_ref = $1 and vehicle_id = $2
+      order by case when status = 'MOUNTED' then 0 else 1 end, updated_at desc
       limit 1`,
     [link.org_ref, vehicle.id],
   );

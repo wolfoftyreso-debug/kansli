@@ -11,6 +11,8 @@ import {
   setStepStatus,
 } from "@/lib/tyra/cases";
 import { issueHubLink } from "@/lib/tyra/hub";
+import { parseTreadReadings, recordVerifiedInspection } from "@/lib/tyra/inspections";
+import { saveQuoteDraft } from "@/lib/tyra/quotes";
 import { setIssuedHubLink } from "@/lib/tyra/issued-link";
 import {
   buildReminderMessage,
@@ -20,7 +22,7 @@ import {
 } from "@/lib/tyra/reminders";
 
 export async function createTyraCase(formData: FormData) {
-  const { session, pool, events } = await requireOrgAction("/tyra");
+  const { session, pool, events } = await requireOrgAction("/tyra", "arende:write");
   const customerName = String(formData.get("customerName") ?? "").trim();
   const registrationNumber = String(formData.get("registrationNumber") ?? "").trim();
   const make = String(formData.get("make") ?? "").trim();
@@ -61,7 +63,7 @@ export async function createTyraCase(formData: FormData) {
 }
 
 export async function updateTyraStep(formData: FormData) {
-  const { session, pool, events } = await requireOrgAction("/tyra");
+  const { session, pool, events } = await requireOrgAction("/tyra", "arende:write");
   const id = String(formData.get("id") ?? "").trim();
   const stepKind = String(formData.get("stepKind") ?? "").trim();
   const status = parseStepStatus(formData.get("status"));
@@ -83,7 +85,7 @@ export async function updateTyraStep(formData: FormData) {
 }
 
 export async function issueTyraHubLink(formData: FormData) {
-  const { session, pool, events } = await requireOrgAction("/tyra");
+  const { session, pool, events } = await requireOrgAction("/tyra", "arende:write");
   const id = String(formData.get("id") ?? "").trim();
   const customerId = String(formData.get("customerId") ?? "").trim();
   if (!id || !customerId) return;
@@ -104,7 +106,7 @@ export async function issueTyraHubLink(formData: FormData) {
 }
 
 export async function enqueueTyraReminder(formData: FormData) {
-  const { session, pool, events } = await requireOrgAction("/tyra");
+  const { session, pool, events } = await requireOrgAction("/tyra", "arende:write");
   const id = String(formData.get("id") ?? "").trim();
   const registrationNumber = String(formData.get("registrationNumber") ?? "").trim();
   if (!id || !registrationNumber) return;
@@ -152,4 +154,40 @@ export async function enqueueTyraReminder(formData: FormData) {
   revalidatePath("/britt");
   revalidatePath("/platform/events");
   redirect(`/tyra/integrations`);
+}
+
+export async function recordTyraInspection(formData: FormData) {
+  const { session, pool } = await requireOrgAction("/tyra", "arende:write");
+  const id = String(formData.get("id") ?? "").trim();
+  if (!id) return;
+  await recordVerifiedInspection({
+    pool,
+    orgRef: session.org.ref,
+    actorRef: session.sub,
+    tireCaseId: id,
+    readings: parseTreadReadings(formData),
+  });
+  revalidatePath("/tyra");
+  revalidatePath(`/tyra/cases/${id}`);
+}
+
+export async function saveTyraQuote(formData: FormData) {
+  const { session, pool } = await requireOrgAction("/tyra", "arende:write");
+  const id = String(formData.get("id") ?? "").trim();
+  if (!id) return;
+  const kronor = (name: string) =>
+    Math.round(Number(String(formData.get(name) ?? "0").replace(",", ".")) * 100);
+  await saveQuoteDraft({
+    pool,
+    orgRef: session.org.ref,
+    tireCaseId: id,
+    title: String(formData.get("title") ?? "").trim(),
+    quantity: Number(formData.get("quantity") ?? 4) || 4,
+    unitCostOre: kronor("unitCostSek"),
+    installationOrePerTyre: kronor("installationSek"),
+    environmentalOrePerTyre: kronor("environmentalSek"),
+    markupPercent: Number(String(formData.get("markupPercent") ?? "0").replace(",", ".")) || 0,
+    note: String(formData.get("note") ?? "").trim(),
+  });
+  revalidatePath(`/tyra/cases/${id}`);
 }
