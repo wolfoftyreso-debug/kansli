@@ -15,6 +15,7 @@ export async function POST(request: Request) {
     const body = (await request.json().catch(() => null)) as {
       title?: string;
       counterparty?: string;
+      body?: string;
     } | null;
     if (!body?.title?.trim() || !body.counterparty?.trim()) {
       throw new ApiError("invalid_request", "title och counterparty krävs.");
@@ -26,6 +27,7 @@ export async function POST(request: Request) {
       actorRef: present.sub,
       title: body.title,
       counterparty: body.counterparty,
+      body: body.body,
       requestId,
     });
     return json({ agreement }, 201);
