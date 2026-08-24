@@ -40,6 +40,21 @@ export default async function TyraPage() {
           TYRA är däckhotellets administration: kund, fordon, ärende, nästa steg och det kunden får
           se. Offert och lager hör till samma pärm — de låtsas inte vara live förrän adaptern finns.
         </p>
+        <p className="text-sm">
+          <Link
+            href="/tyra/kunder"
+            className="font-medium underline decoration-line underline-offset-4"
+          >
+            Kundkort
+          </Link>
+          {" · "}
+          <Link
+            href="/tyra/integrations"
+            className="font-medium underline decoration-line underline-offset-4"
+          >
+            Integrationer
+          </Link>
+        </p>
       </header>
 
       {!session?.org ? (

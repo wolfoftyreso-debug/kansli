@@ -3,6 +3,7 @@ import { createPool, migrateWorkspace } from "@pixdrift/db";
 import { EventLog } from "@pixdrift/events";
 import { hashTyraToken, tyraHubPath } from "./tokens.ts";
 import { createCase, getCaseWorkCard, listCases, setStepStatus } from "./cases.ts";
+import { listCaseEvents, listCustomerCards } from "./hotel.ts";
 import { getHubViewByToken, issueHubLink } from "./hub.ts";
 
 describe("hashTyraToken", () => {
@@ -110,6 +111,12 @@ live("TYRA cases + hub (live Postgres)", () => {
     });
     const card = await getCaseWorkCard(pool, orgRef, created.id);
     expect(card?.steps.length).toBeGreaterThan(0);
+    const registered = await pool.query<{ status: string; storage_status: string }>(
+      `select status, storage_status from tyra.wheel_sets where org_ref = $1`,
+      [orgRef],
+    );
+    expect(registered.rows[0]?.status).toBe("REGISTERED");
+    expect(registered.rows[0]?.storage_status).toBe("IN_WORKSHOP");
     for (const step of card!.steps) {
       await setStepStatus({
         pool,
@@ -122,8 +129,18 @@ live("TYRA cases + hub (live Postgres)", () => {
         requestId: `req-step-${step.kind}`,
       });
     }
+
     const done = await getCaseWorkCard(pool, orgRef, created.id);
     expect(done?.caseStatus).toBe("DONE");
+    const stored = await pool.query<{ storage_status: string }>(
+      `select storage_status from tyra.wheel_sets where org_ref = $1`,
+      [orgRef],
+    );
+    expect(stored.rows[0]?.storage_status).toBe("STORED");
+    const cards = await listCustomerCards(pool, orgRef);
+    expect(cards[0]?.customer.name).toBe("Erik");
+    expect(cards[0]?.counts.wheelSets).toBe(1);
+    expect((await listCaseEvents(pool, orgRef, created.id)).length).toBeGreaterThan(0);
     const completed = await events.list({ orgRef, kind: "tyra.case.completed" });
     expect(completed).toHaveLength(1);
   });

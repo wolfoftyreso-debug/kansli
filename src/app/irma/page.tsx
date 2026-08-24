@@ -11,7 +11,7 @@ import {
 import { readSession } from "@/lib/auth/session";
 import { listAgreements, type Agreement } from "@/lib/irma/agreements";
 import { peekIssuedLink, publicIrmaUrl } from "@/lib/irma/issued-link";
-import { statusLabel } from "@/lib/irma/status";
+import { daysUntilExpiry, statusLabel } from "@/lib/irma/status";
 import { tryRuntime } from "@/lib/platform/page";
 import { createIrmaAgreement } from "./actions";
 
@@ -19,6 +19,15 @@ export const metadata = {
   title: "IRMA — Pixdrift",
   description: "Digital avtalshantering. Ett flöde, koll på varje avtal.",
 };
+
+function expiryCopy(item: Agreement): string {
+  if (item.status === "expired") return "Länken har gått ut. Återutfärda från avtalet.";
+  const days = daysUntilExpiry(item.tokenExpiresAt);
+  if (days == null) return "Väntar på motparten.";
+  if (days <= 0) return "Länken har gått ut. Återutfärda från avtalet.";
+  if (days === 1) return "1 dag kvar till länken går ut.";
+  return `${days} dagar kvar till länken går ut.`;
+}
 
 function needsAttention(item: Agreement): boolean {
   return item.status === "draft" || item.status === "viewed" || item.status === "expired";
@@ -36,6 +45,9 @@ function AgreementCard({ item }: { item: Agreement }) {
         </Link>
       </p>
       <p className="mt-1 text-sm text-ink-soft">{item.counterparty}</p>
+      {item.status !== "signed" && item.status !== "cancelled" ? (
+        <p className="mt-2 text-xs text-muted">{expiryCopy(item)}</p>
+      ) : null}
     </li>
   );
 }

@@ -3,11 +3,11 @@ import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app/AppShell";
 import { Notice, SignInGate, Submit } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
-import { getAgreement } from "@/lib/irma/agreements";
+import { exportAgreementRecord, getAgreement } from "@/lib/irma/agreements";
 import { verifyAgreementIntegrity } from "@/lib/irma/integrity";
-import { statusLabel, verificationLabel } from "@/lib/irma/status";
+import { daysUntilExpiry, statusLabel, verificationLabel } from "@/lib/irma/status";
 import { tryRuntime } from "@/lib/platform/page";
-import { revokeIrmaAgreement } from "../actions";
+import { reissueIrmaAgreement, revokeIrmaAgreement } from "../actions";
 
 export const metadata = {
   title: "Avtal — IRMA — Pixdrift",
@@ -100,15 +100,32 @@ export default async function IrmaAgreementPage({ params }: { params: Promise<{ 
               </p>
             ) : null}
             {agreement.tokenExpiresAt && agreement.status !== "signed" ? (
-              <p className="text-sm text-muted">Länken giltig till {agreement.tokenExpiresAt}</p>
+              <p className="text-sm text-muted">
+                Länken giltig till {agreement.tokenExpiresAt}
+                {daysUntilExpiry(agreement.tokenExpiresAt) != null
+                  ? ` · ${daysUntilExpiry(agreement.tokenExpiresAt)} dagar kvar`
+                  : ""}
+              </p>
             ) : null}
+            <details className="mt-2">
+              <summary className="cursor-pointer text-sm font-medium">Exportera underlag</summary>
+              <pre className="mt-2 overflow-x-auto font-mono text-xs">
+                {exportAgreementRecord(agreement)}
+              </pre>
+            </details>
           </section>
 
           {agreement.status !== "signed" && agreement.status !== "cancelled" ? (
-            <form action={revokeIrmaAgreement}>
-              <input type="hidden" name="id" value={agreement.id} />
-              <Submit>Återkalla länken</Submit>
-            </form>
+            <div className="flex flex-wrap gap-3">
+              <form action={reissueIrmaAgreement}>
+                <input type="hidden" name="id" value={agreement.id} />
+                <Submit>Återutfärda länken</Submit>
+              </form>
+              <form action={revokeIrmaAgreement}>
+                <input type="hidden" name="id" value={agreement.id} />
+                <Submit>Återkalla länken</Submit>
+              </form>
+            </div>
           ) : null}
         </>
       ) : null}

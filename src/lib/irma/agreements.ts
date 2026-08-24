@@ -355,6 +355,72 @@ export async function revokeAgreement(input: {
   return getAgreement(input.pool, input.orgRef, input.id);
 }
 
+export async function reissueAgreementToken(input: {
+  pool: pg.Pool;
+  events: EventLog;
+  orgRef: string;
+  id: string;
+  actorRef: string;
+  requestId: string;
+}): Promise<Agreement | null> {
+  const existing = await getAgreement(input.pool, input.orgRef, input.id);
+  if (!existing) return null;
+  if (existing.status === "signed" || existing.status === "cancelled") return existing;
+
+  const token = randomBytes(24).toString("base64url");
+  const tokenHash = hashIrmaToken(token);
+  const tokenExpiresAt = new Date(Date.now() + IRMA_TOKEN_TTL_MS).toISOString();
+  const updated = await input.pool.query(
+    `update irma.agreements
+        set token_hash = $3,
+            token_expires_at = $4::timestamptz,
+            token_revoked_at = null
+      where id = $1 and org_ref = $2 and status not in ('signed', 'cancelled')
+      returning id`,
+    [input.id, input.orgRef, tokenHash, tokenExpiresAt],
+  );
+  if ((updated.rowCount ?? 0) === 0) return existing;
+
+  await input.events.publish({
+    system: "irma",
+    kind: "irma.agreement.created",
+    orgRef: input.orgRef,
+    actorKind: "user",
+    actorRef: input.actorRef,
+    subjectRef: `irma:agreement:${input.id}`,
+    requestId: input.requestId,
+    payload: {
+      title: existing.title,
+      counterparty: existing.counterparty,
+      verificationLevel: existing.verificationLevel,
+      reissued: true,
+    },
+  });
+  const next = await getAgreement(input.pool, input.orgRef, input.id);
+  return next ? { ...next, magicLink: irmaLinkPath(token) } : null;
+}
+
+export function exportAgreementRecord(agreement: Agreement): string {
+  return JSON.stringify(
+    {
+      id: agreement.id,
+      title: agreement.title,
+      counterparty: agreement.counterparty,
+      status: agreement.status,
+      verificationLevel: agreement.verificationLevel,
+      body: agreement.body,
+      clauses: agreement.clauses,
+      contentSha256: agreement.contentSha256,
+      artifactSha256: agreement.artifactSha256,
+      signerName: agreement.signerName,
+      signedAt: agreement.signedAt,
+      createdAt: agreement.createdAt,
+    },
+    null,
+    2,
+  );
+}
+
 async function loadByToken(pool: pg.Pool, token: string): Promise<AgreementRow | null> {
   const trimmed = token.trim();
   if (!trimmed) return null;

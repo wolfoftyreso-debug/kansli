@@ -5,7 +5,16 @@ import { EmptyState, Notice, SignInGate } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
 import { getAnalysis } from "@/lib/rita/analyses";
-import { analysisSummary, findingsFromAnalysis } from "@/lib/rita/findings";
+import {
+  analysisDisclaimer,
+  analysisLimitations,
+  analysisSummary,
+  categoryLabel,
+  estimatedTotalHint,
+  findingStatusLabel,
+  findingsFromAnalysis,
+  formatOre,
+} from "@/lib/rita/findings";
 
 export const metadata = {
   title: "Analys — RITA — Pixdrift",
@@ -20,6 +29,9 @@ export default async function RitaAnalysisPage({ params }: { params: Promise<{ i
   if (session?.org && runtime && !analysis) notFound();
   const findings = analysis ? findingsFromAnalysis(analysis.result) : [];
   const summary = analysis ? analysisSummary(analysis.result) : null;
+  const disclaimer = analysis ? analysisDisclaimer(analysis.result) : null;
+  const limitations = analysis ? analysisLimitations(analysis.result) : [];
+  const totalHint = analysis ? estimatedTotalHint(analysis.result) : null;
 
   return (
     <AppShell current="rita" session={session}>
@@ -47,6 +59,15 @@ export default async function RitaAnalysisPage({ params }: { params: Promise<{ i
             </Notice>
           ) : null}
           {summary ? <p className="text-sm text-ink-soft">{summary}</p> : null}
+          {totalHint ? <p className="text-sm text-ink-soft">{totalHint}</p> : null}
+          {disclaimer ? <Notice>{disclaimer}</Notice> : null}
+          {limitations.length > 0 ? (
+            <ul className="list-disc pl-5 text-sm text-muted">
+              {limitations.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          ) : null}
 
           {findings.length > 0 ? (
             <section className="flex flex-col gap-3">
@@ -55,10 +76,22 @@ export default async function RitaAnalysisPage({ params }: { params: Promise<{ i
                 {findings.map((finding) => (
                   <li key={finding.id} className="rounded-xl border border-line bg-surface p-4">
                     <p className="text-xs font-medium uppercase tracking-wide text-accent">
-                      {finding.status}
+                      {findingStatusLabel(finding.status)} · {categoryLabel(finding.category)}
                       {finding.risk ? ` · ${finding.risk}` : ""}
                     </p>
                     <p className="mt-2 font-medium">{finding.title}</p>
+                    {finding.ruleId || finding.ruleTitle ? (
+                      <p className="mt-1 font-mono text-xs text-faint">
+                        Regel{finding.ruleId ? `: ${finding.ruleId}` : ""}
+                        {finding.ruleTitle ? ` — ${finding.ruleTitle}` : ""}
+                      </p>
+                    ) : null}
+                    {finding.impactHighOre != null && finding.impactHighOre > 0 ? (
+                      <p className="mt-1 text-sm text-ink-soft">
+                        Möjlig effekt (ej garanti): {formatOre(finding.impactLowOre ?? 0)}–
+                        {formatOre(finding.impactHighOre)}
+                      </p>
+                    ) : null}
                     {finding.rationale ? (
                       <p className="mt-1 text-sm text-ink-soft">{finding.rationale}</p>
                     ) : null}

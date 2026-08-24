@@ -91,13 +91,13 @@ export default function TaskBoard() {
 
   return (
     <section className="flex flex-col gap-6">
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">
+      <p className="text-sm text-ink-soft">
         Uppgiftstavla — {open} öppna, {done} klara.
       </p>
 
       <form
         onSubmit={addTask}
-        className="flex flex-col gap-3 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+        className="flex flex-col gap-3 rounded-2xl border border-line bg-surface p-5"
       >
         <div className="flex flex-col gap-3 sm:flex-row">
           <input
@@ -105,25 +105,25 @@ export default function TaskBoard() {
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Ny uppgift…"
             aria-label="Uppgiftens titel"
-            className="flex-1 rounded-lg border border-zinc-300 bg-transparent px-3 py-2 text-zinc-900 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-zinc-700 dark:text-zinc-100"
+            className="flex-1 rounded-lg border border-line bg-paper px-3 py-2 text-ink outline-none focus:border-accent"
           />
           <input
             value={owner}
             onChange={(e) => setOwner(e.target.value)}
             placeholder="Ansvarig"
             aria-label="Ansvarig"
-            className="rounded-lg border border-zinc-300 bg-transparent px-3 py-2 text-zinc-900 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-zinc-700 dark:text-zinc-100 sm:w-40"
+            className="rounded-lg border border-line bg-paper px-3 py-2 text-ink outline-none focus:border-accent sm:w-40"
           />
         </div>
         <button
           type="submit"
           disabled={submitting}
-          className="self-start rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 disabled:opacity-60"
+          className="self-start rounded-lg bg-accent px-4 py-2 font-medium text-white disabled:opacity-60"
         >
           {submitting ? "Sparar…" : "Lägg till"}
         </button>
         {error && (
-          <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+          <p role="alert" className="text-sm text-ink">
             {error}
           </p>
         )}
@@ -131,9 +131,9 @@ export default function TaskBoard() {
 
       <div className="flex flex-col gap-2">
         {loading ? (
-          <p className="text-zinc-500 dark:text-zinc-400">Laddar…</p>
+          <p className="text-ink-soft">Laddar…</p>
         ) : tasks.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-zinc-300 p-8 text-center text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
+          <p className="rounded-2xl border border-dashed border-line p-8 text-center text-ink-soft">
             Inga uppgifter ännu. Lägg till den första ovan.
           </p>
         ) : (
@@ -141,31 +141,29 @@ export default function TaskBoard() {
             {tasks.map((task) => (
               <li
                 key={task.id}
-                className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-white p-4 shadow-sm transition hover:shadow dark:border-zinc-800 dark:bg-zinc-900"
+                className="flex items-center gap-3 rounded-xl border border-line bg-surface p-4"
               >
                 <input
                   type="checkbox"
                   checked={task.done}
                   onChange={() => toggle(task.id)}
                   aria-label={`Markera "${task.title}" som klar`}
-                  className="h-5 w-5 shrink-0 accent-indigo-600"
+                  className="h-5 w-5 shrink-0 accent-[var(--color-accent)]"
                 />
                 <div className="flex min-w-0 flex-1 flex-col">
                   <span
                     className={`truncate font-medium ${
-                      task.done
-                        ? "text-zinc-400 line-through dark:text-zinc-600"
-                        : "text-zinc-900 dark:text-zinc-100"
+                      task.done ? "text-faint line-through" : "text-ink"
                     }`}
                   >
                     {task.title}
                   </span>
-                  <span className="text-sm text-zinc-500 dark:text-zinc-400">{task.owner}</span>
+                  <span className="text-sm text-ink-soft">{task.owner}</span>
                 </div>
                 <button
                   onClick={() => remove(task.id)}
                   aria-label={`Ta bort "${task.title}"`}
-                  className="shrink-0 rounded-lg px-2 py-1 text-sm text-zinc-400 transition hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/40"
+                  className="shrink-0 rounded-lg px-2 py-1 text-sm text-muted hover:text-danger"
                 >
                   Ta bort
                 </button>

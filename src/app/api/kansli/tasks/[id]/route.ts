@@ -23,11 +23,21 @@ export async function PATCH(_request: Request, context: { params: Promise<{ id: 
 }
 
 export async function DELETE(_request: Request, context: { params: Promise<{ id: string }> }) {
-  return handleApi(async ({ actor, pool }) => {
+  return handleApi(async ({ actor, pool, events, requestId }) => {
     const present = requireOrg(actor);
     const { id } = await context.params;
     const ok = await deleteTask(pool, present.orgRef, id);
     if (!ok) throw new ApiError("not_found", "Uppgiften hittades inte.");
+    await events.publish({
+      system: "kansli",
+      kind: "kansli.task.updated",
+      orgRef: present.orgRef,
+      actorKind: "user",
+      actorRef: present.sub,
+      subjectRef: `kansli:task:${id}`,
+      requestId,
+      payload: { deleted: true },
+    });
     return json({ ok: true });
   });
 }

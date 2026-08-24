@@ -1,7 +1,9 @@
+import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
 import { EmptyState, Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
+import { observationHref, sourceLabel } from "@/lib/britt/links";
 import { listFindings, listRuns, listSnapshots } from "@/lib/britt/intel";
-import { listObservations } from "@/lib/britt/observations";
+import { listObservations, type Observation } from "@/lib/britt/observations";
 import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
 import { recordObservation, runBrittIntel } from "./actions";
@@ -120,24 +122,54 @@ export default async function BrittPage() {
             {observations.length === 0 ? (
               <EmptyState>Inga observationer ännu.</EmptyState>
             ) : (
-              <ul className="flex flex-col gap-3">
-                {observations.map((item) => (
-                  <li key={item.id} className="rounded-xl border border-line bg-surface p-4">
-                    <p className="text-xs font-medium uppercase tracking-wide text-accent">
-                      {item.sourceSystem} · {item.severity}
-                    </p>
-                    <p className="mt-2 font-medium">{item.title}</p>
-                    {item.body ? <p className="mt-1 text-sm text-ink-soft">{item.body}</p> : null}
-                    <p className="mt-2 font-mono text-xs text-faint">{item.createdAt}</p>
-                  </li>
-                ))}
-              </ul>
+              groupedObservations(observations).map(([source, items]) => (
+                <div key={source} className="flex flex-col gap-2">
+                  <h3 className="text-sm font-medium text-ink-soft">{sourceLabel(source)}</h3>
+                  <ul className="flex flex-col gap-3">
+                    {items.map((item) => {
+                      const href = observationHref(item.subjectRef);
+                      return (
+                        <li key={item.id} className="rounded-xl border border-line bg-surface p-4">
+                          <p className="text-xs font-medium uppercase tracking-wide text-accent">
+                            {item.sourceSystem} · {item.severity}
+                          </p>
+                          <p className="mt-2 font-medium">{item.title}</p>
+                          {item.body ? (
+                            <p className="mt-1 text-sm text-ink-soft">{item.body}</p>
+                          ) : null}
+                          {href ? (
+                            <p className="mt-2 text-sm">
+                              <Link
+                                href={href}
+                                className="underline decoration-line underline-offset-4"
+                              >
+                                Öppna källan
+                              </Link>
+                            </p>
+                          ) : null}
+                          <p className="mt-2 font-mono text-xs text-faint">{item.createdAt}</p>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ))
             )}
           </section>
         </>
       )}
     </AppShell>
   );
+}
+
+function groupedObservations(items: Observation[]): Array<[string, Observation[]]> {
+  const groups = new Map<string, Observation[]>();
+  for (const item of items) {
+    const list = groups.get(item.sourceSystem) ?? [];
+    list.push(item);
+    groups.set(item.sourceSystem, list);
+  }
+  return [...groups.entries()];
 }
 
 function MetricCard({ label, value }: { label: string; value: string }) {

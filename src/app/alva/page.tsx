@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
 import { EmptyState, Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
 import { listCases } from "@/lib/alva/cases";
@@ -41,6 +42,9 @@ export default async function AlvaPage() {
             <h2 className="text-lg font-semibold">Nytt fall</h2>
             <Field name="complaint" label="Kundens beskrivning" required multiline />
             <Field name="vehicleRef" label="Fordonsreferens (valfritt)" />
+            <Field name="area" label="Område (valfritt, t.ex. bromsar)" />
+            <Field name="mileageKm" label="Mätarställning km (valfritt)" />
+            <Field name="desiredOutcome" label="Önskat utfall (valfritt)" />
             <Submit>Registrera fall</Submit>
           </form>
 
@@ -55,7 +59,11 @@ export default async function AlvaPage() {
                     <p className="text-xs font-medium uppercase tracking-wide text-accent">
                       {item.status}
                     </p>
-                    <p className="mt-2 font-medium">{item.complaint}</p>
+                    <p className="mt-2 font-medium">
+                      <Link href={`/alva/${item.id}`} className="hover:underline">
+                        {item.complaint}
+                      </Link>
+                    </p>
                     {item.vehicleRef ? (
                       <p className="font-mono text-xs text-faint">{item.vehicleRef}</p>
                     ) : null}

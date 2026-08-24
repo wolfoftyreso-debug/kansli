@@ -11,6 +11,7 @@ import {
 import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
 import { listAnalyses } from "@/lib/rita/analyses";
+import { findingsFromAnalysis } from "@/lib/rita/findings";
 import { ritaEngineSnapshot } from "@/lib/rita/resolve-engine";
 import { requestRitaAnalysis } from "./actions";
 
@@ -95,6 +96,11 @@ export default async function RitaPage() {
                       </Link>
                     </p>
                     <p className="font-mono text-xs text-faint">{item.orgNumber}</p>
+                    {item.status === "completed" ? (
+                      <p className="mt-1 text-sm text-ink-soft">
+                        {findingsFromAnalysis(item.result).length} fynd
+                      </p>
+                    ) : null}
                     {item.blockedReason ? (
                       <p className="mt-2 text-sm text-muted">{item.blockedReason}</p>
                     ) : null}

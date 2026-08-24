@@ -12,6 +12,7 @@ import {
   hashSignature,
   listAgreements,
   openAgreementByToken,
+  reissueAgreementToken,
   revokeAgreement,
 } from "./agreements.ts";
 
@@ -235,5 +236,40 @@ live("IRMA magic link (live Postgres)", () => {
     });
     expect(again?.status).toBe("cancelled");
     expect(await events.list({ orgRef, kind: "irma.agreement.cancelled" })).toHaveLength(1);
+  });
+
+  it("reissues a new hashed token for unsigned agreements", async () => {
+    await migrateWorkspace({ ownerUrl: OWNER!, root: process.cwd(), appRole: "pixdrift_app" });
+    const events = new EventLog(pool);
+    const orgRef = `pixdrift:org:irma-reissue-${Date.now()}`;
+    const created = await createAgreement({
+      pool,
+      events,
+      orgRef,
+      actorRef: "user-test",
+      title: "Tappad länk",
+      counterparty: "Motpart",
+      requestId: "req-re-1",
+    });
+    const oldToken = created.magicLink!.slice("/irma/l/".length);
+    const reissued = await reissueAgreementToken({
+      pool,
+      events,
+      orgRef,
+      id: created.id,
+      actorRef: "user-test",
+      requestId: "req-re-2",
+    });
+    const newToken = reissued?.magicLink?.slice("/irma/l/".length);
+    expect(newToken).toBeTruthy();
+    expect(newToken).not.toBe(oldToken);
+    expect(
+      await openAgreementByToken({ pool, events, token: oldToken, requestId: "req-re-3" }),
+    ).toBeNull();
+    expect(
+      (await openAgreementByToken({ pool, events, token: newToken!, requestId: "req-re-4" }))?.id,
+    ).toBe(created.id);
+    const createdEvents = await events.list({ orgRef, kind: "irma.agreement.created" });
+    expect(createdEvents.some((event) => event.payload["reissued"] === true)).toBe(true);
   });
 });

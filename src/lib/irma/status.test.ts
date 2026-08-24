@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  daysUntilExpiry,
   effectiveStatus,
   parseVerificationLevel,
   statusLabel,
@@ -50,5 +51,14 @@ describe("labels", () => {
     expect(statusLabel("signed")).toBe("Bekräftat");
     expect(verificationLabel(0)).toContain("informationsunderlag");
     expect(verificationLabel(1)).toContain("nivå 1");
+  });
+});
+
+describe("daysUntilExpiry", () => {
+  it("returns whole days remaining", () => {
+    const inTwoDays = new Date(Date.now() + 2 * 86_400_000 + 3_600_000).toISOString();
+    expect(daysUntilExpiry(inTwoDays)).toBe(3);
+    expect(daysUntilExpiry("2000-01-01T00:00:00.000Z")).toBeLessThan(0);
+    expect(daysUntilExpiry(null)).toBeNull();
   });
 });

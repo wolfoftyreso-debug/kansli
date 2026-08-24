@@ -9,6 +9,7 @@ import { WorkCard } from "@/components/tyra/WorkCard";
 import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
 import { CASE_STATUS_LABELS, STEP_STATUS_LABELS, getCaseWorkCard } from "@/lib/tyra/cases";
+import { listCaseEvents } from "@/lib/tyra/hotel";
 import { peekIssuedHubLink, publicTyraUrl } from "@/lib/tyra/issued-link";
 import { enqueueTyraReminder, issueTyraHubLink, updateTyraStep } from "../../actions";
 
@@ -44,6 +45,10 @@ export default async function TyraCasePage({
   const runtime = tryRuntime();
   const card =
     session?.org?.ref && runtime ? await getCaseWorkCard(runtime.pool, session.org.ref, id) : null;
+  const timeline =
+    session?.org?.ref && runtime && card
+      ? await listCaseEvents(runtime.pool, session.org.ref, id)
+      : [];
   if (session?.org && !card) notFound();
   const issued = query.issued === "1" ? await peekIssuedHubLink() : null;
   const senderName = session?.org?.name ?? "Verkstaden";
@@ -59,6 +64,10 @@ export default async function TyraCasePage({
           <p className="pd-label text-faint">
             <Link href="/tyra" className="hover:underline">
               TYRA
+            </Link>
+            {" · "}
+            <Link href="/tyra/kunder" className="hover:underline">
+              Kundkort
             </Link>
             {" · "}
             <Link href="/tyra/integrations" className="hover:underline">
@@ -149,6 +158,23 @@ export default async function TyraCasePage({
               </li>
             ))}
           </ol>
+
+          {timeline.length > 0 ? (
+            <section className="flex flex-col gap-3">
+              <h2 className="text-lg font-semibold">Händelser i ärendet</h2>
+              <ol className="flex flex-col gap-2">
+                {timeline.map((item) => (
+                  <li key={`${item.eventType}-${item.createdAt}`} className="text-sm text-ink-soft">
+                    <span className="font-mono text-xs text-faint">{item.createdAt}</span>
+                    {" · "}
+                    {item.eventType.replaceAll("_", " ").toLowerCase()}
+                    {" · "}
+                    {item.source}
+                  </li>
+                ))}
+              </ol>
+            </section>
+          ) : null}
         </>
       ) : null}
     </AppShell>

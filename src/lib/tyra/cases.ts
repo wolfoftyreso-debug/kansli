@@ -278,6 +278,16 @@ export async function createCase(input: {
       await insertStep(client, input.orgRef, id, step, sort++);
     }
 
+    if (operations.includes("STORAGE_IN")) {
+      await upsertWheelSet(client, {
+        orgRef: input.orgRef,
+        customerId,
+        vehicleId,
+        status: "REGISTERED",
+        storageStatus: "IN_WORKSHOP",
+      });
+    }
+
     await recordCaseEvent(client, {
       orgRef: input.orgRef,
       tireCaseId: id,
@@ -455,6 +465,41 @@ export async function setStepStatus(input: {
       newValue: { status: input.status },
     });
 
+    if (input.stepKind === "CREATE_QUOTE") {
+      const commercial =
+        input.status === "DONE" ? "QUOTE_READY" : input.status === "DOING" ? "QUOTE_DRAFT" : null;
+      if (commercial) {
+        await client.query(
+          `update tyra.tire_cases
+              set commercial_status = $3, updated_at = now()
+            where org_ref = $1 and id = $2`,
+          [input.orgRef, input.tireCaseId, commercial],
+        );
+      }
+    }
+
+    if (
+      input.status === "DONE" &&
+      (input.stepKind === "STORE_WHEELS" || input.stepKind === "VERIFY_STORAGE_LOCATION")
+    ) {
+      const owner = await client.query<{
+        vehicle_id: string | null;
+        customer_id: string | null;
+      }>(`select vehicle_id, customer_id from tyra.tire_cases where org_ref = $1 and id = $2`, [
+        input.orgRef,
+        input.tireCaseId,
+      ]);
+      if (owner.rows[0]?.vehicle_id) {
+        await upsertWheelSet(client, {
+          orgRef: input.orgRef,
+          customerId: owner.rows[0].customer_id,
+          vehicleId: owner.rows[0].vehicle_id,
+          status: "STORED",
+          storageStatus: "STORED",
+        });
+      }
+    }
+
     if (input.status === "DONE" && input.stepKind === "WASH") {
       await recordCaseEvent(client, {
         orgRef: input.orgRef,
@@ -545,6 +590,50 @@ export async function setStepStatus(input: {
       payload: { stepKind: input.stepKind },
     });
   }
+}
+
+async function upsertWheelSet(
+  client: pg.PoolClient,
+  input: {
+    orgRef: string;
+    customerId: string | null;
+    vehicleId: string;
+    status: string;
+    storageStatus: string;
+  },
+): Promise<void> {
+  const existing = await client.query<{ id: string }>(
+    `select id from tyra.wheel_sets
+      where org_ref = $1 and vehicle_id = $2
+      order by updated_at desc
+      limit 1`,
+    [input.orgRef, input.vehicleId],
+  );
+  if (existing.rows[0]) {
+    await client.query(
+      `update tyra.wheel_sets
+          set status = $3,
+              storage_status = $4,
+              customer_id = coalesce($5, customer_id),
+              updated_at = now()
+        where org_ref = $1 and id = $2`,
+      [input.orgRef, existing.rows[0].id, input.status, input.storageStatus, input.customerId],
+    );
+    return;
+  }
+  await client.query(
+    `insert into tyra.wheel_sets
+       (id, org_ref, customer_id, vehicle_id, season, wheel_count, status, storage_status)
+     values ($1,$2,$3,$4,'unknown',4,$5,$6)`,
+    [
+      randomUUID(),
+      input.orgRef,
+      input.customerId,
+      input.vehicleId,
+      input.status,
+      input.storageStatus,
+    ],
+  );
 }
 
 async function insertStep(

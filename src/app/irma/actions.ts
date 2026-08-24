@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireOrgAction } from "@/lib/platform/actions";
-import { createAgreement, revokeAgreement } from "@/lib/irma/agreements";
+import { createAgreement, reissueAgreementToken, revokeAgreement } from "@/lib/irma/agreements";
 import { setIssuedLink } from "@/lib/irma/issued-link";
 import { parseVerificationLevel } from "@/lib/irma/status";
 
@@ -27,6 +27,27 @@ export async function createIrmaAgreement(formData: FormData) {
   });
   if (agreement.magicLink) await setIssuedLink(agreement.magicLink);
   revalidatePath("/irma");
+  revalidatePath("/britt");
+  revalidatePath("/kansli");
+  revalidatePath("/platform/events");
+  redirect("/irma?issued=1");
+}
+
+export async function reissueIrmaAgreement(formData: FormData) {
+  const { session, pool, events } = await requireOrgAction("/irma");
+  const id = String(formData.get("id") ?? "").trim();
+  if (!id) return;
+  const agreement = await reissueAgreementToken({
+    pool,
+    events,
+    orgRef: session.org.ref,
+    id,
+    actorRef: session.sub,
+    requestId: crypto.randomUUID(),
+  });
+  if (agreement?.magicLink) await setIssuedLink(agreement.magicLink);
+  revalidatePath("/irma");
+  revalidatePath(`/irma/${id}`);
   revalidatePath("/britt");
   revalidatePath("/kansli");
   revalidatePath("/platform/events");

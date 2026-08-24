@@ -41,3 +41,10 @@ export function effectiveStatus(input: {
 export function verificationLabel(level: VerificationLevel): string {
   return level === 0 ? "Ingen bekräftelse (informationsunderlag)" : "Hashad bekräftelse (nivå 1)";
 }
+
+export function daysUntilExpiry(iso: string | null | undefined): number | null {
+  if (!iso) return null;
+  const ms = Date.parse(iso) - Date.now();
+  if (!Number.isFinite(ms)) return null;
+  return Math.ceil(ms / 86_400_000);
+}

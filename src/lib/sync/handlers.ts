@@ -75,10 +75,11 @@ export function registerSyncHandlers(events: EventLog, pool: pg.Pool): void {
   });
 
   events.subscribe("irma.agreement.created", async (event) => {
+    const reissued = event.payload["reissued"] === true;
     await record(
       event.orgRef,
       "irma",
-      "IRMA har skapat ett avtal",
+      reissued ? "IRMA har återutfärdat länken" : "IRMA har skapat ett avtal",
       String(event.payload["title"] ?? "Ett underlag väntar på motparten."),
       event.subjectRef,
     );
@@ -192,6 +193,22 @@ export function registerSyncHandlers(events: EventLog, pool: pg.Pool): void {
       event.orgRef,
       "kansli",
       "Kansli har en ny intern uppgift",
+      String(event.payload["title"] ?? ""),
+      event.subjectRef,
+    );
+  });
+
+  events.subscribe("kansli.task.updated", async (event) => {
+    const deleted = event.payload["deleted"] === true;
+    const done = event.payload["done"] === true;
+    await record(
+      event.orgRef,
+      "kansli",
+      deleted
+        ? "Kansli tog bort en intern uppgift"
+        : done
+          ? "Kansli markerade en uppgift som klar"
+          : "Kansli uppdaterade en intern uppgift",
       String(event.payload["title"] ?? ""),
       event.subjectRef,
     );
