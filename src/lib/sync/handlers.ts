@@ -147,6 +147,26 @@ export function registerSyncHandlers(events: EventLog, pool: pg.Pool): void {
     );
   });
 
+  events.subscribe("tyra.reminder.enqueued", async (event) => {
+    await record(
+      event.orgRef,
+      "tyra",
+      "TYRA har köat en påminnelse",
+      "Meddelandet ligger i outbox. Det är inte skickat.",
+      event.subjectRef,
+    );
+  });
+
+  events.subscribe("tyra.reminder.blocked", async (event) => {
+    await record(
+      event.orgRef,
+      "tyra",
+      "TYRA kunde inte skicka en påminnelse",
+      "Ingen sändadapter. Outbox-raden är BLOCKED.",
+      event.subjectRef,
+    );
+  });
+
   events.subscribe("tyra.hub.link.issued", async (event) => {
     await record(
       event.orgRef,

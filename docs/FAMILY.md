@@ -96,6 +96,8 @@ mot plan, likviditet, kundkoncentration). BRITT är den enda som skriver
 | `tyra.case.created` | Ett däckärende är skapat |
 | `tyra.case.completed` | Alla obligatoriska steg är klara |
 | `tyra.hub.link.issued` | En kundhub-länk är utfärdad |
+| `tyra.reminder.enqueued` | En påminnelse ligger i outbox |
+| `tyra.reminder.blocked` | Outbox kunde inte skickas |
 | `alva.case.created` | Ett fall är registrerat |
 | `kansli.task.created` | Intern uppgift |
 | `britt.finding.recorded` (high) | Ett högt fynd från analysen |
@@ -116,9 +118,10 @@ Inte kvalificerad e-signatur. Ingen fillagring. Ingen OCR. Nivå 2–5 finns int
 ### TYRA — däckärendet, inte hela verkstads-OS
 
 Öppnar ett ärende mot `tyra.*` med PIXDRIFT-session. Stegen kompileras av
-`resolveWorkflow` från de åtgärder som valts. Hub-token hashas; kunden öppnar
-`/tyra/hub/<token>` utan konto. Ingen NextAuth. Ingen live-pris. Ingen cron.
-Port från TYRA-repot, slice 1. Se `docs/tyra/README.md`.
+`resolveWorkflow`. Hub-token hashas; kunden öppnar `/tyra/hub/<token>` utan
+konto. Påminnelser köas i outbox och blir `BLOCKED` utan sändadapter.
+Leverantörssök svarar `NOT_CONFIGURED`. Ingen NextAuth. Ingen live-pris.
+Se `docs/tyra/README.md`.
 
 ### ALVA — fallet, inte diagnosen
 

@@ -10,12 +10,8 @@ import {
 } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
-import {
-  CASE_STATUS_LABELS,
-  INTENT_LABELS,
-  listCases,
-  type TireCaseListItem,
-} from "@/lib/tyra/cases";
+import { TaskRow } from "@/components/tyra/Rows";
+import { CASE_STATUS_LABELS, INTENT_LABELS, listCases } from "@/lib/tyra/cases";
 import { createTyraCase } from "./actions";
 
 export const metadata = {
@@ -23,20 +19,11 @@ export const metadata = {
   description: "Däckärenden, arbetssteg och kundhub. Ingen NextAuth, ingen live-pris.",
 };
 
-function CaseRow({ item }: { item: TireCaseListItem }) {
-  return (
-    <li className="rounded-2xl border border-line bg-surface px-5 py-4">
-      <p className="text-xs font-medium uppercase tracking-wide text-accent">
-        {CASE_STATUS_LABELS[item.caseStatus] ?? item.caseStatus} · {INTENT_LABELS[item.intent]}
-      </p>
-      <p className="mt-2 text-lg font-medium tracking-tight">
-        <Link href={`/tyra/cases/${item.id}`} className="hover:underline">
-          {item.registrationNumber ?? "Ärende"}
-        </Link>
-      </p>
-      <p className="mt-1 text-sm text-ink-soft">{item.customerName ?? "Kund saknas"}</p>
-    </li>
-  );
+function caseTone(status: string) {
+  if (status === "DONE") return "good" as const;
+  if (status === "BLOCKED") return "blocked" as const;
+  if (status === "IN_PROGRESS") return "attention" as const;
+  return "neutral" as const;
 }
 
 export default async function TyraPage() {
@@ -73,6 +60,10 @@ export default async function TyraPage() {
               <Field name="make" label="Märke" placeholder="Volvo" />
               <Field name="model" label="Modell" placeholder="XC60" />
             </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field name="phone" label="Telefon (för påminnelse)" placeholder="+46…" />
+              <Field name="email" label="E-post (för påminnelse)" placeholder="kund@exempel.se" />
+            </div>
             <label className="flex flex-col gap-1">
               <span className="text-sm text-ink-soft">Avsikt</span>
               <select
@@ -105,7 +96,18 @@ export default async function TyraPage() {
             ) : (
               <ul className="flex flex-col gap-3">
                 {cases.map((item) => (
-                  <CaseRow key={item.id} item={item} />
+                  <li key={item.id}>
+                    <Link href={`/tyra/cases/${item.id}`} className="block">
+                      <TaskRow
+                        headline={item.registrationNumber ?? "Ärende"}
+                        subtitle={`${item.customerName ?? "Kund saknas"} · ${INTENT_LABELS[item.intent]}`}
+                        status={{
+                          tone: caseTone(item.caseStatus),
+                          label: CASE_STATUS_LABELS[item.caseStatus] ?? item.caseStatus,
+                        }}
+                      />
+                    </Link>
+                  </li>
                 ))}
               </ul>
             )}
@@ -114,8 +116,8 @@ export default async function TyraPage() {
       )}
 
       <Notice>
-        Slice 1 från TYRA-repot (`cursor/tyra-instrument-ui-06e9`). Ingen leverantörsgateway, ingen
-        cron, ingen Fortnox.
+        Port från `cursor/tyra-instrument-ui-06e9`. Outbox kan köas. Utan sändadapter blir den
+        BLOCKED, inte skickad. Ingen live-pris.
       </Notice>
     </AppShell>
   );

@@ -29,6 +29,8 @@ export const EVENT_KINDS = [
   "tyra.case.created",
   "tyra.case.completed",
   "tyra.hub.link.issued",
+  "tyra.reminder.enqueued",
+  "tyra.reminder.blocked",
   "alva.case.created",
 ] as const;
 export type EventKind = (typeof EVENT_KINDS)[number];
@@ -149,8 +151,14 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
     basePath: "/tyra",
     apiBase: "/api/tyra",
     domainDir: "src/lib/tyra",
-    eventKinds: ["tyra.case.created", "tyra.case.completed", "tyra.hub.link.issued"],
-    capabilities: ["cases", "workflow", "hub"],
+    eventKinds: [
+      "tyra.case.created",
+      "tyra.case.completed",
+      "tyra.hub.link.issued",
+      "tyra.reminder.enqueued",
+      "tyra.reminder.blocked",
+    ],
+    capabilities: ["cases", "workflow", "hub", "reminders", "supplier-accounts"],
   },
   {
     id: "alva",

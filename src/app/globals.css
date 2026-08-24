@@ -30,6 +30,15 @@
 
 :root {
   color-scheme: light;
+  --tyra-bg: var(--color-paper);
+  --tyra-fg: var(--color-ink);
+  --tyra-muted: var(--color-ink-soft);
+  --tyra-subtle: var(--color-muted);
+  --tyra-surface: var(--color-surface);
+  --tyra-border: var(--color-line);
+  --tyra-panel: var(--color-paper);
+  --tyra-focus: var(--color-accent);
+  --tyra-radius: 20px;
 }
 
 * {

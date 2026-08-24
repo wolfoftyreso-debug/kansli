@@ -7,6 +7,7 @@ import { productModules } from "@pixdrift/systems";
 export const APP_NEXT_PATHS = [
   ...productModules().map((module) => module.basePath),
   "/tora/calendar",
+  "/tyra/integrations",
   "/platform",
   "/platform/events",
 ] as const;

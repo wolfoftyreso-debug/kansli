@@ -1,17 +1,35 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app/AppShell";
-import { Notice, SignInGate, Submit } from "@/components/app/SignInGate";
+import { Notice, SignInGate } from "@/components/app/SignInGate";
+import { Button } from "@/components/tyra/Button";
+import { StatusBanner } from "@/components/tyra/Status";
+import { TaskRow } from "@/components/tyra/Rows";
+import { WorkCard } from "@/components/tyra/WorkCard";
 import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
 import { CASE_STATUS_LABELS, STEP_STATUS_LABELS, getCaseWorkCard } from "@/lib/tyra/cases";
 import { peekIssuedHubLink, publicTyraUrl } from "@/lib/tyra/issued-link";
-import { issueTyraHubLink, updateTyraStep } from "../../actions";
+import { enqueueTyraReminder, issueTyraHubLink, updateTyraStep } from "../../actions";
 
 export const metadata = {
   title: "Ärende — TYRA",
   description: "Arbetssteg för ett däckärende.",
 };
+
+function caseTone(status: string) {
+  if (status === "DONE") return "good" as const;
+  if (status === "BLOCKED") return "blocked" as const;
+  if (status === "IN_PROGRESS") return "attention" as const;
+  return "neutral" as const;
+}
+
+function stepTone(status: string) {
+  if (status === "DONE") return "good" as const;
+  if (status === "BLOCKED") return "blocked" as const;
+  if (status === "DOING") return "attention" as const;
+  return "neutral" as const;
+}
 
 export default async function TyraCasePage({
   params,
@@ -28,6 +46,7 @@ export default async function TyraCasePage({
     session?.org?.ref && runtime ? await getCaseWorkCard(runtime.pool, session.org.ref, id) : null;
   if (session?.org && !card) notFound();
   const issued = query.issued === "1" ? await peekIssuedHubLink() : null;
+  const senderName = session?.org?.name ?? "Verkstaden";
 
   return (
     <AppShell current="tyra" session={session}>
@@ -41,86 +60,92 @@ export default async function TyraCasePage({
             <Link href="/tyra" className="hover:underline">
               TYRA
             </Link>
+            {" · "}
+            <Link href="/tyra/integrations" className="hover:underline">
+              Integrationer
+            </Link>
           </p>
-          <header className="flex flex-col gap-3">
-            <p className="text-xs font-medium uppercase tracking-wide text-accent">
-              {CASE_STATUS_LABELS[card.caseStatus] ?? card.caseStatus}
-            </p>
-            <h1 className="text-3xl font-semibold tracking-tight">{card.headline}</h1>
-            <p className="text-ink-soft">{card.summary || "Inga åtgärder"}</p>
-            {card.nextBestAction ? (
-              <p className="text-sm text-ink">{card.nextBestAction.title}</p>
-            ) : (
-              <p className="text-sm text-ink-soft">Inget nästa steg.</p>
-            )}
-          </header>
 
-          {issued ? (
-            <Notice>
-              Länk till kunden — giltig två minuter i den här webbläsaren. Kopiera den nu.
-              <label className="mt-2 flex flex-col gap-1">
-                <span className="sr-only">Kundhub-länk</span>
+          <WorkCard
+            title={card.headline}
+            subtitle={card.summary || "Inga åtgärder"}
+            status={{
+              tone: caseTone(card.caseStatus),
+              label: CASE_STATUS_LABELS[card.caseStatus] ?? card.caseStatus,
+            }}
+            nextTitle={card.nextBestAction?.title ?? "Klart."}
+            nextHint={card.customerName}
+          >
+            {issued ? (
+              <StatusBanner tone="attention" title="Länk till kunden">
+                Giltig två minuter i den här webbläsaren. Kopiera den nu.
                 <input
                   readOnly
                   value={publicTyraUrl(issued)}
-                  className="min-h-11 w-full rounded-md border border-line bg-paper px-3 py-2 font-mono text-sm text-ink"
+                  className="mt-2 min-h-11 w-full rounded-md border border-line bg-paper px-3 py-2 font-mono text-sm text-ink"
                 />
-              </label>
-            </Notice>
-          ) : null}
+              </StatusBanner>
+            ) : null}
 
-          {card.customerId ? (
-            <form action={issueTyraHubLink}>
-              <input type="hidden" name="id" value={id} />
-              <input type="hidden" name="customerId" value={card.customerId} />
-              <Submit>Skapa kundhub-länk</Submit>
-            </form>
-          ) : (
-            <Notice>Ingen kund är kopplad. Hub-länk kan inte skapas.</Notice>
-          )}
+            <div className="mt-4 flex flex-wrap gap-2">
+              {card.customerId ? (
+                <form action={issueTyraHubLink}>
+                  <input type="hidden" name="id" value={id} />
+                  <input type="hidden" name="customerId" value={card.customerId} />
+                  <Button type="submit" tone="primary">
+                    Skapa kundhub-länk
+                  </Button>
+                </form>
+              ) : (
+                <StatusBanner tone="neutral">Ingen kund är kopplad.</StatusBanner>
+              )}
+              {card.vehicleId && card.registrationNumber ? (
+                <form action={enqueueTyraReminder}>
+                  <input type="hidden" name="id" value={id} />
+                  <input type="hidden" name="customerId" value={card.customerId ?? ""} />
+                  <input type="hidden" name="vehicleId" value={card.vehicleId} />
+                  <input type="hidden" name="registrationNumber" value={card.registrationNumber} />
+                  <input type="hidden" name="make" value={card.make ?? ""} />
+                  <input type="hidden" name="model" value={card.model ?? ""} />
+                  <input type="hidden" name="customerName" value={card.customerName ?? ""} />
+                  <input type="hidden" name="phone" value={card.customerPhone ?? ""} />
+                  <input type="hidden" name="email" value={card.customerEmail ?? ""} />
+                  <input type="hidden" name="senderName" value={senderName} />
+                  <Button type="submit">Köa säsongspåminnelse</Button>
+                </form>
+              ) : null}
+            </div>
+          </WorkCard>
 
           <ol className="flex flex-col gap-3">
             {card.steps.map((step) => (
-              <li key={step.kind} className="rounded-2xl border border-line bg-surface px-5 py-4">
-                <p className="text-xs font-medium uppercase tracking-wide text-accent">
-                  {STEP_STATUS_LABELS[step.status]}
-                  {step.required ? "" : " · valfritt"}
-                </p>
-                <p className="mt-2 font-medium">{step.title}</p>
-                <form action={updateTyraStep} className="mt-3 flex flex-wrap gap-2">
-                  <input type="hidden" name="id" value={id} />
-                  <input type="hidden" name="stepKind" value={step.kind} />
-                  {step.status !== "DOING" ? (
-                    <button
-                      type="submit"
-                      name="status"
-                      value="DOING"
-                      className="rounded-md border border-line px-3 py-1.5 text-sm text-ink-soft hover:text-ink"
-                    >
-                      Påbörja
-                    </button>
-                  ) : null}
-                  {step.status !== "DONE" ? (
-                    <button
-                      type="submit"
-                      name="status"
-                      value="DONE"
-                      className="rounded-md bg-ink px-3 py-1.5 text-sm font-medium text-paper"
-                    >
-                      Klart
-                    </button>
-                  ) : null}
-                  {step.status !== "BLOCKED" ? (
-                    <button
-                      type="submit"
-                      name="status"
-                      value="BLOCKED"
-                      className="rounded-md border border-line px-3 py-1.5 text-sm text-ink-soft hover:text-ink"
-                    >
-                      Blockera
-                    </button>
-                  ) : null}
-                </form>
+              <li key={step.kind}>
+                <TaskRow
+                  headline={step.title}
+                  subtitle={step.required ? undefined : "Valfritt"}
+                  status={{ tone: stepTone(step.status), label: STEP_STATUS_LABELS[step.status] }}
+                  right={
+                    <form action={updateTyraStep} className="flex flex-wrap gap-2">
+                      <input type="hidden" name="id" value={id} />
+                      <input type="hidden" name="stepKind" value={step.kind} />
+                      {step.status !== "DOING" ? (
+                        <Button type="submit" name="status" value="DOING" size="md">
+                          Påbörja
+                        </Button>
+                      ) : null}
+                      {step.status !== "DONE" ? (
+                        <Button type="submit" name="status" value="DONE" tone="primary">
+                          Klart
+                        </Button>
+                      ) : null}
+                      {step.status !== "BLOCKED" ? (
+                        <Button type="submit" name="status" value="BLOCKED">
+                          Blockera
+                        </Button>
+                      ) : null}
+                    </form>
+                  }
+                />
               </li>
             ))}
           </ol>

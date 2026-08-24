@@ -154,6 +154,8 @@ export async function createCase(input: {
   actorRef: string;
   customerName: string;
   registrationNumber: string;
+  phone?: string;
+  email?: string;
   make?: string;
   model?: string;
   intent?: TireCaseIntent;
@@ -180,11 +182,23 @@ export async function createCase(input: {
     );
     customerId = existingCustomer.rows[0]?.id ?? randomUUID();
     if (!existingCustomer.rows[0]) {
-      await client.query(`insert into tyra.customers (id, org_ref, name) values ($1, $2, $3)`, [
-        customerId,
-        input.orgRef,
-        customerName,
-      ]);
+      await client.query(
+        `insert into tyra.customers (id, org_ref, name, phone, email) values ($1, $2, $3, $4, $5)`,
+        [
+          customerId,
+          input.orgRef,
+          customerName,
+          input.phone?.trim() || null,
+          input.email?.trim() || null,
+        ],
+      );
+    } else {
+      await client.query(
+        `update tyra.customers
+            set phone = coalesce($3, phone), email = coalesce($4, email)
+          where id = $1 and org_ref = $2`,
+        [customerId, input.orgRef, input.phone?.trim() || null, input.email?.trim() || null],
+      );
     }
 
     const existingVehicle = await client.query<{ id: string; customer_id: string | null }>(
@@ -300,7 +314,18 @@ export async function getCaseWorkCard(
   orgRef: string,
   tireCaseId: string,
 ): Promise<
-  (WorkCard & { customerId: string | null; customerName: string | null; caseStatus: string }) | null
+  | (WorkCard & {
+      customerId: string | null;
+      customerName: string | null;
+      customerPhone: string | null;
+      customerEmail: string | null;
+      vehicleId: string | null;
+      registrationNumber: string | null;
+      make: string | null;
+      model: string | null;
+      caseStatus: string;
+    })
+  | null
 > {
   const { rows } = await pool.query<{
     id: string;
@@ -341,11 +366,11 @@ export async function getCaseWorkCard(
       };
 
   const customer = row.customer_id
-    ? await pool.query<{ name: string }>(
-        `select name from tyra.customers where org_ref = $1 and id = $2 limit 1`,
+    ? await pool.query<{ name: string; phone: string | null; email: string | null }>(
+        `select name, phone, email from tyra.customers where org_ref = $1 and id = $2 limit 1`,
         [orgRef, row.customer_id],
       )
-    : { rows: [] as { name: string }[] };
+    : { rows: [] as { name: string; phone: string | null; email: string | null }[] };
 
   const stepsRes = await pool.query<{
     step_kind: string;
@@ -374,6 +399,12 @@ export async function getCaseWorkCard(
     caseId: tireCaseId,
     customerId: row.customer_id,
     customerName: customer.rows[0]?.name ?? null,
+    customerPhone: customer.rows[0]?.phone ?? null,
+    customerEmail: customer.rows[0]?.email ?? null,
+    vehicleId: row.vehicle_id,
+    registrationNumber: v?.registration_number ?? null,
+    make: v?.make ?? null,
+    model: v?.model ?? null,
     caseStatus: row.case_status,
     headline:
       v?.make && v?.model && v?.registration_number

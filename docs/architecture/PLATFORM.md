@@ -55,6 +55,9 @@ Browser → Next.js (kansli)
 | GET/POST | `/api/tyra/cases` | yes |
 | GET | `/api/tyra/cases/:id` | yes |
 | POST | `/api/tyra/hub/link` | yes. Returns plaintext token once. |
+| GET | `/api/tyra/reminders` | yes. Outbox rows. |
+| POST | `/api/tyra/suppliers/search` | yes. Returns `NOT_CONFIGURED` until an adapter exists. |
+| GET | `/api/tyra/cron/reminders` | `CRON_SECRET`. Marks pending outbox `BLOCKED`. |
 | GET/POST | `/api/alva/cases` | yes |
 | GET/POST | `/api/kansli/tasks` | yes |
 | GET/POST/PATCH/DELETE | `/api/tasks` | yes (alias till `/api/kansli/tasks`) |
@@ -76,6 +79,7 @@ Browser → Next.js (kansli)
 | `/tyra` | Tire cases, create + list |
 | `/tyra/cases/:id` | Work card + hub link |
 | `/tyra/hub/:token` | Guest hub (hashed token, no account) |
+| `/tyra/integrations` | Supplier accounts + reminder outbox |
 | `/alva` | Case registration (engine deferred) |
 | `/platform` | Module catalog |
 | `/platform/events` | Org-scoped event log |

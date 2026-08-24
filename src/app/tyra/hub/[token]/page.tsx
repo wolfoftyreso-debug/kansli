@@ -1,13 +1,14 @@
 import { notFound } from "next/navigation";
-import { Notice } from "@/components/app/SignInGate";
+import { StatusBanner } from "@/components/tyra/Status";
+import { TaskRow } from "@/components/tyra/Rows";
 import { tryRuntime } from "@/lib/platform/page";
 import { getHubViewByToken } from "@/lib/tyra/hub";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Däckstatus — TYRA",
-  description: "Kundvy via TYRA-länk. Inget konto krävs.",
+  title: "Däckstatus",
+  description: "Kundvy via verkstadslänk. Inget konto krävs.",
   robots: { index: false, follow: false },
 };
 
@@ -32,7 +33,7 @@ export default async function TyraHubPage({ params }: { params: Promise<{ token:
         <p className="text-ink-soft">{vehicleLabel}</p>
       </header>
 
-      <Notice>{view.commercialNote}</Notice>
+      <StatusBanner tone="neutral">{view.commercialNote}</StatusBanner>
 
       {view.setWarnings.length > 0 ? (
         <ul className="flex flex-col gap-2">
@@ -48,23 +49,23 @@ export default async function TyraHubPage({ params }: { params: Promise<{ token:
       {view.positions.length > 0 ? (
         <ul className="flex flex-col gap-3">
           {view.positions.map((position) => (
-            <li
-              key={position.position}
-              className="rounded-2xl border border-line bg-surface px-5 py-4"
-            >
-              <p className="text-xs font-medium uppercase tracking-wide text-accent">
-                {position.position} · {position.health.label}
-              </p>
-              <p className="mt-2 font-medium">
-                {[position.tyre.brand, position.tyre.model, position.tyre.dimension]
-                  .filter(Boolean)
-                  .join(" ") || "Däckuppgifter saknas"}
-              </p>
-              {position.health.treadDepthMm != null ? (
-                <p className="mt-1 text-sm text-ink-soft">
-                  Mönsterdjup {position.health.treadDepthMm.toFixed(1)} mm
-                </p>
-              ) : null}
+            <li key={position.position}>
+              <TaskRow
+                headline={
+                  [position.tyre.brand, position.tyre.model, position.tyre.dimension]
+                    .filter(Boolean)
+                    .join(" ") || "Däckuppgifter saknas"
+                }
+                subtitle={
+                  position.health.treadDepthMm != null
+                    ? `Mönsterdjup ${position.health.treadDepthMm.toFixed(1)} mm`
+                    : position.health.label
+                }
+                status={{
+                  tone: "neutral",
+                  label: `${position.position} · ${position.health.label}`,
+                }}
+              />
             </li>
           ))}
         </ul>

@@ -119,10 +119,10 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     id: "tyra",
     name: "TYRA",
     question: "Vilket ärende är nästa, och vad ska kunden se?",
-    does: "Skapar ett däckärende med kanoniska åtgärder, kompilerar arbetssteg via resolveWorkflow, visar work card och ger kunden en hashad hub-länk. Token lagras bara som SHA-256. Hubben visar verifierad inspektion om den finns — annars inga mätvärden.",
+    does: "Skapar ett däckärende med kanoniska åtgärder, kompilerar arbetssteg via resolveWorkflow, visar work card och ger kunden en hashad hub-länk. Token lagras bara som SHA-256. Påminnelser kan köas i outbox. Utan sändadapter blir de BLOCKED. Leverantörssök svarar NOT_CONFIGURED.",
     doesNot:
-      "Ingen NextAuth. Ingen egen signup. Ingen Fortnox. Ingen BankID. Ingen live-pris/leverantörsgateway. Ingen cron/outbox. Det kommer från TYRA-repot som senare slices, inte som låtsasfunktion här.",
-    owns: "tyra.customers, tyra.vehicles, tyra.tire_cases, tyra.customer_hub_links",
+      "Ingen NextAuth. Ingen egen signup. Ingen Fortnox. Ingen BankID. Ingen live-pris. Ingen SMS/e-postleverans. Demo-leverantör är borttagen.",
+    owns: "tyra.customers, tyra.vehicles, tyra.tire_cases, tyra.customer_hub_links, tyra.reminder_outbox, tyra.tenant_supplier_accounts",
     status: "pilot",
   },
   {
@@ -172,8 +172,8 @@ export const FAMILY_LINKS: readonly FamilyLink[] = [
   {
     from: "tyra",
     to: "britt",
-    via: "tyra.case.created | tyra.case.completed | tyra.hub.link.issued",
-    meaning: "Ett däckärende är skapat, avslutat, eller en kundhub-länk är utfärdad.",
+    via: "tyra.case.created | tyra.case.completed | tyra.hub.link.issued | tyra.reminder.enqueued | tyra.reminder.blocked",
+    meaning: "Ärende, hub-länk eller påminnelsekö. Blockerad outbox betyder inte skickat.",
   },
   {
     from: "alva",
