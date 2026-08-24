@@ -5,7 +5,7 @@ import { requireOrgAction } from "@/lib/platform/actions";
 import { requestAnalysis } from "@/lib/rita/analyses";
 
 export async function requestRitaAnalysis(formData: FormData) {
-  const { session, pool, events } = await requireOrgAction("/rita");
+  const { session, pool, events } = await requireOrgAction("/rita", "scan:run");
   const companyName = String(formData.get("companyName") ?? "").trim();
   const orgNumber = String(formData.get("orgNumber") ?? "").trim();
   if (!companyName || !orgNumber) return;

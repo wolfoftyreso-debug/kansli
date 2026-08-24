@@ -6,7 +6,7 @@ import { listFindings, listRuns, listSnapshots } from "@/lib/britt/intel";
 import { listObservations, type Observation } from "@/lib/britt/observations";
 import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
-import { recordObservation, runBrittIntel } from "./actions";
+import { closeObservation, recordObservation, runBrittIntel } from "./actions";
 
 export const metadata = {
   title: "BRITT — Pixdrift",
@@ -147,7 +147,15 @@ export default async function BrittPage() {
                               </Link>
                             </p>
                           ) : null}
-                          <p className="mt-2 font-mono text-xs text-faint">{item.createdAt}</p>
+                          <p className="mt-2 font-mono text-xs text-faint">
+                            {item.status} · {item.createdAt}
+                          </p>
+                          {item.status !== "done" ? (
+                            <form action={closeObservation} className="mt-2">
+                              <input type="hidden" name="id" value={item.id} />
+                              <Submit>Markera klar</Submit>
+                            </form>
+                          ) : null}
                         </li>
                       );
                     })}

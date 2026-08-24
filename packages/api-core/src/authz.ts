@@ -24,7 +24,10 @@ export function requireOrg(actor: Actor | null): Actor & { orgRef: string } {
   return present as Actor & { orgRef: string };
 }
 
-export function requirePermission(actor: Actor | null, permission: string): Actor {
+export function requirePermission(
+  actor: Actor | null,
+  permission: string,
+): Actor & { orgRef: string } {
   const present = requireOrg(actor);
   if (!hasPermission(present.permissions, permission)) {
     throw new ApiError("forbidden", `Saknar behörighet ${permission}.`);

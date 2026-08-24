@@ -9,16 +9,29 @@ export interface Observation {
   body: string;
   severity: string;
   subjectRef: string | null;
+  status: string;
   createdAt: string;
 }
 
 export async function listObservations(pool: pg.Pool, orgRef: string): Promise<Observation[]> {
   const { rows } = await pool.query(
-    `select id, source_system, title, body, severity, subject_ref, created_at
+    `select id, source_system, title, body, severity, subject_ref, status, created_at
        from britt.observations where org_ref = $1 order by created_at desc`,
     [orgRef],
   );
   return rows.map(toObservation);
+}
+
+export async function setObservationStatus(input: {
+  pool: pg.Pool;
+  orgRef: string;
+  id: string;
+  status: "open" | "done";
+}): Promise<void> {
+  await input.pool.query(
+    `update britt.observations set status = $3 where org_ref = $1 and id = $2`,
+    [input.orgRef, input.id, input.status],
+  );
 }
 
 export async function addObservation(input: {
@@ -47,7 +60,7 @@ export async function addObservation(input: {
     payload: { title: input.title.trim(), source: "britt" },
   });
   const { rows } = await input.pool.query(
-    `select id, source_system, title, body, severity, subject_ref, created_at
+    `select id, source_system, title, body, severity, subject_ref, status, created_at
        from britt.observations where id = $1`,
     [id],
   );
@@ -61,6 +74,7 @@ function toObservation(row: {
   body: string;
   severity: string;
   subject_ref?: string | null;
+  status?: string | null;
   created_at: Date;
 }): Observation {
   return {
@@ -70,6 +84,7 @@ function toObservation(row: {
     body: row.body,
     severity: row.severity,
     subjectRef: row.subject_ref ?? null,
+    status: row.status ?? "open",
     createdAt: new Date(row.created_at).toISOString(),
   };
 }

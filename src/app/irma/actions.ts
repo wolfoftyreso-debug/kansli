@@ -8,7 +8,7 @@ import { setIssuedLink } from "@/lib/irma/issued-link";
 import { parseVerificationLevel } from "@/lib/irma/status";
 
 export async function createIrmaAgreement(formData: FormData) {
-  const { session, pool, events } = await requireOrgAction("/irma");
+  const { session, pool, events } = await requireOrgAction("/irma", "document:upload");
   const title = String(formData.get("title") ?? "").trim();
   const counterparty = String(formData.get("counterparty") ?? "").trim();
   const body = String(formData.get("body") ?? "").trim();
