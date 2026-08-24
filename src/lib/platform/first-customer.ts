@@ -1,9 +1,9 @@
 import type pg from "pg";
-import { isHardenedRuntime } from "@/lib/auth/secrets";
-import { listAgreements } from "@/lib/irma/agreements";
-import { ritaEngineSnapshot } from "@/lib/rita/resolve-engine";
-import { getCompanyProfile } from "@/lib/tora/profile";
-import { listCases } from "@/lib/tyra/cases";
+import { isHardenedRuntime } from "../auth/secrets.ts";
+import { listAgreements } from "../irma/agreements.ts";
+import { ritaEngineSnapshot } from "../rita/resolve-engine.ts";
+import { getCompanyProfile } from "../tora/profile.ts";
+import { listCases } from "../tyra/cases.ts";
 import { hubStatus } from "./hub-status.ts";
 
 export type GateState = "ready" | "open" | "blocked";
