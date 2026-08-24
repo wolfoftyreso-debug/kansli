@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app/AppShell";
-import { Notice, SignInGate, Submit } from "@/components/app/SignInGate";
+import { SignInGate, Submit } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { exportAgreementRecord, getAgreement } from "@/lib/irma/agreements";
 import { verifyAgreementIntegrity } from "@/lib/irma/integrity";

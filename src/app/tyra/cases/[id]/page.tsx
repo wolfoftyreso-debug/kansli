@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app/AppShell";
-import { Notice, SignInGate } from "@/components/app/SignInGate";
+import { SignInGate } from "@/components/app/SignInGate";
 import { Button } from "@/components/tyra/Button";
 import { StatusBanner } from "@/components/tyra/Status";
 import { TaskRow } from "@/components/tyra/Rows";

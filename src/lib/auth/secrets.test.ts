@@ -3,14 +3,14 @@ import { isHardenedRuntime, resolveClientSecret, resolveSessionSecret } from "./
 
 describe("auth secrets", () => {
   it("allows the development fallback outside prod", () => {
-    const env = { APP_ENV: "dev" } as NodeJS.ProcessEnv;
+    const env = { APP_ENV: "dev" };
     expect(isHardenedRuntime(env)).toBe(false);
     expect(resolveSessionSecret(env)).toMatch(/kansli-dev/);
     expect(resolveClientSecret(env)).toBe("kansli-dev-secret");
   });
 
   it("fails closed in prod without secrets", () => {
-    const env = { APP_ENV: "prod" } as NodeJS.ProcessEnv;
+    const env = { APP_ENV: "prod" };
     expect(isHardenedRuntime(env)).toBe(true);
     expect(() => resolveSessionSecret(env)).toThrow(/APP_SESSION_SECRET/);
     expect(() => resolveClientSecret(env)).toThrow(/PIXDRIFT_CLIENT_SECRET/);
@@ -21,7 +21,7 @@ describe("auth secrets", () => {
       APP_ENV: "production",
       APP_SESSION_SECRET: "session-prod",
       PIXDRIFT_CLIENT_SECRET: "client-prod",
-    } as NodeJS.ProcessEnv;
+    };
     expect(resolveSessionSecret(env)).toBe("session-prod");
     expect(resolveClientSecret(env)).toBe("client-prod");
   });
