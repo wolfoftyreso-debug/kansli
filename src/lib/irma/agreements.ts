@@ -210,8 +210,20 @@ export async function createAgreement(input: {
 }
 
 /**
- * Counterparty opens the hashed token. First successful open moves draft → viewed
- * and publishes. The token itself is never stored.
+ * Load the agreement for a hashed token without changing status.
+ * GET and prefetch must use this. "Öppnat" is a human action, not a page view.
+ */
+export async function peekAgreementByToken(
+  pool: pg.Pool,
+  token: string,
+): Promise<Agreement | null> {
+  const row = await loadByToken(pool, token);
+  return row ? toAgreement(row) : null;
+}
+
+/**
+ * Counterparty confirms they opened the hashed token. First confirmation moves
+ * draft → viewed and publishes. The token itself is never stored.
  */
 export async function openAgreementByToken(input: {
   pool: pg.Pool;

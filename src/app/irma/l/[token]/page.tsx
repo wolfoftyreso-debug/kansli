@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { Field, Notice, Submit } from "@/components/app/SignInGate";
 import { ACKNOWLEDGEMENT_DECLARATION } from "@/lib/irma/clauses";
-import { openAgreementByToken } from "@/lib/irma/agreements";
+import { peekAgreementByToken } from "@/lib/irma/agreements";
 import { daysUntilExpiry } from "@/lib/irma/status";
 import {
   irmaThrottleKey,
@@ -11,7 +11,7 @@ import {
 } from "@/lib/irma/throttle";
 import { tryRuntime } from "@/lib/platform/page";
 import { GuestFrame, GuestProgress, GuestReceipt } from "../../guest-chrome";
-import { acknowledgeIrmaAgreement } from "./actions";
+import { acknowledgeIrmaAgreement, markIrmaViewed } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -27,20 +27,16 @@ export default async function IrmaLinkPage({ params }: { params: Promise<{ token
   if (irmaTokenBlocked(key)) notFound();
   const runtime = tryRuntime();
   if (!runtime) notFound();
-  const agreement = await openAgreementByToken({
-    pool: runtime.pool,
-    events: runtime.events,
-    token,
-    requestId: crypto.randomUUID(),
-  });
+  const agreement = await peekAgreementByToken(runtime.pool, token);
   if (!agreement) {
     noteIrmaTokenFailure(key);
     notFound();
   }
   noteIrmaTokenSuccess(key);
   const signed = agreement.status === "signed";
-  const needsAck = agreement.verificationLevel === 1 && !signed;
-  const step: 1 | 2 | 3 = signed ? 3 : needsAck ? 2 : 1;
+  const unread = agreement.status === "draft";
+  const needsAck = agreement.verificationLevel === 1 && !signed && !unread;
+  const step: 1 | 2 | 3 = signed ? 3 : unread ? 1 : needsAck ? 2 : 1;
 
   return (
     <GuestFrame>
@@ -86,6 +82,17 @@ export default async function IrmaLinkPage({ params }: { params: Promise<{ token
           </ol>
         )}
       </section>
+
+      {unread ? (
+        <form action={markIrmaViewed} className="flex flex-col gap-3">
+          <Notice>
+            Underlaget visas. Statusen är fortfarande Skapat. Prefetch, bots och en GET räknas inte
+            som öppnat.
+          </Notice>
+          <input type="hidden" name="token" value={token} />
+          <Submit>Jag har öppnat underlaget</Submit>
+        </form>
+      ) : null}
 
       {needsAck ? (
         <form action={acknowledgeIrmaAgreement} className="flex flex-col gap-4 pb-4">

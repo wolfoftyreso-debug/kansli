@@ -12,6 +12,7 @@ import {
   hashSignature,
   listAgreements,
   openAgreementByToken,
+  peekAgreementByToken,
   reissueAgreementToken,
   revokeAgreement,
 } from "./agreements.ts";
@@ -62,6 +63,8 @@ live("IRMA magic link (live Postgres)", () => {
     expect(
       await openAgreementByToken({ pool, events, token: "fel", requestId: "req-bad" }),
     ).toBeNull();
+    expect(await peekAgreementByToken(pool, token)).toMatchObject({ status: "draft" });
+    expect(await events.list({ orgRef, kind: "irma.agreement.viewed" })).toHaveLength(0);
 
     const first = await openAgreementByToken({ pool, events, token, requestId: "req-2" });
     expect(first?.status).toBe("viewed");
