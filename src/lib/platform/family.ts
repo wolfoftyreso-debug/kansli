@@ -31,7 +31,7 @@ export const FAMILY_PRINCIPLE =
 export const FAMILY_STACK: readonly { layer: string; runs: string }[] = [
   {
     layer: "Språk",
-    runs: "TypeScript 5 i hela navet. SQL i migreringarna. Rust finns inte i det här repot — skattjakt är en extern binär.",
+    runs: "TypeScript 5 i hela navet. SQL i migreringarna. Rust-doktrin från vendor/cala; skattjakt är en extern binär. ekonomi-ledger validerar verifikat, postar inte i drift.",
   },
   {
     layer: "Webb",
@@ -43,7 +43,7 @@ export const FAMILY_STACK: readonly { layer: string; runs: string }[] = [
   },
   {
     layer: "Data",
-    runs: "PostgreSQL 16 via pg. Owner kör migreringar, app-rollen kör runtime. Scheman: public, platform, kansli, tora, rita, britt, irma, tyra, alva.",
+    runs: "PostgreSQL 16 via pg. Owner kör migreringar, app-rollen kör runtime. Scheman: public, platform, kansli, ekonomi, tora, rita, britt, irma, tyra, alva.",
   },
   {
     layer: "Motorer",
@@ -79,6 +79,17 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     doesNot: "Ingen produktlogik. Inga andras tabeller.",
     owns: "kansli.tasks",
     status: "operational",
+  },
+  {
+    id: "ekonomi",
+    name: "Ekonomi",
+    mission: "En bok för hela huset. Fordran, moms, inbetalning.",
+    question: "Vad är bokat, vad är förfallet, och hur kom pengarna in?",
+    does: "Utfärdar faktura 10 dagar, bokför i öre mot BAS, exporterar moms och verifikat. Slottar för Stripe och Revolut. Matchar inbetalningar när tokenen finns.",
+    doesNot:
+      "Inte Fortnox. Inte påhittad Swish-QR. Inte Stripe-charge utan nyckel. Inte 100 simulerade transaktioner förrän du ger OK. Cala körs inte som sidecar än.",
+    owns: "ekonomi.accounts, ekonomi.transactions, ekonomi.entries, ekonomi.invoices, ekonomi.payments, ekonomi.connectors",
+    status: "pilot",
   },
   {
     id: "tora",
@@ -195,6 +206,18 @@ export const FAMILY_LINKS: readonly FamilyLink[] = [
     meaning: "Ett fall är registrerat. Ingen diagnos följer förrän motorn finns.",
   },
   {
+    from: "ekonomi",
+    to: "britt",
+    via: "ekonomi.invoice.issued | ekonomi.payment.recorded | ekonomi.revolut.sync.blocked",
+    meaning: "Utfärdad faktura, bokad inbetalning eller blockerad Revolut-synk.",
+  },
+  {
+    from: "ekonomi",
+    to: "platform.events",
+    via: "ekonomi.invoice.created",
+    meaning: "Utkast syns i loggen. Ingen bokföring förrän utfärdande.",
+  },
+  {
     from: "kansli",
     to: "britt",
     via: "kansli.task.created",
@@ -235,5 +258,9 @@ export const FAMILY_BLOCKED = [
   {
     id: "britt-intel",
     need: "Fortnox, Revolut och BRITT-repots profiler om demonstrationsanalysen ska bli hela produkten.",
+  },
+  {
+    id: "ekonomi-rails",
+    need: "STRIPE_SECRET_KEY eller restricted key, REVOLUT_BUSINESS_TOKEN för matchning, Swish Handel-certifikat. Faktura 10 dagar fungerar utan dem.",
   },
 ] as const;

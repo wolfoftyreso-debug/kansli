@@ -1,0 +1,15 @@
+[package]
+name = "cala-ledger-example-rust"
+version = "0.26.2-dev"
+edition = "2021"
+license = "Apache-2.0"
+workspace = "../../"
+
+[dependencies]
+cala-ledger = { path = "../../cala-ledger" }
+
+anyhow = { workspace = true }
+tokio = { workspace = true }
+sqlx = { workspace = true }
+rust_decimal = { workspace = true }
+rand = "0.10"

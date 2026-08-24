@@ -25,6 +25,7 @@ Det går inte att koda bort 1–3 genom att sitta längre i kansli-repot. Det g�
 | BRITT | Ja, inkorg | Öppen / klar. Inte ärendehantering. |
 | RITA | Bara om motorn finns | Utan `RITA_ENGINE_BINARY` eller `RITA_ENGINE_URL`: stäng av. |
 | ALVA | Nej som diagnos | Intag + protokolltom (status, anteckning, kontroller, mätvärden). Diagnos = annat repo. |
+| Ekonomi | Ja som bok, nej som PSP | Faktura 10 dagar + verifikat + moms-CSV. Stripe/Revolut/Swish bara med nyckel. Inte Fortnox. |
 
 ## Vad som byggdes så att svaret inte bara är papper
 

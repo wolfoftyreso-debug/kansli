@@ -1,0 +1,73 @@
+[package]
+name = "cala-ledger"
+description = "An embeddable double sided accounting ledger built on PG/SQLx"
+repository = "https://github.com/GaloyMoney/cala"
+documentation = "https://docs.rs/cala-ledger"
+readme = "../README.md"
+version = "0.26.2-dev"
+edition = "2021"
+license = "Apache-2.0"
+categories = ["finance"]
+include = [
+  ".sqlx/**",
+  "build.rs",
+  "migrations/**",
+  "schemas/**",
+  "src/**",
+  "tests/**",
+  "Cargo.toml",
+  "../README.md",
+]
+
+[features]
+
+fail-on-warnings = []
+# Exposes `cala_ledger::fuzz` — internal harnesses that drive pub(crate) logic
+# for the out-of-tree cargo-fuzz crate. Not part of the public API.
+fuzz = []
+json-schema = ["cala-types/json-schema", "job/json-schema", "es-entity/json-schema", "dep:schemars"]
+
+[[bin]]
+name = "event-schemas"
+path = "src/bin/event_schemas.rs"
+required-features = ["json-schema"]
+
+[dependencies]
+cala-types = { workspace = true }
+cel-interpreter = { workspace = true }
+es-entity = { workspace = true }
+job = { workspace = true }
+obix = { workspace = true }
+
+cached = { workspace = true }
+chrono = { workspace = true }
+derive_builder = { workspace = true }
+sqlx = { workspace = true }
+thiserror = { workspace = true }
+uuid = { workspace = true }
+regex = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tracing = { workspace = true }
+tokio = { workspace = true }
+tokio-stream = { workspace = true }
+futures = { workspace = true }
+rust_decimal = { workspace = true }
+schemars = { workspace = true, optional = true }
+
+[dev-dependencies]
+anyhow = { workspace = true }
+rand = { workspace = true }
+tokio-test = "0.4"
+rust_decimal_macros = { workspace = true }
+# Already resolved workspace-wide via tracing-opentelemetry's dependency on
+# it (see Cargo.lock) — no new dependency-tree surface, just reusing an
+# already-vetted version for a test-only span counter. Only the `registry`
+# feature (Registry + Layer + SubscriberExt) is needed — default features
+# would additionally pull in `fmt` (and its `nu-ansi-term` dependency),
+# which nothing here uses.
+tracing-subscriber = { version = "0.3", default-features = false, features = [
+  "registry",
+] }
+
+[build-dependencies]

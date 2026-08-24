@@ -16,6 +16,7 @@ export const metadata = {
 };
 
 const HREF: Record<string, string> = {
+  ekonomi: "/ekonomi",
   tora: "/tora",
   rita: "/rita",
   britt: "/britt",

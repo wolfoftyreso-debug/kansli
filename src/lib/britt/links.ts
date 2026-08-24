@@ -5,6 +5,8 @@ const ROUTES: ReadonlyArray<{ prefix: string; href: (id: string) => string }> = 
   { prefix: "alva:case:", href: (id) => `/alva/${id}` },
   { prefix: "tora:snapshot:", href: (id) => `/tora/${id}` },
   { prefix: "kansli:task:", href: (id) => `/kansli?task=${id}` },
+  { prefix: "ekonomi:invoice:", href: (id) => `/ekonomi/fakturor/${id}` },
+  { prefix: "ekonomi:connector:", href: () => "/ekonomi/anslutningar" },
   { prefix: "tyra:outbox:", href: () => "/tyra/integrations" },
   { prefix: "tyra:customer:", href: () => "/tyra/kunder" },
 ];
@@ -26,6 +28,7 @@ export const SOURCE_LABELS: Record<string, string> = {
   tyra: "TYRA — däckhotell",
   alva: "ALVA — fallintag",
   kansli: "Kansli — intern uppgift",
+  ekonomi: "Ekonomi — bok och betalning",
   britt: "BRITT — egen anteckning",
 };
 

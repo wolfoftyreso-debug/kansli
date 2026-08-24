@@ -22,6 +22,7 @@ export const metadata = {
 const PATH: Record<string, string> = {
   identity: "/idp",
   kansli: "/kansli",
+  ekonomi: "/ekonomi",
   tora: "/tora",
   rita: "/rita",
   britt: "/britt",

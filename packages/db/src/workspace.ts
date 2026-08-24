@@ -14,6 +14,7 @@ const WORKSPACE_MIGRATE_LOCK = "pixdrift.workspace.migrate";
 export const WORKSPACE_SCHEMAS = [
   { schema: "platform", grant: "append" as const },
   { schema: "kansli", grant: "readwrite" as const },
+  { schema: "ekonomi", grant: "readwrite" as const },
   { schema: "tora", grant: "readwrite" as const },
   { schema: "rita", grant: "readwrite" as const },
   { schema: "britt", grant: "readwrite" as const },

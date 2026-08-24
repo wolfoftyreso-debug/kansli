@@ -120,7 +120,7 @@ export function evaluateFirstCustomerGates(input: {
       title: "Kunden skriver under vad produkten inte är",
       state: "open",
       detail:
-        "Inte BankID. Inte live-däckpriser. Inte SMS SENT. Inte TED/HILMA. Inte ALVA-diagnos. Papper, inte en knapp här.",
+        "Inte BankID. Inte live-däckpriser. Inte SMS SENT. Inte TED/HILMA. Inte ALVA-diagnos. Inte Fortnox. Stripe/Revolut bara med nyckel. Papper, inte en knapp här.",
     },
   ];
 

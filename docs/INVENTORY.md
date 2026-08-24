@@ -14,12 +14,12 @@ kansli/
 ├─ src/app/
 │  ├─ (site)/                 publik sajt
 │  ├─ idp/                    OIDC-mount
-│  ├─ kansli tora rita britt irma tyra alva platform
-│  └─ api/{kansli,tora,rita,britt,irma,tyra,alva,platform,auth}
-├─ src/lib/{kansli,tora,rita,britt,irma,tyra,alva,platform,auth,sync}
+│  ├─ kansli ekonomi tora rita britt irma tyra alva platform
+│  └─ api/{kansli,ekonomi,tora,rita,britt,irma,tyra,alva,platform,auth}
+├─ src/lib/{kansli,ekonomi,tora,rita,britt,irma,tyra,alva,platform,auth,sync}
 ├─ packages/                  @pixdrift/*
 ├─ integrations/              OIDC-adaptrar till fristående produktrepon
-├─ db/migrations/{platform,kansli,tora,rita,britt,irma,tyra,alva}/
+├─ db/migrations/{platform,kansli,ekonomi,tora,rita,britt,irma,tyra,alva}/
 └─ .github/workflows/ci.yml
 ```
 
@@ -50,6 +50,7 @@ faller om en yta saknas.
 | --- | --- | --- | --- | --- |
 | Identity | `public` | `/idp` | `/idp` | operational |
 | Kansli | `kansli` | `/kansli` | `/api/kansli` | operational |
+| Ekonomi | `ekonomi` | `/ekonomi` | `/api/ekonomi` | pilot (ledger foundation; `docs/ekonomi/`) |
 | TORA | `tora` | `/tora` | `/api/tora` | pilot |
 | RITA | `rita` | `/rita` | `/api/rita` | pilot |
 | BRITT | `britt` | `/britt` | `/api/britt` | pilot |

@@ -10,6 +10,10 @@ export const APP_NEXT_PATHS = [
   "/tyra/integrations",
   "/tyra/kunder",
   "/kansli/beredskap",
+  "/ekonomi/fakturor",
+  "/ekonomi/verifikat",
+  "/ekonomi/rapporter",
+  "/ekonomi/anslutningar",
   "/platform",
   "/platform/events",
 ] as const;

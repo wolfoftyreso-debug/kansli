@@ -27,6 +27,7 @@ describe("workspace contract", () => {
     expect([...SYSTEM_IDS]).toEqual([
       "identity",
       "kansli",
+      "ekonomi",
       "tora",
       "rita",
       "britt",

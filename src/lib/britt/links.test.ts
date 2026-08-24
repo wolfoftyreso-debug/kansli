@@ -9,6 +9,7 @@ describe("observationHref", () => {
     expect(observationHref("alva:case:3")).toBe("/alva/3");
     expect(observationHref("tora:snapshot:4")).toBe("/tora/4");
     expect(observationHref("kansli:task:5")).toBe("/kansli?task=5");
+    expect(observationHref("ekonomi:invoice:7")).toBe("/ekonomi/fakturor/7");
     expect(observationHref("tyra:outbox:6")).toBe("/tyra/integrations");
   });
 

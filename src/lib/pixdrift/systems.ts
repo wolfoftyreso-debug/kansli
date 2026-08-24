@@ -381,6 +381,52 @@ export const systems: PixSystem[] = [
       { no: "10", title: "Availability", body: ["Pilot in the kansli nav. Europe."] },
     ],
   },
+  {
+    index: "08",
+    slug: "ekonomi",
+    name: "Ekonomi",
+    purpose: "One ledger for the house: invoices, VAT, and payment rails.",
+    stewardship: "MANAGED_PRODUCT",
+    category: "Financial operations",
+    status: "Development",
+    regions: ["Europe"],
+    summary:
+      "Shared bookkeeping. Products raise receivables here. Swish, Stripe and 10-day invoices. Revolut matching when a token exists — never a fake payment.",
+    sections: [
+      {
+        no: "01",
+        title: "Purpose",
+        body: [
+          "Give every Pixdrift product one structured book so a tyre hotel quote, a contract fee and a workshop invoice post the same way.",
+        ],
+      },
+      {
+        no: "02",
+        title: "Problem",
+        body: [
+          "Workshop money is split across DMS, Fortnox, Swish screenshots and memory. VAT and the payment do not meet.",
+        ],
+      },
+      {
+        no: "03",
+        title: "System",
+        body: [
+          "A first-party schema: BAS accounts, hashed journals, invoices in öre, connector slots for Revolut and Stripe. Doctrine from Galoy Cala, runtime in this house.",
+        ],
+      },
+      forthcoming("04", "How it works"),
+      forthcoming("05", "Architecture"),
+      forthcoming("06", "Applications"),
+      { no: "07", title: "Integrations", body: [sharedIdentityIntegration] },
+      forthcoming("08", "Security"),
+      { no: "09", title: "Documentation", body: ["Technical notes under docs/ekonomi."] },
+      {
+        no: "10",
+        title: "Availability",
+        body: ["Foundation in the kansli nav. Europe. Rails blocked without keys."],
+      },
+    ],
+  },
 ];
 
 export function getSystem(slug: string): PixSystem | undefined {
