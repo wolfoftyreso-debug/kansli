@@ -101,7 +101,7 @@ function loginPage(
     ${error ? `<p class="err">${esc(error)}</p>` : ""}
     <button type="submit">Logga in</button>
     ${hint}
-    <p class="hint">Inget konto? <a href="/upphandling">Fyll i koncernupphandling</a> — möte om 10 dagar. Ingen Google-inloggning.</p>
+    <p class="hint">Inget konto? <a href="/upphandling">Begär åtkomst via koncernupphandling</a>.</p>
   </form>
 </body></html>`;
 }

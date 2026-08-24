@@ -29,7 +29,7 @@ export default async function KansliUpphandlingPage() {
       </p>
       <h1 className="text-3xl font-semibold tracking-tight">Koncernupphandling</h1>
       <p className="max-w-xl text-ink-soft">
-        Intag, inte sålda avtal. Varje rad är underlag till en demo och ett möte tio dagar senare.
+        Inkomna underlag. Varje rad används till demo och möte tio dagar senare.
       </p>
       {!session ? (
         <SignInGate next="/kansli/upphandling" title="Logga in för att läsa intagen">

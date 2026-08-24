@@ -6,7 +6,7 @@ import { submitUpphandling } from "./actions";
 export const metadata = {
   title: "Koncernupphandling — Pixdrift",
   description:
-    "Intag för demo och möte om 10 dagar. Inte ett sålt koncernavtal. Vi anpassar när vi vet er stack.",
+    "Underlag för demo och uppföljningsmöte. Anpassning sker mot er miljö när stacken är känd.",
 };
 
 /**
@@ -37,26 +37,20 @@ export default function UpphandlingPage() {
         <aside className="flex flex-col gap-6">
           <p className="pd-label text-faint">Koncernupphandling</p>
           <h1 className="text-4xl font-semibold tracking-tight">
-            Ett formulär. Ett möte om 10 dagar. Inte ett sålt avtal.
+            Underlag för demo och uppföljningsmöte
           </h1>
           <p className="text-ink-soft">
-            När vi vet er stack och miljö bygger vi anpassningen. Det här intaget är allt som krävs
-            för att förbereda en demo och hålla tiden. Volkswagen-logik: sanning före teater.
+            Fyll i hur ni arbetar idag: system, anläggningar och identitet. Vi använder svaret till
+            att förbereda en demonstration och ett möte tio dagar senare. Anpassning mot er miljö
+            görs när stacken är känd.
           </p>
           <ul className="flex flex-col gap-2 text-sm text-ink-soft">
-            <li>Konto skapas i vårt IdP — e-post och lösenord. Ingen påhittad Google-SSO.</li>
-            <li>Faktura 10 dagar i Ekonomi. Stripe och Swish bara med riktiga nycklar.</li>
-            <li>Pilot kan erbjudas med skriftliga gränser. Koncernavtal skrivs efter demot.</li>
+            <li>Inloggning med arbets-e-post och lösenord i Pixdrift Identity.</li>
+            <li>Onboardingfaktura med tio dagars betalning i Ekonomi.</li>
+            <li>Pilot kan erbjudas med avgränsad omfattning. Koncernavtal tecknas efter demot.</li>
           </ul>
           <p className="text-sm text-muted">
-            Layout efter{" "}
-            <a
-              href="https://mobbin.com/flows/b579b13d-0b90-4ca4-9b77-e03c42a7c851"
-              className="underline decoration-line underline-offset-4"
-            >
-              Sana AI Book an intro
-            </a>
-            . Knappen bokar inte en kalender — den håller mötet om 10 dagar.
+            Knappen fastställer mötet till klockan 10:00, tio kalenderdagar från intaget.
           </p>
         </aside>
 
@@ -134,17 +128,17 @@ export default function UpphandlingPage() {
           <CheckField
             name="honestyAccepted"
             required
-            label="Jag har läst vad produkten inte är: inte BankID, inte live-däckpriser, inte SMS SENT, inte TED/HILMA, inte ALVA-diagnos, inte Fortnox. Stripe/Swish bara med nyckel."
+            label="Jag bekräftar att det här är underlag för demo och möte. BankID, live-leverantörspriser, SMS-utskick och kvalificerad e-signatur ingår inte i den här leveransen."
           />
           <CheckField
             name="provisionAccount"
             defaultChecked
-            label="Skapa inloggning nu (e-post + engångslösen). Kräver PIXDRIFT_DB_OWNER_URL."
+            label="Skapa inloggning med arbets-e-post och tillfälligt lösenord."
           />
           <CheckField
             name="issueInvoice"
             defaultChecked
-            label="Utfärda onboardingfaktura, 10 dagar. Inte en påhittad Stripe-charge."
+            label="Utfärda onboardingfaktura med tio dagars betalning."
           />
           <Field name="invoiceKronor" label="Fakturabelopp exkl. moms (kr)" defaultValue="2500" />
           <Submit large>Boka möte om 10 dagar</Submit>

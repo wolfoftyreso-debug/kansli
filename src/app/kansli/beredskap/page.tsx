@@ -40,7 +40,7 @@ export default async function BeredskapPage() {
       </p>
       <h1 className="text-3xl font-semibold tracking-tight">Första kunden</h1>
       <p className="max-w-xl text-ink-soft">
-        Inte ett datum. En lista grindar. Volkswagen rullar ut det som är sant.
+        Inte ett datum. En lista grindar som läses ur runtime.
       </p>
 
       {!session?.org ? (
@@ -64,7 +64,7 @@ export default async function BeredskapPage() {
                 Koncernupphandling är formuläret
               </Link>
               {" — "}
-              demo och möte om 10 dagar. Inte ett sålt Bilia-avtal.
+              underlag för demo och möte om tio dagar.
             </p>
           </section>
 

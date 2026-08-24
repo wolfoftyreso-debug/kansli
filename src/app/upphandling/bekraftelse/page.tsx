@@ -51,8 +51,8 @@ export default async function UpphandlingBekraftelsePage({
             <p className="pd-label text-faint">Koncernupphandling</p>
             <h1 className="text-3xl font-semibold tracking-tight">Mötet är lagt</h1>
             <p className="text-ink-soft">
-              {intake.companyName}. Vi förbereder demot mot den stack ni skrev. Anpassningen byggs
-              när vi sitter i er miljö — inte före.
+              {intake.companyName}. Demot förbereds mot den miljö ni angav. Anpassning i drift sker
+              efter genomgång på plats.
             </p>
             <section className="rounded-xl border border-line bg-surface px-5 py-5">
               <p className="text-sm text-ink-soft">Möte</p>
@@ -60,7 +60,7 @@ export default async function UpphandlingBekraftelsePage({
                 {formatSwedishDateTime(intake.meetingAt)}
               </p>
               <p className="mt-2 text-sm text-muted">
-                Tio dagar från intaget. Inte en kalenderbokning.
+                Tio kalenderdagar från intaget, klockan 10:00.
               </p>
             </section>
             {intake.provisionedEmail ? (
@@ -90,7 +90,7 @@ export default async function UpphandlingBekraftelsePage({
                 <p className="text-sm text-ink-soft">Faktura 10 dagar</p>
                 <p className="mt-1 font-medium">{intake.invoiceNumber}</p>
                 <p className="mt-2 text-sm text-muted">
-                  Inte Stripe. Inte Swish. Öppna Ekonomi efter inloggning.
+                  Onboardingfaktura med tio dagars betalning. Öppna Ekonomi efter inloggning.
                 </p>
               </section>
             ) : null}
