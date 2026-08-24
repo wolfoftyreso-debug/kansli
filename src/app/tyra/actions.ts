@@ -4,11 +4,15 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireOrgAction } from "@/lib/platform/actions";
 import {
+  assignStorageCode,
+  cancelCase,
   createCase,
   parseIntent,
   parseOperations,
   parseStepStatus,
+  setCaseNotes,
   setStepStatus,
+  updateCustomerContact,
 } from "@/lib/tyra/cases";
 import { issueHubLink } from "@/lib/tyra/hub";
 import { parseTreadReadings, recordVerifiedInspection } from "@/lib/tyra/inspections";
@@ -189,5 +193,65 @@ export async function saveTyraQuote(formData: FormData) {
     markupPercent: Number(String(formData.get("markupPercent") ?? "0").replace(",", ".")) || 0,
     note: String(formData.get("note") ?? "").trim(),
   });
+  revalidatePath("/tyra");
   revalidatePath(`/tyra/cases/${id}`);
+}
+
+export async function saveTyraCustomer(formData: FormData) {
+  const { session, pool } = await requireOrgAction("/tyra", "arende:write");
+  const id = String(formData.get("id") ?? "").trim();
+  const customerId = String(formData.get("customerId") ?? "").trim();
+  if (!id || !customerId) return;
+  await updateCustomerContact({
+    pool,
+    orgRef: session.org.ref,
+    customerId,
+    name: String(formData.get("customerName") ?? "").trim(),
+    phone: String(formData.get("phone") ?? "").trim(),
+    email: String(formData.get("email") ?? "").trim(),
+  });
+  revalidatePath("/tyra");
+  revalidatePath("/tyra/kunder");
+  revalidatePath(`/tyra/cases/${id}`);
+}
+
+export async function saveTyraStorageCode(formData: FormData) {
+  const { session, pool } = await requireOrgAction("/tyra", "arende:write");
+  const id = String(formData.get("id") ?? "").trim();
+  const storageCode = String(formData.get("storageCode") ?? "").trim();
+  if (!id || !storageCode) return;
+  await assignStorageCode({
+    pool,
+    orgRef: session.org.ref,
+    actorRef: session.sub,
+    tireCaseId: id,
+    storageCode,
+  });
+  revalidatePath("/tyra");
+  revalidatePath("/tyra/kunder");
+  revalidatePath(`/tyra/cases/${id}`);
+}
+
+export async function saveTyraCaseNotes(formData: FormData) {
+  const { session, pool } = await requireOrgAction("/tyra", "arende:write");
+  const id = String(formData.get("id") ?? "").trim();
+  if (!id) return;
+  await setCaseNotes({
+    pool,
+    orgRef: session.org.ref,
+    tireCaseId: id,
+    notes: String(formData.get("notes") ?? ""),
+  });
+  revalidatePath(`/tyra/cases/${id}`);
+}
+
+export async function cancelTyraCase(formData: FormData) {
+  const { session, pool } = await requireOrgAction("/tyra", "arende:write");
+  const id = String(formData.get("id") ?? "").trim();
+  if (!id) return;
+  await cancelCase({ pool, orgRef: session.org.ref, tireCaseId: id });
+  revalidatePath("/tyra");
+  revalidatePath("/tyra/kunder");
+  revalidatePath(`/tyra/cases/${id}`);
+  revalidatePath("/kansli");
 }

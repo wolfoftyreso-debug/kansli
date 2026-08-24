@@ -70,6 +70,12 @@ export async function saveQuoteDraft(input: {
       where org_ref = $1 and id = $2`,
     [input.orgRef, input.tireCaseId],
   );
+  await input.pool.query(
+    `update tyra.tire_case_steps
+        set status = 'DONE', updated_at = now()
+      where org_ref = $1 and tire_case_id = $2 and step_kind = 'CREATE_QUOTE'`,
+    [input.orgRef, input.tireCaseId],
+  );
   return {
     id,
     tireCaseId: input.tireCaseId,

@@ -21,6 +21,7 @@ export interface TireCaseListItem {
   intent: TireCaseIntent;
   caseStatus: string;
   updatedAt: string;
+  customerId: string | null;
   registrationNumber: string | null;
   customerName: string | null;
 }
@@ -123,10 +124,11 @@ export async function listCases(pool: pg.Pool, orgRef: string): Promise<TireCase
     intent: string;
     case_status: string;
     updated_at: Date;
+    customer_id: string | null;
     registration_number: string | null;
     customer_name: string | null;
   }>(
-    `select tc.id, tc.intent, tc.case_status, tc.updated_at,
+    `select tc.id, tc.intent, tc.case_status, tc.updated_at, tc.customer_id,
             v.registration_number,
             c.name as customer_name
        from tyra.tire_cases tc
@@ -142,6 +144,7 @@ export async function listCases(pool: pg.Pool, orgRef: string): Promise<TireCase
     intent: parseIntent(row.intent),
     caseStatus: row.case_status,
     updatedAt: new Date(row.updated_at).toISOString(),
+    customerId: row.customer_id,
     registrationNumber: row.registration_number,
     customerName: row.customer_name,
   }));
@@ -334,6 +337,9 @@ export async function getCaseWorkCard(
       make: string | null;
       model: string | null;
       caseStatus: string;
+      advisorNotes: string;
+      storageCode: string | null;
+      wheelSetId: string | null;
     })
   | null
 > {
@@ -342,8 +348,9 @@ export async function getCaseWorkCard(
     customer_id: string | null;
     vehicle_id: string | null;
     case_status: string;
+    advisor_notes: string | null;
   }>(
-    `select id, customer_id, vehicle_id, case_status
+    `select id, customer_id, vehicle_id, case_status, advisor_notes
        from tyra.tire_cases where org_ref = $1 and id = $2 limit 1`,
     [orgRef, tireCaseId],
   );
@@ -404,6 +411,14 @@ export async function getCaseWorkCard(
   }));
   const next = steps.find((step) => step.status === "TODO") ?? null;
   const v = vehicle.rows[0];
+  const wheelSet = row.vehicle_id
+    ? await pool.query<{ id: string; storage_code: string | null }>(
+        `select id, storage_code from tyra.wheel_sets
+          where org_ref = $1 and vehicle_id = $2
+          order by updated_at desc limit 1`,
+        [orgRef, row.vehicle_id],
+      )
+    : { rows: [] as { id: string; storage_code: string | null }[] };
 
   return {
     caseId: tireCaseId,
@@ -416,6 +431,9 @@ export async function getCaseWorkCard(
     make: v?.make ?? null,
     model: v?.model ?? null,
     caseStatus: row.case_status,
+    advisorNotes: row.advisor_notes ?? "",
+    storageCode: wheelSet.rows[0]?.storage_code ?? null,
+    wheelSetId: wheelSet.rows[0]?.id ?? null,
     headline:
       v?.make && v?.model && v?.registration_number
         ? `${v.make.toUpperCase()} ${v.model.toUpperCase()} — ${v.registration_number}`
@@ -600,8 +618,9 @@ async function upsertWheelSet(
     vehicleId: string;
     status: string;
     storageStatus: string;
+    storageCode?: string | null;
   },
-): Promise<void> {
+): Promise<string> {
   const existing = await client.query<{ id: string }>(
     `select id from tyra.wheel_sets
       where org_ref = $1 and vehicle_id = $2
@@ -615,25 +634,140 @@ async function upsertWheelSet(
           set status = $3,
               storage_status = $4,
               customer_id = coalesce($5, customer_id),
+              storage_code = coalesce($6, storage_code),
               updated_at = now()
         where org_ref = $1 and id = $2`,
-      [input.orgRef, existing.rows[0].id, input.status, input.storageStatus, input.customerId],
+      [
+        input.orgRef,
+        existing.rows[0].id,
+        input.status,
+        input.storageStatus,
+        input.customerId,
+        input.storageCode?.trim() || null,
+      ],
     );
-    return;
+    return existing.rows[0].id;
   }
+  const id = randomUUID();
   await client.query(
     `insert into tyra.wheel_sets
-       (id, org_ref, customer_id, vehicle_id, season, wheel_count, status, storage_status)
-     values ($1,$2,$3,$4,'unknown',4,$5,$6)`,
+       (id, org_ref, customer_id, vehicle_id, season, wheel_count, status, storage_status, storage_code)
+     values ($1,$2,$3,$4,'unknown',4,$5,$6,$7)`,
     [
-      randomUUID(),
+      id,
       input.orgRef,
       input.customerId,
       input.vehicleId,
       input.status,
       input.storageStatus,
+      input.storageCode?.trim() || null,
     ],
   );
+  return id;
+}
+
+export async function updateCustomerContact(input: {
+  pool: pg.Pool;
+  orgRef: string;
+  customerId: string;
+  name: string;
+  phone?: string;
+  email?: string;
+}): Promise<void> {
+  const name = input.name.trim();
+  if (!name) throw new Error("Kundnamn krävs.");
+  const updated = await input.pool.query(
+    `update tyra.customers
+        set name = $3, phone = $4, email = $5
+      where org_ref = $1 and id = $2`,
+    [
+      input.orgRef,
+      input.customerId,
+      name,
+      input.phone?.trim() || null,
+      input.email?.trim() || null,
+    ],
+  );
+  if ((updated.rowCount ?? 0) === 0) throw new Error("Kunden saknas.");
+}
+
+export async function setCaseNotes(input: {
+  pool: pg.Pool;
+  orgRef: string;
+  tireCaseId: string;
+  notes: string;
+}): Promise<void> {
+  const updated = await input.pool.query(
+    `update tyra.tire_cases
+        set advisor_notes = $3, updated_at = now()
+      where org_ref = $1 and id = $2`,
+    [input.orgRef, input.tireCaseId, input.notes.trim() || null],
+  );
+  if ((updated.rowCount ?? 0) === 0) throw new Error("Ärendet saknas.");
+}
+
+export async function cancelCase(input: {
+  pool: pg.Pool;
+  orgRef: string;
+  tireCaseId: string;
+}): Promise<void> {
+  await input.pool.query(
+    `update tyra.tire_cases
+        set case_status = 'CANCELLED', work_status = 'DONE', updated_at = now()
+      where org_ref = $1 and id = $2 and case_status not in ('DONE', 'CANCELLED')`,
+    [input.orgRef, input.tireCaseId],
+  );
+}
+
+export async function assignStorageCode(input: {
+  pool: pg.Pool;
+  orgRef: string;
+  actorRef: string;
+  tireCaseId: string;
+  storageCode: string;
+}): Promise<void> {
+  const code = input.storageCode.trim().toUpperCase();
+  if (!code) throw new Error("Lagerplats krävs.");
+  const client = await input.pool.connect();
+  try {
+    await client.query("begin");
+    const owner = await client.query<{
+      vehicle_id: string | null;
+      customer_id: string | null;
+    }>(`select vehicle_id, customer_id from tyra.tire_cases where org_ref = $1 and id = $2`, [
+      input.orgRef,
+      input.tireCaseId,
+    ]);
+    if (!owner.rows[0]?.vehicle_id) throw new Error("Ärendet saknar fordon.");
+    await upsertWheelSet(client, {
+      orgRef: input.orgRef,
+      customerId: owner.rows[0].customer_id,
+      vehicleId: owner.rows[0].vehicle_id,
+      status: "STORED",
+      storageStatus: "STORED",
+      storageCode: code,
+    });
+    await client.query(
+      `update tyra.tire_case_steps
+          set status = 'DONE', updated_at = now()
+        where org_ref = $1 and tire_case_id = $2 and step_kind = 'VERIFY_STORAGE_LOCATION'`,
+      [input.orgRef, input.tireCaseId],
+    );
+    await recordCaseEvent(client, {
+      orgRef: input.orgRef,
+      tireCaseId: input.tireCaseId,
+      eventType: "STORAGE_CODE_ASSIGNED",
+      actorRef: input.actorRef,
+      source: "WAREHOUSE",
+      newValue: { storageCode: code },
+    });
+    await client.query("commit");
+  } catch (error) {
+    await client.query("rollback");
+    throw error;
+  } finally {
+    client.release();
+  }
 }
 
 async function insertStep(

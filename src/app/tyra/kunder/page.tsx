@@ -3,6 +3,7 @@ import { AppShell } from "@/components/app/AppShell";
 import { EmptyState, SignInGate } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
+import { listCases } from "@/lib/tyra/cases";
 import { listCustomerCards } from "@/lib/tyra/hotel";
 
 export const metadata = {
@@ -15,6 +16,8 @@ export default async function TyraCustomersPage() {
   const runtime = tryRuntime();
   const cards =
     session?.org?.ref && runtime ? await listCustomerCards(runtime.pool, session.org.ref) : [];
+  const cases =
+    session?.org?.ref && runtime ? await listCases(runtime.pool, session.org.ref) : [];
 
   return (
     <AppShell current="tyra" session={session}>
@@ -51,10 +54,29 @@ export default async function TyraCustomersPage() {
                     {row.vehicle.registrationNumber}
                     {row.vehicle.make ? ` · ${row.vehicle.make}` : ""}
                     {row.wheelSets.length > 0
-                      ? ` · ${row.wheelSets.map((ws) => `${ws.season} ${ws.storageStatus}`).join(", ")}`
+                      ? ` · ${row.wheelSets
+                          .map(
+                            (ws) =>
+                              `${ws.season} ${ws.storageStatus}${ws.storageCode ? ` ${ws.storageCode}` : ""}`,
+                          )
+                          .join(", ")}`
                       : " · inget hjulset"}
                   </li>
                 ))}
+              </ul>
+              <ul className="mt-3 flex flex-col gap-1">
+                {cases
+                  .filter((item) => item.customerId === card.customer.id)
+                  .map((item) => (
+                    <li key={item.id}>
+                      <Link
+                        href={`/tyra/cases/${item.id}`}
+                        className="text-sm underline decoration-line underline-offset-4 hover:text-ink"
+                      >
+                        {item.registrationNumber ?? "Ärende"} · {item.caseStatus}
+                      </Link>
+                    </li>
+                  ))}
               </ul>
             </li>
           ))}

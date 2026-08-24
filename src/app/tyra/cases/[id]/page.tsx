@@ -14,10 +14,14 @@ import { INSPECTION_POSITIONS } from "@/lib/tyra/inspections";
 import { peekIssuedHubLink, publicTyraUrl } from "@/lib/tyra/issued-link";
 import { formatSekFromOre, listQuoteDrafts } from "@/lib/tyra/quotes";
 import {
+  cancelTyraCase,
   enqueueTyraReminder,
   issueTyraHubLink,
   recordTyraInspection,
+  saveTyraCaseNotes,
+  saveTyraCustomer,
   saveTyraQuote,
+  saveTyraStorageCode,
   updateTyraStep,
 } from "../../actions";
 
@@ -138,6 +142,88 @@ export default async function TyraCasePage({
             </div>
           </WorkCard>
 
+          <section className="grid gap-3 md:grid-cols-2">
+            <form
+              action={saveTyraCustomer}
+              className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
+            >
+              <h2 className="text-lg font-semibold">Kund</h2>
+              <input type="hidden" name="id" value={id} />
+              <input type="hidden" name="customerId" value={card.customerId ?? ""} />
+              <label className="flex flex-col gap-1">
+                <span className="text-sm text-ink-soft">Namn</span>
+                <input
+                  name="customerName"
+                  required
+                  defaultValue={card.customerName ?? ""}
+                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
+                />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-sm text-ink-soft">Telefon</span>
+                <input
+                  name="phone"
+                  defaultValue={card.customerPhone ?? ""}
+                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
+                />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="text-sm text-ink-soft">E-post</span>
+                <input
+                  name="email"
+                  defaultValue={card.customerEmail ?? ""}
+                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
+                />
+              </label>
+              <Submit>Spara kund</Submit>
+            </form>
+
+            <form
+              action={saveTyraStorageCode}
+              className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
+            >
+              <h2 className="text-lg font-semibold">Lagerplats</h2>
+              <p className="text-sm text-ink-soft">
+                Verkstadens egen kod. Inte ett live-lager. Sätter hjulsetet som inlagrat.
+              </p>
+              <input type="hidden" name="id" value={id} />
+              <label className="flex flex-col gap-1">
+                <span className="text-sm text-ink-soft">Plats</span>
+                <input
+                  name="storageCode"
+                  required
+                  defaultValue={card.storageCode ?? ""}
+                  placeholder="A-12"
+                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
+                />
+              </label>
+              <Submit>Spara lagerplats</Submit>
+            </form>
+          </section>
+
+          <form
+            action={saveTyraCaseNotes}
+            className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
+          >
+            <h2 className="text-lg font-semibold">Verkstadsanteckning</h2>
+            <p className="text-sm text-ink-soft">Bara ni. Inte kunden i hubben.</p>
+            <input type="hidden" name="id" value={id} />
+            <textarea
+              name="notes"
+              rows={3}
+              defaultValue={card.advisorNotes}
+              className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
+            />
+            <Submit>Spara anteckning</Submit>
+          </form>
+
+          {card.caseStatus !== "DONE" && card.caseStatus !== "CANCELLED" ? (
+            <form action={cancelTyraCase}>
+              <input type="hidden" name="id" value={id} />
+              <Button type="submit">Avbryt ärendet</Button>
+            </form>
+          ) : null}
+
           <ol className="flex flex-col gap-3">
             {card.steps.map((step) => (
               <li key={step.kind}>
@@ -248,6 +334,13 @@ export default async function TyraCasePage({
                 <input
                   name="environmentalSek"
                   defaultValue="25"
+                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
+                />
+              </label>
+              <label className="flex flex-col gap-1 sm:col-span-2">
+                <span className="text-sm text-ink-soft">Intern notering</span>
+                <input
+                  name="note"
                   className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
                 />
               </label>

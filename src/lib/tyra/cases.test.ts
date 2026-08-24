@@ -2,7 +2,16 @@ import { afterAll, describe, expect, it } from "vitest";
 import { createPool, migrateWorkspace } from "@pixdrift/db";
 import { EventLog } from "@pixdrift/events";
 import { hashTyraToken, tyraHubPath } from "./tokens.ts";
-import { createCase, getCaseWorkCard, listCases, setStepStatus } from "./cases.ts";
+import {
+  assignStorageCode,
+  cancelCase,
+  createCase,
+  getCaseWorkCard,
+  listCases,
+  setCaseNotes,
+  setStepStatus,
+  updateCustomerContact,
+} from "./cases.ts";
 import { listCaseEvents, listCustomerCards } from "./hotel.ts";
 import { getHubViewByToken, issueHubLink } from "./hub.ts";
 import { recordVerifiedInspection } from "./inspections.ts";
@@ -183,5 +192,61 @@ live("TYRA cases + hub (live Postgres)", () => {
     const view = await getHubViewByToken(pool, hub.token);
     expect(view?.positions).toHaveLength(4);
     expect(view?.commercialNote).not.toMatch(/Ingen verifierad inspektion/);
+  });
+
+  it("lets the workshop edit the customer, assign a bay, note, and cancel", async () => {
+    await migrateWorkspace({ ownerUrl: OWNER!, root: process.cwd(), appRole: "pixdrift_app" });
+    const events = new EventLog(pool);
+    const orgRef = `pixdrift:org:tyra-ops-${Date.now()}`;
+    const created = await createCase({
+      pool,
+      events,
+      orgRef,
+      actorRef: "user-test",
+      customerName: "Lisa",
+      registrationNumber: "OPS001",
+      phone: "0701111111",
+      intent: "STORE_ONLY",
+      operations: ["STORAGE_IN"],
+      requestId: "req-tyra-ops-1",
+    });
+
+    await updateCustomerContact({
+      pool,
+      orgRef,
+      customerId: created.customerId,
+      name: "Lisa Berg",
+      phone: "0702222222",
+      email: "lisa@example.test",
+    });
+    await assignStorageCode({
+      pool,
+      orgRef,
+      actorRef: "user-test",
+      tireCaseId: created.id,
+      storageCode: "b-04",
+    });
+    await setCaseNotes({
+      pool,
+      orgRef,
+      tireCaseId: created.id,
+      notes: "Kund hämtar fredag.",
+    });
+
+    const card = await getCaseWorkCard(pool, orgRef, created.id);
+    expect(card?.customerName).toBe("Lisa Berg");
+    expect(card?.customerPhone).toBe("0702222222");
+    expect(card?.storageCode).toBe("B-04");
+    expect(card?.advisorNotes).toBe("Kund hämtar fredag.");
+    expect(card?.steps.find((step) => step.kind === "VERIFY_STORAGE_LOCATION")?.status).toBe(
+      "DONE",
+    );
+    const cards = await listCustomerCards(pool, orgRef);
+    expect(cards[0]?.vehicles[0]?.wheelSets[0]?.storageCode).toBe("B-04");
+    expect(cards[0]?.customer.name).toBe("Lisa Berg");
+
+    await cancelCase({ pool, orgRef, tireCaseId: created.id });
+    const cancelled = await getCaseWorkCard(pool, orgRef, created.id);
+    expect(cancelled?.caseStatus).toBe("CANCELLED");
   });
 });
