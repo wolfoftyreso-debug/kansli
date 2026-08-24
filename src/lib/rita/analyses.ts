@@ -129,11 +129,24 @@ async function fail(
   return (await getAnalysis(input.pool, input.orgRef, id))!;
 }
 
-export async function listAnalyses(pool: pg.Pool, orgRef: string): Promise<Analysis[]> {
+export const ANALYSIS_STATUS_LABELS: Record<string, string> = {
+  requested: "Begärd",
+  completed: "Klar",
+  blocked: "Blockerad",
+};
+
+export async function listAnalyses(
+  pool: pg.Pool,
+  orgRef: string,
+  filter: { status?: string } = {},
+): Promise<Analysis[]> {
   const { rows } = await pool.query(
     `select id, org_ref, company_name, org_number, status, blocked_reason, result, created_at
-       from rita.analyses where org_ref = $1 order by created_at desc`,
-    [orgRef],
+       from rita.analyses
+      where org_ref = $1
+        and ($2::text is null or status = $2)
+      order by created_at desc`,
+    [orgRef, filter.status ?? null],
   );
   return rows.map(toAnalysis);
 }

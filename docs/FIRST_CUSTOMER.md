@@ -24,7 +24,7 @@ Det går inte att koda bort 1–3 genom att sitta längre i kansli-repot. Det g�
 | TORA | Ja, med org-profil | **Demo-marknad** (seed). Inte TED/HILMA. |
 | BRITT | Ja, inkorg | Öppen / klar. Inte ärendehantering. |
 | RITA | Bara om motorn finns | Utan `RITA_ENGINE_BINARY` eller `RITA_ENGINE_URL`: stäng av. |
-| ALVA | Nej som diagnos | Intag + protokolltom. Diagnos = annat repo. |
+| ALVA | Nej som diagnos | Intag + protokolltom (status, anteckning, kontroller, mätvärden). Diagnos = annat repo. |
 
 ## Vad som byggdes så att svaret inte bara är papper
 
