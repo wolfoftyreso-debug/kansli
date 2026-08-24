@@ -119,6 +119,11 @@ pnpm --filter @pixdrift/ai-core models   # kräver token; skriver ut alla slugs
 ```
 
 Programmatiskt: `gatewayFromEnv().listModels()` eller `provider.listModels()`.
-Gatewayen ligger sist i `DEFAULT_FAILOVER_ORDER` (Claude-först direkt-providers
+Kansli exponerar `GET /api/platform/ai` (katalog) och `POST /api/platform/ai`
+(ping). Health bär `gateway.configured` utan att anropa motorn. Gatewayen
+ligger sist i `DEFAULT_FAILOVER_ORDER` (Claude-först direkt-providers
 prioriteras); vill du göra gatewayen primär, sätt bara gateway-credentialen och
 utelämna direkt-nycklarna, eller ange egen `order`.
+
+På Vercel räcker OIDC (`VERCEL_OIDC_TOKEN` injiceras). Lokalt och i Cloud Agent
+behövs `AI_GATEWAY_API_KEY`.

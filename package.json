@@ -20,6 +20,7 @@
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
     "@fastify/formbody": "^8.0.2",
+    "@pixdrift/ai-core": "workspace:*",
     "@pixdrift/api-core": "workspace:*",
     "@pixdrift/auth-client": "workspace:*",
     "@pixdrift/contracts": "workspace:*",

@@ -14,6 +14,9 @@ importers:
       '@fastify/formbody':
         specifier: ^8.0.2
         version: 8.0.2
+      '@pixdrift/ai-core':
+        specifier: workspace:*
+        version: link:packages/ai-core
       '@pixdrift/api-core':
         specifier: workspace:*
         version: link:packages/api-core

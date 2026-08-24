@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { GatewayPing } from "./GatewayPing";
 import { AppShell } from "@/components/app/AppShell";
 import { Notice } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
+import { gatewaySnapshot } from "@/lib/platform/ai";
 import {
   FAMILY_BLOCKED,
   FAMILY_LINKS,
@@ -26,6 +28,7 @@ const PATH: Record<string, string> = {
 
 export default async function PlatformPage() {
   const session = await readSession();
+  const gateway = gatewaySnapshot();
 
   return (
     <AppShell current="platform" session={session}>
@@ -38,6 +41,29 @@ export default async function PlatformPage() {
           Ingen produkt skriver i en annans schema.
         </Notice>
       </header>
+
+      <section className="rounded-xl border border-line bg-surface px-4 py-4">
+        <h2 className="text-lg font-semibold">Vercel AI Gateway</h2>
+        <p className="mt-2 text-sm text-ink-soft">
+          En credential, OpenAI-kompatibel yta mot 100+ modeller. Produkter går via{" "}
+          <span className="font-mono">@pixdrift/ai-core</span>. Svaret är inferens, inte fakta.
+        </p>
+        <p className="mt-3 font-mono text-xs text-faint">
+          {gateway.configured ? `konfigurerad · ${gateway.auth}` : "saknar nyckel"} ·{" "}
+          {gateway.model}
+        </p>
+        {session?.org && gateway.configured ? (
+          <div className="mt-3">
+            <GatewayPing />
+          </div>
+        ) : null}
+        {!gateway.configured ? (
+          <p className="mt-3 text-sm text-muted">
+            Sätt <span className="font-mono">AI_GATEWAY_API_KEY</span> i Secrets eller{" "}
+            <span className="font-mono">VERCEL_OIDC_TOKEN</span> på Vercel.
+          </p>
+        ) : null}
+      </section>
 
       <section className="flex flex-col gap-3">
         {FAMILY_SYSTEMS.map((system) => (
@@ -93,6 +119,10 @@ export default async function PlatformPage() {
       <p className="text-sm text-faint">
         <Link href="/api/platform/health" className="underline decoration-line underline-offset-4">
           /api/platform/health
+        </Link>
+        {" · "}
+        <Link href="/api/platform/ai" className="underline decoration-line underline-offset-4">
+          /api/platform/ai
         </Link>
         {" · "}
         <Link href="/platform/events" className="underline decoration-line underline-offset-4">
