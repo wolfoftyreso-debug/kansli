@@ -8,6 +8,7 @@ import {
   buildEngineRequest,
   demoDocumentRequest,
 } from "./request.ts";
+import { findingsFromAnalysis } from "./findings.ts";
 import { resolveRitaEngine, ritaEngineUnavailableReason } from "./resolve-engine.ts";
 
 export interface Analysis {
@@ -82,6 +83,7 @@ export async function requestAnalysis(input: {
         where id = $1`,
       [id, JSON.stringify(envelope)],
     );
+    const findings = findingsFromAnalysis(envelope);
     await input.events.publish({
       system: "rita",
       kind: "rita.analysis.completed",
@@ -89,7 +91,12 @@ export async function requestAnalysis(input: {
       actorKind: "system",
       subjectRef: `rita:analysis:${id}`,
       requestId: input.requestId,
-      payload: { analysisId: id, companyName: input.companyName },
+      payload: {
+        analysisId: id,
+        companyName: input.companyName,
+        findingCount: findings.length,
+        modelConfigured: envelope.model_configured === true,
+      },
     });
     return (await getAnalysis(input.pool, input.orgRef, id))!;
   } catch (error) {

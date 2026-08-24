@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { EVENT_KINDS } from "@pixdrift/events";
 import { SYSTEM_IDS } from "@pixdrift/systems";
-import { FAMILY_LINKS, FAMILY_SYSTEMS } from "./family.ts";
+import { FAMILY_LINKS, FAMILY_STACK, FAMILY_SYSTEMS } from "./family.ts";
 
 describe("family map", () => {
   it("covers every product once and keeps RITA distinct from TORA", () => {
@@ -11,6 +11,22 @@ describe("family map", () => {
     const tora = FAMILY_SYSTEMS.find((s) => s.id === "tora")!;
     expect(rita.does).not.toEqual(tora.does);
     expect(rita.question).not.toEqual(tora.question);
+  });
+
+  it("describes the stack this repo actually runs", () => {
+    expect(FAMILY_STACK.map((row) => row.layer)).toEqual([
+      "Språk",
+      "Webb",
+      "Identitet",
+      "Data",
+      "Motorer",
+      "AI",
+      "Drift och test",
+    ]);
+    const blob = FAMILY_STACK.map((row) => row.runs).join(" ");
+    expect(blob).toMatch(/TypeScript/);
+    expect(blob).toMatch(/PostgreSQL 16/);
+    expect(blob).toMatch(/Ingen AWS SDK/);
   });
 
   it("only names event kinds that exist", () => {

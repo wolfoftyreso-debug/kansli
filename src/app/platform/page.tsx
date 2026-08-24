@@ -8,8 +8,10 @@ import {
   FAMILY_BLOCKED,
   FAMILY_LINKS,
   FAMILY_PRINCIPLE,
+  FAMILY_STACK,
   FAMILY_SYSTEMS,
 } from "@/lib/platform/family";
+import { hubStatus, ritaStatusLine } from "@/lib/platform/hub-status";
 
 export const metadata = {
   title: "Plattform — Pixdrift",
@@ -29,6 +31,7 @@ const PATH: Record<string, string> = {
 export default async function PlatformPage() {
   const session = await readSession();
   const gateway = gatewaySnapshot();
+  const status = hubStatus();
 
   return (
     <AppShell current="platform" session={session}>
@@ -41,6 +44,25 @@ export default async function PlatformPage() {
           Ingen produkt skriver i en annans schema.
         </Notice>
       </header>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-semibold">Vad som körs i det här navet</h2>
+        <p className="font-mono text-xs text-faint">
+          Postgres {status.database}
+          {" · "}
+          Gateway {status.gateway.configured ? status.gateway.auth : "saknas"}
+          {" · "}
+          {ritaStatusLine(status.rita)}
+        </p>
+        <ul className="flex flex-col gap-2">
+          {FAMILY_STACK.map((row) => (
+            <li key={row.layer} className="rounded-xl border border-line bg-surface px-4 py-3">
+              <p className="font-mono text-xs text-accent">{row.layer}</p>
+              <p className="mt-1 text-sm text-ink-soft">{row.runs}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <section className="rounded-xl border border-line bg-surface px-4 py-4">
         <h2 className="text-lg font-semibold">Vercel AI Gateway</h2>

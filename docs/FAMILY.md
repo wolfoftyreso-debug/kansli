@@ -73,7 +73,9 @@ Lokalt kan formuläret skicka `exempel-bokslut.txt`. Utan host eller
 avgör inte anbudsrätt. Kunduppladdning via Blob är inte kopplad.
 
 Händelser: `rita.analysis.requested`, sedan `completed` eller `blocked`.
-BRITT lyssnar på de två sista. Fynd läses ur `result.opportunities`.
+`completed` bär `companyName`, `findingCount` och `modelConfigured`. BRITT
+lyssnar på de två sista och skriver en observation från händelsen — den läser
+inte `rita.analyses`. Fynd i UI läses ur `result.opportunities`.
 
 ### BRITT — vad ska någon följa upp?
 

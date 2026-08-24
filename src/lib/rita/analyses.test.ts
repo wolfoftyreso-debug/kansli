@@ -87,6 +87,8 @@ liveEngine("RITA requestAnalysis against skattjakt", () => {
       const completed = await events.list({ orgRef, kind: "rita.analysis.completed" });
       expect(completed).toHaveLength(1);
       expect(completed[0]?.payload["companyName"]).toBe("Exempelbolaget AB");
+      expect(completed[0]?.payload["findingCount"]).toBe(findings.length);
+      expect(typeof completed[0]?.payload["modelConfigured"]).toBe("boolean");
       const observations = await pool.query(
         `select title from britt.observations where org_ref = $1 and source_system = 'rita'`,
         [orgRef],

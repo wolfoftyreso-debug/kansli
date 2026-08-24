@@ -7,6 +7,18 @@ import type pg from "pg";
  * belongs to. TORA/RITA/IRMA/ALVA/Kansli never write `britt.observations`
  * from their own API; BRITT learns by listening.
  */
+/** BRITT body from the event only — never reads `rita.analyses`. */
+export function ritaCompletedObservationBody(payload: Record<string, unknown>): string {
+  const company = typeof payload.companyName === "string" ? payload.companyName.trim() : "";
+  const raw = payload.findingCount;
+  const count = typeof raw === "number" ? raw : typeof raw === "string" ? Number(raw) : NaN;
+  const findings = Number.isFinite(count) ? `${count} fynd` : "fyndunderlag klart";
+  const head = company ? `${company}: ${findings}` : findings;
+  const model =
+    payload.modelConfigured === true ? "Språkmodell var kopplad." : "Bara regelverket.";
+  return `${head}. ${model}`;
+}
+
 export function registerSyncHandlers(events: EventLog, pool: pg.Pool): void {
   const record = async (
     orgRef: string | null,
@@ -48,7 +60,7 @@ export function registerSyncHandlers(events: EventLog, pool: pg.Pool): void {
       event.orgRef,
       "rita",
       "RITA har slutfört en analys",
-      "Ett nytt fyndunderlag finns i RITA.",
+      ritaCompletedObservationBody(event.payload),
       event.subjectRef,
     );
   });

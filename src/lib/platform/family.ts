@@ -25,6 +25,38 @@ export interface FamilyLink {
 export const FAMILY_PRINCIPLE =
   "Systemen delar identitet och en händelselogg. De delar aldrig tabeller. RITA verifierar räkenskaper. TORA avgör om ett bolag får lämna anbud. De är inte samma sak.";
 
+/** What this nav repo actually runs. Not the target architecture. */
+export const FAMILY_STACK: readonly { layer: string; runs: string }[] = [
+  {
+    layer: "Språk",
+    runs: "TypeScript 5 i hela navet. SQL i migreringarna. Rust finns inte i det här repot — skattjakt är en extern binär.",
+  },
+  {
+    layer: "Webb",
+    runs: "Next.js 16.3 App Router, React 19.2, Tailwind CSS 4. En process: sajt, /idp, produkter och API.",
+  },
+  {
+    layer: "Identitet",
+    runs: "Självhostad OIDC (Authorization Code + PKCE, ES256/JWKS) i Fastify 5, monterad under /idp. Session: httpOnly-cookie kansli_session (jose).",
+  },
+  {
+    layer: "Data",
+    runs: "PostgreSQL 16 via pg. Owner kör migreringar, app-rollen kör runtime. Scheman: public, platform, kansli, tora, rita, britt, irma, alva.",
+  },
+  {
+    layer: "Motorer",
+    runs: "TORA är TypeScript i @pixdrift/tora. RITA anropar skattjakt via HTTP eller subprocess. FakeAnalysisEngine används inte i drift.",
+  },
+  {
+    layer: "AI",
+    runs: "Vercel AI Gateway via @pixdrift/ai-core. Ping: openai/gpt-4.1-nano. Svaret är inferens, inte fakta.",
+  },
+  {
+    layer: "Drift och test",
+    runs: "Vercel, Node 22, pnpm 10. CI: format, lint, typecheck, Vitest mot Postgres 16, build. Ingen AWS SDK i det här repot.",
+  },
+];
+
 export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
   {
     id: "identity",
@@ -117,7 +149,8 @@ export const FAMILY_LINKS: readonly FamilyLink[] = [
     from: "rita",
     to: "britt",
     via: "rita.analysis.completed | rita.analysis.blocked",
-    meaning: "BRITT får veta att ett underlag finns eller att motorn saknas. Inte fynden själva.",
+    meaning:
+      "BRITT får bolagsnamn, fyndantal och om språkmodellen var kopplad. Inte själva fynden — de stannar i rita.analyses.",
   },
   {
     from: "irma",

@@ -44,7 +44,7 @@ Browser → Next.js (kansli)
 | POST | `/api/tora/market` | yes. Persist a snapshot and publish `tora.market.evaluated`. |
 | GET | `/api/tora/opportunities/:id` | no (demo) / yes (tier). Detail from the same engine. |
 | GET | `/api/tora/calendar` | no (demo) / yes (tier). Forward calendar. |
-| GET/POST | `/api/rita/analyses` | yes |
+| GET/POST | `/api/rita/analyses` | yes. Completed events carry `findingCount` and `modelConfigured`. |
 | GET/POST | `/api/britt/observations` | yes |
 | GET/POST | `/api/britt/findings` | yes. Demo metrics analysis; high findings become observations. |
 | GET/POST | `/api/irma/agreements` | yes |

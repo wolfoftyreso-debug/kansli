@@ -3,6 +3,7 @@ import { AppShell } from "@/components/app/AppShell";
 import { Notice, SignInGate } from "@/components/app/SignInGate";
 import { eventLine } from "@/lib/platform/event-copy";
 import { FAMILY_SYSTEMS } from "@/lib/platform/family";
+import { hubStatus, ritaStatusLine } from "@/lib/platform/hub-status";
 import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
 import TaskBoard from "../TaskBoard";
@@ -25,6 +26,7 @@ const HREF: Record<string, string> = {
 export default async function KansliHub() {
   const session = await readSession();
   const runtime = tryRuntime();
+  const status = hubStatus();
   const events =
     session?.org?.ref && runtime
       ? await runtime.events.list({ orgRef: session.org.ref, limit: 8, order: "desc" })
@@ -55,6 +57,13 @@ export default async function KansliHub() {
                 {session.org.name} · {session.org.roles.join(", ") || "—"} · {session.org.tier}
               </p>
             ) : null}
+            <p className="mt-3 font-mono text-xs text-faint">
+              Postgres {status.database}
+              {" · "}
+              Gateway {status.gateway.configured ? status.gateway.auth : "saknas"}
+              {" · "}
+              {ritaStatusLine(status.rita)}
+            </p>
           </section>
 
           <section className="flex flex-col gap-3">

@@ -21,6 +21,12 @@ live("registerSyncHandlers (live Postgres)", () => {
     const orgRef = `pixdrift:org:sync-${Date.now()}`;
 
     await events.publish({
+      system: "rita",
+      kind: "rita.analysis.completed",
+      orgRef,
+      payload: { companyName: "Exempelbolaget AB", findingCount: 7, modelConfigured: true },
+    });
+    await events.publish({
       system: "irma",
       kind: "irma.agreement.created",
       orgRef,
@@ -61,11 +67,25 @@ live("registerSyncHandlers (live Postgres)", () => {
       `select source_system, title, severity from britt.observations where org_ref = $1 order by created_at`,
       [orgRef],
     );
-    expect(rows.map((r) => r.source_system)).toEqual(["irma", "alva", "kansli", "irma", "britt"]);
-    expect(rows[0]?.title).toMatch(/IRMA/);
-    expect(rows[2]?.title).toMatch(/Kansli/);
-    expect(rows[3]?.title).toMatch(/bekräftat/);
-    expect(rows[4]?.severity).toBe("high");
+    expect(rows.map((r) => r.source_system)).toEqual([
+      "rita",
+      "irma",
+      "alva",
+      "kansli",
+      "irma",
+      "britt",
+    ]);
+    expect(rows[0]?.title).toMatch(/RITA/);
+    expect(rows[1]?.title).toMatch(/IRMA/);
+    expect(rows[3]?.title).toMatch(/Kansli/);
+    expect(rows[4]?.title).toMatch(/bekräftat/);
+    expect(rows[5]?.severity).toBe("high");
     expect(rows.some((row) => row.title === "Medelfynd")).toBe(false);
+    const ritaBody = await pool.query<{ body: string }>(
+      `select body from britt.observations where org_ref = $1 and source_system = 'rita'`,
+      [orgRef],
+    );
+    expect(ritaBody.rows[0]?.body).toMatch(/Exempelbolaget AB: 7 fynd/);
+    expect(ritaBody.rows[0]?.body).toMatch(/Språkmodell var kopplad/);
   });
 });
