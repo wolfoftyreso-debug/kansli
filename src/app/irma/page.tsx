@@ -9,7 +9,7 @@ import {
   Submit,
 } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
-import { listAgreements } from "@/lib/irma/agreements";
+import { listAgreements, type Agreement } from "@/lib/irma/agreements";
 import { peekIssuedLink, publicIrmaUrl } from "@/lib/irma/issued-link";
 import { statusLabel } from "@/lib/irma/status";
 import { tryRuntime } from "@/lib/platform/page";
@@ -19,6 +19,26 @@ export const metadata = {
   title: "IRMA — Pixdrift",
   description: "Avtal och överlämning till personer utanför organisationen.",
 };
+
+function needsAttention(item: Agreement): boolean {
+  return item.status === "draft" || item.status === "viewed" || item.status === "expired";
+}
+
+function AgreementCard({ item }: { item: Agreement }) {
+  return (
+    <li className="rounded-2xl border border-line bg-surface px-5 py-4">
+      <p className="text-xs font-medium uppercase tracking-wide text-accent">
+        {statusLabel(item.status)}
+      </p>
+      <p className="mt-2 text-lg font-medium tracking-tight">
+        <Link href={`/irma/${item.id}`} className="hover:underline">
+          {item.title}
+        </Link>
+      </p>
+      <p className="mt-1 text-sm text-ink-soft">{item.counterparty}</p>
+    </li>
+  );
+}
 
 export default async function IrmaPage({
   searchParams,
@@ -34,20 +54,18 @@ export default async function IrmaPage({
       ? await listAgreements(runtime.pool, session.org.ref, query || undefined)
       : [];
   const issued = params.issued === "1" ? await peekIssuedLink() : null;
+  const waiting = query ? [] : agreements.filter(needsAttention);
+  const rest = query ? agreements : agreements.filter((item) => !needsAttention(item));
 
   return (
     <AppShell current="irma" session={session}>
-      <header className="flex flex-col gap-3">
-        <p className="pd-label text-faint">PIXDRIFT / IRMA</p>
-        <h1 className="text-3xl font-semibold tracking-tight">IRMA</h1>
-        <p className="text-ink-soft">
-          Skicka ett underlag till någon utanför organisationen. Motparten öppnar länken utan konto
-          och kan bekräfta att hen har läst det.
+      <header className="flex flex-col gap-4 pt-4 sm:pt-8">
+        <p className="pd-label text-faint">IRMA</p>
+        <h1 className="max-w-xl text-4xl font-semibold tracking-tight">Vad ska motparten läsa?</h1>
+        <p className="max-w-xl text-ink-soft">
+          Skicka ett underlag. Motparten öppnar länken utan konto. Bekräftelsen är nivå 1 — en
+          hashad förklaring, inte BankID.
         </p>
-        <Notice>
-          Bekräftelsen är nivå 1: en hashad förklaring. Inte BankID. Inte kvalificerad e-signatur.
-          Ingen fillagring.
-        </Notice>
       </header>
 
       {issued ? (
@@ -58,7 +76,7 @@ export default async function IrmaPage({
             <input
               readOnly
               value={publicIrmaUrl(issued)}
-              className="w-full min-h-11 rounded-md border border-line bg-paper px-3 py-2 font-mono text-sm text-ink"
+              className="min-h-11 w-full rounded-md border border-line bg-paper px-3 py-2 font-mono text-sm text-ink"
             />
           </label>
           <a
@@ -76,17 +94,25 @@ export default async function IrmaPage({
         </SignInGate>
       ) : (
         <>
-          <form
-            action={createIrmaAgreement}
-            className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
-          >
-            <h2 className="text-lg font-semibold">Nytt underlag</h2>
-            <Field name="title" label="Titel" required />
-            <Field name="counterparty" label="Motpart" required />
+          {waiting.length > 0 ? (
+            <section className="flex flex-col gap-3">
+              <h2 className="text-sm font-medium text-ink-soft">Behöver uppmärksamhet</h2>
+              <ul className="flex flex-col gap-3">
+                {waiting.map((item) => (
+                  <AgreementCard key={item.id} item={item} />
+                ))}
+              </ul>
+            </section>
+          ) : null}
+
+          <form action={createIrmaAgreement} className="flex flex-col gap-4">
+            <Field name="title" label="Titel" required large />
+            <Field name="counterparty" label="Motpart" required large />
             <Field
               name="body"
               label="Vad motparten ska läsa"
               multiline
+              large
               placeholder="Valfri text. Klausuler läggs till automatiskt."
             />
             <CheckField
@@ -94,45 +120,33 @@ export default async function IrmaPage({
               defaultChecked
               label="Kräv bekräftelse (nivå 1). Avmarkera för rent informationsunderlag."
             />
-            <Submit>Skapa och visa länk</Submit>
+            <Submit large>Skapa och visa länk</Submit>
           </form>
 
           <section className="flex flex-col gap-3">
-            <h2 className="text-lg font-semibold">Avtal</h2>
             <form className="flex gap-2" action="/irma" method="get">
               <input
                 name="q"
                 defaultValue={query}
                 placeholder="Sök titel eller motpart"
-                className="min-h-11 flex-1 rounded-md border border-line bg-paper px-3 py-2 text-base"
+                className="min-h-12 flex-1 rounded-lg border border-line bg-paper px-4 py-3 text-base"
               />
               <button
                 type="submit"
-                className="rounded-md border border-line px-3 text-sm text-ink-soft"
+                className="min-h-12 rounded-lg border border-line px-4 text-sm text-ink-soft"
               >
                 Sök
               </button>
             </form>
-            {agreements.length === 0 ? (
+            {rest.length === 0 && waiting.length === 0 ? (
               <EmptyState>{query ? "Inget matchade sökningen." : "Inga avtal ännu."}</EmptyState>
-            ) : (
+            ) : rest.length > 0 ? (
               <ul className="flex flex-col gap-3">
-                {agreements.map((item) => (
-                  <li key={item.id} className="rounded-xl border border-line bg-surface p-4">
-                    <p className="text-xs font-medium uppercase tracking-wide text-accent">
-                      {statusLabel(item.status)}
-                    </p>
-                    <p className="mt-2 font-medium">
-                      <Link href={`/irma/${item.id}`} className="hover:underline">
-                        {item.title}
-                      </Link>
-                    </p>
-                    <p className="text-sm text-ink-soft">{item.counterparty}</p>
-                    <p className="mt-2 font-mono text-xs text-faint">{item.createdAt}</p>
-                  </li>
+                {rest.map((item) => (
+                  <AgreementCard key={item.id} item={item} />
                 ))}
               </ul>
-            )}
+            ) : null}
           </section>
         </>
       )}

@@ -5,10 +5,10 @@
 IRMA är en modul i kansli-processen, inte en egen app. Den äger `irma.*` och publicerar events. Den läser inte `rita.*` eller `tora.*`.
 
 Signering *idag* är hashed acknowledgement. Det är medvetet. Inga externa
-e-signleverantörer, ingen BankID, ingen Mobbin eller annan design-API.
-Runtime-anrop ut ur processen är bara våra API-vendorer (AI Gateway m.fl. i
-`docs/AI-PROVIDERS.md` / `docs/INTEGRATIONS.md`). IRMA anropar ingen av dem
-ännu.
+e-signleverantörer, ingen BankID. Mobbin används bara som designreferens för
+agenten — produkten anropar den inte. Runtime-anrop ut ur processen är bara
+våra API-vendorer (`docs/AI-PROVIDERS.md` / `docs/INTEGRATIONS.md`). IRMA
+anropar ingen av dem ännu.
 
 Originalfil och extraherad modell finns inte. Det finns därför ingen pipeline att separera. Om filer kommer ska de ligga i detta system. Originalet skrivs inte över.
 
