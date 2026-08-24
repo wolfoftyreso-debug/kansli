@@ -2,7 +2,11 @@ import { afterAll, describe, expect, it } from "vitest";
 import { createPool, migrateWorkspace } from "@pixdrift/db";
 import { EventLog } from "@pixdrift/events";
 import { createCase, getCase, listCases, setCaseNotes, setCaseStatus } from "./cases.ts";
-import { recordProtocolMeasurement, recordProtocolObservation } from "./protocol.ts";
+import {
+  buildProtocolFacts,
+  recordProtocolMeasurement,
+  recordProtocolObservation,
+} from "./protocol.ts";
 
 const OWNER = process.env.PIXDRIFT_TEST_OWNER_URL ?? process.env.PIXDRIFT_DB_OWNER_URL;
 const APP = process.env.PIXDRIFT_TEST_DATABASE_URL ?? process.env.DATABASE_URL;
@@ -84,5 +88,14 @@ live("alva.cases (live Postgres)", () => {
     expect(updated?.status).toBe("in_progress");
     expect(updated).not.toHaveProperty("diagnosis");
     expect(updated).not.toHaveProperty("findings");
+
+    const facts = buildProtocolFacts({
+      item: updated!,
+      observations: [observed],
+      measurements: [measured],
+    });
+    expect(facts.diagnosis).toBeNull();
+    expect(facts.diagnosisEngine).toBeNull();
+    expect(facts).not.toHaveProperty("findings");
   });
 });

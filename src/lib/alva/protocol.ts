@@ -166,6 +166,49 @@ export async function recordProtocolMeasurement(input: {
   };
 }
 
+export function buildProtocolFacts(input: {
+  item: {
+    id: string;
+    complaint: string;
+    vehicleRef: string | null;
+    area: string | null;
+    mileageKm: number | null;
+    desiredOutcome: string | null;
+    technicianNotes: string;
+    status: string;
+  };
+  observations: ProtocolObservation[];
+  measurements: ProtocolMeasurement[];
+}): Record<string, unknown> {
+  return {
+    system: "alva",
+    kind: "protocol-facts",
+    diagnosis: null,
+    diagnosisEngine: null,
+    case: {
+      id: input.item.id,
+      complaint: input.item.complaint,
+      vehicleRef: input.item.vehicleRef,
+      area: input.item.area,
+      mileageKm: input.item.mileageKm,
+      desiredOutcome: input.item.desiredOutcome,
+      technicianNotes: input.item.technicianNotes,
+      status: input.item.status,
+    },
+    observations: input.observations.map((row) => ({
+      label: row.label,
+      value: row.value,
+      recordedAt: row.recordedAt,
+    })),
+    measurements: input.measurements.map((row) => ({
+      name: row.name,
+      value: row.value,
+      unit: row.unit,
+      recordedAt: row.recordedAt,
+    })),
+  };
+}
+
 export function observationValueLabel(value: string): string {
   if (value === "yes") return "Ja";
   if (value === "no") return "Nej";

@@ -5,6 +5,7 @@ import { Notice, SignInGate, Submit } from "@/components/app/SignInGate";
 import { CASE_STATUS_LABELS, getCase, parseCaseStatus } from "@/lib/alva/cases";
 import {
   PROTOCOL_CHECKS,
+  buildProtocolFacts,
   listProtocolMeasurements,
   listProtocolObservations,
   observationValueLabel,
@@ -38,6 +39,11 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
       : [];
   if (session?.org && runtime && !item) notFound();
   const status = item ? (parseCaseStatus(item.status) ?? "open") : "open";
+  const facts = item ? buildProtocolFacts({ item, observations, measurements }) : null;
+  const factsJson = facts ? JSON.stringify(facts, null, 2) : "";
+  const factsHref = facts
+    ? `data:application/json;charset=utf-8,${encodeURIComponent(factsJson)}`
+    : "";
 
   return (
     <AppShell current="alva" session={session}>
@@ -218,6 +224,25 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
               </ul>
             ) : null}
           </section>
+
+          {facts ? (
+            <section className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4">
+              <h2 className="text-lg font-semibold">Fakta som JSON</h2>
+              <p className="text-sm text-ink-soft">
+                Export av det ni fyllt i. `diagnosis` är null. Ingen slutsats läggs till.
+              </p>
+              <a
+                href={factsHref}
+                download={`alva-${id}.json`}
+                className="self-start text-sm underline decoration-line underline-offset-4 hover:text-ink"
+              >
+                Ladda ner protokollfakta
+              </a>
+              <pre className="overflow-x-auto rounded-md border border-line bg-paper p-3 font-mono text-xs text-ink-soft">
+                {factsJson}
+              </pre>
+            </section>
+          ) : null}
         </>
       ) : null}
     </AppShell>
