@@ -1,3 +1,4 @@
+import { generateKeyPairSync } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import {
   REVOLUT_CALLBACK_PATH,
@@ -8,12 +9,22 @@ import {
   revolutConsentEndpoint,
   revolutEnvironment,
   revolutJwtIssuer,
+  revolutKeyMatch,
   revolutRedirect,
   revolutRedirectUri,
   revolutTokenEndpoint,
+  spkiSha256,
 } from "./config.ts";
 
 const PROD = "https://kansli.vercel.app/api/integrations/revolut/callback";
+
+function pair() {
+  const { privateKey, publicKey } = generateKeyPairSync("rsa", { modulusLength: 2048 });
+  return {
+    privatePem: privateKey.export({ type: "pkcs8", format: "pem" }).toString(),
+    publicPem: publicKey.export({ type: "spki", format: "pem" }).toString(),
+  };
+}
 
 describe("revolut environment", () => {
   it("takes the declared environment, never the hostname", () => {
@@ -120,6 +131,73 @@ describe("config state", () => {
     expect(state.hasPrivateKey).toBe(true);
     expect(JSON.stringify(state)).not.toContain("secret");
     expect(JSON.stringify(state)).not.toContain("BEGIN PRIVATE KEY");
+  });
+});
+
+describe("certificate and key pairing", () => {
+  const base = { REVOLUT_ENVIRONMENT: "production", REVOLUT_REDIRECT_URI: PROD };
+
+  it("derives the same pin from either half of the pair", () => {
+    const { privatePem, publicPem } = pair();
+    expect(spkiSha256(privatePem)).toBe(spkiSha256(publicPem));
+  });
+
+  it("confirms the deployment holds the key the certificate belongs to", () => {
+    const { privatePem, publicPem } = pair();
+    const match = revolutKeyMatch({
+      ...base,
+      REVOLUT_PRIVATE_KEY: privatePem,
+      REVOLUT_CERTIFICATE_PUBLIC_KEY_SHA256: spkiSha256(publicPem),
+    });
+    expect(match.state).toBe("match");
+  });
+
+  it("catches a key that belongs to a different certificate", () => {
+    const mine = pair();
+    const stranger = pair();
+    const env = {
+      ...base,
+      REVOLUT_CLIENT_ID: "client-id",
+      REVOLUT_PRIVATE_KEY: mine.privatePem,
+      REVOLUT_CERTIFICATE_PUBLIC_KEY_SHA256: spkiSha256(stranger.publicPem),
+    };
+    expect(revolutKeyMatch(env).state).toBe("mismatch");
+    // Nothing is absent, so the gap has to be reported as a mismatch rather
+    // than as a missing variable.
+    const state = revolutConfigState(env);
+    expect(state.missing).toEqual([]);
+    expect(state.ready).toBe(false);
+    expect(() => assertProductionRevolutConfig(env)).toThrow(/hör inte till certifikatet/);
+  });
+
+  it("tolerates the prefixed and wrapped forms a secret store hands back", () => {
+    const { privatePem, publicPem } = pair();
+    const pin = spkiSha256(publicPem);
+    for (const stored of [`sha256:${pin}`, `sha256/${pin}`, ` ${pin}\n`]) {
+      expect(
+        revolutKeyMatch({
+          ...base,
+          REVOLUT_PRIVATE_KEY: privatePem,
+          REVOLUT_CERTIFICATE_PUBLIC_KEY_SHA256: stored,
+        }).state,
+      ).toBe("match");
+    }
+  });
+
+  it("stays unknown, not broken, when the pin was never configured", () => {
+    const { privatePem } = pair();
+    const env = { ...base, REVOLUT_CLIENT_ID: "client-id", REVOLUT_PRIVATE_KEY: privatePem };
+    expect(revolutKeyMatch(env).state).toBe("unknown");
+    expect(revolutConfigState(env).ready).toBe(true);
+    expect(() => assertProductionRevolutConfig(env)).not.toThrow();
+  });
+
+  it("keeps the pin free of key material", () => {
+    const { privatePem, publicPem } = pair();
+    const pin = spkiSha256(privatePem);
+    expect(pin).not.toContain("BEGIN");
+    expect(privatePem).not.toContain(pin);
+    expect(publicPem).not.toContain(pin);
   });
 });
 

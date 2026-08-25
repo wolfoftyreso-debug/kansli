@@ -12,6 +12,8 @@
  * has nothing to do with Revolut.
  */
 
+import { createHash, createPublicKey } from "node:crypto";
+
 export type RevolutEnvironment = "sandbox" | "production";
 
 /** Registered with Revolut as the OAuth redirect URI. Changing it breaks the credential. */
@@ -168,6 +170,8 @@ export interface CertificateMetadata {
   fingerprint: string | null;
   createdAt: string | null;
   expiresAt: string | null;
+  /** SPKI pin of the certificate handed to Revolut, so the pair can be checked. */
+  publicKeySha256: string | null;
   /** Days before expiry that health turns into a warning. */
   warnDays: number;
 }
@@ -178,7 +182,67 @@ export function revolutCertificate(env: Env = process.env): CertificateMetadata 
     fingerprint: raw(env, "REVOLUT_CERTIFICATE_FINGERPRINT"),
     createdAt: raw(env, "REVOLUT_CERTIFICATE_CREATED_AT"),
     expiresAt: raw(env, "REVOLUT_CERTIFICATE_EXPIRES_AT"),
+    publicKeySha256: normaliseSpki(raw(env, "REVOLUT_CERTIFICATE_PUBLIC_KEY_SHA256")),
     warnDays: Number.isFinite(warn) && warn > 0 ? warn : 30,
+  };
+}
+
+/**
+ * SHA-256 over the SubjectPublicKeyInfo, base64. This identifies a key pair
+ * without revealing the private half, and it is derivable from either half, so
+ * the same function fingerprints the certificate the owner pasted into Revolut
+ * and the key the deployment is holding.
+ */
+export function spkiSha256(pem: string): string {
+  const der = createPublicKey(normalisePem(pem)).export({ type: "spki", format: "der" });
+  return createHash("sha256").update(der).digest("base64");
+}
+
+function normaliseSpki(value: string | null): string | null {
+  if (!value) return null;
+  return value.replace(/^sha256[:/]/i, "").replace(/\s+/g, "");
+}
+
+export type KeyMatchState = "match" | "mismatch" | "unknown";
+
+export interface KeyMatch {
+  state: KeyMatchState;
+  reason: string;
+}
+
+/**
+ * Answers the question Revolut cannot answer for us until the first token call:
+ * is the private key in this deployment the other half of the certificate the
+ * owner registered? A mismatched pair can never authenticate, so catching it
+ * here turns an opaque provider rejection into one readable sentence.
+ */
+export function revolutKeyMatch(env: Env = process.env): KeyMatch {
+  const expected = revolutCertificate(env).publicKeySha256;
+  if (!expected) {
+    return {
+      state: "unknown",
+      reason:
+        "REVOLUT_CERTIFICATE_PUBLIC_KEY_SHA256 är inte satt, så nyckelparet kan inte kontrolleras här.",
+    };
+  }
+  let actual: string;
+  try {
+    const pem = revolutPrivateKeyPem(env);
+    if (!pem) {
+      return { state: "unknown", reason: "REVOLUT_PRIVATE_KEY saknas." };
+    }
+    actual = spkiSha256(pem);
+  } catch {
+    return { state: "unknown", reason: "REVOLUT_PRIVATE_KEY kan inte läsas." };
+  }
+  if (actual === expected) {
+    return { state: "match", reason: "Den privata nyckeln hör till certifikatet hos Revolut." };
+  }
+  return {
+    state: "mismatch",
+    reason:
+      "Den privata nyckeln i miljön hör inte till certifikatet som är registrerat hos Revolut. " +
+      "Ladda upp certifikatet som hör till nyckeln, eller lägg in nyckeln som hör till certifikatet.",
   };
 }
 
@@ -194,6 +258,8 @@ export interface RevolutConfigState {
   hasPrivateKey: boolean;
   privateKeyError: string | null;
   certificate: CertificateMetadata;
+  /** Whether the key in this deployment matches the registered certificate. */
+  keyMatch: KeyMatch;
   /** True when connect/callback/refresh can run at all. */
   ready: boolean;
   /** What the owner must still supply, in order. */
@@ -220,6 +286,8 @@ export function revolutConfigState(env: Env = process.env): RevolutConfigState {
   if (!redirect.usableInRevolutPortal) missing.push("REVOLUT_REDIRECT_URI");
   if (!environmentIsExplicit) missing.push("REVOLUT_ENVIRONMENT");
 
+  const keyMatch = revolutKeyMatch(env);
+
   return {
     environment,
     environmentIsExplicit,
@@ -232,12 +300,14 @@ export function revolutConfigState(env: Env = process.env): RevolutConfigState {
     hasPrivateKey,
     privateKeyError,
     certificate: revolutCertificate(env),
+    keyMatch,
     ready:
       hasPrivateKey &&
       hasClientId &&
       environmentIsExplicit &&
       redirect.usableInRevolutPortal &&
-      privateKeyError === null,
+      privateKeyError === null &&
+      keyMatch.state !== "mismatch",
     missing,
   };
 }
@@ -260,4 +330,5 @@ export function assertProductionRevolutConfig(env: Env = process.env): void {
     throw new Error(`REVOLUT_REDIRECT_URI måste vara publik https. Fick ${state.redirect.uri}.`);
   }
   if (state.privateKeyError) throw new Error(state.privateKeyError);
+  if (state.keyMatch.state === "mismatch") throw new Error(state.keyMatch.reason);
 }

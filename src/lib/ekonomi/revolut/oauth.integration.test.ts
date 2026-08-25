@@ -24,6 +24,7 @@ import {
   readConnection,
   type TokenSet,
 } from "./connection.ts";
+import { spkiSha256 } from "./config.ts";
 import { RevolutError } from "./errors.ts";
 import { revolutHealth, warnOnCertificateExpiry } from "./health.ts";
 import {
@@ -188,6 +189,64 @@ live("revolut connection (live Postgres, mocked Revolut)", () => {
     expect(loaded?.credentials.refreshToken).toBe("rt_live_value");
     // The renderable half never carries token material.
     expect(JSON.stringify(loaded!.connection)).not.toContain("at_live_value");
+  });
+
+  it("refuses to call Revolut at all when the key is not the certificate's", async () => {
+    const stranger = generateKeyPairSync("rsa", {
+      modulusLength: 2048,
+      publicKeyEncoding: { type: "spki", format: "pem" },
+      privateKeyEncoding: { type: "pkcs8", format: "pem" },
+    });
+    const fetchSpy = vi.spyOn(globalThis, "fetch");
+    const env = {
+      ...process.env,
+      REVOLUT_CERTIFICATE_PUBLIC_KEY_SHA256: spkiSha256(stranger.publicKey as unknown as string),
+    };
+
+    await expect(exchangeAuthorizationCode("code-123", env)).rejects.toMatchObject({
+      category: "configuration",
+    });
+    await expect(requestRefresh("rt_live_value", env)).rejects.toMatchObject({
+      category: "configuration",
+    });
+    // The point of the check: doomed calls never leave the process.
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it("keeps the grant intact when a mispaired key breaks the refresh", async () => {
+    await persistTokens(pool, {
+      orgRef,
+      environment: "sandbox",
+      tokens: futureTokens({ expiresAt: new Date(Date.now() + REFRESH_MARGIN_MS - 30_000) }),
+      markConnected: true,
+    });
+    const stranger = generateKeyPairSync("rsa", {
+      modulusLength: 2048,
+      publicKeyEncoding: { type: "spki", format: "pem" },
+      privateKeyEncoding: { type: "pkcs8", format: "pem" },
+    });
+
+    await expect(
+      getValidAccessToken({
+        pool,
+        orgRef,
+        environment: "sandbox",
+        env: {
+          ...process.env,
+          REVOLUT_CERTIFICATE_PUBLIC_KEY_SHA256: spkiSha256(
+            stranger.publicKey as unknown as string,
+          ),
+        },
+      }),
+    ).rejects.toMatchObject({ category: "configuration" });
+
+    // A wrong key is our mistake, not a withdrawn consent. Destroying the
+    // refresh token here would turn a fixable config error into a trip to
+    // Revolut for the owner.
+    const loaded = await readConnection(pool, orgRef, "sandbox");
+    expect(loaded?.connection.status).toBe("active");
+    expect(loaded?.credentials.refreshToken).toBe("rt_live_value");
+    expect(loaded?.connection.lastErrorCode).toBe("configuration");
   });
 
   it("classifies a rejected code without killing the connection", async () => {

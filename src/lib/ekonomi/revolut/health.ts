@@ -10,6 +10,7 @@ import type { EventLog } from "@pixdrift/events";
 import {
   revolutConfigState,
   type Env,
+  type KeyMatch,
   type RevolutConfigState,
   type RevolutEnvironment,
 } from "./config.ts";
@@ -37,6 +38,7 @@ export interface RevolutHealth {
     fingerprint: string | null;
     expiresAt: string | null;
     daysUntilExpiry: number | null;
+    keyMatch: KeyMatch;
   };
   actionRequired: boolean;
   /** One Swedish line for a non-developer. */
@@ -63,7 +65,13 @@ function summarise(input: {
   accessTokenValid: boolean;
   refreshAvailable: boolean;
   certificate: CertificateHealth;
+  keyMatch: KeyMatch;
 }): string {
+  // Checked before anything else: a mismatched pair cannot authenticate, and
+  // every other symptom downstream of it would be a red herring.
+  if (input.keyMatch.state === "mismatch") {
+    return "Nyckeln i miljön hör inte till certifikatet hos Revolut.";
+  }
   if (input.status === "revoked") return "Inte ansluten. Anslutningen togs bort.";
   if (input.status === "action_required") return "Anslutningen måste göras om i Revolut.";
   if (!input.configured) return "Inte konfigurerad. Certifikat och client id saknas.";
@@ -184,6 +192,7 @@ export async function revolutHealth(
       fingerprint: config.certificate.fingerprint,
       expiresAt: config.certificate.expiresAt,
       daysUntilExpiry: cert.daysUntilExpiry,
+      keyMatch: config.keyMatch,
     },
     actionRequired,
     summary: summarise({
@@ -192,6 +201,7 @@ export async function revolutHealth(
       accessTokenValid,
       refreshAvailable,
       certificate: cert.health,
+      keyMatch: config.keyMatch,
     }),
   };
 }

@@ -16,6 +16,7 @@ import {
   assertProductionRevolutConfig,
   revolutClientId,
   revolutEnvironment,
+  revolutKeyMatch,
   revolutRedirectUri,
   revolutTokenEndpoint,
   type Env,
@@ -87,6 +88,13 @@ async function postToken(
   const clientId = revolutClientId(env);
   if (!clientId) {
     throw new RevolutError("configuration", "REVOLUT_CLIENT_ID saknas.");
+  }
+  // A key that is not the other half of the registered certificate cannot
+  // produce an assertion Revolut will accept, in any environment. Saying so
+  // here beats sending doomed calls and reading back `invalid_client`.
+  const keyMatch = revolutKeyMatch(env);
+  if (keyMatch.state === "mismatch") {
+    throw new RevolutError("configuration", keyMatch.reason);
   }
   const assertion = await clientAssertionFromEnv(env);
   const body = new URLSearchParams({

@@ -29,6 +29,12 @@ const CERT_LABEL: Record<RevolutHealth["certificate"]["health"], string> = {
   expired: "Utgånget",
 };
 
+const KEY_MATCH_LABEL: Record<RevolutHealth["certificate"]["keyMatch"]["state"], string> = {
+  match: "Stämmer med certifikatet",
+  mismatch: "Stämmer inte med certifikatet",
+  unknown: "Inte kontrollerat",
+};
+
 function when(value: string | null): string {
   if (!value) return "aldrig";
   return new Date(value).toLocaleString("sv-SE", { dateStyle: "short", timeStyle: "short" });
@@ -113,7 +119,15 @@ export default async function RevolutConnectionPage({
                       : `${CERT_LABEL[health.certificate.health]} · ${health.certificate.daysUntilExpiry} dagar`
                   }
                 />
+                <Row
+                  label="Nyckelpar"
+                  value={KEY_MATCH_LABEL[health.certificate.keyMatch.state]}
+                />
               </div>
+            ) : null}
+
+            {config.keyMatch.state === "mismatch" ? (
+              <p className="mt-4 text-sm text-ink-soft">{config.keyMatch.reason}</p>
             ) : null}
 
             <div className="mt-4 flex flex-wrap items-center gap-3">
@@ -127,9 +141,13 @@ export default async function RevolutConnectionPage({
                     ? "Anslut om Revolut"
                     : "Anslut Revolut"}
                 </Link>
-              ) : (
+              ) : config.missing.length > 0 ? (
                 <span className="text-sm text-ink-soft">
                   Anslut går att trycka på när {config.missing.join(", ")} är satt.
+                </span>
+              ) : (
+                <span className="text-sm text-ink-soft">
+                  Anslut går att trycka på när nyckeln och certifikatet hör samman.
                 </span>
               )}
               {health && health.status !== "not_configured" && health.status !== "revoked" ? (

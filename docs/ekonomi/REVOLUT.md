@@ -38,6 +38,7 @@ byt `REVOLUT_REDIRECT_URI` **sedan**.
 | `REVOLUT_CERTIFICATE_CREATED_AT`  | ISO-datum.                                                      |
 | `REVOLUT_CERTIFICATE_EXPIRES_AT`  | ISO-datum. Driver varningen om certifikatbyte.                   |
 | `REVOLUT_CERTIFICATE_WARN_DAYS`   | Default 30.                                                     |
+| `REVOLUT_CERTIFICATE_PUBLIC_KEY_SHA256` | SPKI-pin. Avslöjar en felparad nyckel direkt.              |
 | `EKONOMI_WRAP_KEY`                | Krypterar tokenarna i databasen.                                |
 
 Saknas `REVOLUT_CLIENT_ID` blir tillståndet `NOT_CONFIGURED`. Resten av appen
@@ -59,10 +60,24 @@ Skriptet lägger nyckeln i `.secrets/revolut/` (gitignorerat), skriver ut det
 publika certifikatet och certifikatets metadata, men **aldrig** privatnyckeln.
 Vägrar skriva över en befintlig nyckel.
 
+### Hör nyckeln och certifikatet ihop?
+
+Skriptet skriver även ut `REVOLUT_CERTIFICATE_PUBLIC_KEY_SHA256`: en SHA-256 över
+certifikatets publika nyckel (SPKI), inte över certifikatet. Samma värde går att
+räkna fram ur privatnyckeln, så deploymenten kan själv svara på om nyckeln den
+håller hör till certifikatet som ligger registrerat hos Revolut.
+
+Det spelar roll eftersom ett felparat nyckelpar aldrig kan autentisera, och
+Revolut säger inte varför — varje anrop avvisas bara. Med pinen satt vägrar
+produktionsbooten starta flödet, statusraden **Nyckelpar** säger _Stämmer inte
+med certifikatet_, och felet syns på rätt ställe istället för som ett gåtfullt
+401. Pinen är inte hemlig; den går inte att räkna baklänges till nyckeln.
+
 Revolut dokumenterar ingen överlappande certifikatrotation. Bytet är därför:
 generera nytt par → ladda upp det nya certifikatet i Revolut → sätt den nya
-`REVOLUT_PRIVATE_KEY` och metadata → deploya → tryck **Anslut om**. Varningen
-kommer 30 dagar i förväg så det kan göras planerat.
+`REVOLUT_PRIVATE_KEY` och metadata, pinen inkluderad → deploya → tryck **Anslut
+om**. Varningen kommer 30 dagar i förväg så det kan göras planerat. Glöms pinen
+bort säger statusraden **Nyckelpar** det direkt efter deployen.
 
 ## Så fungerar tokenlivscykeln
 
