@@ -50,7 +50,7 @@ export function railSnapshot(env: NodeJS.ProcessEnv = process.env): Record<Payme
       label: "Faktura 10 dagar",
       offerable: true,
       receivable: true,
-      reason: "Fungerar utan extern adapter. Kunden betalar mot förfallodatum.",
+      reason: "Fungerar direkt. Kunden betalar senast på förfallodagen.",
       envKey: "—",
     },
     stripe: {
@@ -60,8 +60,8 @@ export function railSnapshot(env: NodeJS.ProcessEnv = process.env): Record<Payme
       receivable: stripeMode !== "empty",
       reason:
         stripeMode === "empty"
-          ? "Ingen STRIPE_SECRET_KEY / STRIPE_RESTRICTED_KEY. Checkout skapas inte."
-          : `Nyckeltyp ${stripeMode}. Checkout Sessions, inga påhittade charges.`,
+          ? "Stripe är inte inkopplat. Kortbetalning går inte att erbjuda än."
+          : "Stripe är inkopplat. Betalningar görs på riktigt — inget simuleras.",
       envKey: "STRIPE_SECRET_KEY",
     },
     revolut: {
@@ -70,10 +70,10 @@ export function railSnapshot(env: NodeJS.ProcessEnv = process.env): Record<Payme
       offerable: Boolean(keys.revolutMerchant),
       receivable: Boolean(keys.revolutBusiness || keys.revolutMerchant),
       reason: keys.revolutBusiness
-        ? "Business-token finns. Kontoutdrag och matchning kan köras. Merchant-order bara om REVOLUT_MERCHANT_SECRET också finns."
+        ? "Revolut är anslutet. Kontoutdrag och matchning fungerar. För att ta betalt via Revolut krävs även Merchant-kopplingen."
         : keys.revolutMerchant
-          ? "Merchant-secret finns. Kontoutdrag saknas."
-          : "Ingen Revolut-behörighet. Anslut Revolut Business under Anslutningar — då förnyas tokenen automatiskt.",
+          ? "Merchant-kopplingen finns. Kontoutdrag saknas."
+          : "Revolut är inte anslutet. Anslut under Anslutningar — sen sköter det sig självt.",
       envKey: "REVOLUT_BUSINESS_TOKEN",
     },
     swish: {
@@ -82,8 +82,8 @@ export function railSnapshot(env: NodeJS.ProcessEnv = process.env): Record<Payme
       offerable: false,
       receivable: Boolean(keys.swishPayee),
       reason: keys.swishPayee
-        ? "Payee-alias finns, men Swish Handel-certifikat är inte inkopplat. Mottaget kan bokas manuellt."
-        : "Ingen SWISH_PAYEE_ALIAS. Swish Handel kräver bankcertifikat — inte låtsas-QR.",
+        ? "Swish-numret finns, men kopplingen till Swish Handel är inte klar. Betalningar som kommit in kan bokas för hand."
+        : "Swish är inte inkopplat. Det kräver ett certifikat från banken — vi visar aldrig en QR-kod som inte fungerar.",
       envKey: "SWISH_PAYEE_ALIAS",
     },
   };

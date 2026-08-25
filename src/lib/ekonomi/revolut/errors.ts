@@ -106,25 +106,25 @@ export function describeCategory(category: RevolutErrorCategory): string {
     case "configuration":
       return "Revolut-konfigurationen är inte klar.";
     case "state_invalid":
-      return "OAuth-state matchade inte. Börja om från Anslut.";
+      return "Något gick fel i anslutningen. Börja om från Anslut.";
     case "state_expired":
-      return "OAuth-state hann gå ut. Börja om från Anslut.";
+      return "Anslutningen tog för lång tid. Börja om från Anslut.";
     case "state_replayed":
-      return "OAuth-state var redan använt. Börja om från Anslut.";
+      return "Anslutningen var redan använd. Börja om från Anslut.";
     case "authorization_denied":
       return "Åtkomsten nekades i Revolut.";
     case "code_rejected":
-      return "Revolut avvisade auktoriseringskoden. Koder är kortlivade — börja om.";
+      return "Revolut sa nej. Prova att ansluta igen.";
     case "assertion_rejected":
-      return "Revolut avvisade client assertion. Kontrollera client id och certifikat.";
+      return "Revolut kände inte igen oss. Be den som sköter driften kontrollera id och certifikat.";
     case "authentication_expired":
-      return "Access token var inte giltig. Den förnyas automatiskt.";
+      return "Anslutningen behövde förnyas. Det sker automatiskt.";
     case "refresh_rejected":
-      return "Refresh token gäller inte längre. Anslutningen måste göras om.";
+      return "Anslutningen gäller inte längre. Anslut Revolut igen.";
     case "forbidden":
-      return "Tokenen saknar behörighet för anropet.";
+      return "Anslutningen får inte göra det här i Revolut.";
     case "rate_limited":
-      return "Revolut begränsade anropstakten.";
+      return "Revolut tar emot för många anrop just nu. Vänta en stund.";
     case "server_error":
       return "Revolut svarade med ett serverfel.";
     case "timeout":

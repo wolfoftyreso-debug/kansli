@@ -37,8 +37,8 @@ export default async function TyraPage() {
         <p className="pd-label text-faint">TYRA</p>
         <h1 className="max-w-xl text-4xl font-semibold tracking-tight">Vilket fordon ska in?</h1>
         <p className="max-w-xl text-ink-soft">
-          TYRA är däckhotellets administration: kund, fordon, ärende, nästa steg och det kunden får
-          se. Offert och lager hör till samma pärm — de låtsas inte vara live förrän adaptern finns.
+          TYRA håller ordning på däckhotellet: kunder, fordon, ärenden och nästa steg. Offert och
+          lager är era egna siffror — inga live-priser än.
         </p>
         <p className="text-sm">
           <Link
@@ -59,7 +59,7 @@ export default async function TyraPage() {
 
       {!session?.org ? (
         <SignInGate next="/tyra" title="Logga in för att öppna ärenden">
-          TYRA använder PIXDRIFT-sessionen. Ingen separat verkstadslogin.
+          Samma inloggning som resten av Pixdrift. Inget extra konto för verkstaden.
         </SignInGate>
       ) : (
         <>
@@ -131,7 +131,8 @@ export default async function TyraPage() {
       )}
 
       <Notice>
-        Påminnelser kan köas. Utan sändadapter blir de BLOCKED, inte skickade. Inga live-däckpriser.
+        Påminnelser läggs i kö men skickas inte än — det saknas en koppling till SMS och e-post.
+        Inga live-däckpriser.
       </Notice>
     </AppShell>
   );

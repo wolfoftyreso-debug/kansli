@@ -85,10 +85,7 @@ export default async function IrmaLinkPage({ params }: { params: Promise<{ token
 
       {unread ? (
         <form action={markIrmaViewed} className="flex flex-col gap-3">
-          <Notice>
-            Underlaget visas. Statusen är fortfarande Skapat. Prefetch, bots och en GET räknas inte
-            som öppnat.
-          </Notice>
+          <Notice>Klicka på knappen när du har läst, så vet avsändaren att du öppnat det.</Notice>
           <input type="hidden" name="token" value={token} />
           <Submit>Jag har öppnat underlaget</Submit>
         </form>

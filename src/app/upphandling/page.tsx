@@ -41,16 +41,16 @@ export default function UpphandlingPage() {
           </h1>
           <p className="text-ink-soft">
             Fyll i hur ni arbetar idag: system, anläggningar och identitet. Vi använder svaret till
-            att förbereda en demonstration och ett möte tio dagar senare. Anpassning mot er miljö
-            görs när stacken är känd.
+            att förbereda en demonstration och ett möte tio dagar senare. Anpassningen gör vi när vi
+            vet vilka system ni har.
           </p>
           <ul className="flex flex-col gap-2 text-sm text-ink-soft">
             <li>Inloggning med arbets-e-post och lösenord i Pixdrift Identity.</li>
-            <li>Onboardingfaktura med tio dagars betalning i Ekonomi.</li>
-            <li>Pilot kan erbjudas med avgränsad omfattning. Koncernavtal tecknas efter demot.</li>
+            <li>Startfaktura med tio dagars betalning i Ekonomi.</li>
+            <li>Pilot kan erbjudas med avgränsad omfattning. Avtal tecknas efter demot.</li>
           </ul>
           <p className="text-sm text-muted">
-            Knappen fastställer mötet till klockan 10:00, tio kalenderdagar från intaget.
+            När du skickar in bokas mötet automatiskt: klockan 10.00, tio dagar från idag.
           </p>
         </aside>
 
@@ -138,7 +138,7 @@ export default function UpphandlingPage() {
           <CheckField
             name="issueInvoice"
             defaultChecked
-            label="Utfärda onboardingfaktura med tio dagars betalning."
+            label="Utfärda startfaktura med tio dagars betalning."
           />
           <Field name="invoiceKronor" label="Fakturabelopp exkl. moms (kr)" defaultValue="2500" />
           <Submit large>Boka möte om 10 dagar</Submit>

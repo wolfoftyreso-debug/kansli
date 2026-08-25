@@ -67,7 +67,7 @@ export function ritaEngineSnapshot(
 
 export function ritaEngineUnavailableReason(): string {
   if (process.env.RITA_ENGINE_BINARY?.trim()) {
-    return "RITA_ENGINE_BINARY pekar inte på en körbar skattjakt-binär.";
+    return "Analysen är fel inställd. Be den som sköter driften kontrollera inställningarna.";
   }
-  return "RITA_ENGINE_URL och RITA_ENGINE_TOKEN saknas. Lokal binär sätts med RITA_ENGINE_BINARY.";
+  return "Analysen är inte inkopplad än. Be den som sköter driften koppla in den.";
 }

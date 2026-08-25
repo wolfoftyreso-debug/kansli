@@ -14,7 +14,8 @@ export function ritaCompletedObservationBody(payload: Record<string, unknown>): 
   const count = typeof raw === "number" ? raw : typeof raw === "string" ? Number(raw) : NaN;
   const findings = Number.isFinite(count) ? `${count} fynd` : "fyndunderlag klart";
   const head = company ? `${company}: ${findings}` : findings;
-  const model = payload.modelConfigured === true ? "Språkmodell var kopplad." : "Bara regelverket.";
+  const model =
+    payload.modelConfigured === true ? "Med AI-stöd." : "Utan AI-stöd — bara fasta regler.";
   return `${head}. ${model}`;
 }
 
@@ -68,8 +69,8 @@ export function registerSyncHandlers(events: EventLog, pool: pg.Pool): void {
     await record(
       event.orgRef,
       "rita",
-      "RITA kunde inte köra analysmotorn",
-      String(event.payload["reason"] ?? "Motorn är inte konfigurerad."),
+      "RITA kunde inte köra analysen",
+      String(event.payload["reason"] ?? "Analysen är inte inkopplad än."),
       event.subjectRef,
     );
   });
@@ -153,7 +154,7 @@ export function registerSyncHandlers(events: EventLog, pool: pg.Pool): void {
       event.orgRef,
       "tyra",
       "TYRA har köat en påminnelse",
-      "Meddelandet ligger i outbox. Det är inte skickat.",
+      "Meddelandet ligger i kö och är inte skickat än.",
       event.subjectRef,
     );
   });
@@ -163,7 +164,7 @@ export function registerSyncHandlers(events: EventLog, pool: pg.Pool): void {
       event.orgRef,
       "tyra",
       "TYRA kunde inte skicka en påminnelse",
-      "Ingen sändadapter. Outbox-raden är BLOCKED.",
+      "Det finns ingen koppling till SMS eller e-post, så meddelandet är stoppat.",
       event.subjectRef,
     );
   });
@@ -172,8 +173,8 @@ export function registerSyncHandlers(events: EventLog, pool: pg.Pool): void {
     await record(
       event.orgRef,
       "tyra",
-      "TYRA har skickat en kundhub-länk",
-      "Token visas en gång. Bara hashen ligger i databasen.",
+      "TYRA har skapat en kundlänk",
+      "Länken visas bara en gång och sparas inte i läsbar form.",
       event.subjectRef,
     );
   });
@@ -182,8 +183,8 @@ export function registerSyncHandlers(events: EventLog, pool: pg.Pool): void {
     await record(
       event.orgRef,
       "alva",
-      "ALVA har registrerat ett fall",
-      String(event.payload["note"] ?? "Diagnosmotorn saknas. Fallet är registrerat."),
+      "ALVA har registrerat ett ärende",
+      String(event.payload["note"] ?? "Ärendet är registrerat. Diagnosen är inte inkopplad än."),
       event.subjectRef,
     );
   });
@@ -192,8 +193,8 @@ export function registerSyncHandlers(events: EventLog, pool: pg.Pool): void {
     await record(
       event.orgRef,
       "kansli",
-      "Koncernupphandling inkommen",
-      String(event.payload["title"] ?? "Ett intag väntar. Möte om 10 dagar."),
+      "Ny anmälan om upphandling",
+      String(event.payload["title"] ?? "En ny anmälan väntar. Möte om 10 dagar."),
       event.subjectRef,
     );
   });

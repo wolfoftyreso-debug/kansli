@@ -75,7 +75,7 @@ export function analysisSummary(result: unknown): string | null {
   const identified = Number(row.identified_opportunities ?? 0);
   const high = Number(row.high_priority_count ?? 0);
   const nothing = Boolean(row.found_nothing);
-  if (nothing) return "Motorn hittade inget att rapportera i underlaget.";
+  if (nothing) return "Analysen hittade inget att rapportera.";
   return `${identified} fynd, varav ${high} med hög prioritet.`;
 }
 
@@ -108,7 +108,7 @@ export function estimatedTotalHint(result: unknown): string | null {
   if (impact.high == null || impact.high <= 0) return null;
   const low = formatOre(impact.low ?? 0);
   const high = formatOre(impact.high);
-  return `Preliminärt intervall (ej garanti): ${low}–${high} — beräknat av motorn från underlaget; verifiera med rådgivare.`;
+  return `Ungefär ${low}–${high} (ingen garanti). Stäm av med er rådgivare innan ni agerar.`;
 }
 
 export function formatOre(ore: number): string {

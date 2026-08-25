@@ -25,13 +25,13 @@ export interface FamilyLink {
 }
 
 export const FAMILY_PRINCIPLE =
-  "Systemen delar identitet och en händelselogg. De delar aldrig tabeller. RITA jagar skattemässiga besparingar. TORA avgör om ett bolag får lämna anbud. De är inte samma sak.";
+  "Alla system har samma inloggning och en gemensam händelselista, men varje system äger sin egen information. RITA letar skattebesparingar, TORA bedömer upphandlingar — två olika jobb.";
 
 /** What this nav repo actually runs. Not the target architecture. */
 export const FAMILY_STACK: readonly { layer: string; runs: string }[] = [
   {
     layer: "Språk",
-    runs: "TypeScript 5 i hela navet. SQL i migreringarna. Rust-doktrin från vendor/cala; skattjakt är en extern binär. ekonomi-ledger validerar verifikat, postar inte i drift.",
+    runs: "TypeScript 5 i hela systemet. SQL i databasen. RITA:s analys körs som ett eget program. ekonomi-ledger kontrollerar verifikat, postar inte i drift.",
   },
   {
     layer: "Webb",
@@ -39,23 +39,23 @@ export const FAMILY_STACK: readonly { layer: string; runs: string }[] = [
   },
   {
     layer: "Identitet",
-    runs: "Självhostad OIDC (Authorization Code + PKCE, ES256/JWKS) i Fastify 5, monterad under /idp. Session: httpOnly-cookie kansli_session (jose).",
+    runs: "Egen inloggning, byggd på öppen standard. En cookie håller er inloggade. Samma inloggning i alla system.",
   },
   {
     layer: "Data",
-    runs: "PostgreSQL 16 via pg. Owner kör migreringar, app-rollen kör runtime. Scheman: public, platform, kansli, ekonomi, tora, rita, britt, irma, tyra, alva.",
+    runs: "PostgreSQL 16. Varje system har sin egen data. Inget system skriver i ett annat systems uppgifter.",
   },
   {
     layer: "Motorer",
-    runs: "TORA är TypeScript i @pixdrift/tora. RITA anropar skattjakt via HTTP eller subprocess. FakeAnalysisEngine används inte i drift.",
+    runs: "TORA räknar i samma process. RITA anropar en egen analys. Inga påhittade resultat i drift.",
   },
   {
     layer: "AI",
-    runs: "Vercel AI Gateway via @pixdrift/ai-core. Ping: openai/gpt-4.1-nano. Svaret är inferens, inte fakta.",
+    runs: "AI går via Vercel AI Gateway. Svaret är en gissning, inte fakta.",
   },
   {
     layer: "Drift och test",
-    runs: "Vercel, Node 22, pnpm 10. CI: format, lint, typecheck, Vitest mot Postgres 16, build. Ingen AWS SDK i det här repot.",
+    runs: "Körs på Vercel. Tester mot Postgres 16. Ingen AWS SDK i det här systemet.",
   },
 ];
 
@@ -65,8 +65,8 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     name: "PIXDRIFT Identity",
     mission: "En nyckel till hela huset.",
     question: "Vem är du, och för vilken organisation?",
-    does: "OIDC-inloggning (Authorization Code + PKCE), JWKS, användare, organisationer och medlemskap. Kansli tar emot koden och sätter en BFF-cookie (kansli_session).",
-    doesNot: "Ingen produkt-UI. Ingen MFA. Ingen billing.",
+    does: "Logga in en gång. Kansli tar emot er och håller er inloggade i hela huset.",
+    doesNot: "Ingen produktyta. Ingen extra inloggningsfaktor. Ingen fakturering här.",
     owns: "public (users, orgs, clients, keys)",
     status: "operational",
   },
@@ -75,9 +75,9 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     name: "Kansli",
     mission: "Receptionen. Inte fabriken.",
     question: "Var loggar jag in, och vad ska vi göra internt?",
-    does: "Navet: session, plattforms-API:er, intern uppgiftstavla, koncernupphandling. Samma process som hostar /idp och alla produkt-API:er.",
+    does: "Receptionen: inloggning, intern uppgiftstavla och formuläret för nya kunder.",
     doesNot:
-      "Ingen produktlogik. Inga andras tabeller. Upphandlingen är ett intag, inte ett sålt koncernavtal.",
+      "Ingen produktlogik. Inga andras uppgifter. Formuläret är en anmälan, inte ett sålt avtal.",
     owns: "kansli.tasks, kansli.intakes",
     status: "operational",
   },
@@ -86,9 +86,9 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     name: "Ekonomi",
     mission: "En bok för hela huset. Fordran, moms, inbetalning.",
     question: "Vad är bokat, vad är förfallet, och hur kom pengarna in?",
-    does: "Utfärdar faktura 10 dagar, bokför i öre mot BAS, exporterar moms och verifikat. Slottar för Stripe och Revolut. Matchar inbetalningar när tokenen finns.",
+    does: "Utfärdar faktura på 10 dagar, bokför i öre mot BAS, exporterar moms och verifikat. Ansluter Stripe och Revolut. Matchar inbetalningar när banken är kopplad.",
     doesNot:
-      "Inte Fortnox. Inte påhittad Swish-QR. Inte Stripe-charge utan nyckel. Inte 100 simulerade transaktioner förrän du ger OK. Cala körs inte som sidecar än.",
+      "Inte Fortnox. Ingen Swish-kod som inte fungerar. Inga kortbetalningar utan Stripe. Inget simuleras utan att du sagt ja.",
     owns: "ekonomi.accounts, ekonomi.transactions, ekonomi.entries, ekonomi.invoices, ekonomi.payments, ekonomi.connectors",
     status: "pilot",
   },
@@ -96,9 +96,9 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     id: "tora",
     name: "TORA",
     mission: "Ska vi lägga tid på den här upphandlingen?",
-    question: "Får det här bolaget lämna anbud — på vilken rättslig grund, och vad gör vi nu?",
-    does: "Kör upphandlingsmotorn i processen. GET utvärderar och redigerar efter nivå. Marknad, detalj, kalender. POST (Publicera) skriver en ögonblicksbild och en händelse.",
-    doesNot: "Verifierar inte räkenskaper. Det är RITA.",
+    question: "Får det här bolaget lämna anbud — och vad gör vi nu?",
+    does: "Bedömer upphandlingar efter er plan: marknad, detaljer och kalender. När ni delar läget sparas en ögonblicksbild.",
+    doesNot: "Kollar inte räkenskaperna. Det gör RITA.",
     owns: "tora.market_snapshots",
     status: "pilot",
   },
@@ -107,9 +107,9 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     name: "RITA",
     mission: "Hitta skattemässiga besparingar i underlaget — avdrag, moms, K10, pension, FoU.",
     question: "Vilka skatteutrymmen sitter i böckerna, och vad ska vi kolla?",
-    does: "Skattjakt läser bokslutet mot svenska skatteregler och lämnar fynd (category tax och närliggande avdrag). HTTP eller lokal binär. Utan motor: blocked. Fynd är preliminära — inte skatteråd.",
+    does: "Läser bokslutet mot svenska skatteregler och lämnar fynd. Utan analys: nya jobb stannar. Fynd är preliminära — inte skatteråd.",
     doesNot:
-      "Ingen FakeAnalysisEngine i drift. Utan host eller RITA_ENGINE_BINARY blir status blocked. Avgör inte anbudsrätt. Ingen kunduppladdning via Blob. Ingen garanti om återbäring.",
+      "Inga påhittade resultat. Avgör inte om ni får lämna anbud. Ingen kunduppladdning än. Ingen garanti om återbäring.",
     owns: "rita.analyses",
     status: "pilot",
   },
@@ -118,9 +118,9 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     name: "BRITT",
     mission: "Vad ska någon göra nu, utifrån det som faktiskt hänt?",
     question: "Vad har hänt som någon behöver följa upp?",
-    does: "Observationsinkorg plus deterministisk demonstrationsanalys (omsättning, likviditet, koncentration). Skriver bara i britt-schemat.",
+    does: "En inkorg för sådant som behöver följas upp, plus en exempelanalys av omsättning, kassa och största kund.",
     doesNot:
-      "Inte Fortnox, Revolut eller hela underrättelseprodukten. Ingen läsning av TORA/RITA-tabeller.",
+      "Inte Fortnox, Revolut eller hela underrättelseprodukten. Läser inte andras uppgifter direkt.",
     owns: "britt.observations, britt.findings, britt.metric_snapshots, britt.analysis_runs",
     status: "pilot",
   },
@@ -130,9 +130,9 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     mission:
       "Digitalisera verksamhetens avtalshantering: ett flöde, koll på varje avtal, slut på pappersjakten.",
     question: "Vilket avtal ska ut, vem ska läsa det, och var är det nu?",
-    does: "Skapar ett avtal med klausuler, hashar en tidsbegränsad magic link (14 dagar), motparten öppnar /irma/l/<token> och kan bekräfta. Första öppning = viewed. Bekräftelse = signed + SHA-256-artefakt. Länken kan återkallas. Integritet räknas om mot hash. Lista och sök i orgens avtal.",
+    does: "Skapar avtal med villkor och en länk som gäller 14 dagar. Motparten öppnar länken, läser och bekräftar. Allt får ett digitalt kvitto.",
     doesNot:
-      "Inte hela dokument-OS:et än. Ingen kvalificerad e-signatur. Ingen BankID. Ingen fillagring. Ingen OCR. Nivå 2–5 finns inte. Starkare nivåer byggs här, inte mot en e-sign-SaaS.",
+      "Inget komplett dokumentarkiv än. Ingen juridisk e-signatur. Ingen BankID. Inga starkare signeringsnivåer än.",
     owns: "irma.agreements",
     status: "pilot",
   },
@@ -141,9 +141,9 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     name: "TYRA",
     mission: "Modern däckhotell-administration: CRM, offert, lager och kundflöde i ett.",
     question: "Vilket fordon, vilken kund, vilket lager — och vad är nästa steg?",
-    does: "Ärende, kund/fordon, resolveWorkflow, work card, hashad kundhub. CRM-kortet (nästa åtgärd) finns i domänen. Påminnelse-outbox. Leverantörsinterface utan live-pris.",
+    does: "Ärende, kund, fordon, nästa steg och en kundlänk. Påminnelser läggs i kö. Inga live-priser än.",
     doesNot:
-      "Full lager/offert-UI och live-leverantör är inte inkopplade i navet än. Ingen NextAuth. Ingen Fortnox. Ingen BankID. Ingen SMS/e-postleverans. Demo-leverantör är borttagen.",
+      "Fullt lager och live-priser är inte inkopplade än. Ingen Fortnox. Ingen BankID. Inga SMS eller mejl skickas än.",
     owns: "tyra.customers, tyra.vehicles, tyra.tire_cases, tyra.customer_hub_links, tyra.reminder_outbox, tyra.tenant_supplier_accounts",
     status: "pilot",
   },
@@ -153,9 +153,9 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     mission:
       "Guidad diagnosprocess med full dokumentation — tid och feljakt sparas för verkstad, kund och försäkring.",
     question: "Vad sa kunden, och hur tar vi oss till ett protokoll alla kan följa?",
-    does: "Registrerar fallet och en protokolltom: status, anteckning, kontrollerade fakta och inmatade mätvärden. Ingen slutsats från systemet.",
+    does: "Registrerar ärendet och ett tomt protokoll: status, anteckning, kontroller och mätvärden. Ingen slutsats från systemet.",
     doesNot:
-      "Guidningen och diagnosmotorn väntar på ALVA-repot. Inga påhittade fynd. Motorn kopplas, den låtsas inte fram.",
+      "Den guidade diagnosen är inte inkopplad än. Inga påhittade fynd. Systemet hittar aldrig på något.",
     owns: "alva.cases, alva.case_observations, alva.case_measurements",
     status: "deferred",
   },
@@ -166,14 +166,13 @@ export const FAMILY_LINKS: readonly FamilyLink[] = [
     from: "identity",
     to: "alla produkter",
     via: "OIDC → kansli_session",
-    meaning: "En inloggning. Produkten läser sessionen, inte varandras användartabeller.",
+    meaning: "En inloggning. Produkterna läser inte varandras användarlistor.",
   },
   {
     from: "identity",
     to: "platform.events",
     via: "identity.session.started",
-    meaning:
-      "Lyckad inloggning skrivs i loggen. BRITT lyssnar inte — det är revision, inte en uppföljningsuppgift.",
+    meaning: "Lyckad inloggning skrivs i loggen. Det är ett kvitto, inte en uppgift att följa upp.",
   },
   {
     from: "tora",
@@ -186,7 +185,7 @@ export const FAMILY_LINKS: readonly FamilyLink[] = [
     to: "britt",
     via: "rita.analysis.completed | rita.analysis.blocked",
     meaning:
-      "BRITT får bolagsnamn, fyndantal och om språkmodellen var kopplad. Inte själva fynden — de stannar i rita.analyses.",
+      "BRITT får bolagsnamn, fyndantal och om AI var med. Inte själva fynden — de stannar i RITA.",
   },
   {
     from: "irma",
@@ -198,26 +197,26 @@ export const FAMILY_LINKS: readonly FamilyLink[] = [
     from: "tyra",
     to: "britt",
     via: "tyra.case.created | tyra.case.completed | tyra.hub.link.issued | tyra.reminder.enqueued | tyra.reminder.blocked",
-    meaning: "Ärende, hub-länk eller påminnelsekö. Blockerad outbox betyder inte skickat.",
+    meaning: "Ärende, kundlänk eller påminnelse i kö. Stoppad kö betyder inte skickat.",
   },
   {
     from: "alva",
     to: "britt",
     via: "alva.case.created",
-    meaning: "Ett fall är registrerat. Ingen diagnos följer förrän motorn finns.",
+    meaning: "Ett ärende är registrerat. Ingen diagnos följer förrän den är inkopplad.",
   },
   {
     from: "ekonomi",
     to: "britt",
     via: "ekonomi.invoice.issued | ekonomi.payment.recorded | ekonomi.revolut.sync.blocked",
-    meaning: "Utfärdad faktura, bokad inbetalning eller blockerad Revolut-synk.",
+    meaning: "Utfärdad faktura, bokad inbetalning eller en Revolut-hämtning som inte gick.",
   },
   {
     from: "ekonomi",
     to: "platform.events",
     via: "ekonomi.revolut.oauth.started | ekonomi.revolut.oauth.completed | ekonomi.revolut.oauth.failed | ekonomi.revolut.connection.action_required | ekonomi.revolut.connection.disconnected | ekonomi.revolut.certificate.expiry_warning",
     meaning:
-      "Bankanslutningens livscykel. Rutinmässig tokenförnyelse loggas som drift, inte som händelse i pärmen.",
+      "Bankanslutningens livscykel. Vanlig förnyelse loggas som drift, inte som en händelse i pärmen.",
   },
   {
     from: "ekonomi",
@@ -229,20 +228,20 @@ export const FAMILY_LINKS: readonly FamilyLink[] = [
     from: "kansli",
     to: "britt",
     via: "kansli.task.created",
-    meaning: "Intern uppgift syns som observation. Kansli äger fortfarande tasks-raden.",
+    meaning: "Intern uppgift syns som observation. Kansli äger fortfarande uppgiften.",
   },
   {
     from: "kansli",
     to: "britt",
     via: "kansli.intake.received | kansli.account.provisioned",
-    meaning: "Koncernupphandling inkommen, eller ett verkstadskonto skapat för demoförberedelse.",
+    meaning: "En anmälan har kommit in, eller ett verkstadskonto skapats inför demon.",
   },
   {
     from: "britt",
     to: "britt",
     via: "britt.finding.recorded",
     meaning:
-      "Höga fynd från demonstrationsanalysen blir observationer. Medel och låg stannar i findings.",
+      "Höga fynd från exempelanalysen blir observationer. Medel och låg stannar bland fynden.",
   },
   {
     from: "britt",
@@ -254,27 +253,27 @@ export const FAMILY_LINKS: readonly FamilyLink[] = [
 
 /** Produkter som tas in som första-klass när de har schema, UI, API och events. */
 export const FAMILY_INCOMING =
-  "Fler moduler är på väg in i samma hus: samma inloggning, egen pärm, lappar i händelseboken. De namnges när de har kontrakt — inte före.";
+  "Fler moduler är på väg in i samma hus: samma inloggning, egen pärm, lappar i händelseboken. De får namn när de är redo — inte före.";
 
 export const FAMILY_BLOCKED = [
   {
     id: "rita-engine",
-    need: "På Vercel: RITA_ENGINE_URL + RITA_ENGINE_TOKEN mot en host som kör skattjakt. Lokalt räcker RITA_ENGINE_BINARY + demonstrationsbokslutet.",
+    need: "RITA:s analys måste vara inkopplad (på Vercel via URL, lokalt via programfilen) innan analyser kan köras.",
   },
   {
     id: "alva-repo",
-    need: "Färdigt ALVA-repo innan diagnosmotorn kopplas. Fallet finns redan.",
+    need: "Den guidade diagnosen kopplas när den är klar. Ärendet kan registreras redan nu.",
   },
   {
     id: "irma-sign",
-    need: "IRMA stannar i navet: hashad bekräftelse, Postgres, egen länk. Inga BankID-, e-sign- eller design-API:er. Starkare nivåer byggs här, mot våra vendorer, om de behövs.",
+    need: "IRMA stannar hos oss: enkel digital bekräftelse och en egen länk. Ingen BankID och ingen juridisk e-signatur än.",
   },
   {
     id: "britt-intel",
-    need: "Fortnox, Revolut och BRITT-repots profiler om demonstrationsanalysen ska bli hela produkten.",
+    need: "Fortnox, Revolut och BRITT:s profiler om exempelanalysen ska bli hela produkten.",
   },
   {
     id: "ekonomi-rails",
-    need: "STRIPE_SECRET_KEY eller restricted key, REVOLUT_BUSINESS_TOKEN för matchning, Swish Handel-certifikat. Faktura 10 dagar fungerar utan dem.",
+    need: "Stripe, Revolut och Swish när ni vill ta betalt den vägen. Faktura på 10 dagar fungerar utan dem.",
   },
 ] as const;

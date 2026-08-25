@@ -43,7 +43,7 @@ export default async function RitaAnalysisPage({ params }: { params: Promise<{ i
       </p>
       {!session?.org ? (
         <SignInGate next="/rita" title="Logga in för att se analysen">
-          Analysen tillhör organisationen. Utan session visas den inte.
+          Analysen tillhör ert företag. Logga in för att se den.
         </SignInGate>
       ) : analysis ? (
         <>
@@ -54,9 +54,8 @@ export default async function RitaAnalysisPage({ params }: { params: Promise<{ i
           </p>
           {analysis.blockedReason ? (
             <Notice>
-              Blockerad: {analysis.blockedReason}. Motorn fejkars inte. Koppla{" "}
-              <span className="font-mono">RITA_ENGINE_URL</span> eller{" "}
-              <span className="font-mono">RITA_ENGINE_BINARY</span> mot skattjakt.
+              Analysen stoppades: {analysis.blockedReason}. Vi visar aldrig påhittade resultat. Be
+              den som sköter driften koppla in analysen.
             </Notice>
           ) : null}
           {summary ? <p className="text-sm text-ink-soft">{summary}</p> : null}
@@ -104,16 +103,16 @@ export default async function RitaAnalysisPage({ params }: { params: Promise<{ i
               </ul>
             </section>
           ) : analysis.status === "completed" ? (
-            <EmptyState>Inga fynd i resultatobjektet. Motorn har kört; listan är tom.</EmptyState>
+            <EmptyState>Analysen är klar och hittade inget att rapportera.</EmptyState>
           ) : analysis.status !== "blocked" ? (
-            <p className="text-sm text-muted">
-              Inget resultatobjekt. Det är avsiktligt när status är blocked.
-            </p>
+            <p className="text-sm text-muted">Inget resultat än — analysen kunde inte köras.</p>
           ) : null}
 
           {analysis.result != null ? (
             <details className="rounded-xl border border-line bg-surface p-4">
-              <summary className="cursor-pointer text-sm font-medium">Rå kuvert</summary>
+              <summary className="cursor-pointer text-sm font-medium">
+                Visa hela svaret (tekniskt)
+              </summary>
               <pre className="mt-3 overflow-x-auto font-mono text-xs">
                 {JSON.stringify(analysis.result, null, 2)}
               </pre>

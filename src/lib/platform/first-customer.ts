@@ -42,7 +42,9 @@ export function evaluateFirstCustomerGates(input: {
       id: "database",
       title: "Postgres svarar",
       state: input.databaseUp ? "ready" : "blocked",
-      detail: input.databaseUp ? "Navet har en databas." : "Ingen runtime. Sätt DATABASE_URL.",
+      detail: input.databaseUp
+        ? "Databasen svarar."
+        : "Databasen svarar inte (DATABASE_URL saknas).",
     },
     {
       id: "secrets",
@@ -60,15 +62,15 @@ export function evaluateFirstCustomerGates(input: {
       state: input.seedDemo ? "open" : "ready",
       detail: input.seedDemo
         ? "PIXDRIFT_SEED_DEMO=true. Stäng av innan första kunden loggar in."
-        : "Seed-demo är av.",
+        : "Exempelläget är av.",
     },
     {
       id: "cron",
       title: "Cron-hemlighet (TYRA-påminnelser)",
       state: input.cronSecretSet ? "ready" : "open",
       detail: input.cronSecretSet
-        ? "CRON_SECRET är satt. Kön är ändå BLOCKED tills en sändadapter finns."
-        : "CRON_SECRET saknas. Påminnelse-cron går inte att anropa.",
+        ? "CRON_SECRET är satt. Påminnelser läggs ändå i kö och skickas inte än."
+        : "CRON_SECRET saknas. Påminnelser kan inte köras automatiskt.",
     },
     {
       id: "tyra",
@@ -86,12 +88,12 @@ export function evaluateFirstCustomerGates(input: {
     },
     {
       id: "irma",
-      title: "IRMA L0–L1 har använts",
+      title: "IRMA har använts",
       state: input.irmaAgreements > 0 ? "ready" : "open",
       detail:
         input.irmaAgreements > 0
           ? `${input.irmaAgreements} underlag. Fortfarande inte BankID.`
-          : "Inget underlag skapat. Handshake, inte e-sign.",
+          : "Inget underlag skapat. Enkel bekräftelse, inte e-signatur.",
     },
     {
       id: "tora",
@@ -99,35 +101,35 @@ export function evaluateFirstCustomerGates(input: {
       state: input.toraProfileSaved ? "ready" : "open",
       detail: input.toraProfileSaved
         ? "Bolagsprofil sparad. Marknaden är fortfarande demo."
-        : "Spara bolagsprofilen. Motorn utvärderar annars demonstrationsbolaget.",
+        : "Spara bolagsprofilen. Annars räknar vi på exempelbolaget.",
     },
     {
       id: "rita",
-      title: "RITA-motorn",
+      title: "RITA:s analys",
       state: input.ritaAvailable ? "ready" : "blocked",
       detail: input.ritaAvailable
-        ? "Binär eller HTTP-host finns. Analysera bara riktiga underlag."
-        : "Ingen motor. Sälj inte RITA. Sätt RITA_ENGINE_BINARY eller RITA_ENGINE_URL.",
+        ? "Analysen är inkopplad. Analysera bara riktiga underlag."
+        : "Analysen är inte inkopplad. Sälj inte RITA.",
     },
     {
       id: "alva",
       title: "ALVA-diagnos",
       state: "blocked",
-      detail: "Motorn bor i ALVA-repot. Intag i det här huset är inte diagnos.",
+      detail: "Diagnosen byggs separat. Här registrerar ni bara ärenden.",
     },
     {
       id: "upphandling",
       title: "Koncernupphandling är ett formulär",
       state: "ready",
       detail:
-        "Intaget på /upphandling samlar stack, miljö och kontakt, skapar konto och utfärdar faktura med tio dagars betalning. Mötet läggs klockan 10:00 tio kalenderdagar senare.",
+        "Formuläret på Upphandling samlar in system, miljö och kontakt, skapar konto och utfärdar faktura med tio dagars betalning. Mötet läggs klockan 10.00 tio dagar senare.",
     },
     {
       id: "honesty",
       title: "Kunden skriver under vad produkten inte är",
       state: "open",
       detail:
-        "Inte BankID. Inte live-däckpriser. Inte SMS SENT. Inte TED/HILMA. Inte ALVA-diagnos. Inte Fortnox. Stripe/Revolut bara med nyckel. Kryssas i upphandlingsformuläret.",
+        "Ingen BankID-signering, inga live-däckpriser, inga SMS-utskick, ingen koppling till upphandlingsdatabaser eller Fortnox. Stripe och Revolut bara när de är inkopplade. Detta kryssar kunden i på formuläret.",
     },
   ];
 

@@ -162,8 +162,8 @@ function assessShare(contract: Contract, companyId?: string): ShareAssessment {
       supplierCount,
       explanation:
         `Avrop sker genom förnyad konkurrensutsättning mellan ${supplierCount} antagna ` +
-        "leverantörer. Varje avrop är en egen tävling, så avtalet ger dig rätten att lämna " +
-        "anbud — inte en andel av värdet.",
+        "leverantörer. Varje avrop är en egen tävling, så avtalet betyder att du får lämna " +
+        "anbud — inte att du får en andel av värdet.",
     };
   }
 

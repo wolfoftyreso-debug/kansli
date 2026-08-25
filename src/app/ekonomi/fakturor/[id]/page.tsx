@@ -122,8 +122,8 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
               >
                 <h2 className="text-lg font-semibold">Boka mottagen betalning</h2>
                 <Notice>
-                  Används när pengarna faktiskt kommit — Swish manuellt, bank, eller efter match.
-                  Det här skriver verifikat. Låtsas inte.
+                  Använd bara när pengarna faktiskt har kommit in — via Swish, bank eller matchning.
+                  Bokningen skapar ett verifikat och går inte att ta bort.
                 </Notice>
                 <input type="hidden" name="invoiceId" value={invoice.id} />
                 <select

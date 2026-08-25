@@ -25,7 +25,7 @@ export default async function VerifikatPage() {
       </p>
       <h1 className="text-3xl font-semibold tracking-tight">Verifikat</h1>
       <p className="max-w-xl text-ink-soft">
-        Immutabla. Hashen inkluderar föregående verifikat. En ändring i historiken syns.
+        Verifikat går aldrig att ändra i efterhand. Skulle någon försöka syns det direkt.
       </p>
       {!session ? (
         <SignInGate next="/ekonomi" title="Logga in för verifikat">

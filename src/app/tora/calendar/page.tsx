@@ -37,12 +37,14 @@ export default async function ToraCalendarPage() {
       <header className="flex flex-col gap-3">
         <h1 className="text-3xl font-semibold tracking-tight">Kalender</h1>
         <p className="text-ink-soft">
-          Framåtblickande datum från samma motor som marknaden. Gratisnivån ser formen, inte
-          köparen.
+          Datum framåt för upphandlingarna. På gratisplanen ser ni vad som händer, men inte vem
+          köparen är.
         </p>
         <Notice>
-          {calendar.alertCount} aviseringar.{" "}
-          {calendar.alerts.state === "locked" ? calendar.alerts.teaser : "Innehållet följer nivån."}
+          {calendar.alertCount} påminnelser.{" "}
+          {calendar.alerts.state === "locked"
+            ? calendar.alerts.teaser
+            : "Vad de gäller beror på er plan."}
         </Notice>
         {calendar.thisWeek.length +
           calendar.next30Days.length +
@@ -50,8 +52,8 @@ export default async function ToraCalendarPage() {
           calendar.next12Months.length ===
         0 ? (
           <Notice>
-            Inga händelser i fönstret. Det är inte noll anställningar som en siffra — det är en tom
-            demo-marknad, inte TED/HILMA.
+            Inget på gång i den här perioden. Kom ihåg: det här är exempeldata, inte riktiga
+            annonser.
           </Notice>
         ) : null}
       </header>

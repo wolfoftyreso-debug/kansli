@@ -34,7 +34,7 @@ export default async function KontoutdragPage() {
       </p>
       <h1 className="text-3xl font-semibold tracking-tight">Kontoutdrag</h1>
       <p className="max-w-xl text-ink-soft">
-        Saldo och transaktioner från Revolut Business. Utan ansluten behörighet är listan tom.
+        Saldo och transaktioner från Revolut Business. Utan anslutning är listan tom.
       </p>
 
       {!session ? (
@@ -49,7 +49,7 @@ export default async function KontoutdragPage() {
             <p className="text-sm text-ink-soft">Hämtat från Revolut just nu.</p>
           ) : statement.source === "stored" ? (
             <p className="text-sm text-ink-soft">
-              Senast sparade rader. Live-hämtning misslyckades eller saknas.
+              Det här är senast sparade uppgifter. Vi kunde inte hämta nya just nu.
             </p>
           ) : null}
 
@@ -62,8 +62,8 @@ export default async function KontoutdragPage() {
               </p>
               <p className="mt-2 text-sm text-ink-soft">
                 {statement.reauthorize
-                  ? "Revolut har dragit tillbaka behörigheten. Ett tryck på Anslut om ger tillbaka utdraget."
-                  : "Revolut släpper inte ut kontoutdraget utan behörighet. Anslut en gång — sen sköter tokenförnyelsen sig själv."}
+                  ? "Revolut har stängt anslutningen. Ett tryck på Anslut om ger tillbaka utdraget."
+                  : "Revolut släpper inte ut kontoutdraget utan en anslutning. Anslut en gång — sen sköter det sig självt."}
               </p>
               <p className="mt-3">
                 <Link

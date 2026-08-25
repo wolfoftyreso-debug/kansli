@@ -62,8 +62,8 @@ export const STANDSTILL_ELECTRONIC: StatutoryPeriod = {
   label: "Avtalsspärr (elektroniskt utskick)",
   meaning:
     "Avtal får inte ingås förrän tio dagar gått från att tilldelningsbeslutet skickades " +
-    "elektroniskt. Under den tiden — och bara då — kan en ansökan om överprövning av " +
-    "upphandlingen komma in till förvaltningsrätten.",
+    "elektroniskt. Under den tiden — och bara då — kan upphandlingen överklagas till " +
+    "förvaltningsrätten.",
   source: UHM_PROCESS,
   verification: "verified",
 };
@@ -163,14 +163,14 @@ const ANNOUNCED_TAIL: ProcedureStage[] = [
     title: "Avtalsspärr",
     actor: "supplier",
     what:
-      "Under avtalsspärren får avtal inte tecknas. Det är det enda fönstret där en ansökan om " +
-      "överprövning av upphandlingen kan komma in.",
+      "Under avtalsspärren får avtal inte tecknas. Det är det enda fönstret där ett " +
+      "överklagande av upphandlingen kan komma in.",
     yourMove:
-      "Anser du att något gått fel: ansök om överprövning hos förvaltningsrätten innan spärren " +
-      "löper ut. Ansökan ska ha kommit in — det räcker inte att den skickats.",
+      "Anser du att något gått fel: överklaga hos förvaltningsrätten innan spärren löper ut. " +
+      "Överklagandet ska ha kommit in — det räcker inte att det skickats.",
     pitfall:
-      "När spärren löpt ut är rätten att få upphandlingen överprövad förlorad. Skillnaden " +
-      "mellan dag nio och dag elva är skillnaden mellan en prövning och ingen alls.",
+      "När spärren löpt ut går upphandlingen inte längre att överklaga. Skillnaden mellan dag " +
+      "nio och dag elva är skillnaden mellan en prövning och ingen alls.",
     period: STANDSTILL_ELECTRONIC,
   },
   {
@@ -326,7 +326,7 @@ export const PROCEDURE_GUIDES: Record<ProcedureKind, ProcedureGuide> = {
           "direktupphandlingsgränsen, och om ett befintligt avtal redan styr köpet.",
         pitfall:
           "Ingen leverantör kan kräva en direktupphandling. Att förutsättningarna ser " +
-          "uppfyllda ut ger ingen rätt till uppdraget.",
+          "uppfyllda ut betyder inte att du får uppdraget.",
       },
       {
         id: "contact",
@@ -426,9 +426,8 @@ export const PROCEDURE_GUIDES: Record<ProcedureKind, ProcedureGuide> = {
     kind: "concession",
     name: "Koncession",
     summary:
-      "Leverantören får rätten att driva verksamheten och ta betalt av dem som använder den, " +
-      "i stället för en ersättning från köparen. Verksamhetsrisken ligger därmed hos " +
-      "leverantören.",
+      "Leverantören får driva verksamheten och ta betalt av dem som använder den, i stället " +
+      "för en ersättning från köparen. Verksamhetsrisken ligger därmed hos leverantören.",
     stages: [
       ANNOUNCEMENT,
       {
@@ -485,7 +484,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "Tilldelningsbeslut",
     plain: "Köparens besked om vem som vunnit och varför. Går till alla som lämnat anbud.",
-    whyItMatters: "Det startar avtalsspärren — och därmed klockan för en eventuell överprövning.",
+    whyItMatters: "Det startar avtalsspärren — och därmed klockan för ett eventuellt överklagande.",
   },
   {
     term: "Avtalsspärr",
@@ -493,8 +492,7 @@ export const GLOSSARY: GlossaryEntry[] = [
       "Perioden efter tilldelningsbeslutet då avtal inte får tecknas. Tio dagar vid " +
       "elektroniskt utskick, femton annars.",
     whyItMatters:
-      "Det enda fönstret för att få upphandlingen överprövad. När det stängts är den rätten " +
-      "förlorad.",
+      "Det enda fönstret för att överklaga upphandlingen. När det stängts är chansen borta.",
   },
   {
     term: "Överprövning",
@@ -521,8 +519,8 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "Rangordning",
     plain: "En ordning mellan ramavtalsleverantörerna. Den först rangordnade tillfrågas först.",
     whyItMatters:
-      "Är du rangordnad etta för ett behov har du en verklig rätt till avropet — en av få " +
-      "situationer där ordet rätt är befogat.",
+      "Är du rangordnad etta för ett behov ska du faktiskt tillfrågas först — en av få " +
+      "situationer där du kan räkna med det.",
   },
   {
     term: "Förnyad konkurrensutsättning",

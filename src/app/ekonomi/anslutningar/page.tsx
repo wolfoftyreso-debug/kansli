@@ -38,10 +38,11 @@ export default async function AnslutningarPage() {
         {" / "}
         Anslutningar
       </p>
-      <h1 className="text-3xl font-semibold tracking-tight">Nycklar</h1>
+      <h1 className="text-3xl font-semibold tracking-tight">Anslutningar</h1>
       <p className="max-w-xl text-ink-soft">
-        Revolut ansluts en gång med OAuth och sköter sig själv efter det. De andra slottarna tar en
-        inklistrad nyckel: den krypteras och visas aldrig igen — bara sista fyra.
+        Revolut ansluter du en gång — sen sköter det sig självt. Övriga tjänster kopplas med en
+        nyckel som du klistrar in. Den sparas krypterad och visas aldrig igen (bara de fyra sista
+        tecknen).
       </p>
       {!session ? (
         <SignInGate next="/ekonomi/anslutningar" title="Logga in för anslutningar">
@@ -50,8 +51,8 @@ export default async function AnslutningarPage() {
       ) : (
         <>
           <Notice>
-            Business-tokenen läser saldo och transaktioner. Merchant tar betalt av kunden. Det är
-            två API:er.
+            Business-kopplingen läser saldo och transaktioner. Merchant-kopplingen tar betalt av
+            kunden. Det är två olika anslutningar.
           </Notice>
           <section className="rounded-xl border border-line bg-surface px-4 py-4">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -96,8 +97,8 @@ export default async function AnslutningarPage() {
                 </p>
                 <form action={saveConnectorAction} className="mt-3 flex flex-col gap-2">
                   <input type="hidden" name="provider" value={slot.provider} />
-                  <Field name="secret" label="Klistra in token (sparas krypterad)" />
-                  <Submit>Spara slot</Submit>
+                  <Field name="secret" label="Klistra in nyckeln (sparas krypterad)" />
+                  <Submit>Spara nyckeln</Submit>
                 </form>
               </li>
             ))}

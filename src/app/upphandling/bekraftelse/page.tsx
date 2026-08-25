@@ -7,7 +7,7 @@ import { tryRuntime } from "@/lib/platform/page";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Mötet är hållet — Pixdrift",
+  title: "Mötet är bokat — Pixdrift",
 };
 
 export default async function UpphandlingBekraftelsePage({
@@ -38,12 +38,12 @@ export default async function UpphandlingBekraftelsePage({
       <main className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-12">
         {!intake ? (
           <>
-            <h1 className="text-3xl font-semibold tracking-tight">Intaget hittades inte</h1>
+            <h1 className="text-3xl font-semibold tracking-tight">Anmälan hittades inte</h1>
             <p className="text-ink-soft">
               Öppna länken från bekräftelsen, eller fyll i formuläret igen.
             </p>
             <Link href="/upphandling" className="underline decoration-line underline-offset-4">
-              Tillbaka till koncernupphandling
+              Tillbaka till formuläret
             </Link>
           </>
         ) : (
@@ -59,9 +59,7 @@ export default async function UpphandlingBekraftelsePage({
               <p className="mt-1 text-2xl font-semibold">
                 {formatSwedishDateTime(intake.meetingAt)}
               </p>
-              <p className="mt-2 text-sm text-muted">
-                Tio kalenderdagar från intaget, klockan 10:00.
-              </p>
+              <p className="mt-2 text-sm text-muted">Tio dagar efter anmälan, klockan 10:00.</p>
             </section>
             {intake.provisionedEmail ? (
               <section className="rounded-xl border border-line bg-surface px-5 py-5">

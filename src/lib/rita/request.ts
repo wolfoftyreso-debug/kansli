@@ -9,11 +9,11 @@ export const DEMO_FISCAL_YEAR_START = "2025-01-01";
 export const DEMO_FISCAL_YEAR_END = "2025-12-31";
 
 export const NO_DOCUMENTS_REASON =
-  "Inga dokument skickades. Motorn kräver minst ett underlag på disk. Kunduppladdning via Blob är inte kopplad.";
+  "Inget underlag skickades med. Analysen behöver minst ett dokument.";
 export const DEMO_DOCUMENT_HTTP_REASON =
-  "Demonstrationsbokslutet är en lokal fil. HTTP-motorn läser sökvägar på hosten, inte i den här processen.";
+  "Exempelbokslutet går inte att använda i den här driftmiljön.";
 export const DEMO_DOCUMENT_MISSING_REASON =
-  "Demonstrationsbokslutet saknas i src/lib/rita/fixtures.";
+  "Exempelbokslutet saknas. Kontakta den som sköter driften.";
 
 export function demoBokslutPath(): string {
   return join(process.cwd(), "src/lib/rita/fixtures/exempel-bokslut.txt");

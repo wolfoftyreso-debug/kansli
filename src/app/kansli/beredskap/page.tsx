@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Beredskap — Kansli",
-  description: "Grindarna för första kunden. Inte ett datum.",
+  description: "Checklistan för första kunden. Inte ett datum.",
 };
 
 function tone(state: GateState) {
@@ -40,12 +40,12 @@ export default async function BeredskapPage() {
       </p>
       <h1 className="text-3xl font-semibold tracking-tight">Första kunden</h1>
       <p className="max-w-xl text-ink-soft">
-        Inte ett datum. En lista grindar som läses ur runtime.
+        Ingen lanseringsdag — en checklista. Varje punkt läses direkt ur systemet, inte ur en plan.
       </p>
 
       {!session?.org ? (
-        <SignInGate next="/kansli/beredskap" title="Logga in för att läsa grindarna">
-          Beredskapen läses ur er org och er runtime. Inte ur en broschyr.
+        <SignInGate next="/kansli/beredskap" title="Logga in för att läsa checklistan">
+          Checklistan bygger på hur ert system faktiskt mår just nu.
         </SignInGate>
       ) : (
         <>
@@ -53,11 +53,13 @@ export default async function BeredskapPage() {
             <p className="font-medium">
               {board.pilotOfferable
                 ? "Pilot kan erbjudas — om kunden skriver under vad produkten inte är."
-                : "Pilot kan inte erbjudas. En blockerad grind måste stängas först."}
+                : "Pilot kan inte erbjudas. En blockerad punkt måste lösas först."}
             </p>
             <p className="mt-2 text-sm text-ink-soft">
               Alla sex system klara:{" "}
-              {board.allSystemsReady ? "ja." : "nej. ALVA-diagnos och RITA-host är andra rum."}
+              {board.allSystemsReady
+                ? "ja."
+                : "nej. ALVA:s diagnos och RITA:s analys ligger utanför det här systemet."}
             </p>
             <p className="mt-3 text-sm">
               <Link href="/upphandling" className="underline decoration-line underline-offset-4">
@@ -81,8 +83,8 @@ export default async function BeredskapPage() {
           </ol>
 
           <Notice>
-            Stäng inte en blockerad grind genom att låtsas. RITA utan motor säljs inte. ALVA utan
-            diagnosmotor är intag. TYRA utan sändadapter köar, den skickar inte.
+            Sälj inget som inte finns: RITA utan analys säljs inte, ALVA utan diagnos är bara
+            registrering, och TYRA:s påminnelser läggs i kö men skickas inte.
           </Notice>
         </>
       )}

@@ -31,7 +31,7 @@ function wrapKey(): Buffer | null {
 export function encryptSecret(plain: string): { ciphertext: string; last4: string } {
   const key = wrapKey();
   if (!key)
-    throw new Error("EKONOMI_WRAP_KEY eller APP_SESSION_SECRET krävs för att spara en token.");
+    throw new Error("EKONOMI_WRAP_KEY eller APP_SESSION_SECRET krävs för att spara en nyckel.");
   const iv = randomBytes(12);
   const cipher = createCipheriv("aes-256-gcm", key, iv);
   const encrypted = Buffer.concat([cipher.update(plain, "utf8"), cipher.final()]);
@@ -96,7 +96,7 @@ export async function saveConnectorSecret(input: {
   requestId: string;
 }): Promise<ConnectorSlot> {
   const secret = input.secret.trim();
-  if (secret.length < 8) throw new Error("tokenen är för kort för att vara en riktig nyckel.");
+  if (secret.length < 8) throw new Error("nyckeln är för kort för att vara riktig.");
   const wrapped = encryptSecret(secret);
   await input.pool.query(
     `insert into ekonomi.connectors (org_ref, provider, ciphertext, last4, env_key)

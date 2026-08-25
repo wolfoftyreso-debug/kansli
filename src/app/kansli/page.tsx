@@ -45,8 +45,8 @@ export default async function KansliHub({
         <p className="pd-label text-faint">PIXDRIFT / Kansli</p>
         <h1 className="text-3xl font-semibold tracking-tight">Kansli</h1>
         <p className="text-ink-soft">
-          Navet. Samma identitet i alla system. Uppgiftstavlan är kansliets egen data — inte TORA,
-          inte RITA.
+          Här börjar allt. Samma inloggning i alla system, och en egen uppgiftstavla för det
+          interna.
         </p>
       </header>
 
@@ -76,7 +76,7 @@ export default async function KansliHub({
                 href="/kansli/beredskap"
                 className="underline decoration-line underline-offset-4 hover:text-ink"
               >
-                Första kunden — grindar, inte datum
+                Första kunden — checklista, inte datum
               </Link>
               {" · "}
               <Link

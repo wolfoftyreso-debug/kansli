@@ -47,7 +47,7 @@ export async function submitIntake(input: {
     subjectRef: `kansli:intake:${intake.id}`,
     requestId: `intake-${intake.id}`,
     payload: {
-      title: `${intake.companyName} — koncernupphandling`,
+      title: `${intake.companyName} — anmälan om upphandling`,
       companyName: intake.companyName,
       meetingAt: intake.meetingAt,
     },

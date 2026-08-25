@@ -34,16 +34,16 @@ export default async function ToraPage() {
         <p className="pd-label text-faint">PIXDRIFT / TORA</p>
         <h1 className="text-3xl font-semibold tracking-tight">TORA</h1>
         <p className="text-ink-soft">
-          Upphandlingsrätt och rekommenderad åtgärd för {company.name}. Motorn körs server-side; det
-          en nivå inte får se når aldrig klienten. Inte RITA.
+          TORA visar vilka upphandlingar {company.name} kan lämna anbud på, och vad ni bör göra
+          härnäst. Ni ser bara det som ingår i er plan.
         </p>
         <Notice>
-          Upphandlingarna i underlaget är demonstrationsdata. Bolagsfakta är{" "}
+          Upphandlingarna här är exempel, inte riktiga annonser. Bolagsfakta är{" "}
           {usingDemoCompany
-            ? "fortfarande demonstrationsbolaget — spara er profil nedan."
+            ? "fortfarande exempelbolaget — spara er profil nedan."
             : `er sparade profil (${company.name}).`}{" "}
-          Nivå: <span className="font-medium text-ink">{tier}</span>
-          {session ? ` · ${session.email}` : " · inte inloggad (gratisnivå)"}
+          Er plan: <span className="font-medium text-ink">{tier}</span>
+          {session ? ` · ${session.email}` : " · inte inloggad (gratisplanen)"}
         </Notice>
         <p className="text-sm">
           <Link
@@ -67,9 +67,9 @@ export default async function ToraPage() {
           action={saveToraProfile}
           className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
         >
-          <h2 className="text-lg font-semibold">Ert bolag i motorn</h2>
+          <h2 className="text-lg font-semibold">Ert bolag</h2>
           <p className="text-sm text-ink-soft">
-            Utan profil utvärderas Exempelbolaget. Marknadsnotiserna är fortfarande demo.
+            Utan sparad profil räknar vi på exempelbolaget i stället för på er.
           </p>
           <Field
             name="name"
@@ -84,24 +84,24 @@ export default async function ToraPage() {
           />
           <Field
             name="capabilities"
-            label="Förmågor (kommaseparerade)"
+            label="Vad ni kan göra (skriv med komma mellan)"
             defaultValue={(profile?.capabilities ?? []).join(", ")}
             placeholder="el.installation, el.service"
           />
           <Field
             name="servesAreas"
-            label="Områdeskoder (kommaseparerade)"
+            label="Områden ni jobbar i (skriv med komma mellan)"
             defaultValue={(profile?.servesAreas ?? []).join(", ")}
             placeholder="0138, 0182"
           />
           <Field
             name="certifications"
-            label="Certifieringar (kommaseparerade)"
+            label="Certifieringar (skriv med komma mellan)"
             defaultValue={(profile?.certifications ?? []).join(", ")}
           />
           <Field
             name="registrations"
-            label="Registreringar (kommaseparerade)"
+            label="Registreringar (skriv med komma mellan)"
             defaultValue={(profile?.registrations ?? []).join(", ")}
             placeholder="f_tax, vat"
           />
@@ -119,10 +119,10 @@ export default async function ToraPage() {
 
       {session?.org ? (
         <form action={publishToraMarket} className="rounded-xl border border-line bg-surface p-4">
-          <h2 className="text-lg font-semibold">Publicera till familjen</h2>
+          <h2 className="text-lg font-semibold">Dela läget</h2>
           <p className="mt-1 text-sm text-ink-soft">
-            Skriver en ögonblicksbild i TORA:s schema och en händelse. BRITT lyssnar. Att läsa
-            marknaden publicerar ingenting.
+            Sparar dagens läge så att det syns i BRITT och i händelselistan. Att bara titta här
+            delar ingenting.
           </p>
           <div className="mt-3">
             <Submit>Publicera utvärdering</Submit>
@@ -136,24 +136,24 @@ export default async function ToraPage() {
           >
             Logga in
           </a>{" "}
-          för att publicera utvärderingen till BRITT och händelseloggen.
+          för att kunna dela läget med resten av huset.
         </p>
       )}
 
       <MarketSection
         title="Aktuellt"
-        empty="Inga öppna möjligheter i demonstrationsunderlaget."
+        empty="Inga öppna upphandlingar just nu."
         items={market.openNow}
       />
       <MarketSection title="Kommande" empty="Inga kommande möjligheter." items={market.upcoming} />
       <MarketSection title="Bevakning" empty="Inget att bevaka." items={market.watch} />
-      <MarketSection title="Historik" empty="Ingen historik i underlaget." items={market.history} />
+      <MarketSection title="Historik" empty="Ingen historik ännu." items={market.history} />
 
       {session?.org ? (
         <section className="flex flex-col gap-3">
-          <h2 className="text-lg font-semibold">Publicerade ögonblicksbilder</h2>
+          <h2 className="text-lg font-semibold">Tidigare delningar</h2>
           {snapshots.length === 0 ? (
-            <EmptyState>Inget publicerat ännu.</EmptyState>
+            <EmptyState>Inget delat ännu.</EmptyState>
           ) : (
             <ul className="flex flex-col gap-2">
               {snapshots.map((item) => (

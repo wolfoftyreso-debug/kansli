@@ -116,7 +116,7 @@ export const DOCTRINE = {
    * suppliers is not a legal entitlement to the work.
    */
   noEntitlementFromScarcity:
-    "Att det finns få eller bara en leverantör i närområdet ger ingen rätt till uppdraget. " +
+    "Att det finns få eller bara en leverantör i närområdet betyder inte att du får uppdraget. " +
     "Offentlig upphandling bygger bland annat på likabehandling, öppenhet och konkurrens.",
 
   /**

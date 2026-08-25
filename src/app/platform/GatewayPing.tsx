@@ -17,7 +17,7 @@ export function GatewayPing() {
       </button>
       {state?.ok ? (
         <p className="font-mono text-xs text-faint">
-          {state.model} · {state.latencyMs} ms · inferens “{state.text}”
+          {state.model} · {state.latencyMs} ms · svar “{state.text}”
         </p>
       ) : null}
       {state && !state.ok ? <p className="text-sm text-muted">{state.error}</p> : null}

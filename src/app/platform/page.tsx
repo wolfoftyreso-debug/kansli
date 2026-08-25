@@ -43,13 +43,13 @@ export default async function PlatformPage() {
         <h1 className="text-3xl font-semibold tracking-tight">Vad varje system gör</h1>
         <p className="text-ink-soft">{FAMILY_PRINCIPLE}</p>
         <Notice>
-          IT-yta, inte verkstadsgolvet. En process. En Postgres. Append-only händelselogg. Ingen
-          produkt skriver i en annans schema.
+          Det här är den tekniska kartan. Ett system, en databas, en gemensam händelselista. Varje
+          produkt äger sina egna uppgifter.
         </Notice>
       </header>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Vad som körs i det här navet</h2>
+        <h2 className="text-lg font-semibold">Vad som körs just nu</h2>
         <p className="font-mono text-xs text-faint">
           Postgres {status.database}
           {" · "}
@@ -70,8 +70,8 @@ export default async function PlatformPage() {
       <section className="rounded-xl border border-line bg-surface px-4 py-4">
         <h2 className="text-lg font-semibold">Vercel AI Gateway</h2>
         <p className="mt-2 text-sm text-ink-soft">
-          En credential, OpenAI-kompatibel yta mot 100+ modeller. Produkter går via{" "}
-          <span className="font-mono">@pixdrift/ai-core</span>. Svaret är inferens, inte fakta.
+          En nyckel ger tillgång till över 100 AI-modeller. Kom ihåg: AI-svar är gissningar, inte
+          fakta.
         </p>
         <p className="mt-3 font-mono text-xs text-faint">
           {gateway.configured ? `konfigurerad · ${gateway.auth}` : "saknar nyckel"} ·{" "}

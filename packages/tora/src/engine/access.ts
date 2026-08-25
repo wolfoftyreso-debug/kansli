@@ -202,7 +202,7 @@ export function assessProcurementAccess(
           governingContractId: governing.id,
           explanation: incumbent
             ? `Företaget har uppdraget genom ${governing.title} till ${governing.endDate}. Avtalet ` +
-              "ger ingen rätt till nästa upphandling — den är inte annonserad än, och " +
+              "betyder inte att ni får nästa upphandling — den är inte annonserad än, och " +
               "kraven går inte att bedöma ännu. Använd tiden till att förbereda er."
             : `${governing.supplierName ?? "En annan leverantör"} har uppdraget genom ${governing.title} ` +
               `till ${governing.endDate}. Den nya upphandlingen är inte annonserad än, så kraven går ` +

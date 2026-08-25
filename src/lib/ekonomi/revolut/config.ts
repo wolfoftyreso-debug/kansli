@@ -222,7 +222,7 @@ export function revolutKeyMatch(env: Env = process.env): KeyMatch {
     return {
       state: "unknown",
       reason:
-        "REVOLUT_CERTIFICATE_PUBLIC_KEY_SHA256 är inte satt, så nyckelparet kan inte kontrolleras här.",
+        "REVOLUT_CERTIFICATE_PUBLIC_KEY_SHA256 är inte satt, så vi kan inte kontrollera här att nyckeln och certifikatet hör ihop.",
     };
   }
   let actual: string;

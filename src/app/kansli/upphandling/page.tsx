@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Upphandlingar — Kansli",
-  description: "Inkomna koncernupphandlingar. Demo + möte om 10 dagar.",
+  description: "Anmälningar som kommit in. Demo och möte om 10 dagar.",
 };
 
 export default async function KansliUpphandlingPage() {
@@ -29,14 +29,14 @@ export default async function KansliUpphandlingPage() {
       </p>
       <h1 className="text-3xl font-semibold tracking-tight">Koncernupphandling</h1>
       <p className="max-w-xl text-ink-soft">
-        Inkomna underlag. Varje rad används till demo och möte tio dagar senare.
+        Anmälningar som kommit in. Varje anmälan blir en demo och ett möte tio dagar senare.
       </p>
       {!session ? (
-        <SignInGate next="/kansli/upphandling" title="Logga in för att läsa intagen">
-          Det här är kansliets inbox. Offentliga formuläret ligger på /upphandling.
+        <SignInGate next="/kansli/upphandling" title="Logga in för att läsa anmälningarna">
+          Det här är kansliets inkorg. Det öppna formuläret finns på sidan Upphandling.
         </SignInGate>
       ) : intakes.length === 0 ? (
-        <EmptyState>Inga intag ännu.</EmptyState>
+        <EmptyState>Inga anmälningar ännu.</EmptyState>
       ) : (
         <ul className="flex flex-col gap-3">
           {intakes.map((item) => (

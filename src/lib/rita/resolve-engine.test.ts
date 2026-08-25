@@ -15,7 +15,7 @@ describe("resolveRitaEngine", () => {
     delete process.env.RITA_ENGINE_BINARY;
     try {
       expect(resolveRitaEngine()).toBeNull();
-      expect(ritaEngineUnavailableReason()).toMatch(/RITA_ENGINE_URL/);
+      expect(ritaEngineUnavailableReason()).toMatch(/inte inkopplad/);
       expect(ritaEngineSnapshot({}).available).toBe(false);
       expect(ritaEngineSnapshot({}).kind).toBe("none");
     } finally {

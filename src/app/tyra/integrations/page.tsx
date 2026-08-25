@@ -10,7 +10,7 @@ import { listSupplierAccounts, searchSupplierProducts } from "@/lib/tyra/supplie
 
 export const metadata = {
   title: "Integrationer — TYRA",
-  description: "Leverantörskonton och påminnelse-outbox. Ingen live-leverans.",
+  description: "Leverantörskonton och påminnelser i kö. Inget skickas än.",
 };
 
 export default async function TyraIntegrationsPage() {
@@ -38,13 +38,14 @@ export default async function TyraIntegrationsPage() {
       <header className="flex flex-col gap-3">
         <h1 className="text-3xl font-semibold tracking-tight">Integrationer</h1>
         <p className="text-ink-soft">
-          Konton och kö. Inget skickas och inget pris hämtas förrän en riktig adapter finns.
+          Här syns leverantörskonton och kön av påminnelser. Inget skickas och inga priser hämtas
+          än.
         </p>
       </header>
 
       {!session?.org ? (
         <SignInGate next="/tyra/integrations" title="Logga in för att se integrationer">
-          Leverantörskonton och outbox är per organisation.
+          Leverantörskonton och påminnelser tillhör ert företag.
         </SignInGate>
       ) : (
         <>
@@ -56,7 +57,7 @@ export default async function TyraIntegrationsPage() {
               </StatusBanner>
             ) : null}
             {accounts.length === 0 ? (
-              <EmptyState>Inga leverantörskonton. Demo-adapter är borttagen.</EmptyState>
+              <EmptyState>Inga leverantörskonton än.</EmptyState>
             ) : (
               <ul className="flex flex-col gap-3">
                 {accounts.map((account) => (
@@ -76,7 +77,7 @@ export default async function TyraIntegrationsPage() {
           </section>
 
           <section className="flex flex-col gap-3">
-            <h2 className="text-lg font-semibold">Påminnelse-outbox</h2>
+            <h2 className="text-lg font-semibold">Påminnelser i kö</h2>
             {outbox.length === 0 ? (
               <EmptyState>Inga köade meddelanden.</EmptyState>
             ) : (

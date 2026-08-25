@@ -55,26 +55,26 @@ export default async function BrittPage({
         <p className="pd-label text-faint">PIXDRIFT / BRITT</p>
         <h1 className="text-3xl font-semibold tracking-tight">BRITT</h1>
         <p className="text-ink-soft">
-          Observationer och en deterministisk demonstrationsanalys. BRITT skriver bara i sitt eget
-          schema. Inga Fortnox- eller Revolut-kopplingar.
+          BRITT samlar sådant som behöver följas upp. Siffrorna här är exempel — inga kopplingar
+          till Fortnox eller Revolut än.
         </p>
         <Notice>
-          Siffrorna är demonstrationsfakta för Exempelbolaget, inte livebokföring. Höga fynd blir
-          observationer via händelseloggen.
+          Siffrorna gäller exempelbolaget, inte er riktiga bokföring. Viktiga fynd dyker upp som
+          observationer i inkorgen.
         </Notice>
       </header>
 
       {!session?.org ? (
         <SignInGate next="/britt" title="Logga in för att se observationer">
-          Observationer är per organisation. Synk från TORA, RITA och IRMA syns här när de
-          publicerar.
+          Observationer tillhör ert företag. Det som händer i TORA, RITA och IRMA dyker upp här.
         </SignInGate>
       ) : (
         <>
           <form action={runBrittIntel} className="rounded-xl border border-line bg-surface p-4">
             <h2 className="text-lg font-semibold">Demonstrationsanalys</h2>
             <p className="mt-1 text-sm text-ink-soft">
-              Kör omsättning mot plan, likviditet och kundkoncentration mot seedade fakta.
+              Jämför omsättning mot plan, kollar kassan och hur beroende ni är av er största kund —
+              med exempelsiffror.
             </p>
             {runs[0] ? (
               <p className="mt-1 text-xs text-faint">
@@ -226,7 +226,7 @@ export default async function BrittPage({
                 <MetricCard label="Omsättning" value={kr(latest.revenue)} />
                 <MetricCard label="Plan" value={kr(latest.planRevenue)} />
                 <MetricCard label="Kassa" value={kr(latest.cash)} />
-                <MetricCard label="Månadsförbränning" value={kr(latest.monthlyBurn)} />
+                <MetricCard label="Utgifter per månad" value={kr(latest.monthlyBurn)} />
                 <MetricCard
                   label="Största kund"
                   value={`${Math.round(latest.topCustomerShare * 100)} %`}

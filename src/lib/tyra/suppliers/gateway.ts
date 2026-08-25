@@ -80,7 +80,7 @@ export async function searchSupplierProducts(input: {
       ok: false,
       error: {
         kind: "NOT_CONFIGURED",
-        message: "Leverantörskonto finns, men ingen adapter är registrerad i navet.",
+        message: "Leverantörskonto finns, men kopplingen till leverantören är inte inkopplad än.",
         supplierId: accounts[0]!.supplierId,
       },
     };
@@ -105,7 +105,7 @@ export async function getSupplierOffer(input: {
       ok: false,
       error: {
         kind: "NOT_CONFIGURED",
-        message: "Live-pris finns inte. Ingen leverantörsadapter är kopplad.",
+        message: "Live-pris finns inte. Ingen leverantör är inkopplad än.",
         supplierId: accounts[0]?.supplierId,
       },
     };

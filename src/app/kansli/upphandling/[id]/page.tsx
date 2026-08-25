@@ -24,8 +24,8 @@ export default async function KansliIntakePage({ params }: { params: Promise<{ i
         </Link>
       </p>
       {!session ? (
-        <SignInGate next="/kansli/upphandling" title="Logga in för att läsa intaget">
-          Intaget tillhör kansliet.
+        <SignInGate next="/kansli/upphandling" title="Logga in för att läsa anmälan">
+          Anmälan tillhör kansliet.
         </SignInGate>
       ) : intake ? (
         <>

@@ -18,7 +18,7 @@ import { requestRitaAnalysis } from "./actions";
 
 export const metadata = {
   title: "RITA — Pixdrift",
-  description: "Skattemässiga besparingar i underlaget. Motorn är skattjakt.",
+  description: "RITA letar skattebesparingar i era böcker.",
 };
 
 export default async function RitaPage({
@@ -45,24 +45,22 @@ export default async function RitaPage({
         <p className="pd-label text-faint">PIXDRIFT / RITA</p>
         <h1 className="text-3xl font-semibold tracking-tight">RITA</h1>
         <p className="text-ink-soft">
-          RITA jagar skattemässiga besparingar i böckerna: avdrag, moms, K10, pension, FoU. Motorn
-          är skattjakt. Fynden är preliminära — inte ett skatteråd. TORA avgör anbud; det är en
-          annan fråga.
+          RITA letar skattebesparingar i era böcker: avdrag, moms, K10, pension och FoU. Det RITA
+          hittar är förslag att kolla vidare — inte skatteråd.
         </p>
         <Notice>
           {engine.available
             ? engine.modelReady
-              ? `Motorn är kopplad (${engine.kind}${engine.modelId ? `, ${engine.modelId}` : ""}). Regelverk plus språkmodell. Svaret är inferens där modellen bidragit.`
-              : `Motorn är kopplad (${engine.kind}) men kör bara regelverket. ANTHROPIC_API_KEY saknas i subprocessen.`
-            : "Ingen motor. Utan RITA_ENGINE_URL + token eller RITA_ENGINE_BINARY blir status blocked. Motorn fejkars inte."}{" "}
-          Demonstrationsbokslutet är en inbyggd textfil, inte en kunduppladdning.
+              ? "Analysen är igång. Delar av svaret kommer från en AI-modell och kan behöva dubbelkollas."
+              : "Analysen är igång, men utan AI-stöd just nu. Bara de fasta reglerna används."
+            : "Analysen är inte inkopplad än, så nya analyser stannar som blockerade. Vi visar aldrig påhittade resultat."}{" "}
+          Exempelbokslutet är ett inbyggt exempel — inte något en kund laddat upp.
         </Notice>
       </header>
 
       {!session?.org ? (
         <SignInGate next="/rita" title="Logga in för att begära analys">
-          Analysen skrivs i RITA:s eget schema. BRITT får veta via händelseloggen när något slutar
-          eller blockeras.
+          Analysen sparas i RITA. BRITT får en lapp när en analys blir klar eller stoppas.
         </SignInGate>
       ) : (
         <>
@@ -80,25 +78,25 @@ export default async function RitaPage({
                 placeholder="556xxx-xxxx"
               />
               <p className="text-sm text-ink-soft">
-                Subprocessen kan ta upp till 7 minuter. Det är inte 240000 ms i UI:t.
+                Analysen kan ta upp till 7 minuter. Ha tålamod.
               </p>
               {engine.kind === "http" ? (
                 <p className="text-sm text-ink-soft">
-                  HTTP-motorn tar inte demonstrationsfilen. Ladda upp hos hosten, eller kör
-                  subprocess.
+                  Exempelbokslutet går inte att använda i den här driftmiljön. Använd ett eget
+                  underlag.
                 </p>
               ) : (
                 <CheckField
                   name="useDemoDocument"
                   defaultChecked
-                  label="Använd demonstrationsbokslut (exempel-bokslut.txt). Inte en kundfil."
+                  label="Använd exempelbokslutet (inte en riktig kundfil)."
                 />
               )}
               <Submit>Begär analys</Submit>
             </form>
           ) : (
             <Notice>
-              Formuläret är avstängt tills motorn finns. Se{" "}
+              Det går inte att beställa analyser än. Se{" "}
               <Link
                 href="/kansli/beredskap"
                 className="underline decoration-line underline-offset-4"

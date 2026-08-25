@@ -15,10 +15,10 @@ export const metadata = {
 };
 
 function expiryCopy(item: Agreement): string {
-  if (item.status === "expired") return "Länken har gått ut. Återutfärda från avtalet.";
+  if (item.status === "expired") return "Länken har gått ut. Skicka en ny länk från avtalet.";
   const days = daysUntilExpiry(item.tokenExpiresAt);
   if (days == null) return "Väntar på motparten.";
-  if (days <= 0) return "Länken har gått ut. Återutfärda från avtalet.";
+  if (days <= 0) return "Länken har gått ut. Skicka en ny länk från avtalet.";
   if (days === 1) return "1 dag kvar till länken går ut.";
   return `${days} dagar kvar till länken går ut.`;
 }
@@ -86,9 +86,8 @@ export default async function IrmaPage({
         <p className="pd-label text-faint">IRMA</p>
         <h1 className="max-w-xl text-4xl font-semibold tracking-tight">Vilket avtal ska ut?</h1>
         <p className="max-w-xl text-ink-soft">
-          IRMA digitaliserar avtalshanteringen: ett flöde, status på varje avtal, motparten utan
-          konto. I navet nu är handslaget — klausuler, länk, sett, bekräftat, återkallat. Inte
-          BankID. Inte hela dokumentarkivet än.
+          Med IRMA skickar ni avtal digitalt: skapa, skicka en länk, se när motparten öppnat och
+          bekräftat. Motparten behöver inget konto. BankID och dokumentarkiv finns inte än.
         </p>
       </header>
 
@@ -107,7 +106,7 @@ export default async function IrmaPage({
 
       {!session?.org ? (
         <SignInGate next="/irma" title="Logga in för att skapa avtal">
-          Länken till motparten visas en gång. I databasen ligger bara en hash.
+          Länken visas bara en gång — kopiera den direkt. Vi sparar den inte i läsbar form.
         </SignInGate>
       ) : (
         <>

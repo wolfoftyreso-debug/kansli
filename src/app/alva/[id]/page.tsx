@@ -53,8 +53,8 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
         </Link>
       </p>
       {!session?.org ? (
-        <SignInGate next="/alva" title="Logga in för att se fallet">
-          Fallet tillhör organisationen.
+        <SignInGate next="/alva" title="Logga in för att se ärendet">
+          Ärendet tillhör organisationen.
         </SignInGate>
       ) : item ? (
         <>
@@ -62,9 +62,7 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
           <p className="text-xs font-medium uppercase tracking-wide text-accent">
             {CASE_STATUS_LABELS[status]}
           </p>
-          <Notice>
-            Det här är fakta ni fyller i själva. Ingen diagnosmotor. Ingen slutsats från systemet.
-          </Notice>
+          <Notice>Här fyller ni i fakta själva. Systemet drar inga egna slutsatser.</Notice>
 
           <dl className="flex flex-col gap-3">
             <div>
@@ -136,11 +134,11 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
 
           <section className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4">
             <h2 className="text-lg font-semibold">Kontrollerade fakta</h2>
-            <p className="text-sm text-ink-soft">Ja / nej / okänt. Inte pass/fail-diagnos.</p>
+            <p className="text-sm text-ink-soft">Svara ja, nej eller okänt på varje kontroll.</p>
             {observations.length === 0 && measurements.length === 0 ? (
               <Notice>
-                Protokollet är tomt tills ni fyller i kontroller eller mätvärden. Diagnosmotorn är
-                inte inkopplad.
+                Protokollet är tomt tills ni fyller i kontroller eller mätvärden. Diagnosen är inte
+                inkopplad än.
               </Notice>
             ) : null}
             <form action={recordAlvaObservation} className="grid gap-3 sm:grid-cols-3">

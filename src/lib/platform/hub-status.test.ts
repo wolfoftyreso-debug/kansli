@@ -16,6 +16,6 @@ describe("ritaStatusLine", () => {
         modelReady: true,
         modelId: "claude-fable-5",
       }),
-    ).toBe("RITA subprocess · regelverk + claude-fable-5");
+    ).toBe("RITA · regler + claude-fable-5");
   });
 });

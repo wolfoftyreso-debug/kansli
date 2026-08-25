@@ -65,7 +65,7 @@ export default async function FakturorPage() {
             action={createInvoiceAction}
             className="flex flex-col gap-4 rounded-xl border border-line bg-surface px-4 py-4"
           >
-            <h2 className="text-lg font-semibold">Ny fordran</h2>
+            <h2 className="text-lg font-semibold">Ny faktura</h2>
             <Field name="customerName" label="Kund" required />
             <Field name="customerRef" label="Kundreferens (valfritt)" />
             <Field name="sourceSystem" label="Källsystem (valfritt)" />

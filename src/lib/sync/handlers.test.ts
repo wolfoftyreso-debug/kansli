@@ -86,6 +86,6 @@ live("registerSyncHandlers (live Postgres)", () => {
       [orgRef],
     );
     expect(ritaBody.rows[0]?.body).toMatch(/Exempelbolaget AB: 7 fynd/);
-    expect(ritaBody.rows[0]?.body).toMatch(/Språkmodell var kopplad/);
+    expect(ritaBody.rows[0]?.body).toMatch(/Med AI-stöd/);
   });
 });

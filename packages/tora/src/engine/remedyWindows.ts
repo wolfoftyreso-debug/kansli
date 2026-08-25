@@ -144,7 +144,7 @@ export function redactRemedyDates(outlook: RemedyOutlook, fullDetail: boolean): 
     ),
     summary:
       "Vilka vägar som finns och när de stänger räknas mot upphandlingens datum, som ingår i Pro " +
-      "och uppåt. Reglerna nedan gäller oavsett nivå. Systemet bedömer inte om något gått fel i " +
+      "och uppåt. Reglerna nedan gäller oavsett plan. Systemet bedömer inte om något gått fel i " +
       "den här upphandlingen — det avgörs av underlaget och av en juridisk bedömning.",
   };
 }

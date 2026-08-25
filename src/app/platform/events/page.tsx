@@ -6,7 +6,7 @@ import { tryRuntime } from "@/lib/platform/page";
 
 export const metadata = {
   title: "Händelser — Pixdrift",
-  description: "Append-only synk- och revisionslogg för den aktiva organisationen.",
+  description: "Allt som hänt i era system, i tidsordning.",
 };
 
 export default async function EventsPage() {
@@ -23,18 +23,17 @@ export default async function EventsPage() {
         <p className="pd-label text-faint">PIXDRIFT / Händelser</p>
         <h1 className="text-3xl font-semibold tracking-tight">Händelselogg</h1>
         <p className="text-ink-soft">
-          Append-only. Produkter synkar genom att publicera och lyssna — de läser inte varandras
-          tabeller.
+          Listan fylls bara på — inget ändras eller tas bort i efterhand.
         </p>
-        <Notice>Visas för den aktiva organisationen i sessionen. Ändras inte i efterhand.</Notice>
+        <Notice>Du ser händelser för det företag du är inloggad som.</Notice>
       </header>
 
       {!session?.org ? (
         <SignInGate next="/platform/events" title="Logga in för att läsa loggen">
-          Händelser är scoped till organisationen. Utan session är listan tom avsiktligt.
+          Händelserna tillhör ert företag. Logga in för att se dem.
         </SignInGate>
       ) : events.length === 0 ? (
-        <EmptyState>Inga händelser ännu. Publicera från TORA eller skapa något i RITA.</EmptyState>
+        <EmptyState>Inga händelser ännu. De dyker upp när ni börjar använda systemen.</EmptyState>
       ) : (
         <ol className="flex flex-col gap-2">
           {events.map((event) => {

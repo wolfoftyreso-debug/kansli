@@ -121,7 +121,7 @@ describe("avtalsspärren", () => {
   it("säger att rätten går förlorad när fönstret stängs", () => {
     const stage = PROCEDURE_GUIDES.open.stages.find((s) => s.id === "standstill");
     // Att fristen finns är inte poängen. Poängen är att den är sista chansen.
-    expect(stage?.pitfall).toMatch(/förlorad/);
+    expect(stage?.pitfall).toMatch(/inte längre att överklaga/);
     expect(stage?.yourMove).toMatch(/förvaltningsrätten/);
   });
 });

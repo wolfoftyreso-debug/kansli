@@ -32,22 +32,21 @@ export default async function EkonomiPage() {
         <p className="pd-label text-faint">PIXDRIFT / Ekonomi</p>
         <h1 className="text-3xl font-semibold tracking-tight">Vad är bokat?</h1>
         <p className="max-w-xl text-ink-soft">
-          En bok för hela huset. TYRA, IRMA och de andra skapar fordringar här — de skriver inte i
-          varandras tabeller. Tre spår mot kund: Swish, Stripe, faktura 10 dagar. Revolut ansluts en
-          gång med OAuth och förnyar sin token själv — då kommer kontoutdrag och matchning.
+          En bokföring för hela huset. TYRA, IRMA och de andra lägger sina fakturor här. Kunden kan
+          betala med Swish, Stripe eller faktura på 10 dagar. Anslut Revolut en gång, så hämtas
+          kontoutdrag och betalningar matchas automatiskt.
         </p>
       </header>
 
       {!session ? (
         <SignInGate next="/ekonomi" title="Logga in för att se boken">
-          Ekonomi är orgens egen pärm. Inte demonstrationssiffror från BRITT.
+          Ekonomin tillhör ert företag. Logga in för att se den.
         </SignInGate>
       ) : (
         <>
           <Notice>
-            Grunden är strikt: öre, BAS-konton, balanserade verifikat, hashkedja. Stripe Checkout
-            och Revolut-anrop körs bara med riktig nyckel. 100 simulerade transaktioner väntar på
-            ditt OK — inte före.
+            Allt bokförs i öre mot BAS-kontoplanen, och varje verifikat balanserar. Betalningar körs
+            bara på riktigt när kopplingarna är på plats — inget simuleras utan att du sagt ja.
           </Notice>
 
           <section className="grid gap-3 sm:grid-cols-3">

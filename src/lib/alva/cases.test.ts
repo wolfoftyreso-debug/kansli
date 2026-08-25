@@ -52,7 +52,7 @@ live("alva.cases (live Postgres)", () => {
 
     const published = await events.list({ orgRef, kind: "alva.case.created" });
     expect(published).toHaveLength(1);
-    expect(published[0]?.payload["note"]).toMatch(/ALVA-repot/);
+    expect(published[0]?.payload["note"]).toMatch(/inte inkopplad/);
     expect(published[0]?.payload["complaintExcerpt"]).toMatch(/Oljud/);
     expect(published[0]?.payload).not.toHaveProperty("diagnosis");
 

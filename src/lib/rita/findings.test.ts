@@ -82,7 +82,7 @@ describe("findingsFromAnalysis", () => {
     expect(categoryLabel(finding?.category ?? "")).toBe("Skatt");
     expect(analysisDisclaimer(result)).toMatch(/Ingen garanti/);
     expect(analysisLimitations(result)[0]).toMatch(/rådgivare/);
-    expect(estimatedTotalHint(result)).toMatch(/Preliminärt intervall/);
+    expect(estimatedTotalHint(result)).toMatch(/ingen garanti/);
     expect(estimatedTotalHint(result)).not.toMatch(/Du sparar/);
   });
 });

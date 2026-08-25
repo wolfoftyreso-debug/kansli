@@ -6,12 +6,12 @@ export type DemoModule = (typeof DEMO_MODULES)[number];
 
 export const DEMO_MODULE_LABELS: Record<DemoModule, string> = {
   tyra: "TYRA — däckhotell",
-  irma: "IRMA — underlag L0–L1",
+  irma: "IRMA — digitala avtal",
   ekonomi: "Ekonomi — faktura 10 dagar",
-  tora: "TORA — anbudsrätt (demo-marknad)",
+  tora: "TORA — upphandlingar (exempeldata)",
   britt: "BRITT — inkorg",
-  rita: "RITA — skattjakt (om motorn finns)",
-  alva: "ALVA — intag, inte diagnos",
+  rita: "RITA — skatteanalys (om den är inkopplad)",
+  alva: "ALVA — registrera ärenden (utan diagnos)",
 };
 
 export const MEETING_DELAY_DAYS = 10;
@@ -144,7 +144,7 @@ export function parseIntakeForm(form: FormData, houseOrgRef: string): IntakeDraf
   if (!EMAIL.test(contactEmail)) throw new Error("en giltig arbets-e-post krävs.");
   const honestyAccepted = form.get("honestyAccepted") === "on";
   if (!honestyAccepted) {
-    throw new Error("ärlighetsrutan måste kryssas. Det här är inte ett sålt koncernavtal.");
+    throw new Error("ärlighetsrutan måste kryssas. Anmälan är inte ett sålt avtal.");
   }
   const kronor = String(form.get("invoiceKronor") ?? "").trim();
   let invoiceNetOre: number | undefined;

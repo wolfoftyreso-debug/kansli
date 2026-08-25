@@ -77,8 +77,8 @@ export default async function IrmaAgreementPage({ params }: { params: Promise<{ 
               {integrity?.contentMatches === true
                 ? "oförändrat"
                 : integrity?.contentMatches === false
-                  ? "stämmer inte med hashen"
-                  : "ingen hash (äldre rad)"}
+                  ? "har ändrats"
+                  : "går inte att kontrollera (äldre avtal)"}
               {agreement.artifactSha256
                 ? ` · bekräftelse ${integrity?.artifactMatches === true ? "stämmer" : integrity?.artifactMatches === false ? "stämmer inte" : "kan inte räknas om"}`
                 : ""}

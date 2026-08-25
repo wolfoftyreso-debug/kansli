@@ -17,11 +17,11 @@ export function hubStatus(): HubStatus {
 }
 
 export function ritaStatusLine(rita: RitaEngineSnapshot): string {
-  if (!rita.available) return "RITA-motorn saknas. Analyser blir blocked.";
+  if (!rita.available) return "RITA:s analys saknas. Nya analyser stoppas.";
   const model = rita.modelReady
     ? rita.modelId
-      ? `regelverk + ${rita.modelId}`
-      : "regelverk + språkmodell"
-    : "bara regelverket";
-  return `RITA ${rita.kind} · ${model}`;
+      ? `regler + ${rita.modelId}`
+      : "regler + AI"
+    : "bara fasta regler";
+  return `RITA · ${model}`;
 }

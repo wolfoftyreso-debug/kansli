@@ -16,7 +16,7 @@ const STATUS_LABEL: Record<RevolutHealth["status"], string> = {
   not_configured: "Inte konfigurerad",
   pending_authorization: "Väntar på godkännande",
   active: "Ansluten",
-  refreshing: "Förnyar token",
+  refreshing: "Förnyar anslutningen",
   action_required: "Åtgärd krävs",
   revoked: "Inte ansluten",
   error: "Fel i konfigurationen",
@@ -46,7 +46,7 @@ function when(value: string | null): string {
  */
 function authenticationLabel(health: RevolutHealth): string {
   if (health.certificate.keyMatch.state === "mismatch") return "Nyckeln matchar inte";
-  return health.oauthConnected ? "Frisk" : "Inte ansluten";
+  return health.oauthConnected ? "Fungerar" : "Inte ansluten";
 }
 
 function Row({ label, value }: { label: string; value: string }) {
@@ -81,14 +81,14 @@ export default async function RevolutConnectionPage({
       </p>
       <h1 className="text-3xl font-semibold tracking-tight">Revolut Business</h1>
       <p className="max-w-xl text-ink-soft">
-        En anslutning, en gång. Access-tokenen lever 40 minuter och förnyas automatiskt. Du behöver
-        bara logga in i Revolut igen om Revolut drar tillbaka behörigheten.
+        Anslut en gång, sen sköter det sig självt. Du behöver bara logga in i Revolut igen om banken
+        stänger anslutningen.
       </p>
 
       {params.error ? (
         <Notice>{describeCategory(params.error as RevolutErrorCategory)}</Notice>
       ) : null}
-      {params.connected ? <Notice>Revolut är ansluten. Tokenen sköts härifrån.</Notice> : null}
+      {params.connected ? <Notice>Revolut är ansluten. Förnyelsen sköter sig själv.</Notice> : null}
 
       {!session ? (
         <SignInGate next="/ekonomi/anslutningar/revolut" title="Logga in för att ansluta Revolut">
@@ -109,9 +109,9 @@ export default async function RevolutConnectionPage({
 
             {health ? (
               <div className="mt-4">
-                <Row label="Autentisering" value={authenticationLabel(health)} />
+                <Row label="Inloggning mot banken" value={authenticationLabel(health)} />
                 <Row
-                  label="Automatisk tokenförnyelse"
+                  label="Automatisk förnyelse"
                   value={health.automaticRenewal ? "Aktiv" : "Inaktiv"}
                 />
                 <Row label="Senast verifierad" value={when(health.lastSuccessAt)} />
@@ -125,7 +125,10 @@ export default async function RevolutConnectionPage({
                       : `${CERT_LABEL[health.certificate.health]} · ${health.certificate.daysUntilExpiry} dagar`
                   }
                 />
-                <Row label="Nyckelpar" value={KEY_MATCH_LABEL[health.certificate.keyMatch.state]} />
+                <Row
+                  label="Nyckel och certifikat"
+                  value={KEY_MATCH_LABEL[health.certificate.keyMatch.state]}
+                />
               </div>
             ) : null}
 
@@ -164,7 +167,8 @@ export default async function RevolutConnectionPage({
           <section className="rounded-xl border border-line bg-surface px-4 py-4">
             <h2 className="text-lg font-semibold">Det här klistrar du in i Revolut</h2>
             <p className="mt-2 text-sm text-ink-soft">
-              Omdirigerings-URI. Den är permanent och hör inte till Pixdrift-inloggningen.
+              Adressen nedan klistrar du in hos Revolut. Den ändras aldrig och hör inte till
+              Pixdrift-inloggningen.
             </p>
             <p className="mt-2 break-all font-mono text-sm">{config.redirect.uri}</p>
             <p className="mt-3 text-sm text-ink-soft">{config.redirect.reason}</p>
@@ -182,9 +186,8 @@ export default async function RevolutConnectionPage({
           <section className="rounded-xl border border-line bg-surface px-4 py-4">
             <h2 className="text-lg font-semibold">Om du kopplar bort</h2>
             <p className="mt-2 text-sm text-ink-soft">
-              Vi raderar tokenarna här. Revolut har inget publikt API för att återkalla dem, så ta
-              även bort appens behörighet under APIs i Revolut Business om du vill stänga dörren
-              helt.
+              Vi tar bort anslutningen här. Vill du stänga dörren helt, ta även bort anslutningen
+              inne i Revolut Business (under APIs).
             </p>
           </section>
 

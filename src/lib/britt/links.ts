@@ -22,11 +22,11 @@ export function observationHref(subjectRef: string | null | undefined): string |
 }
 
 export const SOURCE_LABELS: Record<string, string> = {
-  tora: "TORA — anbudsrätt",
+  tora: "TORA — upphandlingar",
   rita: "RITA — skattefynd",
   irma: "IRMA — avtal",
   tyra: "TYRA — däckhotell",
-  alva: "ALVA — fallintag",
+  alva: "ALVA — nya ärenden",
   kansli: "Kansli — intern uppgift",
   ekonomi: "Ekonomi — bok och betalning",
   britt: "BRITT — egen anteckning",

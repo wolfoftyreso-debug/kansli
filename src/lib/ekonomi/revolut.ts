@@ -198,7 +198,9 @@ async function revolutGet<T>(
     signal: AbortSignal.timeout(LEGACY_REQUEST_TIMEOUT_MS),
   });
   if (!response.ok) {
-    throw new Error(`Revolut ${response.status}. Tokenen avvisades eller API:t är otillgängligt.`);
+    throw new Error(
+      `Revolut svarade ${response.status}. Nyckeln godkändes inte, eller så svarar Revolut inte just nu.`,
+    );
   }
   return (await response.json()) as T;
 }
@@ -372,7 +374,7 @@ export async function syncRevolut(input: {
       blocked: true,
       detail: opened.reauthorize
         ? "Revolut-anslutningen måste göras om. Tryck Anslut om på Anslutningar."
-        : "Ingen ansluten Revolut-behörighet och ingen sparad token i slottet.",
+        : "Revolut är inte anslutet och ingen nyckel är sparad. Anslut under Anslutningar.",
     };
   }
 

@@ -119,7 +119,7 @@ export interface Remedy {
 export const REMEDIES: Remedy[] = [
   {
     key: "review_procurement",
-    title: "Överprövning av upphandlingen",
+    title: "Överklaga upphandlingen",
     court: "administrative",
     what:
       "Domstolen prövar om upphandlingen gått till enligt reglerna — innan avtal tecknas. " +
@@ -151,7 +151,7 @@ export const REMEDIES: Remedy[] = [
 
   {
     key: "contract_validity",
-    title: "Överprövning av avtalets giltighet",
+    title: "Överklaga själva avtalet",
     court: "administrative",
     what:
       "Domstolen prövar om ett redan tecknat avtal ska förklaras ogiltigt — till exempel när köpet " +
@@ -168,8 +168,8 @@ export const REMEDIES: Remedy[] = [
       verification: "verified",
     },
     cost:
-      "Ingen ansökningsavgift, och vardera parten står för sina egna kostnader — samma sak som vid " +
-      "överprövning av upphandlingen.",
+      "Ingen ansökningsavgift, och vardera parten står för sina egna kostnader — samma sak som " +
+      "när ni överklagar upphandlingen.",
     costSource: UHM_COURT_PROCESS,
     costVerification: "verified",
     pitfall:
@@ -201,12 +201,12 @@ export const REMEDIES: Remedy[] = [
     },
     cost:
       "Här gäller vanliga civilprocessregler: den som förlorar kan få betala motpartens " +
-      "rättegångskostnader. Riskbilden är alltså en annan än vid överprövning.",
+      "rättegångskostnader. Risken är alltså en annan än när ni överklagar.",
     costSource: UHM_DAMAGES,
     costVerification: "unverified",
     pitfall:
-      "Att en överprövning gått din väg innebär inte att skadestånd följer automatiskt. Det är en " +
-      "egen talan, i en egen domstol, som måste väckas inom sin egen frist.",
+      "Att ett överklagande gått din väg innebär inte att skadestånd följer automatiskt. Det är " +
+      "en egen talan, i en egen domstol, som måste väckas inom sin egen frist.",
   },
 ];
 

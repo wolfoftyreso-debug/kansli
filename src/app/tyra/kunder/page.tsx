@@ -8,7 +8,7 @@ import { listCustomerCards } from "@/lib/tyra/hotel";
 
 export const metadata = {
   title: "Kunder — TYRA",
-  description: "Kundkort från TYRA-schemat. Ingen live-pris, ingen SMS-sändning.",
+  description: "Kunder, fordon och hjulset. Inga live-priser, inga SMS.",
 };
 
 export default async function TyraCustomersPage() {
@@ -27,8 +27,8 @@ export default async function TyraCustomersPage() {
       </p>
       <h1 className="text-3xl font-semibold tracking-tight">Kundkort</h1>
       <p className="max-w-xl text-ink-soft">
-        Kunder, fordon och hjulset som faktiskt ligger i databasen. Nästa åtgärd är en heuristik —
-        inte en live offert.
+        Kunder, fordon och hjulset ni har registrerat. Nästa åtgärd är ett förslag från systemet —
+        inte en färdig offert.
       </p>
       {!session?.org ? (
         <SignInGate next="/tyra/kunder" title="Logga in för att se kundkort">

@@ -214,7 +214,7 @@ export async function processDueOutbox(input: {
   requestId: string;
 }): Promise<{ blocked: number; skipped: number }> {
   const reason = deliveryVendorConfigured()
-    ? "Leverantörsnyckel finns, men sändadaptern är inte implementerad i navet. Raden skickas inte."
+    ? "Leverantörsnyckel finns, men utskicket är inte inkopplat än. Raden skickas inte."
     : "Ingen SMS- eller e-postleverantör är kopplad. Raden skickas inte.";
   const { rows } = await input.pool.query<{ id: string; org_ref: string }>(
     input.orgRef

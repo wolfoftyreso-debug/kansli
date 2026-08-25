@@ -80,8 +80,7 @@ export class SubprocessAnalysisEngine implements AnalysisEngine {
       await access(this.options.binaryPath, constants.X_OK);
     } catch {
       throw new EngineError(
-        `analysmotorn finns inte eller är inte körbar: ${this.options.binaryPath}. ` +
-          `Kör \`pnpm engine:build\`.`,
+        `Analysen går inte att starta: ${this.options.binaryPath}. ` + `Kör \`pnpm engine:build\`.`,
         "engineMissing",
       );
     }
@@ -119,7 +118,7 @@ export class SubprocessAnalysisEngine implements AnalysisEngine {
       parsed = JSON.parse(stdout);
     } catch {
       throw new EngineError(
-        "motorn svarade med något som inte är JSON",
+        "Analysen svarade med något som inte går att läsa",
         "engineUnreadable",
         // stderr carries the engine's own Swedish diagnostics, which is the
         // useful half when stdout is unparseable.
@@ -183,9 +182,7 @@ export class SubprocessAnalysisEngine implements AnalysisEngine {
         settled = true;
         clearTimeout(timer);
         signal?.removeEventListener("abort", onAbort);
-        reject(
-          new EngineError(`analysmotorn kunde inte startas: ${error.message}`, "engineMissing"),
-        );
+        reject(new EngineError(`Analysen kunde inte startas: ${error.message}`, "engineMissing"));
       });
 
       child.on("close", (code) => {
@@ -331,7 +328,7 @@ export class HttpAnalysisEngine implements AnalysisEngine {
       payload === null ||
       typeof (payload as Record<string, unknown>)["engineVersion"] !== "string"
     ) {
-      throw new EngineError("motorn svarade inte med en version", "engineUnreadable");
+      throw new EngineError("Analysen svarade inte med en version", "engineUnreadable");
     }
     const body = payload as Record<string, unknown>;
     return {
@@ -375,7 +372,7 @@ export class HttpAnalysisEngine implements AnalysisEngine {
       const text = await response.text();
       if (!response.ok) {
         throw new EngineError(
-          `analysmotorn svarade ${response.status}`,
+          `Analysen svarade ${response.status}`,
           response.status === 404 ? "engineMissing" : "engineFailed",
           text.slice(0, 2_000),
         );
@@ -385,7 +382,7 @@ export class HttpAnalysisEngine implements AnalysisEngine {
         return JSON.parse(text) as unknown;
       } catch {
         throw new EngineError(
-          "motorn svarade med något som inte är JSON",
+          "Analysen svarade med något som inte går att läsa",
           "engineUnreadable",
           text.slice(0, 2_000),
         );
@@ -396,7 +393,7 @@ export class HttpAnalysisEngine implements AnalysisEngine {
         throw new EngineError(`analysen översteg tidsgränsen på ${timeoutMs} ms`, "engineTimeout");
       }
       throw new EngineError(
-        `analysmotorn kunde inte nås: ${error instanceof Error ? error.message : String(error)}`,
+        `Analysen kunde inte nås: ${error instanceof Error ? error.message : String(error)}`,
         "engineMissing",
       );
     } finally {

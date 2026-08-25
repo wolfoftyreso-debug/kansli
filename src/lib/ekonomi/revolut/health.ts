@@ -74,13 +74,13 @@ function summarise(input: {
   }
   if (input.status === "revoked") return "Inte ansluten. Anslutningen togs bort.";
   if (input.status === "action_required") return "Anslutningen måste göras om i Revolut.";
-  if (!input.configured) return "Inte konfigurerad. Certifikat och client id saknas.";
+  if (!input.configured) return "Inte konfigurerad. Certifikat och id saknas.";
   if (input.status === "pending_authorization") return "Väntar på godkännande i Revolut.";
   if (input.status === "active") {
     if (input.certificate === "expired") return "Ansluten, men certifikatet har gått ut.";
     if (input.certificate === "expiring") return "Ansluten. Certifikatet behöver bytas snart.";
-    if (input.refreshAvailable) return "Ansluten. Tokenen förnyas automatiskt.";
-    return "Ansluten, men utan refresh token. Anslut om för automatisk förnyelse.";
+    if (input.refreshAvailable) return "Ansluten. Förnyas automatiskt.";
+    return "Ansluten, men kan inte förnyas automatiskt. Anslut om.";
   }
   return "Inte ansluten.";
 }

@@ -90,7 +90,7 @@ export async function createCase(input: {
     subjectRef: `alva:case:${id}`,
     requestId: input.requestId,
     payload: {
-      note: "Diagnosmotorn anländer med ALVA-repot. Fallet är registrerat.",
+      note: "Ärendet är registrerat. Diagnosen är inte inkopplad än.",
       caseId: id,
       complaintExcerpt: complaint.slice(0, 120),
       vehicleRef,
@@ -123,7 +123,7 @@ export async function setCaseStatus(input: {
       where org_ref = $1 and id = $2`,
     [input.orgRef, input.caseId, input.status],
   );
-  if ((updated.rowCount ?? 0) === 0) throw new Error("Fallet saknas.");
+  if ((updated.rowCount ?? 0) === 0) throw new Error("Ärendet saknas.");
 }
 
 export async function setCaseNotes(input: {
@@ -138,7 +138,7 @@ export async function setCaseNotes(input: {
       where org_ref = $1 and id = $2`,
     [input.orgRef, input.caseId, input.notes.trim() || null],
   );
-  if ((updated.rowCount ?? 0) === 0) throw new Error("Fallet saknas.");
+  if ((updated.rowCount ?? 0) === 0) throw new Error("Ärendet saknas.");
 }
 
 function toCase(row: {

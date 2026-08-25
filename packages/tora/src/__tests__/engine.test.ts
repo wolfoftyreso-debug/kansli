@@ -515,7 +515,7 @@ describe("förutsedd efterträdare ärver inte avtalet", () => {
   it("säger ändå att företaget har det nuvarande uppdraget", () => {
     const next = find("pred:contract:tyresobostader-fastighetsel");
     expect(next.rationale).toMatch(/Ramavtal fastighetsel och elservice 2024–2027/);
-    expect(next.rationale).toMatch(/ingen rätt till nästa upphandling/);
+    expect(next.rationale).toMatch(/betyder inte att ni får nästa upphandling/);
   });
 
   it("behåller det andra hållet: den som inte har avtalet utestängs inte heller", () => {

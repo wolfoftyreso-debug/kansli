@@ -129,7 +129,7 @@ async function postToken(
   try {
     payload = (await response.json()) as TokenResponse;
   } catch (error) {
-    throw new RevolutError("malformed_response", "Revolut svarade utan giltig JSON.", {
+    throw new RevolutError("malformed_response", "Revolut svarade med något vi inte kunde tolka.", {
       status: response.status,
       cause: error,
     });
@@ -139,7 +139,7 @@ async function postToken(
     const providerCode = typeof payload.error === "string" ? payload.error : null;
     throw new RevolutError(
       tokenErrorCategory(response.status, providerCode, grant),
-      "Revolut avvisade tokenanropet.",
+      "Revolut godkände inte anslutningen.",
       { status: response.status, providerCode },
     );
   }
@@ -147,7 +147,7 @@ async function postToken(
   const accessToken = payload.access_token;
   const expiresIn = Number(payload.expires_in);
   if (typeof accessToken !== "string" || !accessToken) {
-    throw new RevolutError("malformed_response", "Revolut svarade utan access_token.", {
+    throw new RevolutError("malformed_response", "Svaret från Revolut var inte komplett.", {
       status: response.status,
     });
   }
@@ -334,7 +334,10 @@ async function refreshWithLock(
     }
   }
 
-  throw new RevolutError("timeout", "En annan förnyelse av Revolut-tokenen blev inte klar i tid.");
+  throw new RevolutError(
+    "timeout",
+    "En annan förnyelse av Revolut-anslutningen blev inte klar i tid.",
+  );
 }
 
 /** Only a dead grant gets here. This is what turns the UI into "Reconnect". */
