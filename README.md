@@ -73,6 +73,8 @@ Kör de gated Postgres-integrationstesterna genom att sätta `PIXDRIFT_TEST_OWNE
 | `docs/INVENTORY.md` | Exakt kodinventering |
 | `docs/AI-PROVIDERS.md` · `docs/INTEGRATIONS.md` | AI- resp. externa integrationer |
 | `docs/DEPLOYMENT.md` | Drift, runbook, live-länk |
+| `docs/architecture/MCP.md` | REST vs MCP, same domain services |
+| `/documentation/mcp` | DevPortal MCP (generated from the registry) |
 
 ## Kansli-uppgifter
 
@@ -85,6 +87,21 @@ Kör de gated Postgres-integrationstesterna genom att sätta `PIXDRIFT_TEST_OWNE
 
 Samma vägar finns som alias under `/api/tasks`. Data ligger i `kansli.tasks`,
 inte i en JSON-fil.
+
+## MCP
+
+REST is the application interface. MCP is the agent interface. Both call the
+same services (`addTask`, `listInvoices`, `requestAnalysis`, …).
+
+| Method | Path | Description |
+| --- | --- | --- |
+| `POST` | `/mcp` | Streamable HTTP, protocol `2026-07-28` |
+| `GET` | `/api/mcp/health` | Liveness + tool count |
+| `GET` | `/api/mcp/catalog` | Auth-required generated catalog |
+| — | `/documentation/mcp` | DevPortal |
+
+Auth: `Authorization: Bearer ${PIXDRIFT_MCP_TOKEN}` or the Kansli session cookie.
+Tenant comes from the token, not from tool arguments.
 
 ---
 

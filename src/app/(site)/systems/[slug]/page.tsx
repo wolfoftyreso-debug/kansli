@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getSystem, STEWARDSHIP_LABEL, systems } from "@/lib/pixdrift/systems";
+import { toolsForSystem } from "@/lib/mcp/catalog";
 import { Container } from "@/components/site/Container";
 import { SpecTable } from "@/components/site/SpecTable";
 import { RegionIndicator, StatusIndicator } from "@/components/site/indicators";
@@ -63,6 +64,17 @@ export default async function SystemPage({ params }: { params: Promise<{ slug: s
                 { label: "Stewardship", value: STEWARDSHIP_LABEL[system.stewardship] },
                 { label: "Status", value: <StatusIndicator status={system.status} /> },
                 { label: "Region", value: <RegionIndicator regions={system.regions} /> },
+                {
+                  label: "REST API",
+                  value: "Available",
+                },
+                {
+                  label: "MCP",
+                  value:
+                    toolsForSystem(system.slug).length > 0
+                      ? `${toolsForSystem(system.slug).length} tools`
+                      : "Not exposed",
+                },
               ]}
             />
           </div>
@@ -98,6 +110,12 @@ export default async function SystemPage({ params }: { params: Promise<{ slug: s
         </div>
 
         <div className="mt-12 flex flex-wrap gap-4">
+          <Link
+            href="/documentation/mcp"
+            className="border border-line-strong px-5 py-3 text-sm font-medium text-ink hover:border-ink"
+          >
+            MCP
+          </Link>
           <Link
             href="/documentation"
             className="border border-line-strong px-5 py-3 text-sm font-medium text-ink hover:border-ink"

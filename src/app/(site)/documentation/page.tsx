@@ -32,6 +32,18 @@ export default function DocumentationPage() {
         intro="Every system links into the same structured documentation environment, with a consistent shape so information is always where you expect it."
       />
 
+      <div className="mt-10 border border-line bg-surface p-6">
+        <p className="pd-label">MCP</p>
+        <p className="mt-2 max-w-2xl text-ink-soft">
+          Agents use MCP. Applications use REST. Both call the same domain services.
+        </p>
+        <p className="mt-4">
+          <Link href="/documentation/mcp" className="underline decoration-line underline-offset-4">
+            MCP documentation
+          </Link>
+        </p>
+      </div>
+
       <div className="mt-14 grid grid-cols-1 gap-12 lg:grid-cols-[1fr_1.4fr]">
         <div>
           <p className="pd-label">Per-system structure</p>
