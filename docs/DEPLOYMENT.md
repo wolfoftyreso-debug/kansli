@@ -83,6 +83,10 @@ Schemat/nyckeln/klientregistret skapas av en **owner**-roll. Enklast:
 - Alternativt kör migreringen separat som owner och registrera klienter med
   `pnpm onboard -- --id … --redirect … --audience …`.
 
+**Kvitto 2026-08-25:** produkt-scheman (kansli, ekonomi, tora, rita, britt,
+irma, tyra, alva) kördes mot Neon. `PIXDRIFT_SEED_DEMO` togs bort från
+Production. `CRON_SECRET` sattes. TYRA-påminnelser läggs ändå bara i kö.
+
 ## 4. Boring-AWS-baslinje (långsiktigt mål)
 
 ```
@@ -106,7 +110,8 @@ en person kör restore i Neon-konsolen och antecknar resultatet här.
 
 | Kontroll | URL/kommando | Förväntat |
 | --- | --- | --- |
-| kansli live | `https://<host>/` | Inloggningsgrind renderas |
+| kansli live | `https://<host>/` | Systemkatalog + sidospår |
+| hälsa | `https://<host>/api/platform/health` | `{"ok":true,"database":"up"}` i prod |
 | IdP hälsa | `https://<host>/idp/halsa` | `{"status":"ok","lage":"drift"}` |
 | OIDC discovery | `https://<host>/idp/.well-known/openid-configuration` | `issuer` = `https://<host>/idp` |
 | JWKS | `https://<host>/idp/jwks.json` | ES256-nyckel, stabil `kid` (persisterad i Postgres) |

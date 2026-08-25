@@ -95,10 +95,8 @@ MCP kan anropas av en generisk klient. Det är inte en ChatGPT-app.
 Se §5. Ingen locale-URL, ingen intent-graf, ingen Search Console-loop.
 
 **DESIGN — PARTIAL.**
-Tokens i `src/app/globals.css`. Gemensam sajt och `pd-label`.
-Inget `@pixdrift/design`-paket. Ingen design constitution.
-Produktsidorna är samma mall — det är bra — men app-ytorna
-har börjat egna mönster (TYRA-variabler i `:root`).
+Tokens i `src/app/globals.css`. Gemensam stel fasad (`Facade`)
+med sidospår och statuslist. Inget `@pixdrift/design`-paket.
 
 **BACKUP — PARTIAL.**
 `scripts/backup-postgres.sh`, `pnpm db:restore-drill`, CI kör drill.
@@ -173,7 +171,7 @@ Publika sidor i dag: `/`, `/systems`, `/systems/{slug}`,
 `/why`, `/company`.
 Sitemap: `src/app/sitemap.ts` (saknade tidigare MCP-URL:er).
 Robots: tillåt `/`, blockera `/kansli`, `/api/`, `/idp/`.
-Locale: `html lang="en"`. Inga `/en/` `/sv/` `/de/`.
+Locale: `html lang="sv"`. Inga `/en/` `/sv/` `/de/`.
 Ingen hreflang. Canonical är implicit via `metadataBase`.
 
 | Produkt | Kärnentiteter | Problemkluster | Roller | Bransch | Flöden | Integrationer | Språk | Befintliga sidor | Saknade sidor (målbild) | Teknisk SEO | Länkar | Kvalitetslucka |
@@ -201,7 +199,7 @@ Skapa inte ALVA “guided diagnostics” förrän motorn är inkopplad.
 - ingen hreflang, inga locale-URL:er
 - sitemap saknade MCP-dokumentation (rättas i samma ändring)
 - ingen structured data-generator
-- ingen `/llms.txt` (medvetet inte Google-hack; saknas för AI-klienter)
+- `/llms.txt` finns som ärlig maskintext, inte som sökhack
 - ingen knowledge-, tools-, comparisons-yta
 - `/company` har bolagsnamn och städer, inte org.nr, DPA, privacy, terms
 - statusyta är `planned` i `platform.ts`
@@ -256,7 +254,7 @@ MCP-health och `server/discover` är inte samma sak som
 | HTTP-status | PARTIAL | inte syntetiskt bevakat |
 | Prestanda | MISSING | ingen Lighthouse-gate |
 | Mobil | PARTIAL | layout finns, ingen bevakad svit |
-| Locale | MISSING | bara `en` i `html` |
+| Locale | PARTIAL | `html lang="sv"`. Inga locale-URL:er |
 
 ---
 
