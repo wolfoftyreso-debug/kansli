@@ -138,14 +138,29 @@ export function sliceLedger(
   return withWindowCum(windowed.slice(start, end));
 }
 
+function changeAgainst(current: number, previous: number) {
+  const changeOre = current - previous;
+  const changePct = previous === 0 ? (current === 0 ? 0 : null) : (changeOre / previous) * 100;
+  return { changeOre, changePct };
+}
+
 export function periodSummary(points: readonly DayPoint[], previous: readonly DayPoint[]) {
   const salesOre = points.reduce((sum, point) => sum + point.salesOre, 0);
   const receivedOre = points.reduce((sum, point) => sum + point.receivedOre, 0);
   const previousSalesOre = previous.reduce((sum, point) => sum + point.salesOre, 0);
-  const changeOre = salesOre - previousSalesOre;
-  const changePct =
-    previousSalesOre === 0 ? (salesOre === 0 ? 0 : null) : (changeOre / previousSalesOre) * 100;
-  return { salesOre, receivedOre, previousSalesOre, changeOre, changePct };
+  const previousReceivedOre = previous.reduce((sum, point) => sum + point.receivedOre, 0);
+  const sales = changeAgainst(salesOre, previousSalesOre);
+  const received = changeAgainst(receivedOre, previousReceivedOre);
+  return {
+    salesOre,
+    receivedOre,
+    previousSalesOre,
+    previousReceivedOre,
+    changeOre: sales.changeOre,
+    changePct: sales.changePct,
+    receivedChangeOre: received.changeOre,
+    receivedChangePct: received.changePct,
+  };
 }
 
 export function previousWindow(points: readonly DayPoint[], period: PeriodId): DayPoint[] {

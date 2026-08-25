@@ -40,7 +40,8 @@ export function SalesBoard({ points }: { points: DayPoint[] }) {
   const focusIndex = hover ?? Math.max(0, visible.length - 1);
   const focus = visible[focusIndex];
   const latest = focus ? seriesValue(focus, series, "cum") : 0;
-  const change = summary.changeOre;
+  const change = series === "sales" ? summary.changeOre : summary.receivedChangeOre;
+  const changePct = series === "sales" ? summary.changePct : summary.receivedChangePct;
   const up = change > 0;
   const down = change < 0;
   const activeDays = visible.filter((point) => seriesValue(point, series, "day") > 0).length;
@@ -84,9 +85,7 @@ export function SalesBoard({ points }: { points: DayPoint[] }) {
               <>
                 {up ? "+" : ""}
                 {formatSek(change)}
-                {summary.changePct == null
-                  ? ""
-                  : ` (${summary.changePct.toFixed(1).replace(".", ",")} %)`}
+                {changePct == null ? "" : ` (${changePct.toFixed(1).replace(".", ",")} %)`}
                 {" · "}
                 mot förra perioden
               </>
@@ -155,8 +154,10 @@ export function SalesBoard({ points }: { points: DayPoint[] }) {
       <p className="mt-2 text-xs text-muted">
         {formatChartRange(visible[0]?.date ?? "", visible.at(-1)?.date ?? "")}
         {activeDays <= 1
-          ? " · Alla sälj i fönstret ligger på samma dag."
-          : ` · ${activeDays} dagar med sälj`}
+          ? series === "sales"
+            ? " · Alla sälj i fönstret ligger på samma dag."
+            : " · Alla inbetalningar i fönstret ligger på samma dag."
+          : ` · ${activeDays} dagar med ${series === "sales" ? "sälj" : "inbetalning"}`}
       </p>
     </section>
   );

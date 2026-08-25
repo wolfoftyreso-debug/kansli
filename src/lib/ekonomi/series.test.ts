@@ -92,6 +92,7 @@ describe("sales series", () => {
     expect(summary.salesOre).toBe(7_000);
     expect(summary.previousSalesOre).toBe(7_000);
     expect(summary.changeOre).toBe(0);
+    expect(summary.receivedChangeOre).toBe(0);
   });
 
   it("pads a month even when the first sale is today", () => {
