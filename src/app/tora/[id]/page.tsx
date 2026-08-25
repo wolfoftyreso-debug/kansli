@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import type { OpportunityDetailResponse } from "@pixdrift/tora";
+import type { OpportunityDetailResponse, OpportunityView } from "@pixdrift/tora";
 import { AppShell } from "@/components/app/AppShell";
 import { Notice } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
-import { loadToraOpportunity, parseTier } from "@/lib/tora/market";
+import { requirementStatusText } from "@/lib/tora/labels";
+import { loadToraOpportunity, resolveViewTier } from "@/lib/tora/market";
 import { resolveCompany } from "@/lib/tora/profile";
 import {
   displayField,
@@ -23,9 +24,12 @@ export const metadata = {
 export default async function ToraOpportunityPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await readSession();
-  const tier = parseTier(session?.org?.tier);
   const runtime = tryRuntime();
   const company = await resolveCompany(runtime?.pool ?? null, session?.org?.ref ?? null);
+  const tier = resolveViewTier({
+    sessionTier: session?.org?.tier,
+    usingDemoCompany: company.id === "comp:tyresoel",
+  });
   const detail = loadToraOpportunity(tier, decodeURIComponent(id), company);
   if (!detail) notFound();
 
@@ -85,6 +89,8 @@ export default async function ToraOpportunityPage({ params }: { params: Promise<
         </section>
       ) : null}
 
+      <QualificationBlock view={view} />
+      <ScoreBlock view={view} />
       <ValueBlock detail={detail} />
       <EvaluationBlock detail={detail} />
       <Actions detail={detail} />
@@ -94,10 +100,79 @@ export default async function ToraOpportunityPage({ params }: { params: Promise<
       <QuestionsBlock detail={detail} />
 
       <Notice>
-        Er plan: {tier}. Processguide, handlingar, hur ni överklagar och frågor är gratis för alla.
-        Datum och belopp beror på er plan.
+        Betalkonto. Ni ser hela bedömningen för {company.name}: krav, belopp och nästa steg.
       </Notice>
     </AppShell>
+  );
+}
+
+function QualificationBlock({ view }: { view: OpportunityView }) {
+  if (view.qualification.state === "locked") {
+    return (
+      <section>
+        <h2 className="text-lg font-semibold">Krav mot ert bolag</h2>
+        <p className="mt-2 text-sm text-muted">{view.qualification.teaser}</p>
+      </section>
+    );
+  }
+  const qualification = view.qualification.value;
+  return (
+    <section className="flex flex-col gap-2">
+      <h2 className="text-lg font-semibold">Krav mot ert bolag</h2>
+      <p className="text-sm text-ink-soft">
+        {qualification.counts.met} uppfyllda, {qualification.counts.remediable} går att fixa,{" "}
+        {qualification.counts.unmet} saknas
+        {qualification.counts.unknown > 0 ? `, ${qualification.counts.unknown} okända` : ""}.
+      </p>
+      {qualification.explanation ? (
+        <p className="text-sm text-muted">{qualification.explanation}</p>
+      ) : null}
+      <ul className="flex flex-col gap-2">
+        {qualification.assessments.map((item) => (
+          <li
+            key={item.requirementId}
+            className="rounded-xl border border-line bg-surface px-4 py-3"
+          >
+            <p className="text-xs font-medium text-accent">{requirementStatusText(item.status)}</p>
+            <p className="mt-1 font-medium">{item.label}</p>
+            <p className="mt-1 text-sm text-ink-soft">{item.explanation}</p>
+            {item.remediation ? (
+              <p className="mt-1 text-sm text-muted">{item.remediation.action}</p>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function ScoreBlock({ view }: { view: OpportunityView }) {
+  if (view.score.state === "locked") {
+    return (
+      <section>
+        <h2 className="text-lg font-semibold">Poäng</h2>
+        <p className="mt-2 text-sm text-muted">{view.score.teaser}</p>
+      </section>
+    );
+  }
+  const score = view.score.value;
+  return (
+    <section className="flex flex-col gap-2">
+      <h2 className="text-lg font-semibold">Poäng</h2>
+      <p className="text-sm text-ink-soft">{score.explanation}</p>
+      <p className="font-mono text-xs text-faint">
+        {Math.round(score.score)} av 100 · {Math.round(score.confidence * 100)} % av underlaget går
+        att räkna på
+      </p>
+      <ul className="flex flex-col gap-2">
+        {score.factors.map((factor) => (
+          <li key={factor.key} className="rounded-xl border border-line bg-surface px-4 py-3">
+            <p className="font-medium">{factor.label}</p>
+            <p className="mt-1 text-sm text-ink-soft">{factor.explanation}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 

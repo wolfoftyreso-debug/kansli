@@ -81,7 +81,7 @@ export async function provisionWithPool(
 
   await pool.query(
     `insert into organizations (id, name, country, is_demo, tier)
-     values ($1, $2, 'SE', false, 'pilot')`,
+     values ($1, $2, 'SE', false, 'enterprise')`,
     [orgId, input.companyName.trim()],
   );
   if (input.orgNumber?.trim()) {

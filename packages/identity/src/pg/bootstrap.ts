@@ -70,8 +70,8 @@ async function seedDemo(pool: pg.Pool): Promise<void> {
   await pool.query(
     `insert into organizations (id, name, country, is_demo, tier) values
        ('org-exempelbolaget','Exempelbolaget AB','SE',true,'enterprise'),
-       ('org-nordvik','Nordvik Verkstad AB','SE',true,'pro')
-     on conflict (id) do nothing`,
+       ('org-nordvik','Nordvik Verkstad AB','SE',true,'enterprise')
+     on conflict (id) do update set tier = excluded.tier`,
   );
   await pool.query(
     `insert into legal_entities (id, org_id, name, registration_number, country) values

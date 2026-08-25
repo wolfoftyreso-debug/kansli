@@ -229,7 +229,7 @@ export async function seededStore(): Promise<SeedResult> {
     name: "Nordvik Verkstad AB",
     country: "SE",
     isDemo: true,
-    tier: "pro",
+    tier: "enterprise",
     legalEntities: [
       {
         id: "le-nordvik",

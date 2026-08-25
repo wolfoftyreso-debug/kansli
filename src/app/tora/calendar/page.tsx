@@ -4,7 +4,7 @@ import { AppShell } from "@/components/app/AppShell";
 import { EmptyState, Notice } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
-import { loadToraCalendar, parseTier } from "@/lib/tora/market";
+import { loadToraCalendar, resolveViewTier } from "@/lib/tora/market";
 import { resolveCompany } from "@/lib/tora/profile";
 import { opportunityHref } from "@/lib/tora/view";
 
@@ -22,9 +22,12 @@ const KIND_LABEL: Record<CalendarEntryView["kind"], string> = {
 
 export default async function ToraCalendarPage() {
   const session = await readSession();
-  const tier = parseTier(session?.org?.tier);
   const runtime = tryRuntime();
   const company = await resolveCompany(runtime?.pool ?? null, session?.org?.ref ?? null);
+  const tier = resolveViewTier({
+    sessionTier: session?.org?.tier,
+    usingDemoCompany: company.id === "comp:tyresoel",
+  });
   const calendar = loadToraCalendar(tier, company);
 
   return (
@@ -37,14 +40,14 @@ export default async function ToraCalendarPage() {
       <header className="flex flex-col gap-3">
         <h1 className="text-3xl font-semibold tracking-tight">Kalender</h1>
         <p className="text-ink-soft">
-          Datum framåt för upphandlingarna. På gratisplanen ser ni vad som händer, men inte vem
-          köparen är.
+          Datum framåt för upphandlingarna {company.name} ska hålla koll på — med namn och vad som
+          gäller.
         </p>
         <Notice>
           {calendar.alertCount} påminnelser.{" "}
           {calendar.alerts.state === "locked"
             ? calendar.alerts.teaser
-            : "Vad de gäller beror på er plan."}
+            : "Vad de gäller, med köpare och titel."}
         </Notice>
         {calendar.thisWeek.length +
           calendar.next30Days.length +

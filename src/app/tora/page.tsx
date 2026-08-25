@@ -4,7 +4,9 @@ import { OpportunityCard } from "@/components/app/OpportunityCard";
 import { EmptyState, Field, Notice, Submit } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
-import { loadToraMarket, parseTier } from "@/lib/tora/market";
+import { CompanyBriefingCard } from "@/components/app/CompanyBriefing";
+import { buildCompanyBriefing } from "@/lib/tora/briefing";
+import { loadToraMarket, resolveViewTier } from "@/lib/tora/market";
 import { listSnapshots } from "@/lib/tora/persist";
 import { getCompanyProfile, resolveCompany } from "@/lib/tora/profile";
 import { sek } from "@/lib/tora/view";
@@ -17,16 +19,20 @@ export const metadata = {
 
 export default async function ToraPage() {
   const session = await readSession();
-  const tier = parseTier(session?.org?.tier);
   const runtime = tryRuntime();
   const company = await resolveCompany(runtime?.pool ?? null, session?.org?.ref ?? null);
   const profile =
     session?.org?.ref && runtime ? await getCompanyProfile(runtime.pool, session.org.ref) : null;
+  const usingDemoCompany = !profile;
+  const tier = resolveViewTier({
+    sessionTier: session?.org?.tier,
+    usingDemoCompany,
+  });
   const market = loadToraMarket(tier, company);
+  const briefing = buildCompanyBriefing(company);
   const { summary } = market;
   const snapshots =
     session?.org?.ref && runtime ? await listSnapshots(runtime.pool, session.org.ref) : [];
-  const usingDemoCompany = !profile;
 
   return (
     <AppShell current="tora" session={session}>
@@ -34,16 +40,15 @@ export default async function ToraPage() {
         <p className="pd-label text-faint">PIXDRIFT / TORA</p>
         <h1 className="text-3xl font-semibold tracking-tight">TORA</h1>
         <p className="text-ink-soft">
-          TORA visar vilka upphandlingar {company.name} kan lämna anbud på, och vad ni bör göra
-          härnäst. Ni ser bara det som ingår i er plan.
+          TORA visar vilka upphandlingar {company.name} kan lämna anbud på — och varför just ni. Här
+          är hela bedömningen: krav, luckor och nästa steg.
         </p>
         <Notice>
-          Upphandlingarna här är exempel, inte riktiga annonser. Bolagsfakta är{" "}
+          Upphandlingarna är exempel, inte riktiga annonser. Visningen är ett betalkonto, så ni ser
+          namn, belopp och krav.{" "}
           {usingDemoCompany
-            ? "fortfarande exempelbolaget — spara er profil nedan."
-            : `er sparade profil (${company.name}).`}{" "}
-          Er plan: <span className="font-medium text-ink">{tier}</span>
-          {session ? ` · ${session.email}` : " · inte inloggad (gratisplanen)"}
+            ? "Bolagsfakta är exempelbolaget tills ni sparar er egen profil."
+            : `Bolagsfakta är er sparade profil (${company.name}).`}
         </Notice>
         <p className="text-sm">
           <Link
@@ -61,6 +66,8 @@ export default async function ToraPage() {
         <Stat label="Bevakning" value={String(summary.watchCount)} />
         <Stat label="Publicerat värde" value={sek(summary.knownValueSek)} />
       </section>
+
+      <CompanyBriefingCard briefing={briefing} />
 
       {session?.org ? (
         <form
@@ -80,29 +87,35 @@ export default async function ToraPage() {
           <Field
             name="employees"
             label="Anställda"
-            defaultValue={profile?.employees != null ? String(profile.employees) : ""}
+            defaultValue={
+              profile?.employees != null
+                ? String(profile.employees)
+                : company.employees != null
+                  ? String(company.employees)
+                  : ""
+            }
           />
           <Field
             name="capabilities"
             label="Vad ni kan göra (skriv med komma mellan)"
-            defaultValue={(profile?.capabilities ?? []).join(", ")}
+            defaultValue={(profile?.capabilities ?? company.capabilities).join(", ")}
             placeholder="el.installation, el.service"
           />
           <Field
             name="servesAreas"
             label="Områden ni jobbar i (skriv med komma mellan)"
-            defaultValue={(profile?.servesAreas ?? []).join(", ")}
+            defaultValue={(profile?.servesAreas ?? company.servesAreas).join(", ")}
             placeholder="0138, 0182"
           />
           <Field
             name="certifications"
             label="Certifieringar (skriv med komma mellan)"
-            defaultValue={(profile?.certifications ?? []).join(", ")}
+            defaultValue={(profile?.certifications ?? company.certifications).join(", ")}
           />
           <Field
             name="registrations"
             label="Registreringar (skriv med komma mellan)"
-            defaultValue={(profile?.registrations ?? []).join(", ")}
+            defaultValue={(profile?.registrations ?? company.registrations).join(", ")}
             placeholder="f_tax, vat"
           />
           {profile ? (

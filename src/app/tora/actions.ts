@@ -2,8 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { requireOrgAction } from "@/lib/platform/actions";
+import { resolveViewTier } from "@/lib/tora/market";
 import { persistSnapshot } from "@/lib/tora/persist";
-import { splitCsv, upsertCompanyProfile } from "@/lib/tora/profile";
+import { resolveCompany, splitCsv, upsertCompanyProfile } from "@/lib/tora/profile";
 
 export async function saveToraProfile(formData: FormData) {
   const { session, pool } = await requireOrgAction("/tora", "profile:write");
@@ -24,11 +25,15 @@ export async function saveToraProfile(formData: FormData) {
 
 export async function publishToraMarket() {
   const { session, pool, events } = await requireOrgAction("/tora", "profile:write");
+  const company = await resolveCompany(pool, session.org.ref);
   await persistSnapshot({
     pool,
     events,
     orgRef: session.org.ref,
-    tier: session.org.tier,
+    tier: resolveViewTier({
+      sessionTier: session.org.tier,
+      usingDemoCompany: company.id === "comp:tyresoel",
+    }),
     actorRef: session.sub,
     requestId: crypto.randomUUID(),
   });

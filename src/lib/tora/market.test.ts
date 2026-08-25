@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { demoCompany } from "@pixdrift/tora";
-import { loadToraCalendar, loadToraMarket, loadToraOpportunity } from "./market.ts";
+import {
+  loadToraCalendar,
+  loadToraMarket,
+  loadToraOpportunity,
+  parseTier,
+  resolveViewTier,
+} from "./market.ts";
 import { legalBasisText, opportunityHref } from "./view.ts";
 
 describe("TORA loaders", () => {
@@ -39,5 +45,28 @@ describe("TORA loaders", () => {
 
   it("returns undefined for an unknown opportunity", () => {
     expect(loadToraOpportunity("pro", "opp:missing")).toBeUndefined();
+  });
+});
+
+describe("resolveViewTier", () => {
+  it("treats the demo company as a paying account", () => {
+    expect(resolveViewTier({ sessionTier: undefined, usingDemoCompany: true })).toBe("enterprise");
+    expect(resolveViewTier({ sessionTier: "free", usingDemoCompany: true })).toBe("enterprise");
+  });
+
+  it("maps provisioned paying aliases to enterprise", () => {
+    expect(parseTier("pilot")).toBe("enterprise");
+    expect(parseTier("paid")).toBe("enterprise");
+    expect(parseTier("enterprise")).toBe("enterprise");
+  });
+
+  it("opens a free session as a paying account so the owner can see the product", () => {
+    expect(resolveViewTier({ sessionTier: "free", usingDemoCompany: false })).toBe("enterprise");
+  });
+
+  it("keeps a named paying plan", () => {
+    expect(resolveViewTier({ sessionTier: "professional", usingDemoCompany: false })).toBe(
+      "professional",
+    );
   });
 });
