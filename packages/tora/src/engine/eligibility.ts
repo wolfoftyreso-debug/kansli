@@ -115,7 +115,7 @@ export function assessRequirement(
       return {
         ...base,
         status: "remediable",
-        explanation: `Omsättning ${formatSek(company.annualRevenueSek)} understiger kravet på ${formatSek(required)}.`,
+        explanation: `Omsättning ${formatSek(company.annualRevenueSek)} är lägre än kravet på ${formatSek(required)}.`,
         remediation: {
           action:
             "Åberopa ett annat företags ekonomiska kapacitet, t.ex. moderbolag eller samarbetspartner. " +
@@ -137,7 +137,7 @@ export function assessRequirement(
         return {
           ...base,
           status: "met",
-          explanation: `${company.employees} anställda möter kravet på minst ${requirement.minEmployees}.`,
+          explanation: `${company.employees} anställda uppfyller kravet på minst ${requirement.minEmployees}.`,
         };
       }
       if (
@@ -154,7 +154,7 @@ export function assessRequirement(
       return {
         ...base,
         status: "remediable",
-        explanation: `${company.employees} anställda understiger kravet på minst ${requirement.minEmployees}.`,
+        explanation: `${company.employees} anställda är färre än kravet på minst ${requirement.minEmployees}.`,
         remediation: {
           action: "Åberopa underleverantörs kapacitet eller lämna anbud i grupp.",
           effort: "medium",
@@ -182,7 +182,7 @@ export function assessRequirement(
         remediation: {
           action: cert?.issuer
             ? `Ansök om ${cert.label} hos ${cert.issuer}.`
-            : `Skaffa ${certificationLabel(ctx, requirement.certification)}, alternativt anlita underleverantör som har den.`,
+            : `Skaffa ${certificationLabel(ctx, requirement.certification)}, eller anlita en underleverantör som har den.`,
           effort: (cert?.typicalLeadTimeDays ?? 0) > 90 ? "high" : "medium",
           typicalLeadTimeDays: cert?.typicalLeadTimeDays,
         },
@@ -224,7 +224,7 @@ export function assessRequirement(
         status: "remediable",
         explanation:
           `${matching.length} av ${requirement.count} begärda referensuppdrag matchar. ` +
-          `Saknar ${missing}.`,
+          `Det saknas ${missing}.`,
         remediation: {
           action:
             missing === requirement.count
@@ -263,7 +263,7 @@ export function assessRequirement(
         explanation:
           "Uppdragets område ligger utanför angivet serviceområde men inom samma region.",
         remediation: {
-          action: "Utöka serviceområdet i profilen, eller säkra lokal underleverantör.",
+          action: "Utöka serviceområdet i profilen, eller hitta en lokal underleverantör.",
           effort: "medium",
         },
       };
@@ -278,13 +278,13 @@ export function assessRequirement(
         return {
           ...base,
           status: "met",
-          explanation: `Ansvarsförsäkring ${formatSek(cover)} möter kravet på ${formatSek(requirement.minLiabilityCoverSek)}.`,
+          explanation: `Ansvarsförsäkring ${formatSek(cover)} uppfyller kravet på ${formatSek(requirement.minLiabilityCoverSek)}.`,
         };
       }
       return {
         ...base,
         status: "remediable",
-        explanation: `Ansvarsförsäkring ${formatSek(cover)} understiger kravet på ${formatSek(requirement.minLiabilityCoverSek)}.`,
+        explanation: `Ansvarsförsäkring ${formatSek(cover)} är lägre än kravet på ${formatSek(requirement.minLiabilityCoverSek)}.`,
         remediation: {
           action: "Höj försäkringsbeloppet hos ditt försäkringsbolag.",
           effort: "low",
@@ -357,7 +357,7 @@ export function assessRequirement(
       return {
         ...base,
         status: "unknown",
-        explanation: `Kräver manuell bedömning: ${requirement.description}`,
+        explanation: `Behöver läsas och bedömas av en människa: ${requirement.description}`,
       };
     }
   }
@@ -494,8 +494,8 @@ export function assessQualification(
         : requirements.length === 0
           ? "Upphandlingens kvalificeringskrav är inte inlästa, så det går inte att avgöra om " +
             "företaget uppfyller dem. Att inga krav är registrerade betyder inte att inga ställs."
-          : `Kravlistan är inte känt fullständig — ${requirements.length} krav är registrerade men ` +
-            "underlaget är inte inläst. De gap som visas är verkliga; att inga fler finns är inte belagt.",
+          : `Vi vet inte om kravlistan är komplett — ${requirements.length} krav är registrerade men ` +
+            "underlaget är inte inläst. De gap som visas är verkliga, men det kan finnas fler krav som vi inte sett.",
   };
 }
 

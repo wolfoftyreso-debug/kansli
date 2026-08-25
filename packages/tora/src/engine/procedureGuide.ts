@@ -129,7 +129,7 @@ function dateFor(
     case "admission":
       return procurement.admissionOpenUntil
         ? { date: procurement.admissionOpenUntil }
-        : { reason: "Systemets giltighetstid är inte publicerad." };
+        : { reason: "Hur länge systemet gäller är inte publicerat." };
 
     case "contract":
     case "call_off_contract":
@@ -141,7 +141,7 @@ function dateFor(
       // Prövning, tilldelning och avtalsspärr saknar publicerade datum. Att
       // uppskatta dem ur anbudsdagen vore att uppfinna en tidplan köparen
       // aldrig lämnat — och den skulle se ut att gå att planera efter.
-      return { reason: "Infaller efter anbudstiden; något datum är inte publicerat." };
+      return { reason: "Sker efter anbudstiden. Det finns inget publicerat datum." };
   }
 }
 
@@ -190,15 +190,15 @@ function describePosition(
 ): string {
   if (currentIndex === undefined) {
     return (
-      "Var i processen den här upphandlingen står går inte att avgöra av det som är publicerat. " +
-      "Stegen nedan visar hur förfarandet går till i sin helhet."
+      "Det som är publicerat räcker inte för att se var i processen upphandlingen står. " +
+      "Stegen nedan visar hur hela processen går till."
     );
   }
 
   const current = stages[currentIndex];
   const remaining = stages.length - currentIndex - 1;
   const tail =
-    remaining > 0 ? ` Därefter återstår ${remaining} steg.` : " Det här är processens sista steg.";
+    remaining > 0 ? ` Sedan är det ${remaining} steg kvar.` : " Det här är processens sista steg.";
 
   if (current.daysUntil !== undefined && current.daysUntil >= 0) {
     const days = current.daysUntil;
@@ -207,7 +207,7 @@ function describePosition(
   }
 
   if (procurement.status === "under_review") {
-    return `Pågående steg: ${current.stage.title}. Upphandlingen är under överprövning.${tail}`;
+    return `Pågående steg: ${current.stage.title}. Upphandlingen är överklagad.${tail}`;
   }
 
   return `Pågående steg: ${current.stage.title}.${tail}`;

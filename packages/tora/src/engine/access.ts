@@ -99,8 +99,8 @@ export function assessContractAccess(
       legalBasis: {
         contractId: contract.id,
         reason:
-          `Företaget är avtalspart i ${contract.title} som löper till ${contract.endDate}. ` +
-          "Inköp inom avtalets omfattning sker genom avrop mot avtalet.",
+          `Företaget har avtalet ${contract.title}, som gäller till ${contract.endDate}. ` +
+          "Köp som ingår i avtalet beställs direkt från avtalet.",
         source,
       },
       explanation: "Företaget har ett gällande avtal som täcker behovet.",
@@ -114,8 +114,8 @@ export function assessContractAccess(
         status: "competitive",
         governingContractId: contract.id,
         explanation:
-          `Företaget är antaget på ramavtalet ${contract.title}, men avrop sker genom förnyad ` +
-          "konkurrensutsättning mellan ramavtalsleverantörerna.",
+          `Företaget är med på ramavtalet ${contract.title}, men vid varje beställning får ` +
+          "leverantörerna på avtalet tävla om uppdraget igen.",
         caveats: [],
       };
     }
@@ -126,11 +126,11 @@ export function assessContractAccess(
         legalBasis: {
           contractId: contract.id,
           reason:
-            `Företaget är rangordnat som nummer 1 på ramavtalet ${contract.title} till ${contract.endDate}. ` +
-            "Avrop ska enligt avtalets avropsordning i första hand riktas till den rangordnade leverantören.",
+            `Företaget står först i turordningen på ramavtalet ${contract.title}, som gäller till ${contract.endDate}. ` +
+            "Beställningar ska i första hand gå till den som står först.",
           source,
         },
-        explanation: "Företaget är först i rangordningen på gällande ramavtal.",
+        explanation: "Företaget står först i turordningen på ramavtalet.",
         caveats: [],
       };
     }
@@ -138,8 +138,8 @@ export function assessContractAccess(
       status: "discretionary",
       governingContractId: contract.id,
       explanation:
-        `Företaget är rangordnat som nummer ${ranking.rank} på ramavtalet ${contract.title}. ` +
-        "Avrop går i första hand till leverantörer före i rangordningen.",
+        `Företaget står som nummer ${ranking.rank} i turordningen på ramavtalet ${contract.title}. ` +
+        "Beställningar går i första hand till dem som står före.",
       caveats: [],
     };
   }
@@ -148,8 +148,8 @@ export function assessContractAccess(
     status: "blocked",
     governingContractId: contract.id,
     explanation:
-      `Behovet omfattas av ${contract.title} (till ${contract.endDate}) där företaget inte är part. ` +
-      "Nästa möjlighet uppstår när avtalet löper ut eller när en ny upphandling annonseras.",
+      `Köpet styrs av avtalet ${contract.title} (till ${contract.endDate}), och företaget är inte med i det. ` +
+      "Nästa chans kommer när avtalet tar slut eller när en ny upphandling annonseras.",
     caveats: [
       doctrineCaveat("frameworkGovernsPurchase"),
       doctrineCaveat("noEntitlementFromScarcity"),
@@ -202,11 +202,11 @@ export function assessProcurementAccess(
           governingContractId: governing.id,
           explanation: incumbent
             ? `Företaget har uppdraget genom ${governing.title} till ${governing.endDate}. Avtalet ` +
-              "ger ingen rätt till den efterföljande upphandlingen — den är inte annonserad, och " +
-              "kraven går ännu inte att bedöma. Detta är tiden att förbereda sig."
+              "ger ingen rätt till nästa upphandling — den är inte annonserad än, och " +
+              "kraven går inte att bedöma ännu. Använd tiden till att förbereda er."
             : `${governing.supplierName ?? "En annan leverantör"} har uppdraget genom ${governing.title} ` +
-              `till ${governing.endDate}. Den nya upphandlingen är inte annonserad, så kraven går ännu ` +
-              "inte att bedöma. Detta är tiden att förbereda sig.",
+              `till ${governing.endDate}. Den nya upphandlingen är inte annonserad än, så kraven går ` +
+              "inte att bedöma ännu. Använd tiden till att förbereda er.",
           caveats: [doctrineCaveat("noEntitlementFromScarcity")],
         };
       }
@@ -226,21 +226,21 @@ export function assessProcurementAccess(
     case "awarded":
       return {
         status: "blocked",
-        explanation: "Tilldelningsbeslut är fattat. Uppdraget är inte längre öppet för anbud.",
+        explanation: "Köparen har valt leverantör. Det går inte längre att lämna anbud.",
         caveats: [],
       };
     case "under_review":
       return {
         status: "unknown",
-        explanation: "Upphandlingen är föremål för överprövning. Utgången är inte avgjord.",
+        explanation: "Upphandlingen är överklagad. Det är inte avgjort hur det slutar.",
         caveats: [],
       };
     case "predicted":
       return {
         status: "unknown",
         explanation:
-          "Upphandlingen är inte annonserad. Krav och förfarande är ännu inte publicerade, " +
-          "så det går inte att avgöra om företaget kan delta.",
+          "Upphandlingen är inte annonserad än. Krav och upplägg är inte publicerade, " +
+          "så det går inte att säga om företaget kan vara med.",
         caveats: [],
       };
     case "planned":
@@ -249,8 +249,8 @@ export function assessProcurementAccess(
         status: "unknown",
         explanation:
           procurement.status === "market_dialogue"
-            ? "Organisationen för marknadsdialog inför upphandlingen. Krav är inte fastställda."
-            : "Upphandlingen är planerad men ännu inte annonserad.",
+            ? "Köparen pratar med marknaden inför upphandlingen. Kraven är inte bestämda än."
+            : "Upphandlingen är planerad men inte annonserad än.",
         caveats: [doctrineCaveat("marketDialogueIsAllowed")],
       };
     case "closed":
@@ -270,15 +270,15 @@ export function assessProcurementAccess(
       if (!open) {
         return {
           status: "blocked",
-          explanation: "Det dynamiska inköpssystemets giltighetstid har löpt ut.",
+          explanation: "Det dynamiska inköpssystemet gäller inte längre.",
           caveats: [],
         };
       }
       return {
         status: "open",
         explanation:
-          "Dynamiskt inköpssystem. Ansökan om att bli antagen kan lämnas löpande, och antagna " +
-          "leverantörer får delta i kommande avrop.",
+          "Dynamiskt inköpssystem. Det går att ansöka när som helst, och den som är antagen " +
+          "får vara med när köparen beställer.",
         caveats: [doctrineCaveat("dpsAdmissionStaysOpen")],
       };
     }
@@ -292,7 +292,7 @@ export function assessProcurementAccess(
       if (!threshold) {
         return {
           status: "unknown",
-          explanation: `Ingen känd direktupphandlingsgräns för ${procurement.regulation} vid detta datum.`,
+          explanation: `Vi känner inte till någon direktupphandlingsgräns för ${procurement.regulation} vid det här datumet.`,
           caveats,
         };
       }
@@ -321,9 +321,9 @@ export function assessProcurementAccess(
           explanation:
             `Uppskattat värde ${procurement.estimatedValueSek.toLocaleString("sv-SE")} kr ligger nära ` +
             `direktupphandlingsgränsen för ${procurement.regulation} ` +
-            `(${threshold.amountSek.toLocaleString("sv-SE")} kr), och den gränsen är inte verifierad mot ` +
-            "källan. Är beloppet felaktigt avgörs frågan åt andra hållet, så systemet lämnar inget besked. " +
-            "Kontrollera gällande gräns hos källan.",
+            `(${threshold.amountSek.toLocaleString("sv-SE")} kr), och vi har inte kontrollerat gränsen mot ` +
+            "källan. Om beloppet är fel blir svaret det motsatta, så vi lämnar inget besked. " +
+            "Kontrollera hos källan vilken gräns som gäller.",
           caveats,
         };
       }
@@ -332,8 +332,8 @@ export function assessProcurementAccess(
         return {
           status: "competitive",
           explanation:
-            `Uppskattat värde ${procurement.estimatedValueSek.toLocaleString("sv-SE")} kr når eller överstiger ` +
-            `direktupphandlingsgränsen för ${procurement.regulation}. Köpet behöver därför konkurrensutsättas.`,
+            `Uppskattat värde ${procurement.estimatedValueSek.toLocaleString("sv-SE")} kr ligger på eller över ` +
+            `direktupphandlingsgränsen för ${procurement.regulation}. Köparen behöver därför göra en upphandling i konkurrens.`,
           caveats,
         };
       }
@@ -342,7 +342,7 @@ export function assessProcurementAccess(
         explanation:
           `Uppskattat värde ${procurement.estimatedValueSek.toLocaleString("sv-SE")} kr ligger under ` +
           `direktupphandlingsgränsen för ${procurement.regulation}. Direktupphandling kan vara möjlig, ` +
-          "men beslutet är organisationens.",
+          "men det är köparen som bestämmer.",
         caveats,
       };
     }
@@ -350,14 +350,15 @@ export function assessProcurementAccess(
     case "framework_call_off":
       return {
         status: "competitive",
-        explanation: "Avrop sker mellan leverantörer som redan är antagna på ramavtalet.",
+        explanation: "Beställningen görs bland de leverantörer som redan är med på ramavtalet.",
         caveats: [],
       };
 
     default:
       return {
         status: "competitive",
-        explanation: "Annonserad upphandling. Uppdraget avgörs i konkurrens mellan inkomna anbud.",
+        explanation:
+          "Annonserad upphandling. Uppdraget avgörs i konkurrens mellan de anbud som kommer in.",
         caveats: [],
       };
   }

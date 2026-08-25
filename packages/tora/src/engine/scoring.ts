@@ -120,7 +120,7 @@ function serviceMatchFactor(
       key: "service",
       label: "Tjänstematch",
       weight: 25,
-      explanation: "Upphandlingen saknar klassificerad tjänstekategori.",
+      explanation: "Upphandlingen har ingen tjänstekategori angiven.",
     };
   }
   const own = expandCapabilities(ctx.capabilities, company.capabilities);
@@ -151,7 +151,7 @@ function requirementFactor(qualification: QualificationResult): ScoreFactor {
   if (total === 0) {
     return {
       key: "requirements",
-      label: "Kvalificeringskrav",
+      label: "Krav",
       weight: 25,
       // Faktorn saknar `value` med flit: den utesluts ur medelvärdet och sänker
       // konfidensen i stället för att räknas som noll eller ett. Men förklaringen
@@ -166,16 +166,16 @@ function requirementFactor(qualification: QualificationResult): ScoreFactor {
   if (unknown === total) {
     return {
       key: "requirements",
-      label: "Kvalificeringskrav",
+      label: "Krav",
       weight: 25,
-      explanation: "Företagsprofilen saknar uppgifter för samtliga obligatoriska krav.",
+      explanation: "Företagsprofilen saknar uppgifter för alla obligatoriska krav.",
     };
   }
   // A remediable gap is worth partial credit; an unmet one is worth none.
   const value = (met + remediable * 0.5) / (total - unknown);
   return {
     key: "requirements",
-    label: "Kvalificeringskrav",
+    label: "Krav",
     weight: 25,
     value,
     explanation:
@@ -195,7 +195,7 @@ function referenceFactor(qualification: QualificationResult): ScoreFactor {
       key: "references",
       label: "Referenser",
       weight: 15,
-      explanation: "Upphandlingen ställer inga redovisade referenskrav.",
+      explanation: "Upphandlingen ställer inga referenskrav som vi känner till.",
     };
   }
   if (relevant.every((a) => a.status === "unknown")) {
@@ -249,7 +249,7 @@ function timingFactor(procurement: Procurement, ctx: ScoringContext): ScoreFacto
   if (!procurement.deadlineAt) {
     return {
       key: "timing",
-      label: "Tidsmässig möjlighet",
+      label: "Tid kvar",
       weight: 15,
       explanation: "Sista anbudsdag är inte publicerad.",
     };
@@ -258,7 +258,7 @@ function timingFactor(procurement: Procurement, ctx: ScoringContext): ScoreFacto
   if (days < 0) {
     return {
       key: "timing",
-      label: "Tidsmässig möjlighet",
+      label: "Tid kvar",
       weight: 15,
       value: 0,
       explanation: "Sista anbudsdag har passerat.",
@@ -267,7 +267,7 @@ function timingFactor(procurement: Procurement, ctx: ScoringContext): ScoreFacto
   const value = days >= 30 ? 1 : days >= 14 ? 0.75 : days >= 7 ? 0.45 : 0.2;
   return {
     key: "timing",
-    label: "Tidsmässig möjlighet",
+    label: "Tid kvar",
     weight: 15,
     value,
     explanation:
@@ -278,12 +278,17 @@ function timingFactor(procurement: Procurement, ctx: ScoringContext): ScoreFacto
 }
 
 function accessFactor(access: AccessStatus | undefined): ScoreFactor {
-  const label = "Åtkomlighet";
+  const label = "Väg till uppdraget";
   const weight = 25;
   switch (access) {
     case undefined:
     case "unknown":
-      return { key: "access", label, weight, explanation: "Förfarandet är inte fastställt." };
+      return {
+        key: "access",
+        label,
+        weight,
+        explanation: "Det är inte klart än hur köpet ska göras.",
+      };
     case "granted":
       return {
         key: "access",
@@ -308,8 +313,7 @@ function accessFactor(access: AccessStatus | undefined): ScoreFactor {
         label,
         weight,
         value: 0.55,
-        explanation:
-          "Vägen till uppdraget finns, men beslutet ligger hos den upphandlande organisationen.",
+        explanation: "Vägen till uppdraget finns, men det är köparen som bestämmer.",
       };
     case "blocked":
       return {
@@ -318,7 +322,8 @@ function accessFactor(access: AccessStatus | undefined): ScoreFactor {
         weight,
         value: 0,
         explanation:
-          "Uppdraget är inte åtkomligt — avtal, tilldelning eller passerad deadline stänger det.",
+          "Uppdraget går inte att nå — ett avtal, en vald leverantör eller en passerad " +
+          "sista anbudsdag stänger det.",
       };
   }
 }
@@ -332,7 +337,7 @@ function explain(score: number, confidence: number, factors: ScoreFactor[]): str
   const unknown = factors.filter((f) => f.value === undefined);
 
   if (known.length === 0) {
-    return "Det går inte att beräkna en poäng — samtliga faktorer saknar underlag.";
+    return "Vi kan inte räkna ut någon poäng — det saknas underlag för alla faktorer.";
   }
 
   const sorted = [...known].sort((a, b) => b.value - a.value);

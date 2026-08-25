@@ -117,7 +117,7 @@ export const DOCTRINE = {
    */
   noEntitlementFromScarcity:
     "Att det finns få eller bara en leverantör i närområdet ger ingen rätt till uppdraget. " +
-    "Offentlig upphandling styrs av bl.a. likabehandling, transparens och konkurrens.",
+    "Offentlig upphandling bygger bland annat på likabehandling, öppenhet och konkurrens.",
 
   /**
    * Direct award is the buyer's call, never the supplier's. The product may
@@ -125,8 +125,8 @@ export const DOCTRINE = {
    * entitled to a direct award.
    */
   directAwardIsBuyersDecision:
-    "Direktupphandling är inget en leverantör kan kräva. Den upphandlande organisationen " +
-    "avgör om förutsättningarna är uppfyllda, bl.a. utifrån värde och om ett befintligt avtal styr köpet.",
+    "Direktupphandling är inget en leverantör kan kräva. Det är köparen som avgör om det går, " +
+    "bland annat utifrån värdet och om ett avtal redan styr köpet.",
 
   /** Attached to every output of the price intelligence engine. */
   noPriceCoordination:
@@ -139,29 +139,29 @@ export const DOCTRINE = {
    * next procurement cycle.
    */
   dpsAdmissionStaysOpen:
-    "Ett dynamiskt inköpssystem tar löpande emot ansökningar under hela giltighetstiden. " +
-    "En leverantör som uppfyller kraven kan ansluta sig även efter att systemet startat.",
+    "Ett dynamiskt inköpssystem tar emot ansökningar hela tiden det gäller. " +
+    "En leverantör som uppfyller kraven kan gå med även efter att systemet startat.",
 
   /** Framework agreements route the purchase; they do not open it. */
   frameworkGovernsPurchase:
-    "Köpet omfattas av ett befintligt avtal eller ramavtal. Under avtalstiden sker inköp genom " +
-    "avrop enligt avtalets villkor, inte genom en ny upphandling.",
+    "Köpet styrs av ett avtal eller ramavtal som redan finns. Så länge avtalet gäller beställer " +
+    "köparen från avtalet, inte genom en ny upphandling.",
 
   /**
    * Den dyraste missuppfattningen om ramavtal, och den som får små företag att
    * bemanna upp för intäkter som aldrig kommer.
    */
   frameworkGuaranteesNoVolume:
-    "Ett ramavtal garanterar normalt ingen volym. Att bli antagen är att få rätten att bli " +
-    "tillfrågad — inte ett åtagande från köparen att beställa för något visst belopp.",
+    "Ett ramavtal lovar normalt inga beställningar. Att bli antagen betyder att ni kan bli " +
+    "tillfrågade — inte att köparen lovar att beställa för ett visst belopp.",
 
   /**
    * Annonsens belopp är ett tak för hela avtalet, inte en intäkt för en
    * leverantör. Skillnaden är antalet leverantörer gånger avtalets längd.
    */
   announcedValueIsNotYourRevenue:
-    "Det annonserade värdet avser hela avtalet under hela avtalstiden, och delas i ett ramavtal " +
-    "mellan samtliga antagna leverantörer. Det är ett tak för köparen, inte en prognos för dig.",
+    "Det annonserade värdet gäller hela avtalet under hela avtalstiden, och delas i ett ramavtal " +
+    "mellan alla antagna leverantörer. Det är ett tak för köparen, inte en prognos för dig.",
 
   /**
    * Underlaget går före varje generell beskrivning systemet ger.
@@ -183,13 +183,13 @@ export const DOCTRINE = {
    * upptäcks — efter att anbudsarbetet redan är gjort.
    */
   selfDeclarationIsPreliminary:
-    "En egen försäkran (ESPD) är ett preliminärt bevis. Den leverantör som ska tilldelas kontraktet " +
-    "får styrka uppgifterna med handlingar, och kontrollen sker innan tilldelning.",
+    "En egen försäkran (ESPD) är ett första bevis, inte ett slutligt. Den som ska få kontraktet " +
+    "måste sedan visa handlingar som styrker uppgifterna, innan köparen beslutar.",
 
   /** Market dialogue is legitimate and useful, within limits. */
   marketDialogueIsAllowed:
     "Tidig dialog och marknadsanalys inför en upphandling är tillåtet och kan förbättra små och " +
-    "medelstora företags möjligheter att delta, så länge likabehandling och icke-diskriminering upprätthålls.",
+    "medelstora företags möjligheter att delta, så länge köparen behandlar alla lika.",
 } as const;
 
 export type DoctrineKey = keyof typeof DOCTRINE;
@@ -261,7 +261,7 @@ export function unreviewedExtractionCaveat(source?: SourceRef): Caveat {
   return {
     key: "unreviewed_extraction",
     text:
-      "Kravlistan är maskinellt tolkad ur underlaget och inte granskad av en människa. " +
+      "Kravlistan är läst av en dator och inte granskad av en människa. " +
       "Kontrollera kraven mot originaldokumentet innan du lägger tid på anbudet.",
     source,
   };
@@ -272,8 +272,8 @@ export function unverifiedThresholdCaveat(threshold: DirectAwardThreshold): Cave
     key: "unverified_threshold",
     text:
       `Direktupphandlingsgränsen för ${threshold.regulation} anges här som ` +
-      `${threshold.amountSek.toLocaleString("sv-SE")} kr men är inte verifierad mot källan. ` +
-      "Kontrollera aktuellt belopp innan du agerar på bedömningen.",
+      `${threshold.amountSek.toLocaleString("sv-SE")} kr, men vi har inte kontrollerat den mot källan. ` +
+      "Kontrollera vilket belopp som gäller innan du agerar på bedömningen.",
     source: threshold.source,
   };
 }

@@ -178,7 +178,7 @@ describe("placerar upphandlingen i processen", () => {
     };
     const walkthrough = buildWalkthrough(predicted, today);
     expect(walkthrough.stages.every((s) => s.position === "unknown")).toBe(true);
-    expect(walkthrough.whereYouAre).toContain("går inte att avgöra");
+    expect(walkthrough.whereYouAre).toContain("räcker inte för att se");
     // Guiden ska ändå visa hela förfarandet — det är då man hinner förbereda sig.
     expect(walkthrough.stages.length).toBeGreaterThanOrEqual(5);
   });
@@ -199,7 +199,7 @@ describe("placerar upphandlingen i processen", () => {
     };
     const walkthrough = buildWalkthrough(underReview, today);
     expect(walkthrough.stages.find((s) => s.position === "current")?.stage.id).toBe("standstill");
-    expect(walkthrough.whereYouAre).toContain("överprövning");
+    expect(walkthrough.whereYouAre).toContain("överklagad");
   });
 
   it("beskriver läget i klarspråk med dagar kvar", () => {

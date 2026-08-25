@@ -106,8 +106,8 @@ export function evaluateBid(model: EvaluationModel | undefined, input: BidInput)
       status: "unknown",
       missing: ["utvärderingsmodell"],
       explanation:
-        "Underlaget innehåller ingen utvärderingsmodell i systemet, så det går inte att " +
-        "räkna på vad ett anbud skulle ge. Läs tilldelningskriterierna i förfrågningsunderlaget.",
+        "Vi har ingen utvärderingsmodell för den här upphandlingen, så det går inte att " +
+        "räkna på vad ett anbud skulle ge. Läs i upphandlingsdokumenten hur anbuden bedöms.",
       caveats: [noCoordination],
     };
   }
@@ -133,7 +133,7 @@ export function evaluateBid(model: EvaluationModel | undefined, input: BidInput)
           : "Underlaget anger inte hur anbudspriset blir poäng. ") +
         "Samma pris ger olika poäng under en relativ och en linjär modell, så utan formeln " +
         "finns inget att räkna. Leta efter avsnittet om prisutvärdering i " +
-        "förfrågningsunderlaget.",
+        "upphandlingsdokumenten.",
       caveats: [noCoordination],
     };
   }
@@ -165,8 +165,8 @@ function byPriceModel(
           },
         ],
         explanation:
-          "Lägsta pris vinner. Kvalitet poängsätts inte utan prövas som skallkrav, så " +
-          "anbudspriset är det enda som jämförs. Vilket pris som räcker beror på de andra " +
+          "Lägsta pris vinner. Kvaliteten får inga poäng utan prövas som krav som måste uppfyllas, " +
+          "så anbudspriset är det enda som jämförs. Vilket pris som räcker beror på de andra " +
           "anbuden och går inte att veta i förväg.",
         restsOnAssumption: false,
         caveats: [noCoordination],
@@ -190,8 +190,8 @@ function byPriceModel(
           status: "unknown",
           missing: ["egen kvalitetspoäng"],
           explanation:
-            `Köparen har fastställt priset till ${sek(priceModel.priceSek)}, så enbart ` +
-            "kvaliteten utvärderas. Ange din egna bedömda kvalitetspoäng för att räkna.",
+            `Köparen har bestämt priset till ${sek(priceModel.priceSek)}, så det är bara ` +
+            "kvaliteten som utvärderas. Ange din egen bedömda kvalitetspoäng för att räkna.",
           caveats: [noCoordination],
         };
       }
@@ -207,7 +207,7 @@ function byPriceModel(
         evaluationPriceSek: priceModel.priceSek,
         steps,
         explanation:
-          "Priset är fastställt av köparen och kan inte konkurreras med. Det som avgör är " +
+          "Köparen har bestämt priset, så det går inte att tävla med priset. Det som avgör är " +
           "kvaliteten, och poängen ovan är din egen bedömning — inte en bedömning systemet gjort.",
         restsOnAssumption: false,
         caveats: [noCoordination],
@@ -324,7 +324,7 @@ function byPriceModel(
           missing: ["egen kvalitetspoäng"],
           explanation:
             "Modellen räknar om kvalitetspoäng till kronor och drar av dem från anbudspriset. " +
-            "Ange din egna bedömda kvalitetspoäng för att se utvärderingspriset.",
+            "Ange din egen bedömda kvalitetspoäng för att se utvärderingspriset.",
           caveats: [noCoordination],
         };
       }

@@ -515,7 +515,7 @@ describe("förutsedd efterträdare ärver inte avtalet", () => {
   it("säger ändå att företaget har det nuvarande uppdraget", () => {
     const next = find("pred:contract:tyresobostader-fastighetsel");
     expect(next.rationale).toMatch(/Ramavtal fastighetsel och elservice 2024–2027/);
-    expect(next.rationale).toMatch(/ingen rätt till den efterföljande upphandlingen/);
+    expect(next.rationale).toMatch(/ingen rätt till nästa upphandling/);
   });
 
   it("behåller det andra hållet: den som inte har avtalet utestängs inte heller", () => {
@@ -698,7 +698,7 @@ describe("spärren för en okontrollerad gräns", () => {
     const caveat = unverifiedThresholdCaveat(unverified);
     expect(caveat.key).toBe("unverified_threshold");
     expect(caveat.text).toContain("700");
-    expect(caveat.text).toContain("inte verifierad");
+    expect(caveat.text).toContain("inte kontrollerat");
   });
 
   it("ger OKÄNT som verdict, inte bara som access-status", () => {
@@ -1001,7 +1001,7 @@ describe("radar and calendar", () => {
 
   it("explains a closed procurement as closed, not as somebody else's framework", () => {
     const awarded = opportunities.find((o) => o.procurementId === "proc:hist:tyreso-2024")!;
-    expect(awarded.rationale).toContain("Tilldelningsbeslut");
+    expect(awarded.rationale).toContain("valt leverantör");
   });
 
   it("reports how many opportunities published no value, rather than hiding them", () => {

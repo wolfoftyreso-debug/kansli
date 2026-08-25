@@ -30,7 +30,7 @@ export const VERDICT_LABEL: Record<Verdict, string> = {
   ELIGIBLE: "Kvalificerad",
   POSSIBLE: "Möjlig med åtgärd",
   COMPETITIVE: "Konkurrensutsatt",
-  NOT_ELIGIBLE: "Ej kvalificerad",
+  NOT_ELIGIBLE: "Inte kvalificerad",
   UNKNOWN: "Okänt",
 };
 
@@ -139,7 +139,7 @@ export function decideVerdict(input: VerdictInput): VerdictDecision {
   if (access === "blocked") {
     return {
       verdict: "NOT_ELIGIBLE",
-      rationale: accessExplanation ?? "Uppdraget är inte åtkomligt för företaget.",
+      rationale: accessExplanation ?? "Företaget kan inte komma åt uppdraget.",
       caveats,
     };
   }
@@ -149,7 +149,7 @@ export function decideVerdict(input: VerdictInput): VerdictDecision {
       verdict: "UNKNOWN",
       rationale:
         access === "unknown"
-          ? (accessExplanation ?? "Förfarande eller tidplan är inte fastställd.")
+          ? (accessExplanation ?? "Det är inte klart än hur eller när upphandlingen görs.")
           : (qualificationExplanation ?? "Uppgifter saknas för att avgöra om kraven är uppfyllda."),
       caveats,
     };
@@ -161,8 +161,8 @@ export function decideVerdict(input: VerdictInput): VerdictDecision {
       return {
         verdict: "UNKNOWN",
         rationale:
-          "En rättighet har påståtts men kan inte härledas till ett verifierbart avtal. " +
-          "Systemet redovisar därför ingen rättighet.",
+          "Vi kan inte koppla rättigheten till ett avtal som går att kontrollera, " +
+          "så vi visar ingen rättighet.",
         caveats,
       };
     }
@@ -195,8 +195,8 @@ export function decideVerdict(input: VerdictInput): VerdictDecision {
     return {
       verdict: "POSSIBLE",
       rationale:
-        "Företaget uppfyller kraven, men om köpet får göras på detta sätt avgörs av den " +
-        "upphandlande organisationen.",
+        "Företaget uppfyller kraven, men det är köparen som avgör om köpet får göras " +
+        "på det här sättet.",
       caveats,
     };
   }

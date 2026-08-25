@@ -30,6 +30,6 @@ export function legalBasisText(field: Locked<{ contractId: string; reason: strin
   contractId?: string;
 } {
   if (field.state === "locked") return { locked: true, reason: field.teaser };
-  if (!field.value) return { locked: false, reason: "Ingen rättslig grund i underlaget." };
+  if (!field.value) return { locked: false, reason: "Underlaget visar ingen särskild rätt till uppdraget." };
   return { locked: false, reason: field.value.reason, contractId: field.value.contractId };
 }

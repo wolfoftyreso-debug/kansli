@@ -174,23 +174,26 @@ export function redactOpportunity(
     title: identify(opportunity.title, "Lås upp för att se vilken upphandling."),
     rationale: detail(
       opportunity.rationale,
-      "Lås upp för att se varför systemet matchat möjligheten.",
+      "Lås upp för att se varför den här möjligheten passar er.",
     ),
     accessExplanation: detail(
       opportunity.access.explanation,
-      "Lås upp för den procedurmässiga bedömningen.",
+      "Lås upp för att se hur vägen till uppdraget ser ut.",
     ),
-    legalBasis: detail(opportunity.legalBasis, "Lås upp för den rättsliga grunden."),
-    score: detail(opportunity.score, "Lås upp för exakt poäng och faktorunderlag."),
+    legalBasis: detail(opportunity.legalBasis, "Lås upp för att se varför ni får lämna anbud."),
+    score: detail(opportunity.score, "Lås upp för att se exakt poäng och vad den bygger på."),
     deadlineAt: detail(opportunity.deadlineAt, "Lås upp för sista anbudsdag."),
     daysUntilDeadline: detail(opportunity.daysUntilDeadline, "Lås upp för tid kvar."),
     estimatedValueSek: detail(opportunity.estimatedValueSek, "Lås upp för beräknat värde."),
-    qualification: detail(opportunity.qualification, "Lås upp för fullständig kravanalys."),
+    qualification: detail(
+      opportunity.qualification,
+      "Lås upp för att se alla krav och hur ni ligger till.",
+    ),
     recommendedActions: detail(
       opportunity.recommendedActions,
-      "Lås upp för rekommenderade åtgärder.",
+      "Lås upp för att se vad ni bör göra.",
     ),
-    prediction: detail(opportunity.prediction, "Lås upp för tidplan och prognosunderlag."),
+    prediction: detail(opportunity.prediction, "Lås upp för att se tidplan och prognos."),
     sources: detail(opportunity.sources, "Lås upp för källor och dokument."),
   };
 }

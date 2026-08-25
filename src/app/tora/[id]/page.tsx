@@ -42,7 +42,7 @@ export default async function ToraOpportunityPage({ params }: { params: Promise<
       </header>
 
       <section className="rounded-xl border border-line bg-surface p-4">
-        <h2 className="text-lg font-semibold">Rättslig grund</h2>
+        <h2 className="text-lg font-semibold">Varför ni får lämna anbud</h2>
         <p className="mt-2 text-sm text-ink-soft">{basis.reason}</p>
         {basis.contractId ? (
           <p className="mt-2 font-mono text-xs text-faint">{basis.contractId}</p>
@@ -87,8 +87,8 @@ export default async function ToraOpportunityPage({ params }: { params: Promise<
       <QuestionsBlock detail={detail} />
 
       <Notice>
-        Nivå {tier}. Processguide, handlingar, rättsmedel och frågor är inte betalvägg. Datum och
-        belopp följer nivån.
+        Nivå {tier}. Processguide, handlingar, hur ni överklagar och frågor är inte betalvägg.
+        Datum och belopp följer nivån.
       </Notice>
     </AppShell>
   );
@@ -109,7 +109,7 @@ function ValueBlock({ detail }: { detail: OpportunityDetailResponse }) {
     return (
       <section>
         <h2 className="text-lg font-semibold">Värde</h2>
-        <p className="mt-2 text-sm text-muted">Inget värdeberäkning i underlaget.</p>
+        <p className="mt-2 text-sm text-muted">Vi har inget värde att visa.</p>
       </section>
     );
   }
@@ -252,7 +252,7 @@ function DocumentsBlock({ detail }: { detail: OpportunityDetailResponse }) {
 function RemediesBlock({ detail }: { detail: OpportunityDetailResponse }) {
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="text-lg font-semibold">Rättsmedel</h2>
+      <h2 className="text-lg font-semibold">Så kan ni överklaga</h2>
       <p className="text-sm text-ink-soft">{detail.remedies.summary}</p>
       <ul className="flex flex-col gap-2">
         {detail.remedies.windows.map((window) => (
