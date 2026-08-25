@@ -83,8 +83,9 @@ export default async function BeredskapPage() {
           </ol>
 
           <Notice>
-            Sälj inget som inte finns: RITA utan analys säljs inte, ALVA utan diagnos är bara
-            registrering, och TYRA:s påminnelser läggs i kö men skickas inte.
+            Sälj inget som inte finns. Ekonomi är en bok, inte Visma. SMS vid sälj går bara när
+            telefonen är kopplad och ni sagt ja. TYRA:s påminnelser läggs i kö men skickas inte.
+            RITA utan analys säljs inte. ALVA utan diagnos är bara registrering.
           </Notice>
         </>
       )}

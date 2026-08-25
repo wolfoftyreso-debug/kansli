@@ -128,7 +128,7 @@ export default function UpphandlingPage() {
           <CheckField
             name="honestyAccepted"
             required
-            label="Jag bekräftar att det här är underlag för demo och möte. BankID, live-leverantörspriser, SMS-utskick och kvalificerad e-signatur ingår inte i den här leveransen."
+            label="Jag bekräftar att det här är underlag för demo och möte. BankID, live-leverantörspriser, Visma, Fortnox och kvalificerad e-signatur ingår inte. SMS vid sälj går bara när telefonen är kopplad och ni sagt ja."
           />
           <CheckField
             name="provisionAccount"

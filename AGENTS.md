@@ -43,3 +43,6 @@ AI är aldrig source of truth; automation har uttrycklig nivå (L0–L4).
 - Ekonomi sales SMS goes through `src/lib/platform/sms.ts` (46elks). Products
   must not call 46elks themselves. A missed SMS must not roll back a booked
   sale. Mark SENT only if the vendor accepted the message.
+- Production path is `/kansli/beredskap` and `docs/FIRST_CUSTOMER.md`. Do not
+  invent Visma, Fortnox, Stripe Checkout or Swish Handel. The book is enough
+  for a first customer who signs what the product is not.

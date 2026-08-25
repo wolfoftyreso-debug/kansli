@@ -58,7 +58,12 @@ export default async function EkonomiPage() {
           <SystemLink id="irma">IRMA</SystemLink> och de andra lägger sina fakturor här. Kunden kan
           betala med Swish, Stripe eller faktura på 10 dagar. Anslut{" "}
           <SystemLink id="revolut">Revolut</SystemLink> en gång, så hämtas kontoutdrag och
-          betalningar matchas.
+          betalningar matchas. Visma är nästa anslutning — den finns inte här än.
+        </p>
+        <p className="text-sm">
+          <Link href="/kansli/beredskap" className="underline decoration-line underline-offset-4">
+            Första kunden — checklista, inte datum
+          </Link>
         </p>
       </header>
 

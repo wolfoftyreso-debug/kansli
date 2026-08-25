@@ -12,7 +12,8 @@
 
 1. **ALVA-diagnosmotorn** (bor i ALVA-repot). Utan den är ALVA ett intag.
 2. **RITA som HTTP-tjänst** om produktionen är Vercel. Binären körs inte i Functions.
-3. **TYRA-sändning** om kunden kräver att SMS/mejl är `SENT`. Det finns ingen adapter.
+3. **TYRA-sändning** om kunden kräver att påminnelser är `SENT`. TYRA lägger i kö.
+   Ekonomi kan skicka sälj-SMS via 46elks när telefonen är kopplad och ni sagt ja.
 
 Det går inte att koda bort 1–3 genom att sitta längre i kansli-repot. Det går att koda bort allt annat som blockerade en **ärlig** första kund. Det är gjort i den här branchen.
 
@@ -27,7 +28,7 @@ Det går inte att koda bort 1–3 genom att sitta längre i kansli-repot. Det g�
 | BRITT | Ja, inkorg | Öppen / klar. Inte ärendehantering. |
 | RITA | Bara om motorn finns | Utan `RITA_ENGINE_BINARY` eller `RITA_ENGINE_URL`: stäng av. |
 | ALVA | Nej som diagnos | Intag + protokolltom (status, anteckning, kontroller, mätvärden). Diagnos = annat repo. |
-| Ekonomi | Ja som bok, nej som PSP | Faktura 10 dagar + verifikat + moms-CSV. Stripe/Revolut/Swish bara med nyckel. Inte Fortnox. |
+| Ekonomi | Ja som bok, nej som PSP | Faktura 10 dagar + verifikat + moms-CSV + säljbräda. Stripe/Revolut/Swish bara med nyckel. SMS vid sälj via 46elks när ni sagt ja. Inte Visma. Inte Fortnox. |
 
 ## Vad som byggdes så att svaret inte bara är papper
 
@@ -41,6 +42,6 @@ Det går inte att koda bort 1–3 genom att sitta längre i kansli-repot. Det g�
 
 - Neon med PITR. Ett **daterat** restore-kvitto i `DEPLOYMENT.md`.
 - DNS + secrets i Vercel. `APP_ENV=production`. Inga `CHANGE_ME`.
-- Kunden skriver under: ingen BankID, inga live-priser, ingen ALVA-diagnos, ingen TED.
+- Kunden skriver under: ingen BankID, inga live-priser, ingen ALVA-diagnos, ingen TED, ingen Visma.
 
 När de tre sakerna är klara är **första kunden inte ett datum — den är en signatur**.
