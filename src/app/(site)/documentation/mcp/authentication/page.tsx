@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function McpAuthPage() {
   return (
-    <Container className="py-16 lg:py-24">
+    <Container>
       <McpDocNav current="/documentation/mcp/authentication" />
       <div className="mt-10">
         <SectionHeading

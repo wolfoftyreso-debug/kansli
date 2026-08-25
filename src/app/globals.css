@@ -38,7 +38,7 @@
   --tyra-border: var(--color-line);
   --tyra-panel: var(--color-paper);
   --tyra-focus: var(--color-accent);
-  --tyra-radius: 20px;
+  --tyra-radius: 0;
 }
 
 * {
@@ -83,7 +83,7 @@ body {
   height: 3.4rem;
   overflow: hidden;
   border: 1px solid var(--color-line);
-  border-radius: 0.7rem;
+  border-radius: 0;
   background: var(--color-paper);
 }
 .ek-brush-spark {
@@ -144,6 +144,19 @@ body {
 
 .pd-crumb a:hover {
   color: var(--color-ink);
+}
+
+/* Stiff facade: no marketing softness inside the frame. */
+.pd-facade .rounded-xl,
+.pd-facade .rounded-lg,
+.pd-facade .rounded-md,
+.pd-facade .rounded-2xl,
+.pd-facade .rounded {
+  border-radius: 0;
+}
+.pd-facade .shadow-sm,
+.pd-facade .shadow {
+  box-shadow: none;
 }
 
 /* Hairline dividers used throughout the system. */

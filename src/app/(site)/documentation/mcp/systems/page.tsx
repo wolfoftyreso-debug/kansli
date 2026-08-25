@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function McpSystemsPage() {
   const rows = mcpSystemMatrix();
   return (
-    <Container className="py-16 lg:py-24">
+    <Container>
       <McpDocNav current="/documentation/mcp/systems" />
       <div className="mt-10">
         <SectionHeading

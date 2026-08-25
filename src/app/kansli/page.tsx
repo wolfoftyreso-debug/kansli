@@ -44,7 +44,7 @@ export default async function KansliHub({
     <AppShell current="kansli" session={session}>
       <header className="flex flex-col gap-3">
         <ProductCrumb crumbs={[{ href: "/kansli", label: "Kansli" }]} />
-        <h1 className="text-3xl font-semibold tracking-tight">Kansli</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">Kansli</h1>
         <p className="text-ink-soft">
           Här börjar allt. Samma inloggning i alla system, och en egen uppgiftstavla för det
           interna.

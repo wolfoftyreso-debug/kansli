@@ -1,5 +1,6 @@
-import Link from "next/link";
+import { AppShell } from "@/components/app/AppShell";
 import { CheckField, Field, Submit } from "@/components/app/SignInGate";
+import { readSession } from "@/lib/auth/session";
 import { DEMO_MODULE_LABELS, DEMO_MODULES } from "@/lib/kansli/intakes";
 import { submitUpphandling } from "./actions";
 
@@ -16,27 +17,14 @@ export const metadata = {
  * Login pattern (email + password, error under field, no fake Google SSO):
  * https://mobbin.com/flows/4e3afa58-8eac-4166-bfbf-e606b061e637
  */
-export default function UpphandlingPage() {
+export default async function UpphandlingPage() {
+  const session = await readSession();
   return (
-    <div className="min-h-full bg-paper text-ink">
-      <header className="border-b border-line">
-        <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-4">
-          <Link href="/" className="text-sm font-semibold tracking-[0.18em]">
-            PIXDRIFT
-          </Link>
-          <Link
-            href="/kansli"
-            className="text-sm text-ink-soft underline decoration-line underline-offset-4 hover:text-ink"
-          >
-            Logga in
-          </Link>
-        </div>
-      </header>
-
-      <main className="mx-auto grid w-full max-w-5xl gap-12 px-6 py-12 lg:grid-cols-[1fr_1.15fr] lg:items-start lg:py-16">
-        <aside className="flex flex-col gap-6">
+    <AppShell current="upphandling" session={session}>
+      <div className="grid gap-8 lg:grid-cols-[1fr_1.15fr] lg:items-start">
+        <aside className="flex flex-col gap-4">
           <p className="pd-label text-faint">Koncernupphandling</p>
-          <h1 className="text-4xl font-semibold tracking-tight">
+          <h1 className="text-2xl font-semibold tracking-tight">
             Underlag för demo och uppföljningsmöte
           </h1>
           <p className="text-ink-soft">
@@ -56,7 +44,7 @@ export default function UpphandlingPage() {
 
         <form
           action={submitUpphandling}
-          className="flex flex-col gap-4 rounded-xl border border-line bg-surface p-6 shadow-sm"
+          className="flex flex-col gap-4 border border-line bg-surface p-4"
         >
           <Field name="contactEmail" label="Arbets-e-post" type="email" required />
           <div className="grid gap-4 sm:grid-cols-2">
@@ -143,7 +131,7 @@ export default function UpphandlingPage() {
           <Field name="invoiceKronor" label="Fakturabelopp exkl. moms (kr)" defaultValue="2500" />
           <Submit large>Boka möte om 10 dagar</Submit>
         </form>
-      </main>
-    </div>
+      </div>
+    </AppShell>
   );
 }

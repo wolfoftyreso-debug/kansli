@@ -51,12 +51,10 @@ export default async function SystemPage({ params }: { params: Promise<{ slug: s
 
       {/* Product header */}
       <section className="border-b border-line">
-        <Container className="py-16 lg:py-20">
+        <Container>
           <p className="pd-label">System {system.index}</p>
-          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-ink sm:text-6xl">
-            {system.name}
-          </h1>
-          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-soft">{system.purpose}</p>
+          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-ink">{system.name}</h1>
+          <p className="mt-3 max-w-2xl text-sm text-ink-soft">{system.purpose}</p>
           <div className="mt-10">
             <SpecTable
               rows={[
