@@ -20,6 +20,7 @@ const nextConfig: NextConfig = {
     "@pixdrift/events",
     "@pixdrift/systems",
     "@pixdrift/ai-core",
+    "@pixdrift/mcp-core",
   ],
   // Keep the IdP's Node runtime dependencies external (loaded from node_modules
   // at runtime) rather than bundling them into the server output.

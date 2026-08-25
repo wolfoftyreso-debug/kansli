@@ -159,6 +159,14 @@ export default async function PlatformPage() {
         <Link href="/platform/events" className="underline decoration-line underline-offset-4">
           Händelser
         </Link>
+        {" · "}
+        <Link href="/platform/mcp" className="underline decoration-line underline-offset-4">
+          MCP
+        </Link>
+        {" · "}
+        <Link href="/api/mcp/health" className="underline decoration-line underline-offset-4">
+          /api/mcp/health
+        </Link>
       </p>
     </AppShell>
   );

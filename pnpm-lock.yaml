@@ -38,6 +38,9 @@ importers:
       '@pixdrift/identity':
         specifier: workspace:*
         version: link:packages/identity
+      '@pixdrift/mcp-core':
+        specifier: workspace:*
+        version: link:packages/mcp-core
       '@pixdrift/rita-engine':
         specifier: workspace:*
         version: link:packages/rita-engine
@@ -266,6 +269,18 @@ importers:
       tsx:
         specifier: ^4.20.7
         version: 4.23.12
+
+  packages/mcp-core:
+    dependencies:
+      '@pixdrift/api-core':
+        specifier: workspace:*
+        version: link:../api-core
+      '@pixdrift/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      '@pixdrift/systems':
+        specifier: workspace:*
+        version: link:../systems
 
   packages/rita-engine:
     dependencies:

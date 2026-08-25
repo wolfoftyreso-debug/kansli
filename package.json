@@ -33,6 +33,7 @@
     "@pixdrift/db": "workspace:*",
     "@pixdrift/events": "workspace:*",
     "@pixdrift/identity": "workspace:*",
+    "@pixdrift/mcp-core": "workspace:*",
     "@pixdrift/rita-engine": "workspace:*",
     "@pixdrift/systems": "workspace:*",
     "@pixdrift/tora": "workspace:*",

@@ -32,8 +32,9 @@ Authenticated hub (kansli) lives at `/kansli`; the IdP is co-located at `/idp`.
 ## Surfaces (planned — modeled only)
 
 Account, Organization, Status, Billing, Support, Notifications, Permissions,
-API, Developer, Open Source. Defined in `src/lib/pixdrift/platform.ts` as
-`planned` so navigation, data and routing can grow into them deliberately.
+API, Open Source. Defined in `src/lib/pixdrift/platform.ts` as `planned` so
+navigation, data and routing can grow into them deliberately. Developer is
+`present` at `/documentation/mcp`.
 
 ## How growth happens without a rewrite
 

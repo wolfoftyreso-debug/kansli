@@ -95,8 +95,9 @@ export const platformSurfaces: PlatformSurface[] = [
   {
     id: "developer",
     name: "PIXDRIFT Developer",
-    purpose: "Developer resources and integrations.",
-    status: "planned",
+    purpose: "Developer resources and MCP.",
+    status: "present",
+    route: "/documentation/mcp",
   },
   {
     id: "open-source",
