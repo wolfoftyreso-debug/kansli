@@ -11,6 +11,7 @@ import {
   parseInvoiceLinesFromForm,
 } from "@/lib/ekonomi/invoices";
 import { offerPayment, parseRail, recordReceivedPayment } from "@/lib/ekonomi/payments";
+import { saveSalesAlertSettings } from "@/lib/ekonomi/sales-alerts";
 import { loadRevolutStatement, syncRevolut } from "@/lib/ekonomi/revolut";
 import { revolutEnvironment } from "@/lib/ekonomi/revolut/config";
 import { disconnect as disconnectRevolut } from "@/lib/ekonomi/revolut/connection";
@@ -71,6 +72,17 @@ export async function offerPaymentAction(form: FormData) {
     rail: parseRail(form.get("rail")),
   });
   revalidatePath(`/ekonomi/fakturor/${id}`);
+}
+
+export async function saveSalesAlertAction(form: FormData) {
+  const { session, pool } = await requireOrgAction("/ekonomi", "invoice:approve");
+  await saveSalesAlertSettings({
+    pool,
+    orgRef: session.org.ref,
+    phone: String(form.get("phone") ?? ""),
+    enabled: form.get("enabled") === "on",
+  });
+  revalidatePath("/ekonomi");
 }
 
 export async function recordPaymentAction(form: FormData) {

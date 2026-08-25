@@ -77,6 +77,49 @@ body {
   color: var(--color-muted);
 }
 
+/* Dual range slider for the Ekonomi sales board (Avanza-style window). */
+.ek-range {
+  position: relative;
+  height: 1.5rem;
+}
+.ek-range input[type="range"] {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  margin: 0;
+  background: transparent;
+  pointer-events: none;
+  appearance: none;
+}
+.ek-range input[type="range"]::-webkit-slider-runnable-track {
+  height: 4px;
+  background: var(--color-line-strong);
+  border-radius: 999px;
+}
+.ek-range input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  pointer-events: auto;
+  width: 16px;
+  height: 16px;
+  margin-top: -6px;
+  border-radius: 999px;
+  border: 2px solid var(--color-accent);
+  background: var(--color-surface);
+}
+.ek-range input[type="range"]::-moz-range-track {
+  height: 4px;
+  background: var(--color-line-strong);
+  border-radius: 999px;
+}
+.ek-range input[type="range"]::-moz-range-thumb {
+  pointer-events: auto;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  border: 2px solid var(--color-accent);
+  background: var(--color-surface);
+}
+
 .pd-crumb a {
   color: inherit;
   text-decoration: underline;

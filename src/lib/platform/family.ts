@@ -101,6 +101,8 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
       "ekonomi.invoices",
       "ekonomi.payments",
       "ekonomi.connectors",
+      "ekonomi.sales_alert_settings",
+      "ekonomi.sales_alert_outbox",
     ],
     status: "pilot",
   },

@@ -4,6 +4,7 @@ import type { EventLog } from "@pixdrift/events";
 import { salesAccount, vatAccount } from "./chart.ts";
 import { postJournal, type JournalLine } from "./journal.ts";
 import { assertOre, lineTotals, parseVatRateBps, type VatRateBps } from "./money.ts";
+import { notifySaleIssued } from "./sales-alerts.ts";
 
 export const INVOICE_STATUSES = ["draft", "issued", "part_paid", "paid", "void"] as const;
 export type InvoiceStatus = (typeof INVOICE_STATUSES)[number];
@@ -281,7 +282,23 @@ export async function issueInvoice(input: {
     requestId: input.requestId,
     payload: { title: invoice.number, dueDays: days, transactionId: posted.id },
   });
-  return (await getInvoice(input.pool, input.orgRef, invoice.id))!;
+  const issued = (await getInvoice(input.pool, input.orgRef, invoice.id))!;
+  try {
+    await notifySaleIssued({
+      pool: input.pool,
+      events: input.events,
+      orgRef: input.orgRef,
+      actorRef: input.actorRef,
+      invoiceId: issued.id,
+      invoiceNumber: issued.number,
+      customerName: issued.customerName,
+      grossOre: issued.grossOre,
+      requestId: input.requestId,
+    });
+  } catch {
+    // A missed SMS must not roll back a booked sale.
+  }
+  return issued;
 }
 
 export async function listInvoices(pool: pg.Pool, orgRef: string): Promise<Invoice[]> {
