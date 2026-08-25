@@ -9,9 +9,9 @@ import {
   issueInvoice,
   parseInvoiceLinesFromForm,
 } from "./invoices.ts";
-import { bookTyraQuote, listUnbookedTyraQuotes } from "./tyra-sales.ts";
+import { bookTyraQuote, listBookedTyraQuotes, listUnbookedTyraQuotes } from "./tyra-sales.ts";
 import { createCase } from "../tyra/cases.ts";
-import { saveQuoteDraft } from "../tyra/quotes.ts";
+import { markQuoteInvoiced, saveQuoteDraft } from "../tyra/quotes.ts";
 import { recordReceivedPayment } from "./payments.ts";
 import { encryptSecret, last4Of } from "./connectors.ts";
 import { syncRevolut } from "./revolut.ts";
@@ -262,6 +262,16 @@ live("ekonomi ledger (live Postgres)", () => {
     expect(fromQuote.grossOre).toBe(quote.snapshot.totalCustomerPriceOre);
     expect(fromQuote.lines[0]?.kind).toBe("goods");
     expect(await listUnbookedTyraQuotes(pool, orgRef)).toHaveLength(0);
+    await markQuoteInvoiced(pool, orgRef, quote.id);
+    const bookedQuotes = await listBookedTyraQuotes(pool, orgRef, created.id);
+    expect(bookedQuotes).toEqual([
+      { quoteId: quote.id, invoiceId: fromQuote.id, invoiceNumber: fromQuote.number },
+    ]);
+    const status = await pool.query<{ commercial_status: string }>(
+      `select commercial_status from tyra.tire_cases where org_ref = $1 and id = $2`,
+      [orgRef, created.id],
+    );
+    expect(status.rows[0]?.commercial_status).toBe("INVOICED");
 
     await expect(
       bookTyraQuote({

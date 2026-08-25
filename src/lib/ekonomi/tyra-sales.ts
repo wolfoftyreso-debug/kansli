@@ -62,6 +62,39 @@ export async function listUnbookedTyraQuotes(
   }));
 }
 
+export type BookedTyraQuote = {
+  quoteId: string;
+  invoiceId: string;
+  invoiceNumber: string;
+};
+
+export async function listBookedTyraQuotes(
+  pool: pg.Pool,
+  orgRef: string,
+  tireCaseId: string,
+): Promise<BookedTyraQuote[]> {
+  const { rows } = await pool.query<{
+    source_ref: string;
+    id: string;
+    number: string;
+  }>(
+    `select i.source_ref, i.id, i.number
+       from ekonomi.invoices i
+       join tyra.quote_drafts q
+         on q.id = i.source_ref and q.org_ref = i.org_ref
+      where i.org_ref = $1
+        and i.source_system = 'tyra'
+        and q.tire_case_id = $2
+      order by i.created_at desc`,
+    [orgRef, tireCaseId],
+  );
+  return rows.map((row) => ({
+    quoteId: row.source_ref,
+    invoiceId: row.id,
+    invoiceNumber: row.number,
+  }));
+}
+
 export async function bookTyraQuote(input: {
   pool: pg.Pool;
   events: EventLog;

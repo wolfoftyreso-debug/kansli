@@ -13,6 +13,7 @@ import {
 } from "@/lib/ekonomi/invoices";
 import { parseKronorToOre } from "@/lib/ekonomi/money";
 import { bookTyraQuote } from "@/lib/ekonomi/tyra-sales";
+import { markQuoteInvoiced } from "@/lib/tyra/quotes";
 import { offerPayment, parseRail, recordReceivedPayment } from "@/lib/ekonomi/payments";
 import { saveSalesAlertSettings } from "@/lib/ekonomi/sales-alerts";
 import { loadRevolutStatement, syncRevolut } from "@/lib/ekonomi/revolut";
@@ -90,6 +91,7 @@ export async function bookTyraQuoteAction(form: FormData) {
   revalidatePath("/ekonomi/fakturor");
   revalidatePath(`/ekonomi/fakturor/${invoice.id}`);
   revalidatePath("/tyra");
+  await markQuoteInvoiced(pool, session.org.ref, quoteId);
   const tireCaseId = String(form.get("tireCaseId") ?? "").trim();
   if (tireCaseId) revalidatePath(`/tyra/cases/${tireCaseId}`);
 }

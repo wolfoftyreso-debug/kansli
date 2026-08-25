@@ -16,7 +16,8 @@ import {
 } from "@/lib/tyra/cases";
 import { issueHubLink } from "@/lib/tyra/hub";
 import { parseTreadReadings, recordVerifiedInspection } from "@/lib/tyra/inspections";
-import { saveQuoteDraft } from "@/lib/tyra/quotes";
+import { bookTyraQuote } from "@/lib/ekonomi/tyra-sales";
+import { markQuoteInvoiced, parseTyraQuoteForm, saveQuoteDraft } from "@/lib/tyra/quotes";
 import { setIssuedHubLink } from "@/lib/tyra/issued-link";
 import {
   buildReminderMessage,
@@ -179,22 +180,40 @@ export async function saveTyraQuote(formData: FormData) {
   const { session, pool } = await requireOrgAction("/tyra", "arende:write");
   const id = String(formData.get("id") ?? "").trim();
   if (!id) return;
-  const kronor = (name: string) =>
-    Math.round(Number(String(formData.get(name) ?? "0").replace(",", ".")) * 100);
   await saveQuoteDraft({
     pool,
     orgRef: session.org.ref,
     tireCaseId: id,
-    title: String(formData.get("title") ?? "").trim(),
-    quantity: Number(formData.get("quantity") ?? 4) || 4,
-    unitCostOre: kronor("unitCostSek"),
-    installationOrePerTyre: kronor("installationSek"),
-    environmentalOrePerTyre: kronor("environmentalSek"),
-    markupPercent: Number(String(formData.get("markupPercent") ?? "0").replace(",", ".")) || 0,
-    note: String(formData.get("note") ?? "").trim(),
+    ...parseTyraQuoteForm(formData),
   });
   revalidatePath("/tyra");
   revalidatePath(`/tyra/cases/${id}`);
+}
+
+export async function saveAndBookTyraQuote(formData: FormData) {
+  const { session, pool, events } = await requireOrgAction("/tyra", "invoice:approve");
+  const id = String(formData.get("id") ?? "").trim();
+  if (!id) return;
+  const quote = await saveQuoteDraft({
+    pool,
+    orgRef: session.org.ref,
+    tireCaseId: id,
+    ...parseTyraQuoteForm(formData),
+  });
+  const invoice = await bookTyraQuote({
+    pool,
+    events,
+    orgRef: session.org.ref,
+    actorRef: session.sub,
+    quoteId: quote.id,
+    requestId: `tyra-book-${Date.now()}`,
+  });
+  await markQuoteInvoiced(pool, session.org.ref, quote.id);
+  revalidatePath("/tyra");
+  revalidatePath(`/tyra/cases/${id}`);
+  revalidatePath("/ekonomi");
+  revalidatePath("/ekonomi/fakturor");
+  revalidatePath(`/ekonomi/fakturor/${invoice.id}`);
 }
 
 export async function saveTyraCustomer(formData: FormData) {

@@ -46,6 +46,8 @@ AI är aldrig source of truth; automation har uttrycklig nivå (L0–L4).
 - Production path is `/kansli/beredskap` and `docs/FIRST_CUSTOMER.md`. Do not
   invent Visma, Fortnox, Stripe Checkout or Swish Handel. The book is enough
   for a first customer who signs what the product is not.
+- Ekonomi sales forms take kronor. The book stores öre. TYRA tire sales book
+  into Ekonomi from the case. A quote draft is the secondary path, not the sale.
 - Hardened runtime is `APP_ENV=prod|production` or `VERCEL_ENV=production`.
   Preview and `VERCEL_ENV=development` are never hardened. `NODE_ENV=production`
   is not production. Boot fails closed without `DATABASE_URL`, without secrets

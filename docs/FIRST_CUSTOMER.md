@@ -23,7 +23,7 @@ Det går inte att koda bort 1–3 genom att sitta längre i kansli-repot. Det g�
 |---|---|---|
 | Identitet + Kansli | Ja | Demo-lösen bara i preview/dev. Produktion vägrar starta med `PIXDRIFT_SEED_DEMO`. |
 | IRMA | Ja, L0–L1 | Inte BankID. Inte kvalificerad e-signatur. Handshake är koden. |
-| TYRA | Ja, verkstadspilot | Ärende, kund, lagerplats, mätning, offertutkast. Offerten kan bokas som faktura i Ekonomi. **Inget SMS från TYRA. Inga live-däckpriser.** |
+| TYRA | Ja, verkstadspilot | Ärende, kund, lagerplats, mätning. Däck bokas som faktura i Ekonomi från ärendet. Utkast är andra valet. **Inget SMS från TYRA. Inga live-däckpriser.** |
 | TORA | Ja, med org-profil | **Demo-marknad** (seed). Inte TED/HILMA. |
 | BRITT | Ja, inkorg | Öppen / klar. Inte ärendehantering. |
 | RITA | Bara om motorn finns | Utan `RITA_ENGINE_BINARY` eller `RITA_ENGINE_URL`: stäng av. |
