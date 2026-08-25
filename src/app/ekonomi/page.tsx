@@ -2,6 +2,7 @@ import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb, SystemLink } from "@/components/app/ProductCrumb";
 import { SalesBoard } from "@/components/ekonomi/SalesBoard";
+import { SalesDesk } from "@/components/ekonomi/SalesDesk";
 import { CheckField, Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
 import { listInvoices } from "@/lib/ekonomi/invoices";
 import { listPayments } from "@/lib/ekonomi/payments";
@@ -10,6 +11,7 @@ import { agedReceivables } from "@/lib/ekonomi/reports";
 import { formatSek } from "@/lib/ekonomi/money";
 import { buildDailyLedger } from "@/lib/ekonomi/series";
 import { getSalesAlertSettings, listSalesAlerts } from "@/lib/ekonomi/sales-alerts";
+import { listUnbookedTyraQuotes } from "@/lib/ekonomi/tyra-sales";
 import { smsConfigured } from "@/lib/platform/sms";
 import { readSession } from "@/lib/auth/session";
 import { formatSwedishDateTime } from "@/lib/format/datetime";
@@ -35,6 +37,8 @@ export default async function EkonomiPage() {
   const runtime = tryRuntime();
   const invoices =
     session?.org?.ref && runtime ? await listInvoices(runtime.pool, session.org.ref) : [];
+  const quotes =
+    session?.org?.ref && runtime ? await listUnbookedTyraQuotes(runtime.pool, session.org.ref) : [];
   const payments =
     session?.org?.ref && runtime ? await listPayments(runtime.pool, session.org.ref) : [];
   const alerts =
@@ -54,11 +58,11 @@ export default async function EkonomiPage() {
         <ProductCrumb crumbs={[{ href: "/ekonomi", label: "Ekonomi" }]} />
         <h1 className="text-3xl font-semibold tracking-tight">Vad är bokat?</h1>
         <p className="max-w-xl text-ink-soft">
-          Fakturor, moms och hur pengarna kom in. <SystemLink id="tyra">TYRA</SystemLink>,{" "}
-          <SystemLink id="irma">IRMA</SystemLink> och de andra lägger sina fakturor här. Kunden kan
-          betala med Swish, Stripe eller faktura på 10 dagar. Anslut{" "}
-          <SystemLink id="revolut">Revolut</SystemLink> en gång, så hämtas kontoutdrag och
-          betalningar matchas. Visma är nästa anslutning — den finns inte här än.
+          Boka sälj i kronor. Ett klick utfärdar fakturan. <SystemLink id="tyra">TYRA</SystemLink>
+          -offerter som inte är bokade ligger i kön. Kunden kan betala med Swish, Stripe eller
+          faktura på 10 dagar. Anslut <SystemLink id="revolut">Revolut</SystemLink> en gång, så
+          hämtas kontoutdrag och betalningar matchas. Visma är nästa anslutning — den finns inte här
+          än.
         </p>
         <p className="text-sm">
           <Link href="/kansli/beredskap" className="underline decoration-line underline-offset-4">
@@ -74,9 +78,16 @@ export default async function EkonomiPage() {
       ) : (
         <>
           <Notice>
-            Allt bokförs i öre mot BAS-kontoplanen, och varje verifikat balanserar. Betalningar körs
-            bara på riktigt när kopplingarna är på plats — inget simuleras utan att du sagt ja.
+            Ni skriver kronor. Boken sparar öre. Varje verifikat balanserar. Betalningar körs bara
+            på riktigt när kopplingarna är på plats — inget simuleras utan att du sagt ja.
           </Notice>
+
+          <SalesDesk
+            drafts={invoices.filter((invoice) => invoice.status === "draft")}
+            open={aged.notDue}
+            overdue={aged.overdue}
+            quotes={quotes}
+          />
 
           <SalesBoard points={points} />
 

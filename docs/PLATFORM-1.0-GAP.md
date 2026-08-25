@@ -1,6 +1,6 @@
 # PIXDRIFT PLATFORM 1.0 — inventering och luckor
 
-Datum: 2026-08-25.
+Datum: 2026-08-25 (säljskrivbord: kronor, ett klick, TYRA-offert → faktura).
 Målbild: [`PLATFORM-1.0.md`](PLATFORM-1.0.md).
 Metod: läst ur kod i det här repot. Inte ur önskelistor.
 

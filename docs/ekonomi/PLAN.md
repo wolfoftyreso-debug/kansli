@@ -34,7 +34,8 @@ styr vilka metoder som visas.
 
 ```
 Källa (TYRA-offert …)
-    → Ekonomi skapar utkast          (ingen bokföring)
+    → Ekonomi bokar sälj             utkast + utfärda i ett steg
+    → eller sparar utkast            (ingen bokföring)
     → Utfärda, 10 dagar              Dr 1510 / Cr 3xxx+261x
     → Kunden betalar
          Faktura 10d  → manuell bokning eller Revolut-match

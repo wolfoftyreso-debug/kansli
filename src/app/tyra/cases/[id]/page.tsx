@@ -14,6 +14,8 @@ import { listCaseEvents } from "@/lib/tyra/hotel";
 import { INSPECTION_POSITIONS } from "@/lib/tyra/inspections";
 import { peekIssuedHubLink, publicTyraUrl } from "@/lib/tyra/issued-link";
 import { formatSekFromOre, listQuoteDrafts } from "@/lib/tyra/quotes";
+import { listUnbookedTyraQuotes } from "@/lib/ekonomi/tyra-sales";
+import { bookTyraQuoteAction } from "@/app/ekonomi/actions";
 import {
   cancelTyraCase,
   enqueueTyraReminder,
@@ -66,6 +68,11 @@ export default async function TyraCasePage({
     session?.org?.ref && runtime && card
       ? await listQuoteDrafts(runtime.pool, session.org.ref, id)
       : [];
+  const unbookedQuotes =
+    session?.org?.ref && runtime && card
+      ? await listUnbookedTyraQuotes(runtime.pool, session.org.ref, id)
+      : [];
+  const unbookedIds = new Set(unbookedQuotes.map((quote) => quote.id));
   if (session?.org && !card) notFound();
   const issued = query.issued === "1" ? await peekIssuedHubLink() : null;
   const senderName = session?.org?.name ?? "Verkstaden";
@@ -354,9 +361,23 @@ export default async function TyraCasePage({
             {quotes.length > 0 ? (
               <ul className="flex flex-col gap-2">
                 {quotes.map((quote) => (
-                  <li key={quote.id} className="text-sm text-ink-soft">
-                    {quote.title}: {formatSekFromOre(quote.snapshot.totalCustomerPriceOre)} ·{" "}
-                    {formatSwedishDateTime(quote.createdAt)}
+                  <li
+                    key={quote.id}
+                    className="flex flex-wrap items-center justify-between gap-3 text-sm text-ink-soft"
+                  >
+                    <span>
+                      {quote.title}: {formatSekFromOre(quote.snapshot.totalCustomerPriceOre)} ·{" "}
+                      {formatSwedishDateTime(quote.createdAt)}
+                    </span>
+                    {unbookedIds.has(quote.id) ? (
+                      <form action={bookTyraQuoteAction}>
+                        <input type="hidden" name="quoteId" value={quote.id} />
+                        <input type="hidden" name="tireCaseId" value={id} />
+                        <Submit>Boka sälj</Submit>
+                      </form>
+                    ) : (
+                      <span>Bokad i Ekonomi</span>
+                    )}
                   </li>
                 ))}
               </ul>

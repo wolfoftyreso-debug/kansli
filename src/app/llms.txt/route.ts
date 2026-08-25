@@ -5,7 +5,7 @@ Ett system. Ett rum per jobb. Samma inloggning.
 
 ## Rum
 - Kansli — start och uppgifter
-- Ekonomi — bok, faktura, moms. Inte Visma. Inte Fortnox.
+- Ekonomi — boka sälj i kronor, faktura, moms. Inte Visma. Inte Fortnox.
 - TORA — vilka upphandlingar ni kan ta
 - RITA — skatteförslag, inte skatteråd
 - BRITT — det som hänt och ska följas upp

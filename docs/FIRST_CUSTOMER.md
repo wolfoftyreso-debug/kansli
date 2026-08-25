@@ -23,12 +23,12 @@ Det går inte att koda bort 1–3 genom att sitta längre i kansli-repot. Det g�
 |---|---|---|
 | Identitet + Kansli | Ja | Demo-lösen bara i preview/dev. Produktion vägrar starta med `PIXDRIFT_SEED_DEMO`. |
 | IRMA | Ja, L0–L1 | Inte BankID. Inte kvalificerad e-signatur. Handshake är koden. |
-| TYRA | Ja, verkstadspilot | Ärende, kund, lagerplats, mätning, offertutkast. **Inget SMS. Inga live-däckpriser.** |
+| TYRA | Ja, verkstadspilot | Ärende, kund, lagerplats, mätning, offertutkast. Offerten kan bokas som faktura i Ekonomi. **Inget SMS från TYRA. Inga live-däckpriser.** |
 | TORA | Ja, med org-profil | **Demo-marknad** (seed). Inte TED/HILMA. |
 | BRITT | Ja, inkorg | Öppen / klar. Inte ärendehantering. |
 | RITA | Bara om motorn finns | Utan `RITA_ENGINE_BINARY` eller `RITA_ENGINE_URL`: stäng av. |
 | ALVA | Nej som diagnos | Intag + protokolltom (status, anteckning, kontroller, mätvärden). Diagnos = annat repo. |
-| Ekonomi | Ja som bok, nej som PSP | Faktura 10 dagar + verifikat + moms-CSV + säljbräda. Stripe/Revolut/Swish bara med nyckel. SMS vid sälj via 46elks när ni sagt ja. Inte Visma. Inte Fortnox. |
+| Ekonomi | Ja som bok, nej som PSP | Boka sälj i kronor, ett klick. TYRA-offert blir faktura. Faktura 10 dagar + verifikat + moms-CSV + säljbräda. Stripe/Revolut/Swish bara med nyckel. SMS vid sälj via 46elks när ni sagt ja. Inte Visma. Inte Fortnox. |
 
 ## Vad som byggdes så att svaret inte bara är papper
 

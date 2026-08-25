@@ -2,12 +2,13 @@ import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
+import { InvoiceLineFields } from "@/components/ekonomi/InvoiceLineFields";
 import { INVOICE_STATUS_LABELS, listInvoices } from "@/lib/ekonomi/invoices";
-import { formatSek, vatLabel } from "@/lib/ekonomi/money";
+import { formatSek } from "@/lib/ekonomi/money";
 import { readSession } from "@/lib/auth/session";
 import { formatSwedishDate } from "@/lib/format/datetime";
 import { tryRuntime } from "@/lib/platform/page";
-import { createInvoiceAction } from "../actions";
+import { bookSaleAction, createInvoiceAction } from "../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -62,46 +63,27 @@ export default async function FakturorPage() {
           </ul>
 
           <form
-            action={createInvoiceAction}
+            action={bookSaleAction}
             className="flex flex-col gap-4 rounded-xl border border-line bg-surface px-4 py-4"
           >
-            <h2 className="text-lg font-semibold">Ny faktura</h2>
+            <h2 className="text-lg font-semibold">Nytt sälj</h2>
             <Field name="customerName" label="Kund" required />
             <Field name="customerRef" label="Kundreferens (valfritt)" />
-            <Field name="sourceSystem" label="Källsystem (valfritt)" />
-            <Field name="sourceRef" label="Källid (valfritt)" />
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Field name="description" label="Rad 1" required placeholder="Onboarding" />
-              <Field name="quantity" label="Antal" defaultValue="1" />
-              <Field name="unitNetOre" label="Á-pris netto, öre" required placeholder="250000" />
-              <label className="flex flex-col gap-1">
-                <span className="text-sm text-ink-soft">Moms</span>
-                <select
-                  name="vatRateBps"
-                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
-                  defaultValue="2500"
-                >
-                  <option value="2500">{vatLabel(2500)}</option>
-                  <option value="1200">{vatLabel(1200)}</option>
-                </select>
-              </label>
-              <label className="flex flex-col gap-1">
-                <span className="text-sm text-ink-soft">Slag</span>
-                <select
-                  name="kind"
-                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
-                  defaultValue="service"
-                >
-                  <option value="service">Tjänst</option>
-                  <option value="goods">Vara</option>
-                </select>
-              </label>
-            </div>
+            <InvoiceLineFields rows={3} />
             <Notice>
-              Belopp i öre. 10 000 = 100 kr. Inga kommatecken. Moms 6 % och 0 % går inte att boka än
-              — boken har inte de kontona.
+              Skriv kronor. 2 500 eller 2500,50 går bra. Boken sparar öre. Moms 6 % och 0 % går inte
+              att boka än — boken har inte de kontona.
             </Notice>
-            <Submit>Spara utkast</Submit>
+            <div className="flex flex-wrap gap-3">
+              <Submit>Boka sälj</Submit>
+              <button
+                type="submit"
+                formAction={createInvoiceAction}
+                className="self-start border border-line bg-paper px-4 py-2 text-sm"
+              >
+                Spara utkast
+              </button>
+            </div>
           </form>
         </>
       )}

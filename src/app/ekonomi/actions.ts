@@ -6,10 +6,13 @@ import { requireOrgAction } from "@/lib/platform/actions";
 import { saveConnectorSecret, type ConnectorId } from "@/lib/ekonomi/connectors";
 import { CONNECTORS } from "@/lib/ekonomi/connectors";
 import {
+  bookSale,
   createDraftInvoice,
   issueInvoice,
   parseInvoiceLinesFromForm,
 } from "@/lib/ekonomi/invoices";
+import { parseKronorToOre } from "@/lib/ekonomi/money";
+import { bookTyraQuote } from "@/lib/ekonomi/tyra-sales";
 import { offerPayment, parseRail, recordReceivedPayment } from "@/lib/ekonomi/payments";
 import { saveSalesAlertSettings } from "@/lib/ekonomi/sales-alerts";
 import { loadRevolutStatement, syncRevolut } from "@/lib/ekonomi/revolut";
@@ -19,6 +22,17 @@ import { logRevolut } from "@/lib/ekonomi/revolut/observability";
 
 function formList(form: FormData, name: string): string[] {
   return form.getAll(name).map((value) => String(value));
+}
+
+function invoiceLinesFromForm(form: FormData) {
+  return parseInvoiceLinesFromForm({
+    descriptions: formList(form, "description"),
+    quantities: formList(form, "quantity"),
+    unitNetKronor: formList(form, "unitNetKronor"),
+    unitNetOre: formList(form, "unitNetOre"),
+    vatRates: formList(form, "vatRateBps"),
+    kinds: formList(form, "kind"),
+  });
 }
 
 export async function createInvoiceAction(form: FormData) {
@@ -32,18 +46,52 @@ export async function createInvoiceAction(form: FormData) {
     customerRef: String(form.get("customerRef") ?? ""),
     sourceSystem: String(form.get("sourceSystem") ?? "") || undefined,
     sourceRef: String(form.get("sourceRef") ?? "") || undefined,
-    lines: parseInvoiceLinesFromForm({
-      descriptions: formList(form, "description"),
-      quantities: formList(form, "quantity"),
-      unitNetOre: formList(form, "unitNetOre"),
-      vatRates: formList(form, "vatRateBps"),
-      kinds: formList(form, "kind"),
-    }),
+    lines: invoiceLinesFromForm(form),
     requestId: `ekonomi-create-${Date.now()}`,
   });
   revalidatePath("/ekonomi");
   revalidatePath("/ekonomi/fakturor");
   redirect(`/ekonomi/fakturor/${created.id}`);
+}
+
+export async function bookSaleAction(form: FormData) {
+  const { session, pool, events } = await requireOrgAction("/ekonomi", "invoice:approve");
+  const created = await bookSale({
+    pool,
+    events,
+    orgRef: session.org.ref,
+    actorRef: session.sub,
+    customerName: String(form.get("customerName") ?? ""),
+    customerRef: String(form.get("customerRef") ?? ""),
+    sourceSystem: String(form.get("sourceSystem") ?? "") || undefined,
+    sourceRef: String(form.get("sourceRef") ?? "") || undefined,
+    lines: invoiceLinesFromForm(form),
+    requestId: `ekonomi-book-${Date.now()}`,
+  });
+  revalidatePath("/ekonomi");
+  revalidatePath("/ekonomi/fakturor");
+  revalidatePath(`/ekonomi/fakturor/${created.id}`);
+  if (form.get("stay") === "1") redirect("/ekonomi");
+  redirect(`/ekonomi/fakturor/${created.id}`);
+}
+
+export async function bookTyraQuoteAction(form: FormData) {
+  const { session, pool, events } = await requireOrgAction("/ekonomi", "invoice:approve");
+  const quoteId = String(form.get("quoteId") ?? "");
+  const invoice = await bookTyraQuote({
+    pool,
+    events,
+    orgRef: session.org.ref,
+    actorRef: session.sub,
+    quoteId,
+    requestId: `ekonomi-tyra-${Date.now()}`,
+  });
+  revalidatePath("/ekonomi");
+  revalidatePath("/ekonomi/fakturor");
+  revalidatePath(`/ekonomi/fakturor/${invoice.id}`);
+  revalidatePath("/tyra");
+  const tireCaseId = String(form.get("tireCaseId") ?? "").trim();
+  if (tireCaseId) revalidatePath(`/tyra/cases/${tireCaseId}`);
 }
 
 export async function issueInvoiceAction(form: FormData) {
@@ -95,7 +143,11 @@ export async function recordPaymentAction(form: FormData) {
     actorRef: session.sub,
     invoiceId: id,
     rail: parseRail(form.get("rail")),
-    amountOre: Number(form.get("amountOre")),
+    amountOre: (() => {
+      const kronor = String(form.get("amountKronor") ?? "").trim();
+      if (kronor) return parseKronorToOre(kronor, "belopp");
+      return Number(form.get("amountOre"));
+    })(),
     externalRef: String(form.get("externalRef") ?? ""),
     requestId: `ekonomi-pay-${Date.now()}`,
   });
