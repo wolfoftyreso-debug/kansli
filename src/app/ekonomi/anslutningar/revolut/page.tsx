@@ -125,10 +125,7 @@ export default async function RevolutConnectionPage({
                       : `${CERT_LABEL[health.certificate.health]} · ${health.certificate.daysUntilExpiry} dagar`
                   }
                 />
-                <Row
-                  label="Nyckelpar"
-                  value={KEY_MATCH_LABEL[health.certificate.keyMatch.state]}
-                />
+                <Row label="Nyckelpar" value={KEY_MATCH_LABEL[health.certificate.keyMatch.state]} />
               </div>
             ) : null}
 
