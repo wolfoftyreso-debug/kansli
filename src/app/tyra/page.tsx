@@ -100,7 +100,7 @@ export default async function TyraPage() {
               <CheckField name="wash" label="Tvätt" defaultChecked />
               <CheckField name="balance" label="Balansering" defaultChecked />
               <CheckField name="storageIn" label="Lägga in hjul" />
-              <CheckField name="quote" label="Förbered offert" />
+              <CheckField name="quote" label="Sälj däck" />
             </fieldset>
             <Submit>Öppna ärende</Submit>
           </form>

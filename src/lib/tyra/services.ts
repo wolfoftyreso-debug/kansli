@@ -22,7 +22,7 @@ export const OPERATION_LABELS: Record<CanonicalOperation, string> = {
   WHEEL_DISPOSAL: "Skrotning av hjul",
   TIRE_REPLACEMENT_REQUIRED: "Däckbyte krävs",
   TIRE_REPLACEMENT_RECOMMENDED: "Däckbyte rekommenderas",
-  TIRE_QUOTE: "Offert",
+  TIRE_QUOTE: "Sälj däck",
   TIRE_ORDER: "Beställning",
   TIRE_INSTALLATION: "Montering",
   TIRE_DISPOSAL: "Däckskrotning",

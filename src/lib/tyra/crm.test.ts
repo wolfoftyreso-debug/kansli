@@ -37,7 +37,7 @@ describe("CRM engine: buildCustomerCard", () => {
     });
 
     expect(card.counts.openOpportunities).toBe(1);
-    expect(card.nextAction).toEqual({ kind: "prepare_quote", label: "Förbered offert" });
+    expect(card.nextAction).toEqual({ kind: "prepare_quote", label: "Sälj däck" });
   });
 
   it("suggests pick when there is no open opportunity but pick is needed", () => {

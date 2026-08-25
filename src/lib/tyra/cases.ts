@@ -30,7 +30,7 @@ export const INTENT_LABELS: Record<TireCaseIntent, string> = {
   TIRE_SWAP_APPOINTMENT: "Hjulskifte",
   STORE_ONLY: "Inlagring",
   PICKUP_ONLY: "Utlämning",
-  QUOTE_ONLY: "Offert",
+  QUOTE_ONLY: "Däck",
   MIXED: "Blandat",
 };
 
