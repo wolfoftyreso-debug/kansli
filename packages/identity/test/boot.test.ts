@@ -3,7 +3,9 @@ import {
   bootIdentityFromEnv,
   isHardenedIdentityRuntime,
   withDeploymentRedirects,
+  withPreviewClientSecret,
 } from "../src/boot.ts";
+import { sha256Base64ForSecret } from "../src/secret.ts";
 
 describe("identity boot on Vercel", () => {
   it("does not treat NODE_ENV=production as production", () => {
@@ -68,5 +70,32 @@ describe("identity boot on Vercel", () => {
       "https://kansli-q3vxtqmwx-hypbit.vercel.app/api/auth/callback",
     );
     expect(merged[0]?.redirectUris).toContain("https://kansli.vercel.app/api/auth/callback");
+  });
+
+  it("lets the preview BFF use the local client secret", () => {
+    const overlaid = withPreviewClientSecret(
+      [
+        {
+          clientId: "kansli-web",
+          clientSecretHash: sha256Base64ForSecret("production-secret"),
+          redirectUris: ["https://kansli.vercel.app/api/auth/callback"],
+          name: "Kansli",
+        },
+      ],
+      { VERCEL_ENV: "preview" },
+    );
+    expect(overlaid[0]?.clientSecretHash).toBe(sha256Base64ForSecret("kansli-dev-secret"));
+    const prod = withPreviewClientSecret(
+      [
+        {
+          clientId: "kansli-web",
+          clientSecretHash: sha256Base64ForSecret("production-secret"),
+          redirectUris: ["https://kansli.vercel.app/api/auth/callback"],
+          name: "Kansli",
+        },
+      ],
+      { VERCEL_ENV: "production" },
+    );
+    expect(prod[0]?.clientSecretHash).toBe(sha256Base64ForSecret("production-secret"));
   });
 });

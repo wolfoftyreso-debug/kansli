@@ -59,6 +59,20 @@ export function withDeploymentRedirects(
   });
 }
 
+/** Preview BFF often lacks production PIXDRIFT_CLIENT_SECRET. Match this instance to the fallback. */
+export function withPreviewClientSecret(
+  clients: OidcClient[],
+  env: NodeJS.ProcessEnv = process.env,
+): OidcClient[] {
+  if (env.VERCEL_ENV !== "preview" && env.VERCEL_ENV !== "development") return clients;
+  const kansliId = env.CLIENT_ID ?? "kansli-web";
+  const secret = env.PIXDRIFT_CLIENT_SECRET ?? env.CLIENT_SECRET ?? "kansli-dev-secret";
+  const clientSecretHash = sha256Base64ForSecret(secret);
+  return clients.map((client) =>
+    client.clientId === kansliId ? { ...client, clientSecretHash } : client,
+  );
+}
+
 export interface BootOptions {
   /** OIDC issuer. Defaults to `ISSUER` env, then `http://${HOST}:${PORT}`. */
   issuer?: string;
@@ -158,7 +172,7 @@ export async function bootIdentityFromEnv(opts: BootOptions = {}): Promise<Fasti
   const cookieSecure =
     env.COOKIE_SECURE !== undefined ? env.COOKIE_SECURE === "true" : issuer.startsWith("https://");
 
-  const clients = withDeploymentRedirects(clientsFromEnv(env), env);
+  const clients = withPreviewClientSecret(withDeploymentRedirects(clientsFromEnv(env), env), env);
   // Demo deployments (PIXDRIFT_SEED_DEMO) prefill the login form so the known
   // demo account can sign in with a single click.
   const demoLogin =
@@ -190,7 +204,10 @@ export async function bootIdentityFromEnv(opts: BootOptions = {}): Promise<Fasti
       store,
       signingKey,
       additionalPublicJwks,
-      clients: withDeploymentRedirects(registered.length > 0 ? registered : clients, env),
+      clients: withPreviewClientSecret(
+        withDeploymentRedirects(registered.length > 0 ? registered : clients, env),
+        env,
+      ),
       sessionSecret,
       cookieSecure,
       demoLogin,

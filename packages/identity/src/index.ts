@@ -4,6 +4,7 @@ export {
   clientsFromEnv,
   isHardenedIdentityRuntime,
   withDeploymentRedirects,
+  withPreviewClientSecret,
   type BootOptions,
 } from "./boot.ts";
 export { generateSigningKey, signingKeyFromPkcs8, jwks, type SigningKey } from "./keys.ts";
