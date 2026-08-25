@@ -1,12 +1,14 @@
 import Link from "next/link";
 import type { OpportunityView } from "@pixdrift/tora";
-import { displayField, opportunityHref } from "@/lib/tora/view";
+import { displayField, opportunityHref, verdictText } from "@/lib/tora/view";
 
 export function OpportunityCard({ item }: { item: OpportunityView }) {
   return (
     <li className="rounded-xl border border-line bg-surface p-4">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <p className="text-xs font-medium uppercase tracking-wide text-accent">{item.verdict}</p>
+        <p className="text-xs font-medium uppercase tracking-wide text-accent">
+          {verdictText(item.verdict)}
+        </p>
         <p className="font-mono text-xs text-faint">{item.scoreBand}</p>
       </div>
       <p className="mt-2 font-medium">

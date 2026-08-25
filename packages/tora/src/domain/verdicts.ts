@@ -26,12 +26,12 @@ export type Verdict =
   | "UNKNOWN";
 
 export const VERDICT_LABEL: Record<Verdict, string> = {
-  RIGHT: "Rättighet",
-  ELIGIBLE: "Kvalificerad",
-  POSSIBLE: "Möjlig med åtgärd",
-  COMPETITIVE: "Konkurrensutsatt",
-  NOT_ELIGIBLE: "Inte kvalificerad",
-  UNKNOWN: "Okänt",
+  RIGHT: "Ni är redan med",
+  ELIGIBLE: "Ni kan lämna anbud",
+  POSSIBLE: "Går om ni gör en sak först",
+  COMPETITIVE: "Öppen tävling",
+  NOT_ELIGIBLE: "Ni kan inte lämna anbud",
+  UNKNOWN: "Vi vet inte än",
 };
 
 /** Traffic light shown in listings. `UNKNOWN` is grey, never optimistically blue. */

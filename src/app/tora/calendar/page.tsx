@@ -17,7 +17,7 @@ const KIND_LABEL: Record<CalendarEntryView["kind"], string> = {
   admission_deadline: "Sista dag att anmäla sig",
   expected_announcement: "Förväntad annons",
   contract_end: "Avtalsslut",
-  action: "Åtgärd",
+  action: "Att göra",
 };
 
 export default async function ToraCalendarPage() {
@@ -65,7 +65,7 @@ export default async function ToraCalendarPage() {
 
       {calendar.alerts.state === "unlocked" && calendar.alerts.value.length > 0 ? (
         <section className="flex flex-col gap-2">
-          <h2 className="text-lg font-semibold">Aviseringar</h2>
+          <h2 className="text-lg font-semibold">Påminnelser</h2>
           <ul className="flex flex-col gap-2">
             {calendar.alerts.value.map((alert) => (
               <li key={alert.id} className="rounded-xl border border-line bg-surface px-4 py-3">

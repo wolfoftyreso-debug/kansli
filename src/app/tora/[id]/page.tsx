@@ -7,7 +7,14 @@ import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
 import { loadToraOpportunity, parseTier } from "@/lib/tora/market";
 import { resolveCompany } from "@/lib/tora/profile";
-import { displayField, evaluationKindText, legalBasisText, sek } from "@/lib/tora/view";
+import {
+  displayField,
+  evaluationKindText,
+  legalBasisText,
+  sek,
+  timingText,
+  verdictText,
+} from "@/lib/tora/view";
 
 export const metadata = {
   title: "Möjlighet — TORA — Pixdrift",
@@ -33,11 +40,13 @@ export default async function ToraOpportunityPage({ params }: { params: Promise<
         </Link>
       </p>
       <header className="flex flex-col gap-3">
-        <p className="text-xs font-medium uppercase tracking-wide text-accent">{view.verdict}</p>
+        <p className="text-xs font-medium uppercase tracking-wide text-accent">
+          {verdictText(view.verdict)}
+        </p>
         <h1 className="text-3xl font-semibold tracking-tight">{displayField(view.title)}</h1>
         <p className="text-ink-soft">{displayField(view.organizationName)}</p>
         <p className="font-mono text-xs text-faint">
-          {view.scoreBand} · {view.organizationKindHint} · {view.timing}
+          {view.scoreBand} · {view.organizationKindHint} · {timingText(view.timing)}
         </p>
       </header>
 
@@ -175,7 +184,7 @@ function Actions({ detail }: { detail: OpportunityDetailResponse }) {
   if (field.state === "locked") {
     return (
       <section>
-        <h2 className="text-lg font-semibold">Åtgärder</h2>
+        <h2 className="text-lg font-semibold">Att göra</h2>
         <p className="mt-2 text-sm text-muted">{field.teaser}</p>
       </section>
     );
@@ -183,7 +192,7 @@ function Actions({ detail }: { detail: OpportunityDetailResponse }) {
   if (!field.value.length) return null;
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="text-lg font-semibold">Åtgärder</h2>
+      <h2 className="text-lg font-semibold">Att göra</h2>
       <ul className="flex flex-col gap-2">
         {field.value.map((action) => (
           <li key={action.label} className="rounded-xl border border-line bg-surface px-4 py-3">

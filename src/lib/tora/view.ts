@@ -24,6 +24,30 @@ export function evaluationKindText(kind: string): string {
   return EVALUATION_KIND[kind] ?? kind;
 }
 
+const VERDICT_TEXT: Record<string, string> = {
+  RIGHT: "Ni är redan med",
+  ELIGIBLE: "Ni kan lämna anbud",
+  POSSIBLE: "Går om ni gör en sak först",
+  COMPETITIVE: "Öppen tävling",
+  NOT_ELIGIBLE: "Ni kan inte lämna anbud",
+  UNKNOWN: "Vi vet inte än",
+};
+
+export function verdictText(verdict: string): string {
+  return VERDICT_TEXT[verdict] ?? verdict;
+}
+
+const TIMING_TEXT: Record<string, string> = {
+  open_now: "Öppen nu",
+  upcoming: "Kommande",
+  watch: "Bevakning",
+  closed: "Stängd",
+};
+
+export function timingText(timing: string): string {
+  return TIMING_TEXT[timing] ?? timing;
+}
+
 export function legalBasisText(field: Locked<{ contractId: string; reason: string } | undefined>): {
   locked: boolean;
   reason: string;
