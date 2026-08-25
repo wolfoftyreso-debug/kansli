@@ -8,13 +8,18 @@ import {
   VERIFIER_COOKIE,
 } from "@/lib/auth/config";
 import { safeNextPath } from "@/lib/auth/next";
+import { authPublicUrlsFromRequest } from "@/lib/auth/origin";
 
 export async function GET(request: NextRequest) {
+  const urls = authPublicUrlsFromRequest({
+    proto: request.headers.get("x-forwarded-proto") ?? request.nextUrl.protocol,
+    host: request.headers.get("x-forwarded-host") ?? request.headers.get("host"),
+  });
   const client = createOidcClient({
-    issuer: authConfig.issuer,
+    issuer: urls.issuer,
     clientId: authConfig.clientId,
     clientSecret: authConfig.clientSecret,
-    redirectUri: authConfig.redirectUri,
+    redirectUri: urls.redirectUri,
   });
 
   const state = randomValue();

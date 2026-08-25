@@ -23,11 +23,16 @@ export function isHardenedIdentityRuntime(env: NodeJS.ProcessEnv = process.env):
   return env.APP_ENV === "prod" || env.APP_ENV === "production" || env.VERCEL_ENV === "production";
 }
 
-function vercelHttpsOrigin(env: NodeJS.ProcessEnv): string | null {
-  const raw = env.VERCEL_URL?.trim();
-  if (!raw) return null;
-  const host = raw.replace(/^https?:\/\//, "").replace(/\/+$/, "");
-  return host ? `https://${host}` : null;
+function vercelHttpsOrigins(env: NodeJS.ProcessEnv): string[] {
+  const hosts = [env.VERCEL_BRANCH_URL, env.VERCEL_URL]
+    .map((raw) =>
+      raw
+        ?.trim()
+        .replace(/^https?:\/\//, "")
+        .replace(/\/+$/, ""),
+    )
+    .filter((host): host is string => Boolean(host));
+  return [...new Set(hosts)].map((host) => `https://${host}`);
 }
 
 /** Preview hostnames are not in the production client registry. Allow this deploy's callback. */
@@ -35,18 +40,21 @@ export function withDeploymentRedirects(
   clients: OidcClient[],
   env: NodeJS.ProcessEnv = process.env,
 ): OidcClient[] {
-  const origin = vercelHttpsOrigin(env);
-  if (!origin) return clients;
-  const callback = `${origin}/api/auth/callback`;
-  const home = `${origin}/`;
+  const origins = vercelHttpsOrigins(env);
+  if (origins.length === 0) return clients;
   const kansliId = env.CLIENT_ID ?? "kansli-web";
   return clients.map((client) => {
     if (client.clientId !== kansliId) return client;
-    const redirectUris = client.redirectUris.includes(callback)
-      ? client.redirectUris
-      : [...client.redirectUris, callback];
-    const postLogout = client.postLogoutRedirectUris ?? [];
-    const postLogoutRedirectUris = postLogout.includes(home) ? postLogout : [...postLogout, home];
+    let redirectUris = client.redirectUris;
+    let postLogoutRedirectUris = client.postLogoutRedirectUris ?? [];
+    for (const origin of origins) {
+      const callback = `${origin}/api/auth/callback`;
+      const home = `${origin}/`;
+      if (!redirectUris.includes(callback)) redirectUris = [...redirectUris, callback];
+      if (!postLogoutRedirectUris.includes(home)) {
+        postLogoutRedirectUris = [...postLogoutRedirectUris, home];
+      }
+    }
     return { ...client, redirectUris, postLogoutRedirectUris };
   });
 }

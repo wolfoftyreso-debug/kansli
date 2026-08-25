@@ -56,10 +56,16 @@ describe("identity boot on Vercel", () => {
           name: "Kansli",
         },
       ],
-      { VERCEL_URL: "kansli-git-branch-hypbit.vercel.app" },
+      {
+        VERCEL_URL: "kansli-q3vxtqmwx-hypbit.vercel.app",
+        VERCEL_BRANCH_URL: "kansli-git-branch-hypbit.vercel.app",
+      },
     );
     expect(merged[0]?.redirectUris).toContain(
       "https://kansli-git-branch-hypbit.vercel.app/api/auth/callback",
+    );
+    expect(merged[0]?.redirectUris).toContain(
+      "https://kansli-q3vxtqmwx-hypbit.vercel.app/api/auth/callback",
     );
     expect(merged[0]?.redirectUris).toContain("https://kansli.vercel.app/api/auth/callback");
   });

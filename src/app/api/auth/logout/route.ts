@@ -1,20 +1,25 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { createOidcClient } from "@pixdrift/auth-client";
 import { authConfig, SESSION_COOKIE } from "@/lib/auth/config";
+import { authPublicUrlsFromRequest } from "@/lib/auth/origin";
 
-async function endSession(): Promise<NextResponse> {
+async function endSession(request: NextRequest): Promise<NextResponse> {
+  const urls = authPublicUrlsFromRequest({
+    proto: request.headers.get("x-forwarded-proto") ?? request.nextUrl.protocol,
+    host: request.headers.get("x-forwarded-host") ?? request.headers.get("host"),
+  });
   const client = createOidcClient({
-    issuer: authConfig.issuer,
+    issuer: urls.issuer,
     clientId: authConfig.clientId,
     clientSecret: authConfig.clientSecret,
-    redirectUri: authConfig.redirectUri,
+    redirectUri: urls.redirectUri,
   });
 
   let target: string;
   try {
-    target = await client.endSessionUrl({ postLogoutRedirectUri: `${authConfig.baseUrl}/` });
+    target = await client.endSessionUrl({ postLogoutRedirectUri: `${urls.origin}/` });
   } catch {
-    target = `${authConfig.baseUrl}/`;
+    target = `${urls.origin}/`;
   }
 
   // 303 so the browser performs a GET on the IdP end-session endpoint (a POST
@@ -24,10 +29,10 @@ async function endSession(): Promise<NextResponse> {
   return response;
 }
 
-export async function POST() {
-  return endSession();
+export async function POST(request: NextRequest) {
+  return endSession(request);
 }
 
-export async function GET() {
-  return endSession();
+export async function GET(request: NextRequest) {
+  return endSession(request);
 }

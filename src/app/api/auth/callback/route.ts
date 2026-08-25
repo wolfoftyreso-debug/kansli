@@ -9,12 +9,20 @@ import {
   VERIFIER_COOKIE,
 } from "@/lib/auth/config";
 import { safeNextPath } from "@/lib/auth/next";
+import { authPublicUrlsFromRequest } from "@/lib/auth/origin";
 import { sealSession } from "@/lib/auth/session";
 import { getRuntime } from "@/lib/platform/runtime";
 
-function fail(reason: string): NextResponse {
+function urlsFor(request: NextRequest) {
+  return authPublicUrlsFromRequest({
+    proto: request.headers.get("x-forwarded-proto") ?? request.nextUrl.protocol,
+    host: request.headers.get("x-forwarded-host") ?? request.headers.get("host"),
+  });
+}
+
+function fail(request: NextRequest, reason: string): NextResponse {
   return NextResponse.redirect(
-    new URL(`/?error=${encodeURIComponent(reason)}`, authConfig.baseUrl),
+    new URL(`/?error=${encodeURIComponent(reason)}`, urlsFor(request).origin),
   );
 }
 
@@ -22,21 +30,22 @@ export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get("code");
   const state = request.nextUrl.searchParams.get("state");
   const oidcError = request.nextUrl.searchParams.get("error");
-  if (oidcError) return fail(oidcError);
+  if (oidcError) return fail(request, oidcError);
 
   const expectedState = request.cookies.get(STATE_COOKIE)?.value;
   const verifier = request.cookies.get(VERIFIER_COOKIE)?.value;
   const nonce = request.cookies.get(NONCE_COOKIE)?.value;
 
   if (!code || !state || !expectedState || state !== expectedState || !verifier) {
-    return fail("state");
+    return fail(request, "state");
   }
 
+  const urls = urlsFor(request);
   const client = createOidcClient({
-    issuer: authConfig.issuer,
+    issuer: urls.issuer,
     clientId: authConfig.clientId,
     clientSecret: authConfig.clientSecret,
-    redirectUri: authConfig.redirectUri,
+    redirectUri: urls.redirectUri,
   });
 
   let sessionValue: string;
@@ -56,7 +65,7 @@ export async function GET(request: NextRequest) {
       memberships: tokens.claims.memberships,
     });
   } catch {
-    return fail("exchange");
+    return fail(request, "exchange");
   }
 
   try {
@@ -74,7 +83,7 @@ export async function GET(request: NextRequest) {
   }
 
   const next = safeNextPath(request.cookies.get(NEXT_COOKIE)?.value) ?? "/kansli";
-  const response = NextResponse.redirect(new URL(next, authConfig.baseUrl));
+  const response = NextResponse.redirect(new URL(next, urls.origin));
   response.cookies.set(SESSION_COOKIE, sessionValue, {
     httpOnly: true,
     sameSite: "lax",
