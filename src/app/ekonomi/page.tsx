@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb, SystemLink } from "@/components/app/ProductCrumb";
 import { Notice, SignInGate } from "@/components/app/SignInGate";
 import { listInvoices } from "@/lib/ekonomi/invoices";
 import { listPayments } from "@/lib/ekonomi/payments";
@@ -29,12 +30,14 @@ export default async function EkonomiPage() {
   return (
     <AppShell current="ekonomi" session={session}>
       <header className="flex flex-col gap-3">
-        <p className="pd-label text-faint">PIXDRIFT / Ekonomi</p>
+        <ProductCrumb crumbs={[{ href: "/ekonomi", label: "Ekonomi" }]} />
         <h1 className="text-3xl font-semibold tracking-tight">Vad är bokat?</h1>
         <p className="max-w-xl text-ink-soft">
-          Fakturor, moms och hur pengarna kom in. TYRA, IRMA och de andra lägger sina fakturor här.
-          Kunden kan betala med Swish, Stripe eller faktura på 10 dagar. Anslut Revolut en gång, så
-          hämtas kontoutdrag och betalningar matchas.
+          Fakturor, moms och hur pengarna kom in. <SystemLink id="tyra">TYRA</SystemLink>,{" "}
+          <SystemLink id="irma">IRMA</SystemLink> och de andra lägger sina fakturor här. Kunden kan
+          betala med Swish, Stripe eller faktura på 10 dagar. Anslut{" "}
+          <SystemLink id="revolut">Revolut</SystemLink> en gång, så hämtas kontoutdrag och
+          betalningar matchas.
         </p>
       </header>
 

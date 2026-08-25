@@ -77,6 +77,17 @@ body {
   color: var(--color-muted);
 }
 
+.pd-crumb a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+  text-decoration-color: currentColor;
+}
+
+.pd-crumb a:hover {
+  color: var(--color-ink);
+}
+
 /* Hairline dividers used throughout the system. */
 .pd-hr {
   border: 0;

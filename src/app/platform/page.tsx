@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { GatewayPing } from "./GatewayPing";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { Notice } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { gatewaySnapshot } from "@/lib/platform/ai";
@@ -41,7 +42,7 @@ export default async function PlatformPage() {
   return (
     <AppShell current="platform" session={session}>
       <header className="flex flex-col gap-3">
-        <p className="pd-label text-faint">PIXDRIFT / Plattform</p>
+        <ProductCrumb crumbs={[{ href: "/platform", label: "Plattform" }]} />
         <h1 className="text-3xl font-semibold tracking-tight">Vad varje system gör</h1>
         <p className="text-ink-soft">{FAMILY_PRINCIPLE}</p>
         <Notice>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
 import { INVOICE_STATUS_LABELS, listInvoices } from "@/lib/ekonomi/invoices";
 import { formatSek, vatLabel } from "@/lib/ekonomi/money";
@@ -20,13 +21,12 @@ export default async function FakturorPage() {
 
   return (
     <AppShell current="ekonomi" session={session}>
-      <p className="pd-label text-faint">
-        <Link href="/ekonomi" className="hover:text-ink">
-          Ekonomi
-        </Link>
-        {" / "}
-        Fakturor
-      </p>
+      <ProductCrumb
+        crumbs={[
+          { href: "/ekonomi", label: "Ekonomi" },
+          { href: "/ekonomi/fakturor", label: "Fakturor" },
+        ]}
+      />
       <h1 className="text-3xl font-semibold tracking-tight">Fakturor</h1>
       <p className="max-w-xl text-ink-soft">
         Utkast bokförs inte. Utfärdad faktura skriver kundfordran, försäljning och utgående moms.

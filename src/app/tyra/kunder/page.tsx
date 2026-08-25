@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { EmptyState, SignInGate } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
@@ -20,11 +21,12 @@ export default async function TyraCustomersPage() {
 
   return (
     <AppShell current="tyra" session={session}>
-      <p className="pd-label text-faint">
-        <Link href="/tyra" className="hover:text-ink">
-          PIXDRIFT / TYRA
-        </Link>
-      </p>
+      <ProductCrumb
+        crumbs={[
+          { href: "/tyra", label: "TYRA" },
+          { href: "/tyra/kunder", label: "Kundkort" },
+        ]}
+      />
       <h1 className="text-3xl font-semibold tracking-tight">Kundkort</h1>
       <p className="max-w-xl text-ink-soft">
         Kunder, fordon och hjulset ni har registrerat. Nästa åtgärd är ett förslag från systemet —

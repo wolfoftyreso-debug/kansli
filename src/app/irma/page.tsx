@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { CheckField, EmptyState, Field, SignInGate, Submit } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { listAgreements, type Agreement } from "@/lib/irma/agreements";
@@ -83,7 +84,7 @@ export default async function IrmaPage({
   return (
     <AppShell current="irma" session={session}>
       <header className="flex flex-col gap-4 pt-4 sm:pt-8">
-        <p className="pd-label text-faint">IRMA</p>
+        <ProductCrumb crumbs={[{ href: "/irma", label: "IRMA" }]} />
         <h1 className="max-w-xl text-4xl font-semibold tracking-tight">Vilket avtal ska ut?</h1>
         <p className="max-w-xl text-ink-soft">
           Med IRMA skickar ni avtal digitalt: skapa, skicka en länk, se när motparten öppnat och

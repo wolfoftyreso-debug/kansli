@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { OpportunityDetailResponse, OpportunityView } from "@pixdrift/tora";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { Notice } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
@@ -38,11 +38,7 @@ export default async function ToraOpportunityPage({ params }: { params: Promise<
 
   return (
     <AppShell current="tora" session={session}>
-      <p className="pd-label text-faint">
-        <Link href="/tora" className="hover:text-ink">
-          PIXDRIFT / TORA
-        </Link>
-      </p>
+      <ProductCrumb crumbs={[{ href: "/tora", label: "TORA" }]} />
       <header className="flex flex-col gap-3">
         <p className="text-xs font-medium text-accent">{verdictText(view.verdict)}</p>
         <h1 className="text-3xl font-semibold tracking-tight">{displayField(view.title)}</h1>

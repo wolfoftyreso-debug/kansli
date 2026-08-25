@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { OpportunityCard } from "@/components/app/OpportunityCard";
 import { EmptyState, Field, Notice, Submit } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
@@ -37,7 +38,7 @@ export default async function ToraPage() {
   return (
     <AppShell current="tora" session={session}>
       <header className="flex flex-col gap-3">
-        <p className="pd-label text-faint">PIXDRIFT / TORA</p>
+        <ProductCrumb crumbs={[{ href: "/tora", label: "TORA" }]} />
         <h1 className="text-3xl font-semibold tracking-tight">TORA</h1>
         <p className="text-ink-soft">
           TORA visar vilka upphandlingar {company.name} kan lämna anbud på — och varför just ni. Här

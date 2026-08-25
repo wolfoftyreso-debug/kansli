@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import {
   CheckField,
   EmptyState,
@@ -42,7 +43,7 @@ export default async function RitaPage({
   return (
     <AppShell current="rita" session={session}>
       <header className="flex flex-col gap-3">
-        <p className="pd-label text-faint">PIXDRIFT / RITA</p>
+        <ProductCrumb crumbs={[{ href: "/rita", label: "RITA" }]} />
         <h1 className="text-3xl font-semibold tracking-tight">RITA</h1>
         <p className="text-ink-soft">
           RITA letar skattebesparingar i era böcker: avdrag, moms, K10, pension och FoU. Det RITA

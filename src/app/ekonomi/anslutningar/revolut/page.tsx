@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { Notice, SignInGate, Submit } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
@@ -72,13 +73,13 @@ export default async function RevolutConnectionPage({
 
   return (
     <AppShell current="ekonomi" session={session}>
-      <p className="pd-label text-faint">
-        <Link href="/ekonomi/anslutningar" className="hover:text-ink">
-          Anslutningar
-        </Link>
-        {" / "}
-        Revolut
-      </p>
+      <ProductCrumb
+        crumbs={[
+          { href: "/ekonomi", label: "Ekonomi" },
+          { href: "/ekonomi/anslutningar", label: "Anslutningar" },
+          { href: "/ekonomi/anslutningar/revolut", label: "Revolut" },
+        ]}
+      />
       <h1 className="text-3xl font-semibold tracking-tight">Revolut Business</h1>
       <p className="max-w-xl text-ink-soft">
         Anslut en gång, sen sköter det sig självt. Du behöver bara logga in i Revolut igen om banken

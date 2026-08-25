@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { EmptyState, Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
 import { CASE_STATUS_LABELS, listCases, parseCaseStatus } from "@/lib/alva/cases";
 import { readSession } from "@/lib/auth/session";
@@ -20,7 +21,7 @@ export default async function AlvaPage() {
   return (
     <AppShell current="alva" session={session}>
       <header className="flex flex-col gap-3">
-        <p className="pd-label text-faint">PIXDRIFT / ALVA</p>
+        <ProductCrumb crumbs={[{ href: "/alva", label: "ALVA" }]} />
         <h1 className="text-3xl font-semibold tracking-tight">ALVA</h1>
         <p className="text-ink-soft">
           ALVA tar emot vad kunden sa, vad ni antecknade och vad som mättes. Diagnosen kopplas in

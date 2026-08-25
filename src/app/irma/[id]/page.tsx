@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { SignInGate, Submit } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { exportAgreementRecord, getAgreement } from "@/lib/irma/agreements";
@@ -36,11 +36,7 @@ export default async function IrmaAgreementPage({ params }: { params: Promise<{ 
 
   return (
     <AppShell current="irma" session={session}>
-      <p className="pd-label text-faint">
-        <Link href="/irma" className="hover:text-ink">
-          PIXDRIFT / IRMA
-        </Link>
-      </p>
+      <ProductCrumb crumbs={[{ href: "/irma", label: "IRMA" }]} />
       {!session?.org ? (
         <SignInGate next="/irma" title="Logga in för att se avtalet">
           Avtalet tillhör organisationen.

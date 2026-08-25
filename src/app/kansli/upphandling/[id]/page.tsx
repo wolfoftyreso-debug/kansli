@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { Notice, SignInGate } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { formatSwedishDateTime } from "@/lib/format/datetime";
@@ -18,11 +18,12 @@ export default async function KansliIntakePage({ params }: { params: Promise<{ i
 
   return (
     <AppShell current="upphandling" session={session}>
-      <p className="pd-label text-faint">
-        <Link href="/kansli/upphandling" className="hover:underline">
-          Upphandling
-        </Link>
-      </p>
+      <ProductCrumb
+        crumbs={[
+          { href: "/kansli", label: "Kansli" },
+          { href: "/kansli/upphandling", label: "Upphandling" },
+        ]}
+      />
       {!session ? (
         <SignInGate next="/kansli/upphandling" title="Logga in för att läsa anmälan">
           Anmälan tillhör kansliet.

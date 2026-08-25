@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { Notice, SignInGate } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { loadFirstCustomerBoard, type GateState } from "@/lib/platform/first-customer";
@@ -31,13 +32,12 @@ export default async function BeredskapPage() {
 
   return (
     <AppShell current="kansli" session={session}>
-      <p className="pd-label text-faint">
-        <Link href="/kansli" className="hover:underline">
-          Kansli
-        </Link>
-        {" · "}
-        Beredskap
-      </p>
+      <ProductCrumb
+        crumbs={[
+          { href: "/kansli", label: "Kansli" },
+          { href: "/kansli/beredskap", label: "Beredskap" },
+        ]}
+      />
       <h1 className="text-3xl font-semibold tracking-tight">Första kunden</h1>
       <p className="max-w-xl text-ink-soft">
         Ingen lanseringsdag — en checklista. Varje punkt läses direkt ur systemet, inte ur en plan.

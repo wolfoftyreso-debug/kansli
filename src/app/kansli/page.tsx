@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { Notice, SignInGate } from "@/components/app/SignInGate";
 import { eventLine } from "@/lib/platform/event-copy";
 import { FAMILY_SYSTEMS } from "@/lib/platform/family";
@@ -42,7 +43,7 @@ export default async function KansliHub({
   return (
     <AppShell current="kansli" session={session}>
       <header className="flex flex-col gap-3">
-        <p className="pd-label text-faint">PIXDRIFT / Kansli</p>
+        <ProductCrumb crumbs={[{ href: "/kansli", label: "Kansli" }]} />
         <h1 className="text-3xl font-semibold tracking-tight">Kansli</h1>
         <p className="text-ink-soft">
           Här börjar allt. Samma inloggning i alla system, och en egen uppgiftstavla för det

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { CalendarEntryView } from "@pixdrift/tora";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { EmptyState, Notice } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { tryRuntime } from "@/lib/platform/page";
@@ -32,11 +33,12 @@ export default async function ToraCalendarPage() {
 
   return (
     <AppShell current="tora" session={session}>
-      <p className="pd-label text-faint">
-        <Link href="/tora" className="hover:text-ink">
-          PIXDRIFT / TORA
-        </Link>
-      </p>
+      <ProductCrumb
+        crumbs={[
+          { href: "/tora", label: "TORA" },
+          { href: "/tora/calendar", label: "Kalender" },
+        ]}
+      />
       <header className="flex flex-col gap-3">
         <h1 className="text-3xl font-semibold tracking-tight">Kalender</h1>
         <p className="text-ink-soft">

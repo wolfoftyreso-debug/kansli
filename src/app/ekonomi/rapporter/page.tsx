@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { SignInGate } from "@/components/app/SignInGate";
 import { listInvoices } from "@/lib/ekonomi/invoices";
 import { formatSek, vatLabel } from "@/lib/ekonomi/money";
@@ -22,13 +23,12 @@ export default async function RapporterPage() {
 
   return (
     <AppShell current="ekonomi" session={session}>
-      <p className="pd-label text-faint">
-        <Link href="/ekonomi" className="hover:text-ink">
-          Ekonomi
-        </Link>
-        {" / "}
-        Rapporter
-      </p>
+      <ProductCrumb
+        crumbs={[
+          { href: "/ekonomi", label: "Ekonomi" },
+          { href: "/ekonomi/rapporter", label: "Rapporter" },
+        ]}
+      />
       <h1 className="text-3xl font-semibold tracking-tight">Moms och fordringar</h1>
       <p className="max-w-xl text-ink-soft">
         Perioden är innevarande kalenderår. Exporten är CSV från bokförda fakturor — inte en

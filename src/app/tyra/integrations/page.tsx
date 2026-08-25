@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { EmptyState, SignInGate } from "@/components/app/SignInGate";
 import { StatusBanner } from "@/components/tyra/Status";
 import { TaskRow } from "@/components/tyra/Rows";
@@ -30,11 +30,12 @@ export default async function TyraIntegrationsPage() {
 
   return (
     <AppShell current="tyra" session={session}>
-      <p className="pd-label text-faint">
-        <Link href="/tyra" className="hover:underline">
-          TYRA
-        </Link>
-      </p>
+      <ProductCrumb
+        crumbs={[
+          { href: "/tyra", label: "TYRA" },
+          { href: "/tyra/integrations", label: "Integrationer" },
+        ]}
+      />
       <header className="flex flex-col gap-3">
         <h1 className="text-3xl font-semibold tracking-tight">Integrationer</h1>
         <p className="text-ink-soft">

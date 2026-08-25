@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
 import { listConnectorSlots } from "@/lib/ekonomi/connectors";
 import { railSnapshot } from "@/lib/ekonomi/rails";
@@ -31,13 +32,12 @@ export default async function AnslutningarPage() {
 
   return (
     <AppShell current="ekonomi" session={session}>
-      <p className="pd-label text-faint">
-        <Link href="/ekonomi" className="hover:text-ink">
-          Ekonomi
-        </Link>
-        {" / "}
-        Anslutningar
-      </p>
+      <ProductCrumb
+        crumbs={[
+          { href: "/ekonomi", label: "Ekonomi" },
+          { href: "/ekonomi/anslutningar", label: "Anslutningar" },
+        ]}
+      />
       <h1 className="text-3xl font-semibold tracking-tight">Anslutningar</h1>
       <p className="max-w-xl text-ink-soft">
         Revolut ansluter du en gång — sen sköter det sig självt. Övriga tjänster kopplas med en

@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { SignInGate } from "@/components/app/SignInGate";
 import { listTransactions } from "@/lib/ekonomi/journal";
 import { readSession } from "@/lib/auth/session";
@@ -16,13 +16,12 @@ export default async function VerifikatPage() {
 
   return (
     <AppShell current="ekonomi" session={session}>
-      <p className="pd-label text-faint">
-        <Link href="/ekonomi" className="hover:text-ink">
-          Ekonomi
-        </Link>
-        {" / "}
-        Verifikat
-      </p>
+      <ProductCrumb
+        crumbs={[
+          { href: "/ekonomi", label: "Ekonomi" },
+          { href: "/ekonomi/verifikat", label: "Verifikat" },
+        ]}
+      />
       <h1 className="text-3xl font-semibold tracking-tight">Verifikat</h1>
       <p className="max-w-xl text-ink-soft">
         Verifikat går aldrig att ändra i efterhand. Skulle någon försöka syns det direkt.

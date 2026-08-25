@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { SignInGate, Submit } from "@/components/app/SignInGate";
 import { Button } from "@/components/tyra/Button";
 import { StatusBanner } from "@/components/tyra/Status";
@@ -78,19 +78,13 @@ export default async function TyraCasePage({
         </SignInGate>
       ) : card ? (
         <>
-          <p className="pd-label text-faint">
-            <Link href="/tyra" className="hover:underline">
-              TYRA
-            </Link>
-            {" · "}
-            <Link href="/tyra/kunder" className="hover:underline">
-              Kundkort
-            </Link>
-            {" · "}
-            <Link href="/tyra/integrations" className="hover:underline">
-              Integrationer
-            </Link>
-          </p>
+          <ProductCrumb
+            crumbs={[
+              { href: "/tyra", label: "TYRA" },
+              { href: "/tyra/kunder", label: "Kundkort" },
+              { href: "/tyra/integrations", label: "Integrationer" },
+            ]}
+          />
 
           <WorkCard
             title={card.headline}

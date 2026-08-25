@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { EmptyState, SignInGate } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { formatSwedishDateTime } from "@/lib/format/datetime";
@@ -20,13 +21,12 @@ export default async function KansliUpphandlingPage() {
 
   return (
     <AppShell current="upphandling" session={session}>
-      <p className="pd-label text-faint">
-        <Link href="/kansli" className="hover:underline">
-          Kansli
-        </Link>
-        {" · "}
-        Upphandling
-      </p>
+      <ProductCrumb
+        crumbs={[
+          { href: "/kansli", label: "Kansli" },
+          { href: "/kansli/upphandling", label: "Upphandling" },
+        ]}
+      />
       <h1 className="text-3xl font-semibold tracking-tight">Koncernupphandling</h1>
       <p className="max-w-xl text-ink-soft">
         Anmälningar som kommit in. Varje anmälan blir en demo och ett möte tio dagar senare.

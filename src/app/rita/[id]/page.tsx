@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { EmptyState, Notice, SignInGate } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { formatSwedishDateTime } from "@/lib/format/datetime";
@@ -36,11 +36,7 @@ export default async function RitaAnalysisPage({ params }: { params: Promise<{ i
 
   return (
     <AppShell current="rita" session={session}>
-      <p className="pd-label text-faint">
-        <Link href="/rita" className="hover:text-ink">
-          PIXDRIFT / RITA
-        </Link>
-      </p>
+      <ProductCrumb crumbs={[{ href: "/rita", label: "RITA" }]} />
       {!session?.org ? (
         <SignInGate next="/rita" title="Logga in för att se analysen">
           Analysen tillhör ert företag. Logga in för att se den.

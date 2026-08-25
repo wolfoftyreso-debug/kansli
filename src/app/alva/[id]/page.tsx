@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { Notice, SignInGate, Submit } from "@/components/app/SignInGate";
 import { CASE_STATUS_LABELS, getCase, parseCaseStatus } from "@/lib/alva/cases";
 import {
@@ -47,11 +47,7 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
 
   return (
     <AppShell current="alva" session={session}>
-      <p className="pd-label text-faint">
-        <Link href="/alva" className="hover:text-ink">
-          PIXDRIFT / ALVA
-        </Link>
-      </p>
+      <ProductCrumb crumbs={[{ href: "/alva", label: "ALVA" }]} />
       {!session?.org ? (
         <SignInGate next="/alva" title="Logga in för att se ärendet">
           Ärendet tillhör organisationen.

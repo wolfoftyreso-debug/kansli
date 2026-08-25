@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { EmptyState, Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
 import { observationHref, sourceLabel } from "@/lib/britt/links";
 import { listFindings, listRuns, listSnapshots } from "@/lib/britt/intel";
@@ -52,7 +53,7 @@ export default async function BrittPage({
   return (
     <AppShell current="britt" session={session}>
       <header className="flex flex-col gap-3">
-        <p className="pd-label text-faint">PIXDRIFT / BRITT</p>
+        <ProductCrumb crumbs={[{ href: "/britt", label: "BRITT" }]} />
         <h1 className="text-3xl font-semibold tracking-tight">BRITT</h1>
         <p className="text-ink-soft">
           BRITT samlar sådant som behöver följas upp. Siffrorna här är exempel — inga kopplingar

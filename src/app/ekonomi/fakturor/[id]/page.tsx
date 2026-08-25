@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
 import { INVOICE_STATUS_LABELS, getInvoice, remainingOre } from "@/lib/ekonomi/invoices";
 import { formatSek, vatLabel } from "@/lib/ekonomi/money";
@@ -34,11 +35,12 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
 
   return (
     <AppShell current="ekonomi" session={session}>
-      <p className="pd-label text-faint">
-        <Link href="/ekonomi/fakturor" className="hover:text-ink">
-          Fakturor
-        </Link>
-      </p>
+      <ProductCrumb
+        crumbs={[
+          { href: "/ekonomi", label: "Ekonomi" },
+          { href: "/ekonomi/fakturor", label: "Fakturor" },
+        ]}
+      />
       {!session ? (
         <SignInGate next="/ekonomi" title="Logga in för fakturan">
           Enskilt dokument, inte en delad länk än.

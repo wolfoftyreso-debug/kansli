@@ -1,4 +1,5 @@
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { EmptyState, Notice, SignInGate } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { eventHeadline } from "@/lib/platform/event-copy";
@@ -20,7 +21,12 @@ export default async function EventsPage() {
   return (
     <AppShell current="events" session={session}>
       <header className="flex flex-col gap-3">
-        <p className="pd-label text-faint">PIXDRIFT / Händelser</p>
+        <ProductCrumb
+          crumbs={[
+            { href: "/platform", label: "Plattform" },
+            { href: "/platform/events", label: "Händelser" },
+          ]}
+        />
         <h1 className="text-3xl font-semibold tracking-tight">Händelselogg</h1>
         <p className="text-ink-soft">
           Listan fylls bara på — inget ändras eller tas bort i efterhand.

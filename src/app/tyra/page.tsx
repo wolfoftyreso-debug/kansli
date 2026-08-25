@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import {
   CheckField,
   EmptyState,
@@ -34,7 +35,7 @@ export default async function TyraPage() {
   return (
     <AppShell current="tyra" session={session}>
       <header className="flex flex-col gap-4 pt-4 sm:pt-8">
-        <p className="pd-label text-faint">TYRA</p>
+        <ProductCrumb crumbs={[{ href: "/tyra", label: "TYRA" }]} />
         <h1 className="max-w-xl text-4xl font-semibold tracking-tight">Vilket fordon ska in?</h1>
         <p className="max-w-xl text-ink-soft">
           TYRA håller ihop kund, bil och hjul, och visar vad som ska göras härnäst. Offert och lager

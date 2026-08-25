@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
+import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { Notice, SignInGate, Submit } from "@/components/app/SignInGate";
 import { loadRevolutStatement } from "@/lib/ekonomi/revolut";
 import { formatMoney } from "@/lib/ekonomi/money";
@@ -25,13 +26,12 @@ export default async function KontoutdragPage() {
 
   return (
     <AppShell current="ekonomi" session={session}>
-      <p className="pd-label text-faint">
-        <Link href="/ekonomi" className="hover:text-ink">
-          Ekonomi
-        </Link>
-        {" / "}
-        Kontoutdrag
-      </p>
+      <ProductCrumb
+        crumbs={[
+          { href: "/ekonomi", label: "Ekonomi" },
+          { href: "/ekonomi/kontoutdrag", label: "Kontoutdrag" },
+        ]}
+      />
       <h1 className="text-3xl font-semibold tracking-tight">Kontoutdrag</h1>
       <p className="max-w-xl text-ink-soft">
         Saldo och transaktioner från Revolut Business. Utan anslutning är listan tom.
