@@ -31,6 +31,8 @@ node_modules/
 
 # local runtime data (json store)
 /data
+local.db
+*.db
 
 # debug
 npm-debug.log*
