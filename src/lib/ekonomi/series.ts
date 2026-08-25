@@ -37,9 +37,9 @@ export function stockholmDay(value: string | Date): string {
 }
 
 function addDays(day: string, count: number): string {
-  const date = new Date(`${day}T12:00:00+02:00`);
-  date.setUTCDate(date.getUTCDate() + count);
-  return stockholmDay(date);
+  const [year, month, date] = day.split("-").map(Number);
+  const next = new Date(Date.UTC(year!, month! - 1, date! + count, 12, 0, 0));
+  return next.toISOString().slice(0, 10);
 }
 
 function daysBetween(from: string, to: string): number {
@@ -96,6 +96,33 @@ export function buildDailyLedger(
   });
 }
 
+function emptyDay(date: string): DayPoint {
+  return { date, salesOre: 0, receivedOre: 0, salesCumOre: 0, receivedCumOre: 0 };
+}
+
+function daysForPeriod(points: readonly DayPoint[], period: PeriodId): DayPoint[] {
+  if (points.length === 0) return [];
+  const spec = PERIODS.find((item) => item.id === period) ?? PERIODS[1];
+  const today = points.at(-1)!.date;
+  const from = spec.days == null ? points[0]!.date : addDays(today, -(spec.days - 1));
+  const byDate = new Map(points.map((point) => [point.date, point]));
+  return enumerateDays(from, today).map((date) => byDate.get(date) ?? emptyDay(date));
+}
+
+function withWindowCum(points: readonly DayPoint[]): DayPoint[] {
+  let salesCum = 0;
+  let receivedCum = 0;
+  return points.map((point) => {
+    salesCum += point.salesOre;
+    receivedCum += point.receivedOre;
+    return { ...point, salesCumOre: salesCum, receivedCumOre: receivedCum };
+  });
+}
+
+export function periodWindow(points: readonly DayPoint[], period: PeriodId): DayPoint[] {
+  return withWindowCum(daysForPeriod(points, period));
+}
+
 export function sliceLedger(
   points: readonly DayPoint[],
   period: PeriodId,
@@ -103,21 +130,12 @@ export function sliceLedger(
   endPct = 100,
 ): DayPoint[] {
   if (points.length === 0) return [];
-  const spec = PERIODS.find((item) => item.id === period) ?? PERIODS[1];
-  const windowed =
-    spec.days == null ? [...points] : points.slice(Math.max(0, points.length - spec.days));
+  const windowed = daysForPeriod(points, period);
   const lo = Math.min(Math.max(startPct, 0), 99);
   const hi = Math.min(Math.max(endPct, lo + 1), 100);
   const start = Math.floor((windowed.length * lo) / 100);
   const end = Math.max(start + 1, Math.ceil((windowed.length * hi) / 100));
-  const slice = windowed.slice(start, end);
-  let salesCum = 0;
-  let receivedCum = 0;
-  return slice.map((point) => {
-    salesCum += point.salesOre;
-    receivedCum += point.receivedOre;
-    return { ...point, salesCumOre: salesCum, receivedCumOre: receivedCum };
-  });
+  return withWindowCum(windowed.slice(start, end));
 }
 
 export function periodSummary(points: readonly DayPoint[], previous: readonly DayPoint[]) {
@@ -132,11 +150,12 @@ export function periodSummary(points: readonly DayPoint[], previous: readonly Da
 
 export function previousWindow(points: readonly DayPoint[], period: PeriodId): DayPoint[] {
   if (points.length === 0) return [];
-  const spec = PERIODS.find((item) => item.id === period);
-  const days = spec?.days ?? Math.ceil(points.length / 2);
-  const current = points.slice(Math.max(0, points.length - days));
-  const end = points.length - current.length;
-  return points.slice(Math.max(0, end - days), end);
+  const current = daysForPeriod(points, period);
+  if (current.length === 0) return [];
+  const prevEnd = addDays(current[0]!.date, -1);
+  const prevFrom = addDays(prevEnd, -(current.length - 1));
+  const byDate = new Map(points.map((point) => [point.date, point]));
+  return enumerateDays(prevFrom, prevEnd).map((date) => byDate.get(date) ?? emptyDay(date));
 }
 
 export function formatSekCompact(ore: number): string {
@@ -148,4 +167,13 @@ export function formatSekCompact(ore: number): string {
   if (abs >= 10_000)
     return `${sign}${(abs / 1000).toLocaleString("sv-SE", { maximumFractionDigits: 1 })} tkr`;
   return `${sign}${Math.round(abs).toLocaleString("sv-SE")} kr`;
+}
+
+export function formatChartDay(day: string): string {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return day || "—";
+  return new Intl.DateTimeFormat("sv-SE", {
+    timeZone: STOCKHOLM,
+    day: "numeric",
+    month: "short",
+  }).format(new Date(`${day}T12:00:00+02:00`));
 }

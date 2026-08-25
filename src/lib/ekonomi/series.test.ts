@@ -3,8 +3,10 @@ import type { Invoice } from "./invoices.ts";
 import type { Payment } from "./payments.ts";
 import {
   buildDailyLedger,
+  formatChartDay,
   formatSekCompact,
   periodSummary,
+  periodWindow,
   previousWindow,
   sliceLedger,
   stockholmDay,
@@ -79,7 +81,7 @@ describe("sales series", () => {
     );
     const all = buildDailyLedger(invoices, [], now);
     const month = sliceLedger(all, "1M");
-    expect(month.length).toBeGreaterThan(7);
+    expect(month).toHaveLength(30);
     const week = sliceLedger(all, "1W");
     expect(week).toHaveLength(7);
     const zoomed = sliceLedger(all, "1W", 50, 100);
@@ -91,8 +93,22 @@ describe("sales series", () => {
     expect(summary.changeOre).toBe(0);
   });
 
-  it("formats compact krona for the axis", () => {
+  it("pads a month even when the first sale is today", () => {
+    const now = new Date("2026-08-25T12:00:00+02:00");
+    const all = buildDailyLedger([invoice("2026-08-25T09:00:00+02:00", 5_000)], [], now);
+    const month = periodWindow(all, "1M");
+    expect(month).toHaveLength(30);
+    expect(month[0]?.date).toBe("2026-07-27");
+    expect(month[0]?.salesOre).toBe(0);
+    expect(month.at(-1)?.date).toBe("2026-08-25");
+    expect(month.at(-1)?.salesOre).toBe(5_000);
+    expect(month.at(-1)?.salesCumOre).toBe(5_000);
+  });
+
+  it("formats compact krona and short Swedish chart dates", () => {
     expect(formatSekCompact(12_500_00)).toBe("12,5 tkr");
     expect(stockholmDay("2026-08-25T23:30:00+02:00")).toBe("2026-08-25");
+    expect(formatChartDay("2026-08-25")).toMatch(/25/);
+    expect(formatChartDay("2026-08-25")).toMatch(/aug/i);
   });
 });

@@ -40,3 +40,6 @@ AI är aldrig source of truth; automation har uttrycklig nivå (L0–L4).
   handwritten catalog.
 - Standard commands: `pnpm format:check`, `pnpm lint`, `pnpm test`, `pnpm dev`.
   Demo login (when seeded): `demo@exempelbolaget.se` / `demo-losenord-1234`.
+- Ekonomi sales SMS goes through `src/lib/platform/sms.ts` (46elks). Products
+  must not call 46elks themselves. A missed SMS must not roll back a booked
+  sale. Mark SENT only if the vendor accepted the message.
