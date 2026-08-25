@@ -102,6 +102,13 @@ Ingen logg och ingen händelse får innehålla access-token, refresh-token,
 privatnyckel, auktoriseringskod eller client assertion. `logRevolut` redigerar
 bort dem, och `observability.test.ts` bevakar det.
 
+Ett undantag går inte att koda bort: auktoriseringskoden kommer som query-parameter
+i en redirect, så plattformens åtkomstlogg skriver den callback-URL:en oavsett vad
+appen gör. Det är samma sak i alla OAuth-flöden med authorization code. Koden är
+engångs och byts direkt i callbacken, så raden i åtkomstloggen är död redan när
+den skrivs. `state` är också engångs (`consumed_at`), så en avlyssnad rad kan inte
+spelas upp igen.
+
 ## Koppla bort
 
 Revolut publicerar inget API för att återkalla tokenarna i det här flödet. Vi

@@ -123,7 +123,9 @@ export default async function RevolutConnectionPage({
                   prefetch={false}
                   className="rounded-lg border border-line px-3 py-2 text-sm font-medium hover:bg-surface-2"
                 >
-                  {health?.oauthConnected ? "Anslut om" : "Anslut Revolut"}
+                  {health?.oauthConnected || health?.actionRequired
+                    ? "Anslut om Revolut"
+                    : "Anslut Revolut"}
                 </Link>
               ) : (
                 <span className="text-sm text-ink-soft">
