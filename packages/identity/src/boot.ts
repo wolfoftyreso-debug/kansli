@@ -17,6 +17,40 @@ import type { OidcClient } from "./config.ts";
 
 const DEV_SESSION_SECRET = "dev-idp-session-secret-min-32-chars-0001";
 
+/** Vercel preview builds set NODE_ENV=production. That is not production. */
+export function isHardenedIdentityRuntime(env: NodeJS.ProcessEnv = process.env): boolean {
+  if (env.VERCEL_ENV === "preview" || env.VERCEL_ENV === "development") return false;
+  return env.APP_ENV === "prod" || env.APP_ENV === "production" || env.VERCEL_ENV === "production";
+}
+
+function vercelHttpsOrigin(env: NodeJS.ProcessEnv): string | null {
+  const raw = env.VERCEL_URL?.trim();
+  if (!raw) return null;
+  const host = raw.replace(/^https?:\/\//, "").replace(/\/+$/, "");
+  return host ? `https://${host}` : null;
+}
+
+/** Preview hostnames are not in the production client registry. Allow this deploy's callback. */
+export function withDeploymentRedirects(
+  clients: OidcClient[],
+  env: NodeJS.ProcessEnv = process.env,
+): OidcClient[] {
+  const origin = vercelHttpsOrigin(env);
+  if (!origin) return clients;
+  const callback = `${origin}/api/auth/callback`;
+  const home = `${origin}/`;
+  const kansliId = env.CLIENT_ID ?? "kansli-web";
+  return clients.map((client) => {
+    if (client.clientId !== kansliId) return client;
+    const redirectUris = client.redirectUris.includes(callback)
+      ? client.redirectUris
+      : [...client.redirectUris, callback];
+    const postLogout = client.postLogoutRedirectUris ?? [];
+    const postLogoutRedirectUris = postLogout.includes(home) ? postLogout : [...postLogout, home];
+    return { ...client, redirectUris, postLogoutRedirectUris };
+  });
+}
+
 export interface BootOptions {
   /** OIDC issuer. Defaults to `ISSUER` env, then `http://${HOST}:${PORT}`. */
   issuer?: string;
@@ -105,18 +139,18 @@ export async function bootIdentityFromEnv(opts: BootOptions = {}): Promise<Fasti
   const port = Number(env.PORT ?? 4000);
   const host = env.HOST ?? "127.0.0.1";
   const issuer = opts.issuer ?? env.ISSUER ?? `http://${host}:${port}`;
-  const isProd = env.NODE_ENV === "production" || env.APP_ENV === "prod";
+  const isProd = isHardenedIdentityRuntime(env);
 
   // Fail closed in production: no weak/default signing secret for IdP sessions.
   if (isProd && (!env.SESSION_SECRET || env.SESSION_SECRET === DEV_SESSION_SECRET)) {
     throw new Error("SESSION_SECRET måste sättas till ett starkt, unikt värde i produktion");
   }
-  const sessionSecret = env.SESSION_SECRET ?? DEV_SESSION_SECRET;
+  const sessionSecret = env.SESSION_SECRET ?? env.APP_SESSION_SECRET ?? DEV_SESSION_SECRET;
   // Secure cookies by default over HTTPS; overridable with COOKIE_SECURE.
   const cookieSecure =
     env.COOKIE_SECURE !== undefined ? env.COOKIE_SECURE === "true" : issuer.startsWith("https://");
 
-  const clients = clientsFromEnv(env);
+  const clients = withDeploymentRedirects(clientsFromEnv(env), env);
   // Demo deployments (PIXDRIFT_SEED_DEMO) prefill the login form so the known
   // demo account can sign in with a single click.
   const demoLogin =
@@ -148,7 +182,7 @@ export async function bootIdentityFromEnv(opts: BootOptions = {}): Promise<Fasti
       store,
       signingKey,
       additionalPublicJwks,
-      clients: registered.length > 0 ? registered : clients,
+      clients: withDeploymentRedirects(registered.length > 0 ? registered : clients, env),
       sessionSecret,
       cookieSecure,
       demoLogin,

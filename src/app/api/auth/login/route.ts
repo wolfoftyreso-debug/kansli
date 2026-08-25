@@ -23,7 +23,16 @@ export async function GET(request: NextRequest) {
   const org = request.nextUrl.searchParams.get("org") ?? undefined;
   const next = safeNextPath(request.nextUrl.searchParams.get("next"));
 
-  const authorizationUrl = await client.authorizationUrl({ state, nonce, codeVerifier, org });
+  let authorizationUrl: string;
+  try {
+    authorizationUrl = await client.authorizationUrl({ state, nonce, codeVerifier, org });
+  } catch (err) {
+    console.error("[auth/login] authorization url failed", err);
+    return new NextResponse(
+      `<!doctype html><html lang="sv"><meta charset="utf-8"><title>Inloggningen går inte just nu</title><body style="font-family:system-ui;max-width:36rem;margin:3rem auto;padding:0 1rem"><h1>Inloggningen går inte just nu</h1><p>Vi kunde inte nå inloggningen. Prova igen om en stund, eller gå tillbaka till <a href="/">startsida</a>.</p></body></html>`,
+      { status: 503, headers: { "content-type": "text/html; charset=utf-8" } },
+    );
+  }
 
   const response = NextResponse.redirect(authorizationUrl);
   const opts = {

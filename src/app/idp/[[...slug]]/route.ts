@@ -28,7 +28,8 @@ const PREFIX = "/idp";
 let cached: { issuer: string; app: Promise<FastifyInstance> } | null = null;
 
 function issuerFor(req: NextRequest): string {
-  if (process.env.PIXDRIFT_ISSUER) return process.env.PIXDRIFT_ISSUER;
+  const preview = process.env.VERCEL_ENV === "preview" || process.env.VERCEL_ENV === "development";
+  if (!preview && process.env.PIXDRIFT_ISSUER) return process.env.PIXDRIFT_ISSUER;
   const proto = req.headers.get("x-forwarded-proto") ?? req.nextUrl.protocol.replace(":", "");
   const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? req.nextUrl.host;
   return `${proto}://${host}${PREFIX}`;

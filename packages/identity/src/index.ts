@@ -1,5 +1,11 @@
 export { createIdentityServer } from "./server.ts";
-export { bootIdentityFromEnv, clientsFromEnv, type BootOptions } from "./boot.ts";
+export {
+  bootIdentityFromEnv,
+  clientsFromEnv,
+  isHardenedIdentityRuntime,
+  withDeploymentRedirects,
+  type BootOptions,
+} from "./boot.ts";
 export { generateSigningKey, signingKeyFromPkcs8, jwks, type SigningKey } from "./keys.ts";
 export {
   InMemoryStore,

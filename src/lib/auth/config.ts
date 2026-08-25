@@ -1,21 +1,24 @@
+import { authPublicUrls } from "./origin.ts";
 import { resolveClientSecret, resolveSessionSecret } from "./secrets.ts";
+
+const urls = authPublicUrls();
 
 /**
  * Kansli acts as an OIDC client (BFF) of the Pixdrift identity provider.
- * Configuration comes from the environment with development-friendly defaults
- * so `pnpm dev` + `pnpm dev:idp` work out of the box. APP_ENV=prod fails closed.
+ * Local defaults keep `pnpm dev` working. On a Vercel preview the URLs follow
+ * this deployment — not production — so login does not call localhost.
  */
 export const authConfig = {
-  // The IdP is co-located under /idp in this app; default to same-origin so
-  // `pnpm dev` gives a working SSO flow with no extra process. Override with
-  // PIXDRIFT_ISSUER (e.g. https://<host>/idp in production).
-  issuer: process.env.PIXDRIFT_ISSUER ?? "http://127.0.0.1:3000/idp",
+  issuer: urls.issuer,
   clientId: process.env.PIXDRIFT_CLIENT_ID ?? "kansli-web",
   clientSecret: resolveClientSecret(),
-  redirectUri: process.env.PIXDRIFT_REDIRECT_URI ?? "http://127.0.0.1:3000/api/auth/callback",
-  baseUrl: process.env.APP_BASE_URL ?? "http://127.0.0.1:3000",
+  redirectUri: urls.redirectUri,
+  baseUrl: urls.origin,
   sessionSecret: resolveSessionSecret(),
-  cookieSecure: process.env.COOKIE_SECURE === "true",
+  cookieSecure:
+    process.env.COOKIE_SECURE !== undefined
+      ? process.env.COOKIE_SECURE === "true"
+      : urls.origin.startsWith("https://"),
 } as const;
 
 export const SESSION_COOKIE = "kansli_session";
