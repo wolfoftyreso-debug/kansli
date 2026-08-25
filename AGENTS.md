@@ -46,3 +46,9 @@ AI är aldrig source of truth; automation har uttrycklig nivå (L0–L4).
 - Production path is `/kansli/beredskap` and `docs/FIRST_CUSTOMER.md`. Do not
   invent Visma, Fortnox, Stripe Checkout or Swish Handel. The book is enough
   for a first customer who signs what the product is not.
+- Hardened runtime is `APP_ENV=prod|production` or `VERCEL_ENV=production`.
+  Preview and `VERCEL_ENV=development` are never hardened. `NODE_ENV=production`
+  is not production. Boot fails closed without `DATABASE_URL`, without secrets
+  of at least 32 characters, with `PIXDRIFT_SEED_DEMO=true`, or with
+  `COOKIE_SECURE=false`. Identity does not fall back to an in-memory store
+  when hardened. CSP is enforced only when hardened.

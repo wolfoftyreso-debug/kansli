@@ -21,7 +21,7 @@ Det går inte att koda bort 1–3 genom att sitta längre i kansli-repot. Det g�
 
 | System | Första kund | Vad kunden måste acceptera |
 |---|---|---|
-| Identitet + Kansli | Ja | Demo-lösen bara om `PIXDRIFT_SEED_DEMO`. Annars riktiga användare. |
+| Identitet + Kansli | Ja | Demo-lösen bara i preview/dev. Produktion vägrar starta med `PIXDRIFT_SEED_DEMO`. |
 | IRMA | Ja, L0–L1 | Inte BankID. Inte kvalificerad e-signatur. Handshake är koden. |
 | TYRA | Ja, verkstadspilot | Ärende, kund, lagerplats, mätning, offertutkast. **Inget SMS. Inga live-däckpriser.** |
 | TORA | Ja, med org-profil | **Demo-marknad** (seed). Inte TED/HILMA. |
@@ -41,7 +41,8 @@ Det går inte att koda bort 1–3 genom att sitta längre i kansli-repot. Det g�
 ## Drift som fortfarande är er, inte kod
 
 - Neon med PITR. Ett **daterat** restore-kvitto i `DEPLOYMENT.md`.
-- DNS + secrets i Vercel. `APP_ENV=production`. Inga `CHANGE_ME`.
+- DNS + secrets i Vercel. `APP_ENV=production` eller `VERCEL_ENV=production`. Preview är aldrig produktion, även om `NODE_ENV=production`.
+- Hemligheter minst 32 tecken. Inga `kansli-dev*`. Ingen `COOKIE_SECURE=false`. Ingen `PIXDRIFT_SEED_DEMO`. Utan `DATABASE_URL` startar inte processen.
 - Kunden skriver under: ingen BankID, inga live-priser, ingen ALVA-diagnos, ingen TED, ingen Visma.
 
 När de tre sakerna är klara är **första kunden inte ett datum — den är en signatur**.

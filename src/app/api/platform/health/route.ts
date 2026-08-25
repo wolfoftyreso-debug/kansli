@@ -1,4 +1,5 @@
 import { SYSTEM_MODULES } from "@pixdrift/systems";
+import { isHardenedRuntime } from "@/lib/auth/secrets";
 import { gatewaySnapshot } from "@/lib/platform/ai";
 import { handleApi, json } from "@/lib/platform/http";
 import { ritaEngineSnapshot } from "@/lib/rita/resolve-engine";
@@ -6,7 +7,7 @@ import { ritaEngineSnapshot } from "@/lib/rita/resolve-engine";
 export async function GET() {
   return handleApi(async ({ pool }) => {
     await pool.query("select 1");
-    const hardened = process.env.APP_ENV === "prod" || process.env.APP_ENV === "production";
+    const hardened = isHardenedRuntime();
     if (hardened) {
       return json({ ok: true, database: "up" });
     }

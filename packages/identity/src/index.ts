@@ -1,5 +1,6 @@
 export { createIdentityServer } from "./server.ts";
 export {
+  assertHardenedIdentityBoot,
   bootIdentityFromEnv,
   clientsFromEnv,
   isHardenedIdentityRuntime,

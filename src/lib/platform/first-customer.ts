@@ -40,8 +40,9 @@ export function evaluateFirstCustomerGates(input: {
   ekonomiPaid: number;
   smsVendor: boolean;
   smsEnabled: boolean;
+  hardened?: boolean;
 }): FirstCustomerBoard {
-  const hardened = input.appEnv === "prod" || input.appEnv === "production";
+  const hardened = input.hardened ?? (input.appEnv === "prod" || input.appEnv === "production");
   const gates: FirstCustomerGate[] = [
     {
       id: "database",
@@ -64,9 +65,11 @@ export function evaluateFirstCustomerGates(input: {
     {
       id: "demo",
       title: "Inte ett öppet demoläge mot kund",
-      state: input.seedDemo ? "open" : "ready",
+      state: input.seedDemo ? (hardened ? "blocked" : "open") : "ready",
       detail: input.seedDemo
-        ? "PIXDRIFT_SEED_DEMO=true. Stäng av innan första kunden loggar in."
+        ? hardened
+          ? "PIXDRIFT_SEED_DEMO=true i produktion. Processen ska inte starta."
+          : "PIXDRIFT_SEED_DEMO=true. Stäng av innan första kunden loggar in."
         : "Exempelläget är av.",
     },
     {
@@ -158,7 +161,9 @@ export function evaluateFirstCustomerGates(input: {
   ];
 
   const blockingPilot = gates.filter(
-    (gate) => (gate.id === "database" || gate.id === "secrets") && gate.state === "blocked",
+    (gate) =>
+      (gate.id === "database" || gate.id === "secrets" || gate.id === "demo") &&
+      gate.state === "blocked",
   );
   const pilotOfferable = blockingPilot.length === 0;
   return {
@@ -220,11 +225,14 @@ export async function loadFirstCustomerBoard(
     smsEnabled = Boolean(sms.rows[0]?.enabled);
   }
 
+  const session = process.env.APP_SESSION_SECRET?.trim() ?? "";
   return evaluateFirstCustomerGates({
     databaseUp: status.database === "up",
     appEnv: process.env.APP_ENV ?? "",
+    hardened: isHardenedRuntime(),
     seedDemo: process.env.PIXDRIFT_SEED_DEMO === "true",
-    sessionSecretSet: Boolean(process.env.APP_SESSION_SECRET?.trim()) || !isHardenedRuntime(),
+    sessionSecretSet:
+      (session.length >= 32 && !session.startsWith("kansli-dev")) || !isHardenedRuntime(),
     cronSecretSet: Boolean(process.env.CRON_SECRET?.trim()),
     toraProfileSaved,
     tyraCases,

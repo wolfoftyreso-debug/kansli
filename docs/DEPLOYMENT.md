@@ -36,9 +36,11 @@ Detta är det enda som inte kan göras från kod (kräver dashboard-åtgärd):
    `DATABASE_URL` (och `POSTGRES_URL`) som miljövariabler.
 2. Kör schema/bootstrap **en gång** (se avsnitt 3).
 
-Utan `DATABASE_URL` faller `/idp` tillbaka på en in-memory-store per instans —
-det räcker för `pnpm dev` (en process) men **inte** för serverless på Vercel
-(flera instanser delar inte minne). Postgres krävs alltså i drift.
+Utan `DATABASE_URL` faller `/idp` tillbaka på en in-memory-store **bara utanför
+produktion**. Preview och `pnpm dev` får minneslagret. `VERCEL_ENV=production`
+eller `APP_ENV=prod|production` vägrar starta utan Postgres, utan hemligheter
+på minst 32 tecken, med `PIXDRIFT_SEED_DEMO=true` eller med `COOKIE_SECURE=false`.
+`NODE_ENV=production` räknas inte som produktion (Vercel preview sätter den).
 
 ## 2. Miljövariabler (Production, projektet `kansli`)
 
@@ -60,8 +62,9 @@ CLIENT_SECRET=<KANSLI_CLIENT_SECRET>        # måste vara SAMMA som PIXDRIFT_CLI
 REDIRECT_URIS=https://<host>/api/auth/callback
 POST_LOGOUT_URIS=https://<host>/
 SESSION_SECRET=<SESSION_SECRET, 32+ tecken>
-APP_ENV=prod                                # fail-closed: kräver starkt SESSION_SECRET
+APP_ENV=prod                                # fail-closed tillsammans med VERCEL_ENV=production
 # DATABASE_URL sätts automatiskt av Vercel Postgres-integrationen
+# Sätt inte PIXDRIFT_SEED_DEMO=true i Production — processen vägrar starta.
 ```
 
 Andra moduler (ALVA, RITA, TORA, BRITT, IRMA) registreras via egna

@@ -51,6 +51,27 @@ describe("evaluateFirstCustomerGates", () => {
     expect(board.pilotOfferable).toBe(true);
   });
 
+  it("blocks production when the demo seed is still on", () => {
+    const board = evaluateFirstCustomerGates({
+      ...base,
+      appEnv: "production",
+      seedDemo: true,
+    });
+    expect(board.gates.find((g) => g.id === "demo")?.state).toBe("blocked");
+    expect(board.pilotOfferable).toBe(false);
+  });
+
+  it("blocks a hardened Vercel production even when APP_ENV is empty", () => {
+    const board = evaluateFirstCustomerGates({
+      ...base,
+      appEnv: "",
+      hardened: true,
+      seedDemo: true,
+    });
+    expect(board.gates.find((g) => g.id === "demo")?.state).toBe("blocked");
+    expect(board.gates.find((g) => g.id === "secrets")?.state).toBe("ready");
+  });
+
   it("treats an issued invoice as an Ekonomi book, not as Visma", () => {
     const empty = evaluateFirstCustomerGates(base);
     expect(empty.gates.find((g) => g.id === "ekonomi")?.state).toBe("open");
