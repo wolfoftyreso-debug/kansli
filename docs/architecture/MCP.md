@@ -15,4 +15,9 @@ REST route →  application service  →  domain logic
 - Authz: `@pixdrift/api-core` `requireActor` / `requireOrg` / `requirePermission`.
 - Audit: `kansli.mcp.invoked` / `kansli.mcp.denied` plus the product event the service already publishes.
 
-Not in this repo: NORA, Mova, SAGA. Not built: cluster rate-limit store, OpenTelemetry exporter, Grafana dashboards, approval queue, feature flags. Those gaps are listed in the PR, not hidden.
+Capability Graph (derived from this registry, not a second catalog):
+`src/lib/platform/capability-graph.ts`, `/documentation/capabilities`.
+
+Platform target and gap matrix: `docs/PLATFORM-1.0.md`, `docs/PLATFORM-1.0-GAP.md`.
+
+Not in this repo: NORA, Mova, SAGA. Not built: cluster rate-limit store, OpenTelemetry exporter, Grafana dashboards, approval queue, feature flags. Those gaps are listed in the matrix, not hidden.

@@ -5,6 +5,10 @@ agent (Cursor/Codex) eller människa **ska läsa detta innan något görs** i n�
 repo, och ett förslag som bryter mot en artikel måste antingen avvisas eller
 åtföljas av ett uttryckligt, granskat undantag.
 
+Plattformens målbild (ytor, Capability Graph, vad som *inte* ska
+byggas parallellt) står i [`PLATFORM-1.0.md`](PLATFORM-1.0.md).
+Luckorna mot den målbilden står i [`PLATFORM-1.0-GAP.md`](PLATFORM-1.0-GAP.md).
+
 Grundhållningen: **Applikationen får gå sönder. Kundens data får inte gå sönder.**
 Bygg en liten, hårt kontrollerad gemensam kärna där varje produkt fortfarande
 utvecklas självständigt. Undvik en monolit där ett fel i en produkt riskerar

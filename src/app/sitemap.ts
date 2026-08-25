@@ -10,6 +10,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/how-it-works",
     "/applications",
     "/documentation",
+    "/documentation/mcp",
+    "/documentation/mcp/authentication",
+    "/documentation/mcp/clients",
+    "/documentation/mcp/tools",
+    "/documentation/mcp/systems",
+    "/documentation/mcp/errors",
+    "/documentation/capabilities",
     "/why",
     "/company",
   ];

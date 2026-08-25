@@ -100,6 +100,13 @@ export const platformSurfaces: PlatformSurface[] = [
     route: "/documentation/mcp",
   },
   {
+    id: "capability-graph",
+    name: "PIXDRIFT Capability Graph",
+    purpose: "Machine-readable registry of product capabilities and their interfaces.",
+    status: "present",
+    route: "/documentation/capabilities",
+  },
+  {
     id: "open-source",
     name: "PIXDRIFT Open Source",
     purpose: "Components published openly.",

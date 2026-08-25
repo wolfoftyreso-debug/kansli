@@ -1,0 +1,322 @@
+# PIXDRIFT PLATFORM 1.0 — inventering och luckor
+
+Datum: 2026-08-25.
+Målbild: [`PLATFORM-1.0.md`](PLATFORM-1.0.md).
+Metod: läst ur kod i det här repot. Inte ur önskelistor.
+
+**Regel för celler:** PASS = körbar yta med bevis.
+PARTIAL = något finns, men inte målbilden.
+MISSING = finns inte.
+N/A = produkten finns inte i `@pixdrift/systems`.
+
+NORA, MOVA och SAGA är N/A i hela matrisen.
+De nämns i målbilden. De finns inte i koden.
+
+---
+
+## 1. Produkter som faktiskt finns
+
+Källa: `packages/systems/src/catalog.ts`.
+
+| id | namn | status i katalog | schema | UI | API |
+| --- | --- | --- | --- | --- | --- |
+| identity | PIXDRIFT Identity | operational | `public` | `/idp` | `/idp` |
+| kansli | Kansli | operational | `kansli` | `/kansli` | `/api/kansli` |
+| ekonomi | Ekonomi | pilot | `ekonomi` | `/ekonomi` | `/api/ekonomi` |
+| tora | TORA | pilot | `tora` | `/tora` | `/api/tora` |
+| rita | RITA | pilot | `rita` | `/rita` | `/api/rita` |
+| britt | BRITT | pilot | `britt` | `/britt` | `/api/britt` |
+| irma | IRMA | pilot | `irma` | `/irma` | `/api/irma` |
+| tyra | TYRA | pilot | `tyra` | `/tyra` | `/api/tyra` |
+| alva | ALVA | deferred | `alva` | `/alva` | `/api/alva` |
+
+Publik katalog (`src/lib/pixdrift/systems.ts`) saknar `kansli` medvetet.
+Den har inte NORA, MOVA eller SAGA.
+
+---
+
+## 2. Plattformsmatris
+
+| Produkt | AUTH | REST | MCP | SDK | WEBHOOK | DEVPORTAL | CHATGPT | SEO | DESIGN | BACKUP | MONITORING |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| identity | PASS | PARTIAL | PARTIAL | MISSING | MISSING | PARTIAL | MISSING | PARTIAL | PARTIAL | PARTIAL | PARTIAL |
+| kansli | PASS | PARTIAL | PARTIAL | MISSING | MISSING | PARTIAL | MISSING | MISSING | PARTIAL | PARTIAL | PARTIAL |
+| ekonomi | PASS | PARTIAL | PARTIAL | MISSING | MISSING | PARTIAL | MISSING | PARTIAL | PARTIAL | PARTIAL | PARTIAL |
+| tora | PASS | PARTIAL | PARTIAL | MISSING | MISSING | PARTIAL | MISSING | PARTIAL | PARTIAL | PARTIAL | PARTIAL |
+| rita | PASS | PARTIAL | PARTIAL | MISSING | MISSING | PARTIAL | MISSING | PARTIAL | PARTIAL | PARTIAL | PARTIAL |
+| britt | PASS | PARTIAL | PARTIAL | MISSING | MISSING | PARTIAL | MISSING | PARTIAL | PARTIAL | PARTIAL | PARTIAL |
+| irma | PASS | PARTIAL | PARTIAL | MISSING | MISSING | PARTIAL | MISSING | PARTIAL | PARTIAL | PARTIAL | PARTIAL |
+| tyra | PASS | PARTIAL | PARTIAL | MISSING | MISSING | PARTIAL | MISSING | PARTIAL | PARTIAL | PARTIAL | PARTIAL |
+| alva | PASS | PARTIAL | PARTIAL | MISSING | MISSING | PARTIAL | MISSING | PARTIAL | PARTIAL | PARTIAL | PARTIAL |
+| nora | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
+| mova | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
+| saga | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
+
+### Bevis per kolumn
+
+**AUTH — PASS** för alla produkter i navet.
+Samma OIDC + BFF-cookie. Ingen produkt har egen login.
+Kod: `packages/identity`, `src/app/api/auth/*`, `src/lib/auth/*`.
+Luckor mot målbilden (RBAC/ABAC, entitlements, feature flags,
+service accounts) hör till Platform Core, inte till “har de inloggning?”.
+
+**REST — PARTIAL.**
+JSON-API under `/api/{system}` med `@pixdrift/api-core`.
+Ingen OpenAPI. Ingen publik `api.pixdrift.com/v1`.
+Flera skrivvägar saknar MCP-par (se §4).
+
+**MCP — PARTIAL.**
+`POST /mcp`, protokoll `2026-07-28`, 14 verktyg i
+`src/lib/mcp/tools.ts`. Alla anropar befintliga tjänster.
+Inte alla REST-operationer har verktyg. Ingen L4-kö.
+Rate limit och idempotens är per process.
+
+**SDK — MISSING.**
+Inga paket `@pixdrift/sdk-*`. Ingen OpenAPI att generera från.
+
+**WEBHOOK — MISSING.**
+`platform.events` är intern append-only-logg.
+Inga signerade utgående webhooks till kundsystem.
+Kanalnamnet `webhook` finns i kontrakt, inte som driftad yta.
+
+**DEVPORTAL — PARTIAL.**
+`/documentation` och `/documentation/mcp/*` (genererat ur registret).
+Explorer: `/platform/mcp` (inloggad).
+Saknas: sandbox-tenant, API Explorer med körning mot sandbox,
+webhook debugger, OAuth-appar, request replay, recipes, status,
+changelog som data.
+
+**CHATGPT — MISSING.**
+Ingen Apps SDK, ingen app-manifest, ingen chatt-UI.
+MCP kan anropas av en generisk klient. Det är inte en ChatGPT-app.
+
+**SEO — PARTIAL** för produkter med `/systems/{slug}`.
+**MISSING** för Kansli (ingen publiksida i katalogen).
+Se §5. Ingen locale-URL, ingen intent-graf, ingen Search Console-loop.
+
+**DESIGN — PARTIAL.**
+Tokens i `src/app/globals.css`. Gemensam sajt och `pd-label`.
+Inget `@pixdrift/design`-paket. Ingen design constitution.
+Produktsidorna är samma mall — det är bra — men app-ytorna
+har börjat egna mönster (TYRA-variabler i `:root`).
+
+**BACKUP — PARTIAL.**
+`scripts/backup-postgres.sh`, `pnpm db:restore-drill`, CI kör drill.
+Neon PITR är leverantörskapacitet. Ingen daterad
+produktions-restore. Ingen per-tjänst RPO/RTO-kontrakt.
+
+**MONITORING — PARTIAL.**
+`GET /api/platform/health`, `x-request-id`, event-logg,
+MCP-metrics i processen, `/api/mcp/health`.
+Ingen OpenTelemetry-export, ingen Grafana, ingen PagerDuty,
+ingen syntetisk bevakning av login/MCP/docs.
+
+---
+
+## 3. De sju lagren
+
+| Lager | Betyg | Vad som finns | Vad som saknas |
+| --- | --- | --- | --- |
+| 1. Platform Core | PARTIAL | Identity, org, session, `noun:verb`-behörighet, API Core, events, request-id | ABAC/OPA, entitlements, billing, feature flags, notifieringskärna, hemlighetsvalv, OTel, per-tjänst SLO |
+| 2. Universal Integration | PARTIAL | REST + MCP mot samma `src/lib/{produkt}`. Revolut OAuth. | OpenAPI, webhooks, SDK, service accounts, OAuth-appar för tredje part |
+| 3. Developer Platform | PARTIAL | `/documentation`, MCP-docs, MCP-explorer | Sandbox, Try-it, recipes, changelog-data, status, request replay |
+| 4. App / Agent | PARTIAL | MCP + klientinstruktioner i docs | ChatGPT Apps, Apps SDK-UI, produktappar |
+| 5. Knowledge & Search | PARTIAL | `/systems`, `/documentation`, sitemap, robots, OG i root layout | Locale-URL, hreflang, knowledge, verktyg, intent-graf, llms.txt |
+| 6. Design System | PARTIAL | CSS-tokens, gemensam sajtmall | Tokenpaket, komponentbibliotek, produkt-DNA-regler, a11y-svit |
+| 7. Reliability | PARTIAL | CI, restore-drill, health | Reliability contract, Neon-restore-kvitto, syntetiska tester, incident |
+
+---
+
+## 4. Capability Graph — frö mot full täckning
+
+Grafen i kod är **bara** de 14 MCP-verktygen.
+Varje verktyg har redan `rest.method` + `rest.path`.
+Det är medvetet: ingen parallell lista.
+
+REST som **finns** men **inte** sitter i grafen än:
+
+| REST | Produkt | Varför den saknas i grafen |
+| --- | --- | --- |
+| PATCH/DELETE `/api/kansli/tasks/:id` | kansli | Ingen MCP-skrivning för uppdatering/radering |
+| GET `/api/ekonomi/invoices/:id` | ekonomi | Bara listan är verktyg |
+| GET/POST `/api/ekonomi/connectors` | ekonomi | Connector-yta, inte MCP |
+| GET `/api/ekonomi/reports` | ekonomi | Rapport-yta, inte MCP |
+| Revolut connect/callback | ekonomi | OAuth-flöde, inte domänverktyg |
+| GET `/api/tora/opportunities/:id` | tora | Detalj utan MCP |
+| GET `/api/tora/calendar` | tora | Kalender utan MCP |
+| GET `/api/rita/analyses/:id` | rita | Detalj utan MCP |
+| GET/POST `/api/britt/findings` | britt | Findings utan MCP |
+| GET `/api/irma/agreements` | irma | Lista utan MCP |
+| GET/POST `/api/irma/agreements/:id` | irma | Detalj/revoke utan MCP |
+| GET/POST `/api/irma/l/:token` | irma | Gästlänk, medvetet utan agent |
+| GET `/api/tyra/cases` | tyra | Lista utan MCP |
+| GET `/api/tyra/cases/:id` | tyra | Detalj utan MCP |
+| POST `/api/tyra/hub/link` | tyra | Hubblänk utan MCP |
+| GET `/api/tyra/reminders` | tyra | Outbox utan MCP |
+| POST `/api/tyra/suppliers/search` | tyra | Returnerar `NOT_CONFIGURED` |
+| GET `/api/tyra/cron/reminders` | tyra | Cron, inte agentyta |
+| GET `/api/alva/cases` | alva | Lista utan MCP |
+| GET `/api/platform/health` | platform | Publik health |
+| GET `/api/platform/ai` | platform | Gateway-ping, inferens |
+| `/api/auth/*` | identity | Browser-BFF, inte agent |
+
+Nästa kodflytt i grafen: bind de REST-ytor som *ska* vara
+agentbara. Inte alla ska det (gästlänk, cron, OAuth-callback).
+
+---
+
+## 5. SEO-matris per produkt
+
+Publika sidor i dag: `/`, `/systems`, `/systems/{slug}`,
+`/how-it-works`, `/applications`, `/documentation`,
+`/documentation/mcp/*`, `/documentation/capabilities`,
+`/why`, `/company`.
+Sitemap: `src/app/sitemap.ts` (saknade tidigare MCP-URL:er).
+Robots: tillåt `/`, blockera `/kansli`, `/api/`, `/idp/`.
+Locale: `html lang="en"`. Inga `/en/` `/sv/` `/de/`.
+Ingen hreflang. Canonical är implicit via `metadataBase`.
+
+| Produkt | Kärnentiteter | Problemkluster | Roller | Bransch | Flöden | Integrationer | Språk | Befintliga sidor | Saknade sidor (målbild) | Teknisk SEO | Länkar | Kvalitetslucka |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| identity | SSO, OIDC, org | många logins | admin | tvärgående | logga in | alla produkter | en (en) | `/systems/identity` | privacy, security, locale | PARTIAL | svag mot docs | tunn på hur SSO funkar för en köpare |
+| kansli | uppgifter, nav | — | — | — | skapa uppgift | — | — | ingen `/systems/kansli` | produktsida eller medvetet intern | MISSING | — | intern produkt, inte sökbar |
+| ekonomi | faktura, moms, betalning | spridd ekonomi | ekonomi | tjänsteföretag | fakturera, matcha | Revolut (kod), Stripe/Swish (text) | en | `/systems/ekonomi` | knowledge, kalkylator, /sv /de | PARTIAL | svag | flera avsnitt `forthcoming` |
+| tora | upphandling, behörighet | fel anbud | anbudsansvarig | offentlig sektor / leverantör | utvärdera marknad | — | en | `/systems/tora` | guide, jämförelse | PARTIAL | svag | bättre än de flesta, fortfarande produktblad |
+| rita | skatteanalys, fynd | missade avdrag | revisor, vd | Sverige | beställ analys | motor `skattjakt` (eget repo) | en | `/systems/rita` | knowledge, disclaimer-djup | PARTIAL | svag | många `forthcoming` |
+| britt | observation, fynd | uppföljning | chef | tvärgående | samla det som hänt | events in | en | `/systems/britt` | dashboard-story som knowledge | PARTIAL | svag | många `forthcoming` |
+| irma | avtal, länk, signatur | “har de läst?” | jurist, vd | tvärgående | skicka, läs, bekräfta | — | en | `/systems/irma` | e-sign vs IRMA, DPA | PARTIAL | svag | många `forthcoming` |
+| tyra | kund, bil, hjul | däckhotell-kaos | verkstad | däck / verkstad | ärende, hubb | leverantörssök `NOT_CONFIGURED` | en | `/systems/tyra` | däckhotell-kunskap, kalkylator | PARTIAL | svag | ärlig om vad som saknas |
+| alva | ärende, fel, mätvärde | “vad sa kunden?” | verkstad | fordon | registrera fall | diagnosmotor **inte här** | en | `/systems/alva` | guided diagnostics **nej** förrän motorn finns | PARTIAL | svag | får inte sälja diagnos |
+| nora | — | — | — | — | — | — | — | — | — | N/A | — | inte i repot |
+| mova | — | — | — | — | — | — | — | — | — | N/A | — | inte i repot |
+| saga | — | — | — | — | — | — | — | — | — | N/A | — | inte i repot |
+
+**Keyword-möjligheter (förslag, inte publicerade sidor):**
+förstärk TORA upphandling, TYRA däckhotell, IRMA avtalslänk,
+Ekonomi faktura+moms. Skapa inte “500 sökord”-sidor.
+Skapa inte ALVA “guided diagnostics” förrän motorn är inkopplad.
+
+**Tekniska SEO-fel (hela sajten):**
+
+- ingen hreflang, inga locale-URL:er
+- sitemap saknade MCP-dokumentation (rättas i samma ändring)
+- ingen structured data-generator
+- ingen `/llms.txt` (medvetet inte Google-hack; saknas för AI-klienter)
+- ingen knowledge-, tools-, comparisons-yta
+- `/company` har bolagsnamn och städer, inte org.nr, DPA, privacy, terms
+- statusyta är `planned` i `platform.ts`
+
+---
+
+## 6. Developer experience — 15-minutersprovet
+
+Mål: kall extern utvecklare gör första anropet på en kvart.
+
+| Steg | Resultat | Friktion |
+| --- | --- | --- |
+| Hitta plattformen | PARTIAL | `/documentation` och `/documentation/mcp` finns. Ingen `developers.pixdrift.com`. |
+| Skapa sandbox | MISSING | Ingen isolering. Demo-org kräver `PIXDRIFT_SEED_DEMO`. |
+| Autentisera | PARTIAL | Session-cookie eller Bearer mot IdP. Ingen self-serve token-knapp. Klienthemligheter är env. |
+| Läsa docs | PARTIAL | MCP-docs genereras. REST saknar OpenAPI och per-operation HTML. |
+| Första REST-anrop | PARTIAL | Går mot `/api/...` med session. Ingen Try-it mot sandbox. |
+| Koppla MCP | PARTIAL | `POST /mcp` + `/documentation/mcp/clients`. Inga färdiga Cursor/ChatGPT-installationspaket med OAuth. |
+| Första tool | PARTIAL | Inloggad explorer `/platform/mcp`. Extern klient måste bära token själv. |
+| Inspektera trace | PARTIAL | `x-request-id` syns. Ingen trace-backend. |
+| Webhook | MISSING | Finns inte. |
+| SDK | MISSING | Finns inte. |
+
+**Mätt friktion:** en främmande utvecklare kan *läsa* MCP-kontraktet
+och anropa `POST /mcp` om hen redan har en org och en token.
+Hen kan inte skapa en testmiljö, inte klicka Run, inte prenumerera
+på en webhook. Det är mer än noll och långt från 15 minuter.
+
+---
+
+## 7. ChatGPT-prov
+
+Inte kört. Ingen app är byggd.
+MCP-health och `server/discover` är inte samma sak som
+“NORA for ChatGPT” med bokningskort.
+
+---
+
+## 8. Sökprov (publik sajt)
+
+| Check | Resultat | Bevis |
+| --- | --- | --- |
+| Crawlbar HTML | PARTIAL | App Router-sidor. Docs är serverrenderade. |
+| Indexerbar | PARTIAL | robots tillåter sajt, blockerar app/api/idp |
+| Canonical | PARTIAL | `metadataBase` + implicit URL. Ingen per-sida canonical-policy |
+| hreflang | MISSING | — |
+| Sitemap | PARTIAL | statiska rutter + `/systems/{slug}` |
+| Robots | PASS | `src/app/robots.ts` |
+| Structured data | MISSING | ingen JSON-LD-generator |
+| Metadata / OG | PARTIAL | root layout. Få unika per produktsida |
+| Interna länkar | PARTIAL | nav + systems. Ingen intent-graf |
+| HTTP-status | PARTIAL | inte syntetiskt bevakat |
+| Prestanda | MISSING | ingen Lighthouse-gate |
+| Mobil | PARTIAL | layout finns, ingen bevakad svit |
+| Locale | MISSING | bara `en` i `html` |
+
+---
+
+## 9. Integrationer — ärlig status
+
+| Integration | Status | Bevis |
+| --- | --- | --- |
+| PIXDRIFT Identity (OIDC) | production i navet | `/idp`, auth-client |
+| Revolut Business | experimental / kod finns | `/api/integrations/revolut/*` |
+| Stripe | planned | nämns i ekonomi-docs, ingen webhook-yta |
+| Swish | planned | copy, ingen connector |
+| Fortnox | planned | nämns som problem, ingen connector |
+| Visma | planned | samma |
+| 46elks / Resend / Mapbox | secrets namngivna | `docs/INTEGRATIONS.md` — kärna inte byggd |
+| Apollo.io | planned | BRITT-connector namngiven, inte driftad |
+| ChatGPT Apps | missing | — |
+| Claude / Cursor / Codex som *app* | missing | MCP kan användas, ingen paketering |
+| Slack / Teams / Microsoft 365 / Google | missing | — |
+| DMS / däckleverantör | missing | TYRA search = `NOT_CONFIGURED` |
+
+---
+
+## 10. Tillit och bolag
+
+`src/lib/pixdrift/brand.ts`: Landvex AB (Stockholm), Landvex Inc. (Houston),
+`contact@pixdrift.com`.
+
+Saknas som sidor: privacy, terms, DPA, subprocessors, security portal,
+responsible disclosure, status, accessibility statement, release history.
+
+Påstå inte ISO/SOC. De finns inte i repot.
+
+---
+
+## 11. Rekommenderad ordning (efter den här fasen)
+
+Ändra bara om ny kod motbevisar tabellen.
+
+1. Håll Capability Graph som enda katalog. Fyll REST-luckor som *ska* vara agentbara.
+2. OpenAPI ur grafen — inte en handskriven spec vid sidan av.
+3. Developer Portal: sandbox + Try-it på *befintlig* `/documentation`.
+4. SDK-generering ur kontraktet.
+5. ChatGPT Apps bara där MCP redan har ett ärligt läsverktyg och ev. säker skrivning.
+6. Design tokens som paket när två ytor annars divergerar.
+7. Publik sökgrund: locale-URL, hreflang, structured data, trust-sidor.
+   Innehåll därefter, med kvalitetsgrind.
+8. Reliability contract per tjänst + daterad Neon-restore.
+9. Extension SDK sist.
+
+---
+
+## 12. Vad den här fasen medvetet *inte* byggde
+
+- ChatGPT Apps / Apps SDK-UI
+- SDK-generatorer
+- SEO-motor / intent-pipeline / Search Console-import
+- Sandbox-tenants
+- Webhook-produkt
+- Integrationsmarketplace
+- Plugin-runtime
+- Andra DevPortal-app
+
+Det är nästa *kodflyttar*, var och en mot en cell i matrisen.

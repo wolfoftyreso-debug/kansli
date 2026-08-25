@@ -16,6 +16,8 @@ kontrakt, IdP) under självständiga produkter (ALVA, RITA, TORA, BRITT, IRMA �
 Innan du ändrar något i familjen, läs och följ:
 
 - `docs/ARCHITECTURE-CONSTITUTION.md` — styrande, nästan juridiska artiklar.
+- `docs/PLATFORM-1.0.md` — fryst plattformsmålbild (en plattform, flera produkter).
+- `docs/PLATFORM-1.0-GAP.md` — PASS/PARTIAL/MISSING mot den målbilden. Läs innan du bygger.
 - `docs/PIXDRIFT-ARKITEKTUR.md` — målarkitektur, sammanflätning, synk, sekvens.
 - `docs/REPO-INTAKE.md` — pipeline och klassificering (KEEP/MOVE/MERGE/REWRITE/
   DEPRECATE/DELETE/UNKNOWN; `UNKNOWN` utreds, gissas aldrig).
@@ -26,3 +28,15 @@ Innan du ändrar något i familjen, läs och följ:
 Kärnregler i korthet: explicit dataägande; ingen modul skriver i en annans data;
 kontrakt/events, inte delade tabeller; testad restore; audit på allt viktigt;
 AI är aldrig source of truth; automation har uttrycklig nivå (L0–L4).
+
+## Cursor Cloud specific instructions
+
+- `docs/PLATFORM-1.0-GAP.md` is the build gate. Do not start ChatGPT Apps, SDK
+  generators, SEO engines or a second DevPortal until that matrix says the
+  underlying cell is ready.
+- Products are only the ids in `@pixdrift/systems`. NORA, MOVA and SAGA are not
+  in this repository. Do not invent them.
+- Capability Graph is generated from `src/lib/mcp/tools.ts`. Do not add a second
+  handwritten catalog.
+- Standard commands: `pnpm format:check`, `pnpm lint`, `pnpm test`, `pnpm dev`.
+  Demo login (when seeded): `demo@exempelbolaget.se` / `demo-losenord-1234`.
