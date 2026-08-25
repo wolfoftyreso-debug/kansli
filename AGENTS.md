@@ -54,3 +54,8 @@ AI är aldrig source of truth; automation har uttrycklig nivå (L0–L4).
   of at least 32 characters, with `PIXDRIFT_SEED_DEMO=true`, or with
   `COOKIE_SECURE=false`. Identity does not fall back to an in-memory store
   when hardened. CSP is enforced only when hardened.
+- One Postgres. Product schemas own their tables. Customer rows carry
+  `org_ref`. Request paths pin `app.org_ref` via `tryRuntime(session.org.ref)`
+  or `runtimeForOrg`. `DATABASE_URL` is `pixdrift_app`, never the table owner.
+  Kansli intakes are house-level (`house_org_ref`), not per workshop. Do not
+  invent a second database, Redis as source of record, or sandbox tenants.

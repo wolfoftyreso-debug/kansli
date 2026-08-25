@@ -12,7 +12,7 @@ export const metadata = {
 
 export default async function EventsPage() {
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const events =
     session?.org?.ref && runtime
       ? await runtime.events.list({ orgRef: session.org.ref, limit: 50, order: "desc" })

@@ -34,7 +34,7 @@ const ALERT_STATUS: Record<string, string> = {
 
 export default async function EkonomiPage() {
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const invoices =
     session?.org?.ref && runtime ? await listInvoices(runtime.pool, session.org.ref) : [];
   const quotes =

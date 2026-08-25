@@ -106,6 +106,28 @@ Lokal + CI-övning: `pnpm db:restore-drill` (`scripts/restore-drill.sh`) dumpar
 på produktion är leverantörens väg — den är inte övad från den här repot förrän
 en person kör restore i Neon-konsolen och antecknar resultatet här.
 
+## 4b. Datalagring och flera verkstäder
+
+En Postgres (Neon). Inget Redis, ingen andra databas. Produkter äger egna
+scheman: `platform`, `kansli`, `ekonomi`, `tora`, `rita`, `britt`, `irma`,
+`tyra`, `alva`. Identity ligger i `public` och är plattformsglobal (inloggning
+måste läsa över orgar).
+
+Kundrader har `org_ref` (`pixdrift:org:<id>`). Undantag: `ekonomi.accounts`
+(gemensam kontoplan), `kansli.intakes` (husets CRM, `house_org_ref`),
+`schema_migrations`.
+
+Runtime är `pixdrift_app` (`DATABASE_URL`). Owner (`PIXDRIFT_DB_OWNER_URL`)
+äger tabellerna och kör migrering. App-rollen äger inget.
+
+Isolation: SQL filtrerar `org_ref`. Request-vägen sätter dessutom
+`app.org_ref` (`bindOrgPool` / `tryRuntime(session.org.ref)`). RLS på
+kundtabeller följer den inställningen. Tom inställning (cron, gästlänk med
+token, hus-intakes) lämnar RLS öppen så token och köer fortsätter fungera.
+Bevis: `src/lib/platform/tenancy.test.ts`.
+
+Sätt inte `DATABASE_URL` till owner-rollen. Då slår RLS inte.
+
 ## 5. Verifieringschecklista (efter Postgres + env)
 
 | Kontroll | URL/kommando | Förväntat |

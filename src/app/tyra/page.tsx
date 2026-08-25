@@ -29,7 +29,7 @@ function caseTone(status: string) {
 
 export default async function TyraPage() {
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const cases = session?.org?.ref && runtime ? await listCases(runtime.pool, session.org.ref) : [];
 
   return (

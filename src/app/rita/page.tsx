@@ -28,7 +28,7 @@ export default async function RitaPage({
   searchParams: Promise<{ status?: string }>;
 }) {
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const params = await searchParams;
   const status =
     params.status === "completed" || params.status === "blocked" || params.status === "requested"

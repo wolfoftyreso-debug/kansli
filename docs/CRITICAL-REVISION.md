@@ -141,7 +141,8 @@ Kansli: **72 → 76**. Identity: **78 → 82**.
 5. **TORA-marknaden är demo.** Bolagsprofilen är er. TED/HILMA saknas.
 6. **Permissions täcker skrivvägarna.** Inte varje GET. Inte Kansli-tasks.
 7. **Inga HTTP-tester mot `route.ts`.** Domäntester är täta. Ytan är inte
-   bevisad. Events-läckan hade fångats av en enda org-isolationstest.
+   bevisad. Två-org-isolation för faktura/uppgift/ärende ligger i
+   `src/lib/platform/tenancy.test.ts`. HTTP-ytan är fortfarande obevisad.
 8. **Backup är CI-verklig och prod-falsk** tills någon skriver en daterad
    Neon-restore i `DEPLOYMENT.md`.
 9. **Throttle är per instans.** Vercel Fluid gör in-memory till teater.

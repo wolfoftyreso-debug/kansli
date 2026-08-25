@@ -131,8 +131,8 @@ export async function notifySaleIssued(input: {
   await input.pool.query(
     `update ekonomi.sales_alert_outbox
         set status = $2, last_error = $3, provider_ref = $4
-      where id = $1`,
-    [id, status, delivered.reason, delivered.providerRef],
+      where org_ref = $1 and id = $2`,
+    [input.orgRef, id, status, delivered.reason, delivered.providerRef],
   );
   await input.events.publish({
     system: "ekonomi",

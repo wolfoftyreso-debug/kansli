@@ -23,7 +23,7 @@ const KIND_LABEL: Record<CalendarEntryView["kind"], string> = {
 
 export default async function ToraCalendarPage() {
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const company = await resolveCompany(runtime?.pool ?? null, session?.org?.ref ?? null);
   const tier = resolveViewTier({
     sessionTier: session?.org?.tier,

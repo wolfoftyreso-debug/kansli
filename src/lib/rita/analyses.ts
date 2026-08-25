@@ -80,8 +80,8 @@ export async function requestAnalysis(input: {
     await input.pool.query(
       `update rita.analyses
           set status = 'completed', result = $2::jsonb, updated_at = now()
-        where id = $1`,
-      [id, JSON.stringify(envelope)],
+        where org_ref = $1 and id = $2`,
+      [input.orgRef, id, JSON.stringify(envelope)],
     );
     const findings = findingsFromAnalysis(envelope);
     await input.events.publish({
@@ -114,8 +114,8 @@ async function fail(
   await input.pool.query(
     `update rita.analyses
         set status = 'blocked', blocked_reason = $2, updated_at = now()
-      where id = $1`,
-    [id, reason],
+      where org_ref = $1 and id = $2`,
+    [input.orgRef, id, reason],
   );
   await input.events.publish({
     system: "rita",

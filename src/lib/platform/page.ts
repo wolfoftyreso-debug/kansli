@@ -1,8 +1,8 @@
-import { getRuntime, type PlatformRuntime } from "./runtime";
+import { getRuntime, runtimeForOrg, type PlatformRuntime } from "./runtime";
 
-export function tryRuntime(): PlatformRuntime | null {
+export function tryRuntime(orgRef?: string | null): PlatformRuntime | null {
   try {
-    return getRuntime();
+    return orgRef ? runtimeForOrg(orgRef) : getRuntime();
   } catch {
     return null;
   }

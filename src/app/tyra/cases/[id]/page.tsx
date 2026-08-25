@@ -59,7 +59,7 @@ export default async function TyraCasePage({
   const { id } = await params;
   const query = await searchParams;
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const card =
     session?.org?.ref && runtime ? await getCaseWorkCard(runtime.pool, session.org.ref, id) : null;
   const timeline =

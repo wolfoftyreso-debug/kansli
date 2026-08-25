@@ -27,7 +27,7 @@ function label(state: GateState) {
 
 export default async function BeredskapPage() {
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const board = await loadFirstCustomerBoard(runtime?.pool ?? null, session?.org?.ref ?? null);
 
   return (

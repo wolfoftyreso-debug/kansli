@@ -14,7 +14,7 @@ export const metadata = {
 
 export default async function TyraCustomersPage() {
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const cards =
     session?.org?.ref && runtime ? await listCustomerCards(runtime.pool, session.org.ref) : [];
   const cases = session?.org?.ref && runtime ? await listCases(runtime.pool, session.org.ref) : [];

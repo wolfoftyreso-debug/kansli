@@ -1,6 +1,6 @@
 # PIXDRIFT PLATFORM 1.0 — inventering och luckor
 
-Datum: 2026-08-25 (säljskrivbord: kronor, ett klick, TYRA-offert → faktura).
+Datum: 2026-08-25 (datalagring: en Neon, `org_ref` + RLS, två-org-test).
 Målbild: [`PLATFORM-1.0.md`](PLATFORM-1.0.md).
 Metod: läst ur kod i det här repot. Inte ur önskelistor.
 
@@ -115,7 +115,7 @@ ingen syntetisk bevakning av login/MCP/docs.
 
 | Lager | Betyg | Vad som finns | Vad som saknas |
 | --- | --- | --- | --- |
-| 1. Platform Core | PARTIAL | Identity, org, session, `noun:verb`-behörighet, API Core, events, request-id, tunn SMS-kanal (`src/lib/platform/sms.ts`) för Ekonomi-sälj | ABAC/OPA, entitlements, billing, feature flags, notifieringskärna, hemlighetsvalv, OTel, per-tjänst SLO |
+| 1. Platform Core | PARTIAL | Identity, org, session, `noun:verb`-behörighet, API Core, events, request-id, `org_ref` + RLS när `app.org_ref` är satt, tunn SMS-kanal (`src/lib/platform/sms.ts`) för Ekonomi-sälj | ABAC/OPA, entitlements, billing, feature flags, notifieringskärna, hemlighetsvalv, OTel, per-tjänst SLO, sandbox-tenant |
 | 2. Universal Integration | PARTIAL | REST + MCP mot samma `src/lib/{produkt}`. Revolut OAuth. | OpenAPI, webhooks, SDK, service accounts, OAuth-appar för tredje part |
 | 3. Developer Platform | PARTIAL | `/documentation`, MCP-docs, MCP-explorer | Sandbox, Try-it, recipes, changelog-data, status, request replay |
 | 4. App / Agent | PARTIAL | MCP + klientinstruktioner i docs | ChatGPT Apps, Apps SDK-UI, produktappar |

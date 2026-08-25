@@ -24,7 +24,7 @@ export const metadata = {
 export default async function RitaAnalysisPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const analysis =
     session?.org?.ref && runtime ? await getAnalysis(runtime.pool, session.org.ref, id) : null;
   if (session?.org && runtime && !analysis) notFound();

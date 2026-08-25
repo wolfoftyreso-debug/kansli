@@ -2,7 +2,7 @@ import { hasPermission } from "@pixdrift/contracts";
 import { redirect } from "next/navigation";
 import { readSession, type AppSession } from "@/lib/auth/session";
 import { safeNextPath, type AppNextPath } from "@/lib/auth/next";
-import { getRuntime, type PlatformRuntime } from "./runtime";
+import { runtimeForOrg, type PlatformRuntime } from "./runtime";
 
 export type OrgActionContext = PlatformRuntime & {
   session: AppSession & { org: NonNullable<AppSession["org"]> };
@@ -18,5 +18,5 @@ export async function requireOrgAction(
   if (permission && !hasPermission(session.org.permissions ?? [], permission)) {
     throw new Error(`Saknar behörighet ${permission}.`);
   }
-  return { session: session as OrgActionContext["session"], ...getRuntime() };
+  return { session: session as OrgActionContext["session"], ...runtimeForOrg(session.org.ref) };
 }

@@ -30,7 +30,7 @@ export default async function BrittPage({
   searchParams: Promise<{ status?: string; mine?: string }>;
 }) {
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const orgRef = session?.org?.ref;
   const params = await searchParams;
   const status =

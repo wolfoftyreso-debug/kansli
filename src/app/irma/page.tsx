@@ -66,7 +66,7 @@ export default async function IrmaPage({
   searchParams: Promise<{ issued?: string; q?: string; status?: string }>;
 }) {
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const params = await searchParams;
   const query = params.q?.trim() ?? "";
   const status = parseStatusFilter(params.status);

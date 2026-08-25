@@ -22,7 +22,7 @@ const LABELS = {
 
 export default async function AnslutningarPage() {
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const slots =
     session?.org?.ref && runtime ? await listConnectorSlots(runtime.pool, session.org.ref) : [];
   const rails = railSnapshot();

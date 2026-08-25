@@ -24,7 +24,7 @@ export const metadata = {
 export default async function ToraOpportunityPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const company = await resolveCompany(runtime?.pool ?? null, session?.org?.ref ?? null);
   const tier = resolveViewTier({
     sessionTier: session?.org?.tier,

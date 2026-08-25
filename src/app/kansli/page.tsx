@@ -32,7 +32,7 @@ export default async function KansliHub({
   searchParams: Promise<{ task?: string }>;
 }) {
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const status = hubStatus();
   const highlightId = (await searchParams).task?.trim() || null;
   const events =

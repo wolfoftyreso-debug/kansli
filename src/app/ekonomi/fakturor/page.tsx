@@ -16,7 +16,7 @@ export const metadata = { title: "Fakturor — Ekonomi" };
 
 export default async function FakturorPage() {
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const invoices =
     session?.org?.ref && runtime ? await listInvoices(runtime.pool, session.org.ref) : [];
 

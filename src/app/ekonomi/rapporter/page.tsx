@@ -13,7 +13,7 @@ export const metadata = { title: "Rapporter — Ekonomi" };
 
 export default async function RapporterPage() {
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const invoices =
     session?.org?.ref && runtime ? await listInvoices(runtime.pool, session.org.ref) : [];
   const from = new Date(new Date().getUTCFullYear(), 0, 1);

@@ -4,6 +4,7 @@ import { ApiError } from "@pixdrift/api-core";
 import type pg from "pg";
 import { appDatabaseUrl } from "./env";
 import { registerSyncHandlers } from "../sync/handlers";
+import { bindOrgPool } from "./tenancy";
 
 export interface PlatformRuntime {
   pool: pg.Pool;
@@ -27,4 +28,10 @@ export function getRuntime(): PlatformRuntime {
   registerSyncHandlers(events, pool);
   runtime = { pool, events };
   return runtime;
+}
+
+/** Request-scoped runtime: product queries pin `app.org_ref` for RLS. */
+export function runtimeForOrg(orgRef: string): PlatformRuntime {
+  const base = getRuntime();
+  return { pool: bindOrgPool(base.pool, orgRef), events: base.events };
 }

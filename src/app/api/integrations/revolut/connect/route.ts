@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { hasPermission } from "@pixdrift/contracts";
 import { readSession } from "@/lib/auth/session";
 import { authConfig } from "@/lib/auth/config";
-import { getRuntime } from "@/lib/platform/runtime";
+import { runtimeForOrg } from "@/lib/platform/runtime";
 import {
   REVOLUT_STATUS_PATH,
   revolutConfigState,
@@ -43,8 +43,8 @@ export async function GET() {
   const config = revolutConfigState();
   if (!config.ready) return backToStatus("configuration");
 
-  const { pool, events } = getRuntime();
   const orgRef = session.org.ref;
+  const { pool, events } = runtimeForOrg(orgRef);
 
   await ensurePendingConnection(pool, orgRef, config.environment);
   const state = await createOAuthState(pool, {
