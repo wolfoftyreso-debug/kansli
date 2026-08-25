@@ -11,7 +11,7 @@ import { createIrmaAgreement } from "./actions";
 
 export const metadata = {
   title: "IRMA — Pixdrift",
-  description: "Digital avtalshantering. Ett flöde, koll på varje avtal.",
+  description: "Skicka ett avtal, se om det är läst och bekräftat.",
 };
 
 function expiryCopy(item: Agreement): string {

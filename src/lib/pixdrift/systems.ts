@@ -51,7 +51,7 @@ export interface PixSystem {
 }
 
 const sharedIdentityIntegration =
-  "Connects to the family through PIXDRIFT Identity: a single sign-on and a verified access token (OIDC, Authorization Code + PKCE, asymmetric JWKS verification). No shared secrets, tenant derived from the token.";
+  "Samma inloggning som de andra systemen. Ni loggar in en gång. Produkterna delar inte varandras användarlistor.";
 
 function forthcoming(no: string, title: string): SystemSection {
   return { no, title, body: [] };
@@ -62,47 +62,42 @@ export const systems: PixSystem[] = [
     index: "01",
     slug: "identity",
     name: "PIXDRIFT Identity",
-    purpose: "One identity and single sign-on across every system in the family.",
+    purpose: "En inloggning till alla system.",
     stewardship: "MANAGED_PRODUCT",
-    category: "Platform infrastructure",
+    category: "Inloggning",
     status: "Operational",
     regions: ["Europe", "United States"],
-    summary:
-      "A self-hosted identity layer: one login, verified access tokens, and a client registry that new systems join without redeploying the core.",
+    summary: "Logga in en gång. Sedan är du inne i Kansli, TORA, RITA och de andra.",
     sections: [
       {
         no: "01",
         title: "Purpose",
-        body: [
-          "Give every PIXDRIFT system one identity and one sign-on, so people move between systems without a second login and each system can trust who is calling.",
-        ],
+        body: ["En inloggning till alla system, så ni inte loggar in om och om igen."],
       },
       {
         no: "02",
         title: "Problem",
-        body: [
-          "Organizations accumulate systems, each with its own accounts and secrets. Identity fragments, access drifts, and shared secrets leak between services.",
-        ],
+        body: ["Varje system får egna konton. Folk loggar in om och om igen, och lösenord sprids."],
       },
       {
         no: "03",
         title: "System",
         body: [
-          "A self-hosted OpenID Connect provider: discovery, JWKS, authorize/login, token and userinfo endpoints, with a durable store and a rotating signing key.",
+          "Egen inloggning. Du loggar in en gång. De andra systemen litar på den inloggningen.",
         ],
       },
       {
         no: "04",
         title: "How it works",
         body: [
-          "Systems run the Authorization Code + PKCE flow and verify tokens against the provider's public keys (JWKS). A system can verify a token without ever being able to issue one.",
+          "Ett system kan kolla att du är inloggad, men inte logga in någon annan i ditt namn.",
         ],
       },
       {
         no: "05",
         title: "Architecture",
         body: [
-          "Stateless verification via published keys; a Postgres-backed store for users, organizations and the client registry; asymmetric ES256 signing with key rotation.",
+          "Användare och bolag ligger i en egen databas. Nycklar byts. Produkterna delar inte listan.",
         ],
       },
       forthcoming("06", "Applications"),
@@ -110,25 +105,23 @@ export const systems: PixSystem[] = [
         no: "07",
         title: "Integrations",
         body: [
-          "Every other PIXDRIFT system integrates here. A new system is registered as one client entry — no change to the identity core.",
+          "Alla andra system kopplar hit. Ett nytt system läggs till utan att inloggningen byggs om.",
         ],
       },
       {
         no: "08",
         title: "Security",
-        body: [
-          "PKCE, single-use authorization codes, a redirect allowlist, asymmetric tokens and per-client authentication. Secrets never travel between resource servers.",
-        ],
+        body: ["Inloggningen är en gång. Hemligheter skickas inte mellan systemen."],
       },
       {
         no: "09",
         title: "Documentation",
-        body: ["Technical reference under Documentation → Systems → Identity."],
+        body: ["Teknisk text under Dokumentation → System → Identity."],
       },
       {
         no: "10",
         title: "Availability",
-        body: ["Operational. Europe and United States."],
+        body: ["Igång. Europa och USA."],
       },
     ],
   },
@@ -136,35 +129,32 @@ export const systems: PixSystem[] = [
     index: "02",
     slug: "alva",
     name: "ALVA",
-    purpose:
-      "Guided diagnosis with a full protocol — time saved for workshop, customer and insurer.",
+    purpose: "Kundens fel, anteckningar och mätvärden. Diagnosen kommer senare.",
     stewardship: "MANAGED_PRODUCT",
-    category: "Operational software",
+    category: "Verkstad",
     status: "Development",
     regions: ["Europe"],
     summary:
-      "A guided path from the customer's words to a protocol every party can follow. The engine arrives with the ALVA repo; the nav already owns the case.",
+      "Tar emot vad kunden sa, vad ni antecknade och vad som mättes. Ställer ingen diagnos själv.",
     sections: [
       {
         no: "01",
         title: "Purpose",
         body: [
-          "Take a complaint through a guided diagnosis and leave a complete record — so the workshop stops hunting, the customer sees the same facts, and the next party does not start over.",
+          "Tar emot kundens fel, anteckningar och mätvärden. Diagnosen kopplas in senare. Systemet ställer ingen diagnos och ger inget råd.",
         ],
       },
       {
         no: "02",
         title: "Problem",
         body: [
-          "Diagnosis is often held in memory and notes. The reasoning, the measurements and the evidence are rarely captured in a way anyone can follow later.",
+          "Kundens fel sitter i huvudet och i lappar. Det som sagts och mätts går inte att följa senare.",
         ],
       },
       {
         no: "03",
         title: "System",
-        body: [
-          "A structured entity model — vehicle, work order, customer complaint, diagnosis session, diagnosis protocol — where each complaint owns its own independent diagnostic case.",
-        ],
+        body: ["Ett ärende per kundfel: anteckningar och mätvärden. Ingen diagnos från systemet."],
       },
       forthcoming("04", "How it works"),
       forthcoming("05", "Architecture"),
@@ -174,28 +164,28 @@ export const systems: PixSystem[] = [
       {
         no: "09",
         title: "Documentation",
-        body: ["In preparation. See the documentation coverage report."],
+        body: ["Skrivs när diagnosen är inkopplad."],
       },
-      { no: "10", title: "Availability", body: ["In development. Europe."] },
+      { no: "10", title: "Availability", body: ["Inte klart än. Europa."] },
     ],
   },
   {
     index: "03",
     slug: "rita",
     name: "RITA",
-    purpose: "Find tax savings sitting in the books — deductions, VAT, K10, pensions, R&D.",
+    purpose: "Letar skattebesparingar i era böcker.",
     stewardship: "MANAGED_PRODUCT",
-    category: "Verification software",
+    category: "Skatt",
     status: "Development",
     regions: ["Europe"],
     summary:
-      "Skattjakt reads the accounts against Swedish tax rules and surfaces savings opportunities. Findings stay findings — not a tax ruling.",
+      "Läser bokslutet mot svenska skatteregler och lämnar förslag att kolla. Inte skatteråd.",
     sections: [
       {
         no: "01",
         title: "Purpose",
         body: [
-          "Hunt for tax savings in the company's own records: unused deductions, VAT treatment, K10 salary requirements, pension space, R&D relief. The engine is skattjakt. Suggestions stay separate from computed numbers.",
+          "Letar skattebesparingar i era böcker: avdrag, moms och andra luckor. Förslagen är att kolla — inte skatteråd.",
         ],
       },
       forthcoming("02", "Problem"),
@@ -205,97 +195,92 @@ export const systems: PixSystem[] = [
       forthcoming("06", "Applications"),
       { no: "07", title: "Integrations", body: [sharedIdentityIntegration] },
       forthcoming("08", "Security"),
-      { no: "09", title: "Documentation", body: ["In preparation."] },
-      { no: "10", title: "Availability", body: ["In development. Europe."] },
+      { no: "09", title: "Documentation", body: ["Skrivs när mer av produkten är klar."] },
+      { no: "10", title: "Availability", body: ["Inte klart än. Europa."] },
     ],
   },
   {
     index: "04",
     slug: "tora",
     name: "TORA",
-    purpose: "A register of rights and opportunities anchored to a stated legal basis.",
+    purpose: "Vilka upphandlingar just ert bolag kan ta.",
     stewardship: "MANAGED_PRODUCT",
-    category: "Operational software",
+    category: "Upphandling",
     status: "Pilot",
     regions: ["Europe"],
     summary:
-      "Keeps rights and opportunities structured and traceable, where a right requires an explicit legal basis rather than an assumption. Separate from RITA.",
+      "Jämför bolaget mot upphandlingarna: krav, luckor, belopp, datum och nästa steg. Inte RITA.",
     sections: [
       {
         no: "01",
         title: "Purpose",
         body: [
-          "Make rights and opportunities in public procurement explicit and traceable, so a claim is backed by a stated legal basis rather than memory.",
+          "Visa vilka upphandlingar just ert bolag kan lämna anbud på — och varför. Krav, luckor och nästa steg.",
         ],
       },
       {
         no: "02",
         title: "Problem",
         body: [
-          "A company learns too late that a door was open, or spends time on a procurement it cannot bid for. The legal basis, the deadline and the recommended action live in different heads.",
+          "Bolaget lägger tid på upphandlingar de inte kan ta, eller missar dem de kan ta. Kraven, datumen och nästa steg sitter i olika huvuden.",
         ],
       },
       {
         no: "03",
         title: "System",
         body: [
-          "An opportunity engine: access, eligibility, lifecycle, scoring and recommended action, with server-side redaction by subscription tier. Not RITA — RITA verifies financial records; TORA decides whether a company may bid.",
+          "Jämför bolagsprofilen mot upphandlingarna. Visar krav, luckor, belopp och vad ni ska göra nu. RITA tittar i räkenskaperna. TORA gör det inte.",
         ],
       },
       {
         no: "04",
         title: "How it works",
         body: [
-          "A company profile is joined to a procurement graph. The engine produces a verdict, a legal basis when one exists, and a next action. Free-tier clients never receive a field they are not entitled to.",
+          "Bolaget läggs mot upphandlingarna. Ni får en bedömning och ett nästa steg, inte en juridisk slutsats.",
         ],
       },
       {
         no: "05",
         title: "Architecture",
         body: [
-          "TypeScript engine in @pixdrift/tora, served from Next.js on Vercel. Identity via PIXDRIFT Identity. Persistence on Neon Postgres (product schema owned by TORA).",
+          "TORA räknar i samma sajt. Uppgifterna är TORAs. Inloggningen är densamma som i de andra systemen.",
         ],
       },
       {
         no: "06",
         title: "Applications",
-        body: [
-          "Pilot surface at /tora on the PIXDRIFT hub. Standalone SPA remains at tora-hypbit.vercel.app.",
-        ],
+        body: ["Finns under /tora. Upphandlingarna i demon är exempel."],
       },
       { no: "07", title: "Integrations", body: [sharedIdentityIntegration] },
       {
         no: "08",
         title: "Security",
-        body: [
-          "Redaction is enforcement on the server, not a UI filter. A right requires an explicit legal basis. Demo data is labelled as such.",
-        ],
+        body: ["Bedömningen räknas på servern. Exempeldata är märkt som exempel."],
       },
       {
         no: "09",
         title: "Documentation",
-        body: ["Technical notes under Consolidation and the migration ledger."],
+        body: ["Kör TORA i navet för att se hur det fungerar."],
       },
-      { no: "10", title: "Availability", body: ["Pilot. Europe."] },
+      { no: "10", title: "Availability", body: ["På väg. Europa."] },
     ],
   },
   {
     index: "05",
     slug: "irma",
     name: "IRMA",
-    purpose: "Digital contract handling for the whole organisation — one flow, every agreement.",
+    purpose: "Skicka ett avtal, se om det är läst och bekräftat.",
     stewardship: "MANAGED_PRODUCT",
-    category: "Operational software",
+    category: "Avtal",
     status: "Development",
     regions: ["Europe"],
-    summary:
-      "Replaces the paper chase: every agreement in one flow, counterparties without an account, status you can see. The nav holds the handshake slice today.",
+    summary: "Skickar avtalet. Visar om det är öppnat, signerat eller avvisat.",
     sections: [
       {
         no: "01",
         title: "Purpose",
         body: [
-          "Digitise how an organisation issues, tracks and closes agreements so nobody hunts mail and folders for the current version. The counterparty does not need an internal login.",
+          "Skicka ett avtal med en länk. Motparten läser och bekräftar. Ni ser var avtalet är.",
         ],
       },
       forthcoming("02", "Problem"),
@@ -305,27 +290,26 @@ export const systems: PixSystem[] = [
       forthcoming("06", "Applications"),
       { no: "07", title: "Integrations", body: [sharedIdentityIntegration] },
       forthcoming("08", "Security"),
-      { no: "09", title: "Documentation", body: ["In preparation."] },
-      { no: "10", title: "Availability", body: ["In development. Europe."] },
+      { no: "09", title: "Documentation", body: ["Skrivs när mer av produkten är klar."] },
+      { no: "10", title: "Availability", body: ["Inte klart än. Europa."] },
     ],
   },
   {
     index: "06",
     slug: "britt",
     name: "BRITT",
-    purpose: "Focused operational workflow software for a specific, recurring task.",
+    purpose: "Det som hänt och behöver följas upp.",
     stewardship: "MANAGED_PRODUCT",
-    category: "Operational software",
+    category: "Uppföljning",
     status: "Development",
     regions: ["Europe"],
-    summary:
-      "A narrow tool for a recurring operational workflow that no larger system owns end to end.",
+    summary: "Samlar saker som måste följas upp. En sak i taget, med nästa steg.",
     sections: [
       {
         no: "01",
         title: "Purpose",
         body: [
-          "Own one recurring operational workflow cleanly, rather than leaving it split across spreadsheets and email.",
+          "Samlar det som redan hänt och behöver en uppföljning. Inte ett ärendesystem och inte en chatt.",
         ],
       },
       forthcoming("02", "Problem"),
@@ -335,41 +319,40 @@ export const systems: PixSystem[] = [
       forthcoming("06", "Applications"),
       { no: "07", title: "Integrations", body: [sharedIdentityIntegration] },
       forthcoming("08", "Security"),
-      { no: "09", title: "Documentation", body: ["In preparation."] },
-      { no: "10", title: "Availability", body: ["In development. Europe."] },
+      { no: "09", title: "Documentation", body: ["Skrivs när mer av produkten är klar."] },
+      { no: "10", title: "Availability", body: ["Inte klart än. Europa."] },
     ],
   },
   {
     index: "07",
     slug: "tyra",
     name: "TYRA",
-    purpose: "Modern tire-hotel administration: CRM, quotes, storage and the customer flow.",
+    purpose: "Kund, bil, hjul och vad som ska göras härnäst.",
     stewardship: "MANAGED_PRODUCT",
-    category: "Operational software",
+    category: "Däckhotell",
     status: "Development",
     regions: ["Europe"],
-    summary:
-      "One place for the hotel: who the customer is, which set is in, what to quote, what the customer sees. The nav holds the case and hub slice today.",
+    summary: "Håller ihop kund, fordon och däck. Visar när det är dags att byta eller hämta.",
     sections: [
       {
         no: "01",
         title: "Purpose",
         body: [
-          "Run a tire hotel as one operation — CRM, quote, storage and workshop card — instead of notes, SMS and a separate system for each season.",
+          "Håller ihop kund, bil och hjul, och visar vad som ska göras härnäst. Inte ett allmänt kundregister.",
         ],
       },
       {
         no: "02",
         title: "Problem",
         body: [
-          "Seasonal tire work is split across DMS notes, SMS and memory. The customer rarely sees the same facts the workshop uses.",
+          "Kund, bil och hjul sitter i lappar, SMS och huvudet. Kunden ser sällan samma sak som verkstaden.",
         ],
       },
       {
         no: "03",
         title: "System",
         body: [
-          "A first-party Pixdrift module: tyra schema, OIDC session, resolveWorkflow, hashed hub tokens. Ported from the TYRA repo domain, not from NextAuth.",
+          "Kund, fordon, ärende och en kundlänk. Offert och live-priser är inte inkopplade än.",
         ],
       },
       forthcoming("04", "How it works"),
@@ -377,41 +360,41 @@ export const systems: PixSystem[] = [
       forthcoming("06", "Applications"),
       { no: "07", title: "Integrations", body: [sharedIdentityIntegration] },
       forthcoming("08", "Security"),
-      { no: "09", title: "Documentation", body: ["Technical notes under docs/tyra."] },
-      { no: "10", title: "Availability", body: ["Pilot in the kansli nav. Europe."] },
+      { no: "09", title: "Documentation", body: ["Kör TYRA i navet för att se hur det fungerar."] },
+      { no: "10", title: "Availability", body: ["På väg. Europa."] },
     ],
   },
   {
     index: "08",
     slug: "ekonomi",
     name: "Ekonomi",
-    purpose: "One ledger for the house: invoices, VAT, and payment rails.",
+    purpose: "Fakturor, moms och hur pengarna kom in.",
     stewardship: "MANAGED_PRODUCT",
-    category: "Financial operations",
+    category: "Ekonomi",
     status: "Development",
     regions: ["Europe"],
     summary:
-      "Shared bookkeeping. Products raise receivables here. Swish, Stripe and 10-day invoices. Revolut matching when a token exists — never a fake payment.",
+      "Skriver faktura, bokför moms och matchar inbetalningar när banken är ansluten. Ingen påhittad inbetalning.",
     sections: [
       {
         no: "01",
         title: "Purpose",
         body: [
-          "Give every Pixdrift product one structured book so a tyre hotel quote, a contract fee and a workshop invoice post the same way.",
+          "Fakturor, moms och hur pengarna kom in. De andra systemen lägger sina fakturor här.",
         ],
       },
       {
         no: "02",
         title: "Problem",
         body: [
-          "Workshop money is split across DMS, Fortnox, Swish screenshots and memory. VAT and the payment do not meet.",
+          "Pengarna sitter i Fortnox, Swish-bilder och huvudet. Momsen och inbetalningen möts inte.",
         ],
       },
       {
         no: "03",
         title: "System",
         body: [
-          "A first-party schema: BAS accounts, hashed journals, invoices in öre, connector slots for Revolut and Stripe. Doctrine from Galoy Cala, runtime in this house.",
+          "Faktura i öre, moms och koppling till Stripe och Revolut. Ingen påhittad inbetalning.",
         ],
       },
       forthcoming("04", "How it works"),
@@ -419,11 +402,15 @@ export const systems: PixSystem[] = [
       forthcoming("06", "Applications"),
       { no: "07", title: "Integrations", body: [sharedIdentityIntegration] },
       forthcoming("08", "Security"),
-      { no: "09", title: "Documentation", body: ["Technical notes under docs/ekonomi."] },
+      {
+        no: "09",
+        title: "Documentation",
+        body: ["Kör Ekonomi i navet för att se hur det fungerar."],
+      },
       {
         no: "10",
         title: "Availability",
-        body: ["Foundation in the kansli nav. Europe. Rails blocked without keys."],
+        body: ["På väg. Europa. Kort och Swish kräver att de är inkopplade."],
       },
     ],
   },

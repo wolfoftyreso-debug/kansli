@@ -9,7 +9,7 @@ import { registerAlvaCase } from "./actions";
 
 export const metadata = {
   title: "ALVA — Pixdrift",
-  description: "Guidad felsökning med full dokumentation.",
+  description: "Kundens fel, anteckningar och mätvärden. Diagnosen kommer senare.",
 };
 
 export default async function AlvaPage() {
@@ -23,8 +23,8 @@ export default async function AlvaPage() {
         <p className="pd-label text-faint">PIXDRIFT / ALVA</p>
         <h1 className="text-3xl font-semibold tracking-tight">ALVA</h1>
         <p className="text-ink-soft">
-          ALVA tar er från kundens beskrivning till ett protokoll som alla kan följa. Just nu kan ni
-          registrera ärenden och fylla i fakta. Den guidade diagnosen kommer senare.
+          ALVA tar emot vad kunden sa, vad ni antecknade och vad som mättes. Diagnosen kopplas in
+          senare. Systemet ställer ingen diagnos själv.
         </p>
         <Notice>
           Diagnosen är inte inkopplad än. Ni kan fylla i ett tomt protokoll med egna uppgifter.

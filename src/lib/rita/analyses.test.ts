@@ -42,7 +42,7 @@ live("RITA requestAnalysis (live Postgres)", () => {
       if (BINARY && existsSync(BINARY)) {
         expect(analysis.blockedReason).toBe(NO_DOCUMENTS_REASON);
       } else {
-        expect(analysis.blockedReason).toMatch(/RITA_ENGINE/);
+        expect(analysis.blockedReason).toMatch(/inkopplad|inställd|RITA_ENGINE/);
       }
     } finally {
       if (previous) process.env.RITA_ENGINE_BINARY = previous;

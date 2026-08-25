@@ -10,7 +10,9 @@ import {
   FAMILY_LINKS,
   FAMILY_PRINCIPLE,
   FAMILY_STACK,
+  FAMILY_STATUS_LABEL,
   FAMILY_SYSTEMS,
+  familyPartyName,
 } from "@/lib/platform/family";
 import { hubStatus, ritaStatusLine } from "@/lib/platform/hub-status";
 
@@ -43,13 +45,67 @@ export default async function PlatformPage() {
         <h1 className="text-3xl font-semibold tracking-tight">Vad varje system gör</h1>
         <p className="text-ink-soft">{FAMILY_PRINCIPLE}</p>
         <Notice>
-          Det här är den tekniska kartan. Ett system, en databas, en gemensam händelselista. Varje
-          produkt äger sina egna uppgifter.
+          Varje system gör ett jobb. TORA tar upphandlingar. RITA tar skatt. De blandas inte.
         </Notice>
       </header>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Vad som körs just nu</h2>
+        <h2 className="text-lg font-semibold">Systemen</h2>
+        {FAMILY_SYSTEMS.map((system) => (
+          <article key={system.id} className="rounded-xl border border-line bg-surface px-4 py-4">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <h3 className="font-semibold">
+                <Link href={PATH[system.id] ?? "/platform"} className="hover:underline">
+                  {system.name}
+                </Link>
+              </h3>
+              <p className="text-xs text-faint">{FAMILY_STATUS_LABEL[system.status]}</p>
+            </div>
+            <p className="mt-2 text-sm font-medium text-ink">{system.mission}</p>
+            <p className="mt-1 text-sm text-ink-soft">{system.does}</p>
+            <p className="mt-2 text-sm text-muted">{system.doesNot}</p>
+          </article>
+        ))}
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-semibold">Hur de hänger ihop</h2>
+        <ul className="flex flex-col gap-2">
+          {FAMILY_LINKS.map((link) => (
+            <li
+              key={`${link.from}-${link.via}`}
+              className="rounded-xl border border-line bg-surface px-4 py-3"
+            >
+              <p className="text-sm font-medium">
+                {familyPartyName(link.from)} → {familyPartyName(link.to)}
+              </p>
+              <p className="mt-1 text-sm text-ink-soft">{link.meaning}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-semibold">Fler system</h2>
+        <p className="text-sm text-ink-soft">{FAMILY_INCOMING}</p>
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-semibold">Väntar på att kopplas in</h2>
+        <ul className="flex flex-col gap-2">
+          {FAMILY_BLOCKED.map((item) => (
+            <li
+              key={item.id}
+              className="rounded-xl border border-line bg-surface px-4 py-3 text-sm text-ink-soft"
+            >
+              {item.need}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-semibold">Teknik — för den som sköter driften</h2>
         <p className="font-mono text-xs text-faint">
           Postgres {status.database}
           {" · "}
@@ -88,63 +144,6 @@ export default async function PlatformPage() {
             <span className="font-mono">VERCEL_OIDC_TOKEN</span> på Vercel.
           </p>
         ) : null}
-      </section>
-
-      <section className="flex flex-col gap-3">
-        {FAMILY_SYSTEMS.map((system) => (
-          <article key={system.id} className="rounded-xl border border-line bg-surface px-4 py-4">
-            <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <h2 className="font-semibold">
-                <Link href={PATH[system.id] ?? "/platform"} className="hover:underline">
-                  {system.name}
-                </Link>
-              </h2>
-              <p className="font-mono text-xs text-faint">{system.status}</p>
-            </div>
-            <p className="mt-2 text-sm font-medium text-ink">{system.mission}</p>
-            <p className="mt-1 text-sm text-ink-soft">{system.question}</p>
-            <p className="mt-2 text-sm text-ink-soft">I navet: {system.does}</p>
-            <p className="mt-2 text-sm text-muted">{system.doesNot}</p>
-            <p className="mt-3 font-mono text-xs text-faint">äger {system.owns}</p>
-          </article>
-        ))}
-      </section>
-
-      <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Hur de hänger ihop</h2>
-        <ul className="flex flex-col gap-2">
-          {FAMILY_LINKS.map((link) => (
-            <li
-              key={`${link.from}-${link.via}`}
-              className="rounded-xl border border-line bg-surface px-4 py-3"
-            >
-              <p className="font-mono text-xs text-accent">{link.via}</p>
-              <p className="mt-1 text-sm font-medium">
-                {link.from} → {link.to}
-              </p>
-              <p className="mt-1 text-sm text-ink-soft">{link.meaning}</p>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Fler moduler</h2>
-        <p className="text-sm text-ink-soft">{FAMILY_INCOMING}</p>
-      </section>
-
-      <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Väntar på underlag utanför det här repot</h2>
-        <ul className="flex flex-col gap-2">
-          {FAMILY_BLOCKED.map((item) => (
-            <li
-              key={item.id}
-              className="rounded-xl border border-line bg-surface px-4 py-3 text-sm text-ink-soft"
-            >
-              {item.need}
-            </li>
-          ))}
-        </ul>
       </section>
 
       <p className="text-sm text-faint">

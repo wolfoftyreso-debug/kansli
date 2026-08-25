@@ -15,6 +15,14 @@ describe("family map", () => {
       expect(system.mission.length).toBeGreaterThan(8);
     }
     expect(rita.mission.toLowerCase()).toMatch(/skatte/);
+    for (const system of FAMILY_SYSTEMS) {
+      expect(system.mission).not.toMatch(/hus|fabrik|Receptionen|CRM|legal basis/i);
+      expect(system.question).not.toMatch(/hus|fabrik|Receptionen/i);
+    }
+    expect(tora.mission.toLowerCase()).toMatch(/upphandling/);
+    expect(FAMILY_SYSTEMS.find((s) => s.id === "britt")!.mission.toLowerCase()).toMatch(
+      /följas upp/,
+    );
   });
 
   it("describes the stack this repo actually runs", () => {

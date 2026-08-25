@@ -17,7 +17,7 @@ import {
 
 export const metadata = {
   title: "BRITT — Pixdrift",
-  description: "Operativa observationer och uppföljning.",
+  description: "Det som hänt och behöver följas upp.",
 };
 
 const kr = (value: number) =>

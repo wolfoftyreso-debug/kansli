@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Ekonomi — Pixdrift",
-  description: "Gemensam bok och betalspår. Inte Fortnox. Inte påhittade inbetalningar.",
+  description: "Fakturor, moms och hur pengarna kom in.",
 };
 
 export default async function EkonomiPage() {
@@ -32,9 +32,9 @@ export default async function EkonomiPage() {
         <p className="pd-label text-faint">PIXDRIFT / Ekonomi</p>
         <h1 className="text-3xl font-semibold tracking-tight">Vad är bokat?</h1>
         <p className="max-w-xl text-ink-soft">
-          En bokföring för hela huset. TYRA, IRMA och de andra lägger sina fakturor här. Kunden kan
-          betala med Swish, Stripe eller faktura på 10 dagar. Anslut Revolut en gång, så hämtas
-          kontoutdrag och betalningar matchas automatiskt.
+          Fakturor, moms och hur pengarna kom in. TYRA, IRMA och de andra lägger sina fakturor här.
+          Kunden kan betala med Swish, Stripe eller faktura på 10 dagar. Anslut Revolut en gång, så
+          hämtas kontoutdrag och betalningar matchas.
         </p>
       </header>
 

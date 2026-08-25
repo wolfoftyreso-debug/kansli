@@ -5,9 +5,8 @@ import { SectionHeading } from "@/components/site/SectionHeading";
 import { SystemCard } from "@/components/site/SystemCard";
 
 export const metadata: Metadata = {
-  title: "Systems — PIXDRIFT",
-  description:
-    "The catalog of software developed and operated under PIXDRIFT — purpose-built for the operational gaps between larger systems.",
+  title: "System — PIXDRIFT",
+  description: "Vad varje system gör. Ett jobb per system. Samma inloggning.",
 };
 
 export default function SystemsPage() {
@@ -15,9 +14,9 @@ export default function SystemsPage() {
     <Container className="py-20 lg:py-28">
       <SectionHeading
         as="h1"
-        eyebrow="Systems"
-        title="An engineered product portfolio."
-        intro="Each system solves a clearly defined problem between larger platforms, coexists with existing infrastructure, and shares one identity across the family."
+        eyebrow="System"
+        title="Vad varje system gör."
+        intro="Ett jobb per system. TORA tar upphandlingar. RITA tar skatt. Samma inloggning överallt."
       />
       <div className="mt-14 grid grid-cols-1 gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
         {systems.map((s) => (

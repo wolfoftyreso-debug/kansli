@@ -16,7 +16,7 @@ import { createTyraCase } from "./actions";
 
 export const metadata = {
   title: "TYRA — Pixdrift",
-  description: "Däckhotell: CRM, ärende, kundhub. Offert och lager byggs i samma pärm.",
+  description: "Kund, bil, hjul och vad som ska göras härnäst.",
 };
 
 function caseTone(status: string) {
@@ -37,8 +37,8 @@ export default async function TyraPage() {
         <p className="pd-label text-faint">TYRA</p>
         <h1 className="max-w-xl text-4xl font-semibold tracking-tight">Vilket fordon ska in?</h1>
         <p className="max-w-xl text-ink-soft">
-          TYRA håller ordning på däckhotellet: kunder, fordon, ärenden och nästa steg. Offert och
-          lager är era egna siffror — inga live-priser än.
+          TYRA håller ihop kund, bil och hjul, och visar vad som ska göras härnäst. Offert och lager
+          är era egna siffror — inga live-priser än.
         </p>
         <p className="text-sm">
           <Link

@@ -60,7 +60,8 @@ export default async function RitaPage({
 
       {!session?.org ? (
         <SignInGate next="/rita" title="Logga in för att begära analys">
-          Analysen sparas i RITA. BRITT får en lapp när en analys blir klar eller stoppas.
+          Analysen sparas i RITA. BRITT får något att följa upp när en analys blir klar eller
+          stoppas.
         </SignInGate>
       ) : (
         <>

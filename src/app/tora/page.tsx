@@ -14,7 +14,7 @@ import { publishToraMarket, saveToraProfile } from "./actions";
 
 export const metadata = {
   title: "TORA — Pixdrift",
-  description: "Tender Opportunity and Requirement Analysis.",
+  description: "Vilka upphandlingar just ert bolag kan ta.",
 };
 
 export default async function ToraPage() {

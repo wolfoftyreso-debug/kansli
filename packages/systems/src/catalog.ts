@@ -75,7 +75,7 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
   {
     id: "identity",
     name: "PIXDRIFT Identity",
-    purpose: "One login and verified tokens for every system.",
+    purpose: "En inloggning till alla system.",
     status: "operational",
     schema: null,
     basePath: "/idp",
@@ -87,7 +87,7 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
   {
     id: "kansli",
     name: "Kansli",
-    purpose: "The hub: identity session, platform APIs, and internal tasks.",
+    purpose: "Startsidan. Uppgifter och vägen in.",
     status: "operational",
     schema: "kansli",
     basePath: "/kansli",
@@ -104,7 +104,7 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
   {
     id: "ekonomi",
     name: "Ekonomi",
-    purpose: "Shared ledger: invoices, VAT, and payment rails for every product.",
+    purpose: "Fakturor, moms och hur pengarna kom in.",
     status: "pilot",
     schema: "ekonomi",
     basePath: "/ekonomi",
@@ -129,7 +129,7 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
   {
     id: "tora",
     name: "TORA",
-    purpose: "Public-procurement rights, eligibility and recommended action.",
+    purpose: "Vilka upphandlingar just ert bolag kan ta.",
     status: "pilot",
     schema: "tora",
     basePath: "/tora",
@@ -141,7 +141,7 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
   {
     id: "rita",
     name: "RITA",
-    purpose: "Find tax savings in the books. The engine is skattjakt.",
+    purpose: "Letar skattebesparingar i era böcker.",
     status: "pilot",
     schema: "rita",
     basePath: "/rita",
@@ -153,7 +153,7 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
   {
     id: "britt",
     name: "BRITT",
-    purpose: "Operational observations and follow-up.",
+    purpose: "Det som hänt och behöver följas upp.",
     status: "pilot",
     schema: "britt",
     basePath: "/britt",
@@ -165,7 +165,7 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
   {
     id: "irma",
     name: "IRMA",
-    purpose: "Digital contract handling: one flow, every agreement, no paper chase.",
+    purpose: "Skicka ett avtal, se om det är läst och bekräftat.",
     status: "pilot",
     schema: "irma",
     basePath: "/irma",
@@ -190,7 +190,7 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
   {
     id: "tyra",
     name: "TYRA",
-    purpose: "Tire-hotel administration: CRM, quotes, storage and the work card.",
+    purpose: "Kund, bil, hjul och vad som ska göras härnäst.",
     status: "pilot",
     schema: "tyra",
     basePath: "/tyra",
@@ -208,7 +208,7 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
   {
     id: "alva",
     name: "ALVA",
-    purpose: "Guided vehicle diagnosis and a protocol every party can follow.",
+    purpose: "Kundens fel, anteckningar och mätvärden. Diagnosen kommer senare.",
     status: "deferred",
     schema: "alva",
     basePath: "/alva",

@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Kansli — Pixdrift",
-  description: "Navet: identitet, uppgifter och ingång till familjen.",
+  description: "Startsidan. Uppgifter och vägen in.",
 };
 
 const HREF: Record<string, string> = {
@@ -100,7 +100,7 @@ export default async function KansliHub({
                   className="rounded-xl border border-line bg-surface px-4 py-3 hover:border-line-strong"
                 >
                   <p className="font-medium">{system.name}</p>
-                  <p className="mt-1 text-sm text-ink-soft">{system.question}</p>
+                  <p className="mt-1 text-sm text-ink-soft">{system.mission}</p>
                 </Link>
               ))}
               <Link
@@ -134,7 +134,7 @@ export default async function KansliHub({
           ) : null}
 
           <Notice>
-            När en uppgift skapas får BRITT en observation. Det är samma hus, två pärmar.
+            När en uppgift skapas får BRITT en sak att följa upp. Kansli äger fortfarande uppgiften.
           </Notice>
           <TaskBoard highlightId={highlightId} />
         </>
