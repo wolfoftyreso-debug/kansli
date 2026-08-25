@@ -25,6 +25,7 @@ tomorrow's platform unnecessarily difficult.
 | --- | --- | --- |
 | PIXDRIFT Product Registry | The systems catalog (`systems.ts`) | `/systems` |
 | PIXDRIFT Documentation | Structured docs + terminology | `/documentation` |
+| PIXDRIFT Capability Graph | Generated from the MCP registry | `/documentation/capabilities` |
 | PIXDRIFT Identity | SSO / OIDC provider (operational) | `/systems/identity`, `/idp` |
 
 Authenticated hub (kansli) lives at `/kansli`; the IdP is co-located at `/idp`.
@@ -34,7 +35,8 @@ Authenticated hub (kansli) lives at `/kansli`; the IdP is co-located at `/idp`.
 Account, Organization, Status, Billing, Support, Notifications, Permissions,
 API, Open Source. Defined in `src/lib/pixdrift/platform.ts` as `planned` so
 navigation, data and routing can grow into them deliberately. Developer is
-`present` at `/documentation/mcp`.
+`present` at `/documentation/mcp`. Capability Graph is `present` at
+`/documentation/capabilities`.
 
 ## How growth happens without a rewrite
 

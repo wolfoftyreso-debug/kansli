@@ -37,9 +37,15 @@ export default function DocumentationPage() {
         <p className="mt-2 max-w-2xl text-ink-soft">
           Agents use MCP. Applications use REST. Both call the same domain services.
         </p>
-        <p className="mt-4">
+        <p className="mt-4 flex flex-wrap gap-4">
           <Link href="/documentation/mcp" className="underline decoration-line underline-offset-4">
             MCP documentation
+          </Link>
+          <Link
+            href="/documentation/capabilities"
+            className="underline decoration-line underline-offset-4"
+          >
+            Capability Graph
           </Link>
         </p>
       </div>

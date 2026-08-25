@@ -1,8 +1,11 @@
 # Pixdrift-plattformen — kodinventering
 
 Vad som faktiskt ligger i `kansli` i dag. Målbilden står i
-`PIXDRIFT-ARKITEKTUR.md`. Driftskartan står i `FAMILY.md`.
+`PIXDRIFT-ARKITEKTUR.md` och den frysta plattformskonstitutionen i
+`PLATFORM-1.0.md`. Luckor mot den: `PLATFORM-1.0-GAP.md`.
+Driftskartan står i `FAMILY.md`.
 Modulkontraktet — id, schema, UI, API, events — är `@pixdrift/systems`.
+Capability Graph (härledd ur MCP-registret): `src/lib/platform/capability-graph.ts`.
 
 CI kör format, lint, typecheck (app + paket + adaptrar), test mot Postgres och
 build. En svit som saknar test-DB hoppas över, den hoppas inte över fel.
