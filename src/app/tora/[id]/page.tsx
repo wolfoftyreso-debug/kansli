@@ -87,8 +87,8 @@ export default async function ToraOpportunityPage({ params }: { params: Promise<
       <QuestionsBlock detail={detail} />
 
       <Notice>
-        Nivå {tier}. Processguide, handlingar, hur ni överklagar och frågor är inte betalvägg.
-        Datum och belopp följer nivån.
+        Nivå {tier}. Processguide, handlingar, hur ni överklagar och frågor är inte betalvägg. Datum
+        och belopp följer nivån.
       </Notice>
     </AppShell>
   );
