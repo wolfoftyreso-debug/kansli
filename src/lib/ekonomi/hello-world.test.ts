@@ -27,6 +27,25 @@ live("ekonomi hello-world (live Postgres)", () => {
     const orgRef = `pixdrift:org:ekonomi-hello-${Date.now()}`;
 
     expect(CONNECTORS).not.toContain("visma");
+    await expect(
+      createDraftInvoice({
+        pool,
+        events,
+        orgRef,
+        actorRef: "user-hello",
+        customerName: "Bilia Landvetter",
+        lines: [
+          {
+            description: "Bok 6 procent",
+            quantity: 1,
+            unitNetOre: 1000,
+            vatRateBps: 600,
+            kind: "service",
+          },
+        ],
+        requestId: "hello-vat6",
+      }),
+    ).rejects.toThrow(/12 eller 25/);
     const emptyEnv = { NODE_ENV: "test" } as NodeJS.ProcessEnv;
     expect(railSnapshot(emptyEnv).stripe.offerable).toBe(false);
     expect(railSnapshot(emptyEnv).swish.offerable).toBe(false);

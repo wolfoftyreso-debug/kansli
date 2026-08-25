@@ -110,6 +110,7 @@ export function buildLines(raw: InvoiceLineInput[]): InvoiceLine[] {
       unitNetOre: line.unitNetOre,
       vatRateBps: line.vatRateBps,
     });
+    salesAccount(line.kind, line.vatRateBps);
     return {
       id: randomUUID(),
       description,

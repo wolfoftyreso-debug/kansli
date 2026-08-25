@@ -83,8 +83,6 @@ export default async function FakturorPage() {
                 >
                   <option value="2500">{vatLabel(2500)}</option>
                   <option value="1200">{vatLabel(1200)}</option>
-                  <option value="600">{vatLabel(600)}</option>
-                  <option value="0">{vatLabel(0)}</option>
                 </select>
               </label>
               <label className="flex flex-col gap-1">
@@ -99,7 +97,10 @@ export default async function FakturorPage() {
                 </select>
               </label>
             </div>
-            <Notice>Belopp i öre. 10 000 = 100 kr. Inga kommatecken.</Notice>
+            <Notice>
+              Belopp i öre. 10 000 = 100 kr. Inga kommatecken. Moms 6 % och 0 % går inte att boka än
+              — boken har inte de kontona.
+            </Notice>
             <Submit>Spara utkast</Submit>
           </form>
         </>
