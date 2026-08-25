@@ -1,0 +1,61 @@
+{
+  "name": "kansli",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "dev:idp": "pnpm --filter @pixdrift/identity start",
+    "onboard": "pnpm --filter @pixdrift/identity onboard --",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "typecheck:packages": "pnpm -r --filter \"./packages/*\" typecheck",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "doc:gap": "pnpm --filter @pixdrift/doc-intel gap-report",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "db:backup": "bash scripts/backup-postgres.sh",
+    "db:restore-drill": "bash scripts/restore-drill.sh"
+  },
+  "dependencies": {
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/formbody": "^8.0.2",
+    "@pixdrift/ai-core": "workspace:*",
+    "@pixdrift/api-core": "workspace:*",
+    "@pixdrift/auth-client": "workspace:*",
+    "@pixdrift/auth-core": "workspace:*",
+    "@pixdrift/contracts": "workspace:*",
+    "@pixdrift/db": "workspace:*",
+    "@pixdrift/events": "workspace:*",
+    "@pixdrift/identity": "workspace:*",
+    "@pixdrift/rita-engine": "workspace:*",
+    "@pixdrift/systems": "workspace:*",
+    "@pixdrift/tora": "workspace:*",
+    "fastify": "^5.2.1",
+    "jose": "^6.0.11",
+    "next": "16.3.2",
+    "pg": "^8.13.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/pg": "^8.11.10",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.2",
+    "prettier": "^3.6.2",
+    "tailwindcss": "^4",
+    "tsx": "^4.20.7",
+    "typescript": "^5",
+    "vitest": "^3.2.4"
+  },
+  "packageManager": "pnpm@10.33.3"
+}

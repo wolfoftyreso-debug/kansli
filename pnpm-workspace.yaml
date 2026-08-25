@@ -1,0 +1,8 @@
+packages:
+  - "packages/*"
+  - "integrations/*"
+onlyBuiltDependencies:
+  - esbuild
+ignoredBuiltDependencies:
+  - sharp
+  - unrs-resolver

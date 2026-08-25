@@ -1,0 +1,121 @@
+{
+  "generatedAt": "2026-08-22",
+  "records": [
+    {
+      "capabilityId": "platform.idp.discovery",
+      "status": "PARTIALLY_DOCUMENTED",
+      "articleIds": ["docs/INVENTORY.md", "docs/DEPLOYMENT.md"],
+      "notes": "Developer docs only; no end-user handbook article or contextual help yet."
+    },
+    {
+      "capabilityId": "platform.idp.jwks",
+      "status": "PARTIALLY_DOCUMENTED",
+      "articleIds": ["docs/INVENTORY.md", "docs/DEPLOYMENT.md"],
+      "notes": "Developer docs only."
+    },
+    {
+      "capabilityId": "platform.idp.authorize-login",
+      "status": "PARTIALLY_DOCUMENTED",
+      "articleIds": ["docs/INVENTORY.md"],
+      "notes": "Developer docs only."
+    },
+    {
+      "capabilityId": "platform.idp.token",
+      "status": "PARTIALLY_DOCUMENTED",
+      "articleIds": ["docs/INVENTORY.md"],
+      "notes": "Developer docs only."
+    },
+    {
+      "capabilityId": "platform.idp.userinfo",
+      "status": "PARTIALLY_DOCUMENTED",
+      "articleIds": ["docs/INVENTORY.md"],
+      "notes": "Developer docs only."
+    },
+    {
+      "capabilityId": "platform.idp.logout",
+      "status": "PARTIALLY_DOCUMENTED",
+      "articleIds": ["docs/INVENTORY.md"],
+      "notes": "Developer docs only."
+    },
+    {
+      "capabilityId": "platform.idp.postgres-store",
+      "status": "PARTIALLY_DOCUMENTED",
+      "articleIds": ["docs/DEPLOYMENT.md", "packages/identity/README.md"],
+      "notes": "Developer/ops docs."
+    },
+    {
+      "capabilityId": "platform.idp.onboarding-cli",
+      "status": "PARTIALLY_DOCUMENTED",
+      "articleIds": ["docs/INVENTORY.md", "integrations/README.md"],
+      "notes": "Developer docs only."
+    },
+    {
+      "capabilityId": "platform.kansli.landing-login-gate",
+      "status": "UNDOCUMENTED"
+    },
+    {
+      "capabilityId": "platform.kansli.sso-login",
+      "status": "PARTIALLY_DOCUMENTED",
+      "articleIds": ["docs/DEPLOYMENT.md"],
+      "notes": "Developer/ops docs; no end-user article."
+    },
+    {
+      "capabilityId": "platform.kansli.taskboard",
+      "status": "UNDOCUMENTED"
+    },
+    {
+      "capabilityId": "platform.kansli.logout",
+      "status": "UNDOCUMENTED"
+    },
+    {
+      "capabilityId": "platform.kansli.idp-mount",
+      "status": "PARTIALLY_DOCUMENTED",
+      "articleIds": ["docs/DEPLOYMENT.md"],
+      "notes": "Decision + env documented for ops."
+    },
+    {
+      "capabilityId": "platform.ai-core.router",
+      "status": "PARTIALLY_DOCUMENTED",
+      "articleIds": ["docs/AI-PROVIDERS.md"],
+      "notes": "Developer docs; flagship + Claude-first failover documented."
+    },
+    {
+      "capabilityId": "platform.contracts",
+      "status": "PARTIALLY_DOCUMENTED",
+      "articleIds": ["docs/INVENTORY.md", "packages/contracts/src/index.ts"],
+      "notes": "Documented in source header + inventory."
+    },
+    {
+      "capabilityId": "platform.auth-core",
+      "status": "PARTIALLY_DOCUMENTED",
+      "articleIds": ["docs/INVENTORY.md"],
+      "notes": "Developer docs only."
+    },
+    {
+      "capabilityId": "integration.alva.token-verifier",
+      "status": "PARTIALLY_DOCUMENTED",
+      "articleIds": ["integrations/alva/README.md", "integrations/README.md"],
+      "notes": "Integration adapter documented for developers; not an end-user handbook."
+    },
+    {
+      "capabilityId": "integration.rita.oidc-plugin",
+      "status": "PARTIALLY_DOCUMENTED",
+      "articleIds": ["integrations/README.md"]
+    },
+    {
+      "capabilityId": "integration.irma.oidc-adapter",
+      "status": "PARTIALLY_DOCUMENTED",
+      "articleIds": ["integrations/README.md"]
+    },
+    {
+      "capabilityId": "integration.britt.bff-adapter",
+      "status": "PARTIALLY_DOCUMENTED",
+      "articleIds": ["integrations/README.md"]
+    },
+    {
+      "capabilityId": "integration.tora.public-pkce",
+      "status": "PARTIALLY_DOCUMENTED",
+      "articleIds": ["integrations/README.md"]
+    }
+  ]
+}

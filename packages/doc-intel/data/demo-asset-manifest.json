@@ -1,0 +1,5 @@
+{
+  "generatedAt": "2026-08-23",
+  "note": "Tomt med avsikt. Inga verifierade snapshots finns: ALVA-produkten/sandboxen ingår inte i detta repo, så inga verkliga UI-tillstånd kan fångas härifrån. När appen är tillgänglig fylls detta av capture-pipelinen (varje asset bär appVersion, commit, route, fixture, viewport, QA-status m.m.). Fabricerade ALVA-skärmar läggs aldrig här.",
+  "assets": []
+}

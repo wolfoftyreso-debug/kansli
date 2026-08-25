@@ -1,0 +1,27 @@
+{
+  "name": "@pixdrift/rita-adapter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Fastify plugin that logs a RITA user in via Pixdrift OIDC (Authorization Code + PKCE) and maps the identity to a RITA session + tenant.",
+  "exports": {
+    ".": {
+      "types": "./src/pixdrift-oidc.ts",
+      "import": "./src/pixdrift-oidc.ts"
+    }
+  },
+  "main": "src/pixdrift-oidc.ts",
+  "types": "src/pixdrift-oidc.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fastify/cookie": "^11.0.2",
+    "@pixdrift/auth-client": "workspace:*",
+    "@pixdrift/contracts": "workspace:*",
+    "fastify": "^5.2.1"
+  },
+  "devDependencies": {
+    "@pixdrift/identity": "workspace:*"
+  }
+}

@@ -1,0 +1,179 @@
+//! # cala-ledger
+//!
+//! This crate provides a set of primitives for implementing an SQL-compatible
+//! double-entry accounting system. This system is engineered specifically is
+//! for dealing with money and building financial products.
+//!
+//! Visit the [website of the Cala project](https://cala.sh) for more info and
+//! tutorials.
+//!
+//! ## Quick Start
+//!
+//! Here is how to initialize a ledger create a primitive template and post a transaction.
+//! This is a toy example that brings all pieces together end-to-end.
+//! Not recommended for real use.
+//! ```rust
+//! use cala_ledger::{account::*, journal::*, tx_template::*, *};
+//! use rust_decimal::Decimal;
+//! use uuid::uuid;
+//!
+//! async fn init_cala(journal_id: JournalId) -> anyhow::Result<CalaLedger, anyhow::Error> {
+//!     let pg_con = std::env::var("PG_CON")
+//!         .unwrap_or_else(|_| "postgres://user:password@localhost:5432/pg".to_string());
+//!     let pool = sqlx::PgPool::connect(&pg_con).await?;
+//!     // The caller owns the `Jobs` and drives the EC rollup by polling it.
+//!     let mut jobs = job::Jobs::init(
+//!         job::JobSvcConfig::builder()
+//!             .pool(pool.clone())
+//!             .build()
+//!             .map_err(anyhow::Error::msg)?,
+//!     )
+//!     .await?;
+//!     let cala_config = CalaLedgerConfig::builder()
+//!         .pool(pool)
+//!         // .exec_migrations(true) # commented out for execution in CI
+//!         .build()?;
+//!     let cala = CalaLedger::init(cala_config, &mut jobs).await?;
+//!
+//!     // Initialize the journal - all entities are constructed via builders
+//!     let new_journal = NewJournal::builder()
+//!         .id(journal_id)
+//!         .name("Ledger")
+//!         .build()
+//!         .expect("Couldn't build NewJournal");
+//!     let _ = cala.journals().create(new_journal).await;
+//!
+//!     // Initialize an income omnibus account
+//!     let main_account_id = uuid!("00000000-0000-0000-0000-000000000001");
+//!     let new_account = NewAccount::builder()
+//!         .id(main_account_id)
+//!         .name("Income")
+//!         .code("Income")
+//!         .build()?;
+//!     cala.accounts().create(new_account).await?;
+//!
+//!     // Create the trivial 'income' template
+//!     let params = vec![
+//!         NewParamDefinition::builder()
+//!             .name("sender_account_id")
+//!             .r#type(ParamDataType::Uuid)
+//!             .build()?,
+//!         NewParamDefinition::builder()
+//!             .name("units")
+//!             .r#type(ParamDataType::Decimal)
+//!             .build()?,
+//!     ];
+//!
+//!     let entries = vec![
+//!         NewTxTemplateEntry::builder()
+//!             .entry_type("'INCOME_DR'")
+//!             .account_id("params.sender_account_id")
+//!             .layer("SETTLED")
+//!             .direction("DEBIT")
+//!             .units("params.units")
+//!             .currency("'BTC'")
+//!             .build()?,
+//!         NewTxTemplateEntry::builder()
+//!             .entry_type("'INCOME_CR'")
+//!             .account_id(format!("uuid('{}')", main_account_id))
+//!             .layer("SETTLED")
+//!             .direction("CREDIT")
+//!             .units("params.units")
+//!             .currency("'BTC'")
+//!             .build()?,
+//!     ];
+//!
+//!     let tx_code = "GENERAL_INCOME";
+//!     let new_template = NewTxTemplate::builder()
+//!         .id(uuid::Uuid::now_v7())
+//!         .code(tx_code)
+//!         .params(params)
+//!         .transaction(
+//!             NewTxTemplateTransaction::builder()
+//!                 .effective("date()")
+//!                 .journal_id(format!("uuid('{}')", journal_id))
+//!                 .build()?,
+//!         )
+//!         .entries(entries)
+//!         .build()?;
+//!
+//!     cala.tx_templates().create(new_template).await?;
+//!     Ok(cala)
+//! }
+//!
+//! #[tokio::main]
+//! async fn main() -> anyhow::Result<()> {
+//!     let journal_id = JournalId::from(uuid!("00000000-0000-0000-0000-000000000001"));
+//!     let cala = init_cala(journal_id).await?;
+//!     // The account that is sending to the general income account
+//!     let sender_account_id = AccountId::new();
+//!     let sender_account = NewAccount::builder()
+//!         .id(sender_account_id)
+//!         .name(format!("Sender-{}", sender_account_id))
+//!         .code(format!("Sender-{}", sender_account_id))
+//!         .build()?;
+//!     cala.accounts().create(sender_account).await?;
+//!     // Prepare the input parameters that the template requires
+//!     let mut params = Params::new();
+//!     params.insert("sender_account_id", sender_account_id);
+//!     params.insert("units", Decimal::ONE);
+//!     // Create the transaction via the template
+//!     cala.post_transaction(TransactionId::new(), "GENERAL_INCOME", params)
+//!         .await?;
+//!
+//!     let account_balance = cala
+//!         .balances()
+//!         .find(journal_id, sender_account_id, "BTC".parse()?)
+//!         .await?;
+//!
+//!     let expected_balance = Decimal::new(-1, 0); // Define the expected balance
+//!     assert_eq!(account_balance.settled(), expected_balance);
+//!     Ok(())
+//! }
+//! ```
+
+#![cfg_attr(feature = "fail-on-warnings", deny(warnings))]
+#![cfg_attr(feature = "fail-on-warnings", deny(clippy::all))]
+
+mod account_set_member;
+mod cel_context;
+mod ec_rollup;
+mod param;
+
+pub mod account;
+pub mod account_set;
+pub mod balance;
+pub mod entry;
+pub mod journal;
+pub mod migrate;
+pub mod posting;
+pub mod transaction;
+pub mod tx_template;
+pub mod velocity;
+
+pub use es_entity;
+// Re-exported so consumers can pass a `job::Jobs` of the same `job` version
+// cala-ledger links into `CalaLedger::init` for EC-rollup registration.
+pub use job;
+
+mod ledger;
+pub mod outbox;
+
+pub use ec_rollup::EcRollupStatus;
+pub use ledger::*;
+
+pub mod primitives {
+    pub use cala_types::primitives::*;
+}
+pub use primitives::*;
+
+/// Internal fuzz harnesses. Exposed only under the `fuzz` feature so the
+/// out-of-tree cargo-fuzz crate (`fuzz/`) can drive logic that is otherwise
+/// `pub(crate)`. Not part of the public API; no stability guarantees.
+#[cfg(feature = "fuzz")]
+#[doc(hidden)]
+pub mod fuzz {
+    pub use crate::balance::fuzz_recalculate as effective_balance;
+    pub use crate::ec_rollup::fuzz_batch as ec_rollup_batch;
+    pub use crate::velocity::fuzz_enforce as velocity_enforce;
+}

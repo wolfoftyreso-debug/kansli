@@ -1,0 +1,15 @@
+{
+  "name": "@pixdrift/tora-adapter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "TORA is OIDC-native; wiring is configuration. This package proves the Pixdrift IdP emits a token that satisfies TORA's resource-server contract (sub, tenant, tier, scope).",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@pixdrift/auth-client": "workspace:*",
+    "@pixdrift/identity": "workspace:*",
+    "jose": "^6.0.11"
+  }
+}

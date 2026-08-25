@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="sv">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Så här fungerar Pixdrift</title>
+    <style>
+      :root {
+        --paper: #fbfbf9;
+        --ink: #101317;
+        --soft: #363b42;
+        --line: #cfcec8;
+        --accent: #1f4b8f;
+        --surface: #ffffff;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 22px;
+        line-height: 1.45;
+      }
+      main {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 40px 24px 80px;
+      }
+      h1 {
+        font-size: 42px;
+        line-height: 1.15;
+        margin: 0 0 12px;
+      }
+      .lead {
+        font-size: 24px;
+        color: var(--soft);
+        margin: 0 0 36px;
+      }
+      .step {
+        background: var(--surface);
+        border: 2px solid var(--ink);
+        padding: 22px 24px;
+        margin: 0;
+      }
+      .arrow {
+        text-align: center;
+        font-size: 36px;
+        color: var(--accent);
+        padding: 8px 0;
+        font-family: sans-serif;
+      }
+      .num {
+        display: inline-block;
+        min-width: 2ch;
+        font-family: ui-monospace, monospace;
+        font-size: 18px;
+        letter-spacing: 0.12em;
+        color: var(--accent);
+        margin-bottom: 8px;
+      }
+      .grid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: 1fr;
+      }
+      @media (min-width: 720px) {
+        .grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      .folder {
+        border: 2px solid var(--line);
+        background: var(--paper);
+        padding: 16px 18px;
+      }
+      .folder strong {
+        display: block;
+        font-size: 22px;
+        margin-bottom: 6px;
+      }
+      footer {
+        margin-top: 40px;
+        border-top: 2px solid var(--ink);
+        padding-top: 20px;
+        font-size: 20px;
+      }
+      img {
+        width: 100%;
+        height: auto;
+        border: 1px solid var(--line);
+        margin: 28px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Så här fungerar Pixdrift</h1>
+      <p class="lead">
+        Tänk ett kontor. Ett väntrum. Sex pärmar. En händelsebok. Ingen pärm får skriva i en annan
+        pärm.
+      </p>
+
+      <img
+        src="./hur-det-fungerar.png"
+        alt="Ritning: webbläsare, inloggning, kansli, sex pärmar, händelsebok"
+      />
+
+      <section class="step">
+        <div class="num">1</div>
+        <p>Du öppnar webbläsaren och går till kansliet. Det är samma hus för alla verktyg.</p>
+      </section>
+      <div class="arrow" aria-hidden="true">↓</div>
+      <section class="step">
+        <div class="num">2</div>
+        <p>
+          Pixdrift frågar: vem är du, och vilket bolag tillhör du? Det kallas inloggning. Samma
+          nyckel används överallt. Ingen egen lösenordslucka per verktyg.
+        </p>
+      </section>
+      <div class="arrow" aria-hidden="true">↓</div>
+      <section class="step">
+        <div class="num">3</div>
+        <p>
+          Du kommer in i kansliet. Därifrån väljer du ett verktyg. Kansliet är receptionen, inte
+          hela fabriken.
+        </p>
+      </section>
+      <div class="arrow" aria-hidden="true">↓</div>
+      <section class="step">
+        <div class="num">4</div>
+        <p>Varje verktyg har sin egen pärm:</p>
+        <div class="grid">
+          <div class="folder">
+            <strong>TORA</strong>
+            Får vi lämna anbud?
+          </div>
+          <div class="folder">
+            <strong>RITA</strong>
+            Vilka skattemässiga besparingar sitter i böckerna?
+          </div>
+          <div class="folder">
+            <strong>BRITT</strong>
+            Vad ska någon följa upp?
+          </div>
+          <div class="folder">
+            <strong>IRMA</strong>
+            Avtalshantering: ett flöde, koll på varje avtal.
+          </div>
+          <div class="folder">
+            <strong>TYRA</strong>
+            Däckhotell: kund, lager, offert, ärende.
+          </div>
+          <div class="folder">
+            <strong>ALVA</strong>
+            Guidad diagnos och protokoll. Motorn är på väg in.
+          </div>
+        </div>
+      </section>
+      <div class="arrow" aria-hidden="true">↓</div>
+      <section class="step">
+        <div class="num">5</div>
+        <p>
+          När något händer skrivs en lapp i händelseboken. BRITT läser lapparna och säger vad någon
+          bör göra. Verktygen pratar inte genom att rota i varandras pärmar.
+        </p>
+      </section>
+
+      <footer>
+        <p>
+          Allt detta är byggt i ett hus: Next.js på Vercel, en Postgres, en inloggning. Revisionen
+          med procent, luckor och nästa steg ligger i
+          <code>docs/INFRASTRUCTURE-AUDIT.md</code>.
+        </p>
+      </footer>
+    </main>
+  </body>
+</html>

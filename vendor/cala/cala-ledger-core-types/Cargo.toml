@@ -1,0 +1,28 @@
+[package]
+name = "cala-ledger-core-types"
+repository = "https://github.com/GaloyMoney/cala"
+description = "Core types for cala"
+version = "0.26.2-dev"
+edition = "2021"
+license = "Apache-2.0"
+
+[features]
+
+fail-on-warnings = []
+json-schema = ["es-entity/json-schema", "dep:schemars", "cel-interpreter/json-schema"]
+
+[dependencies]
+cel-interpreter = { workspace = true }
+es-entity = { workspace = true }
+
+schemars = { workspace = true, optional = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+strum = { workspace = true }
+sqlx = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+thiserror = { workspace = true }
+derive_builder = { workspace = true }
+rust_decimal = { workspace = true }
+rusty-money = { workspace = true }

@@ -1,0 +1,11 @@
+{
+  "name": "@pixdrift/britt-adapter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "description": "Zero-dependency CommonJS OIDC BFF for BRITT (Express + node:sqlite). PKCE flow + WebCrypto ES256/JWKS id-token verification, no external deps.",
+  "main": "pixdrift-oidc.js",
+  "devDependencies": {
+    "@pixdrift/identity": "workspace:*"
+  }
+}
