@@ -16,7 +16,15 @@ set -euo pipefail
 
 DAYS=1825
 OUT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/.secrets/revolut"
-SUBJECT="/CN=pixdrift.com/O=Landvex/C=SE"
+
+# CN follows the host of the registered redirect URI, because that same host is
+# the `iss` of every client assertion signed with this key. Revolut verifies the
+# signature, not the CN, but keeping them equal means the certificate says out
+# loud which deployment it belongs to.
+CN="${REVOLUT_REDIRECT_URI:-}"
+CN="${CN#*://}"
+CN="${CN%%/*}"
+SUBJECT="/CN=${CN:-pixdrift.com}/O=Landvex/C=SE"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
