@@ -40,9 +40,7 @@ export default async function ToraOpportunityPage({ params }: { params: Promise<
         </Link>
       </p>
       <header className="flex flex-col gap-3">
-        <p className="text-xs font-medium uppercase tracking-wide text-accent">
-          {verdictText(view.verdict)}
-        </p>
+        <p className="text-xs font-medium text-accent">{verdictText(view.verdict)}</p>
         <h1 className="text-3xl font-semibold tracking-tight">{displayField(view.title)}</h1>
         <p className="text-ink-soft">{displayField(view.organizationName)}</p>
         <p className="font-mono text-xs text-faint">

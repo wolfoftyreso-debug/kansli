@@ -46,7 +46,7 @@ export const FAMILY_STACK: readonly { layer: string; runs: string }[] = [
     runs: "PostgreSQL 16. Varje system har sin egen data. Inget system skriver i ett annat systems uppgifter.",
   },
   {
-    layer: "Motorer",
+    layer: "Analys",
     runs: "TORA räknar i samma process. RITA anropar en egen analys. Inga påhittade resultat i drift.",
   },
   {

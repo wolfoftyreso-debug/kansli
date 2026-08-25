@@ -23,7 +23,7 @@ describe("family map", () => {
       "Webb",
       "Identitet",
       "Data",
-      "Motorer",
+      "Analys",
       "AI",
       "Drift och test",
     ]);

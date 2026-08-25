@@ -125,7 +125,7 @@ export default async function ToraPage() {
             delar ingenting.
           </p>
           <div className="mt-3">
-            <Submit>Publicera utvärdering</Submit>
+            <Submit>Dela läget</Submit>
           </div>
         </form>
       ) : (
