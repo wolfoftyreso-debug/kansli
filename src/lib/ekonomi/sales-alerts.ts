@@ -130,7 +130,7 @@ export async function notifySaleIssued(input: {
   const status: AlertStatus = delivered.ok ? "SENT" : smsConfigured() ? "FAILED" : "BLOCKED";
   await input.pool.query(
     `update ekonomi.sales_alert_outbox
-        set status = $2, last_error = $3, provider_ref = $4
+        set status = $3, last_error = $4, provider_ref = $5
       where org_ref = $1 and id = $2`,
     [input.orgRef, id, status, delivered.reason, delivered.providerRef],
   );

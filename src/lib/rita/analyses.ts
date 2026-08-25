@@ -79,7 +79,7 @@ export async function requestAnalysis(input: {
     );
     await input.pool.query(
       `update rita.analyses
-          set status = 'completed', result = $2::jsonb, updated_at = now()
+          set status = 'completed', result = $3::jsonb, updated_at = now()
         where org_ref = $1 and id = $2`,
       [input.orgRef, id, JSON.stringify(envelope)],
     );
@@ -113,7 +113,7 @@ async function fail(
 ): Promise<Analysis> {
   await input.pool.query(
     `update rita.analyses
-        set status = 'blocked', blocked_reason = $2, updated_at = now()
+        set status = 'blocked', blocked_reason = $3, updated_at = now()
       where org_ref = $1 and id = $2`,
     [input.orgRef, id, reason],
   );
