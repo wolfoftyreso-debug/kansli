@@ -164,8 +164,16 @@ export async function revolutHealth(
     now.getTime() - new Date(connection.refreshLockAt).getTime() < 60_000;
 
   const stored = connection?.status ?? "not_configured";
+  const keyMatch = config.keyMatch;
+  // A mismatched pair outranks the stored status: the grant may well still be
+  // good in Revolut, but this deployment cannot use it, so calling it "Ansluten"
+  // would send the owner looking in the wrong place.
   const status: ConnectionStatus =
-    stored === "active" && refreshing ? "refreshing" : (stored as ConnectionStatus);
+    keyMatch.state === "mismatch"
+      ? "error"
+      : stored === "active" && refreshing
+        ? "refreshing"
+        : (stored as ConnectionStatus);
 
   const cert = certificateHealth(config.certificate.expiresAt, config.certificate.warnDays, now);
   const actionRequired = stored === "action_required" || stored === "revoked";
@@ -192,7 +200,7 @@ export async function revolutHealth(
       fingerprint: config.certificate.fingerprint,
       expiresAt: config.certificate.expiresAt,
       daysUntilExpiry: cert.daysUntilExpiry,
-      keyMatch: config.keyMatch,
+      keyMatch,
     },
     actionRequired,
     summary: summarise({
@@ -201,7 +209,7 @@ export async function revolutHealth(
       accessTokenValid,
       refreshAvailable,
       certificate: cert.health,
-      keyMatch: config.keyMatch,
+      keyMatch,
     }),
   };
 }

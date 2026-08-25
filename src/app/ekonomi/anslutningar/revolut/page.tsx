@@ -19,7 +19,7 @@ const STATUS_LABEL: Record<RevolutHealth["status"], string> = {
   refreshing: "Förnyar token",
   action_required: "Åtgärd krävs",
   revoked: "Inte ansluten",
-  error: "Fel",
+  error: "Fel i konfigurationen",
 };
 
 const CERT_LABEL: Record<RevolutHealth["certificate"]["health"], string> = {
@@ -38,6 +38,15 @@ const KEY_MATCH_LABEL: Record<RevolutHealth["certificate"]["keyMatch"]["state"],
 function when(value: string | null): string {
   if (!value) return "aldrig";
   return new Date(value).toLocaleString("sv-SE", { dateStyle: "short", timeStyle: "short" });
+}
+
+/**
+ * The grant can be alive in Revolut while this deployment still cannot sign for
+ * it, and calling that "Frisk" would contradict everything else on the page.
+ */
+function authenticationLabel(health: RevolutHealth): string {
+  if (health.certificate.keyMatch.state === "mismatch") return "Nyckeln matchar inte";
+  return health.oauthConnected ? "Frisk" : "Inte ansluten";
 }
 
 function Row({ label, value }: { label: string; value: string }) {
@@ -100,10 +109,7 @@ export default async function RevolutConnectionPage({
 
             {health ? (
               <div className="mt-4">
-                <Row
-                  label="Autentisering"
-                  value={health.oauthConnected ? "Frisk" : "Inte ansluten"}
-                />
+                <Row label="Autentisering" value={authenticationLabel(health)} />
                 <Row
                   label="Automatisk tokenförnyelse"
                   value={health.automaticRenewal ? "Aktiv" : "Inaktiv"}

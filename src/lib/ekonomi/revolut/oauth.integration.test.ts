@@ -537,6 +537,35 @@ live("revolut connection (live Postgres, mocked Revolut)", () => {
     expect(JSON.stringify(health)).not.toContain("BEGIN PRIVATE KEY");
   });
 
+  it("stops calling itself connected when the key is not the certificate's", async () => {
+    await persistTokens(pool, {
+      orgRef,
+      environment: "sandbox",
+      tokens: futureTokens(),
+      markConnected: true,
+    });
+    const stranger = generateKeyPairSync("rsa", {
+      modulusLength: 2048,
+      publicKeyEncoding: { type: "spki", format: "pem" },
+      privateKeyEncoding: { type: "pkcs8", format: "pem" },
+    });
+    const health = await revolutHealth(pool, orgRef, {
+      env: {
+        REVOLUT_ENVIRONMENT: "sandbox",
+        REVOLUT_CLIENT_ID: "test-client-id",
+        REVOLUT_PRIVATE_KEY: process.env.REVOLUT_PRIVATE_KEY,
+        REVOLUT_REDIRECT_URI: REDIRECT,
+        REVOLUT_CERTIFICATE_PUBLIC_KEY_SHA256: spkiSha256(stranger.publicKey as unknown as string),
+      },
+    });
+    expect(health.certificate.keyMatch.state).toBe("mismatch");
+    expect(health.status).toBe("error");
+    expect(health.automaticRenewal).toBe(false);
+    // Reconnecting in Revolut would not fix a wrong key, so it must not be asked for.
+    expect(health.actionRequired).toBe(false);
+    expect(health.summary).toContain("hör inte till certifikatet");
+  });
+
   it("warns about an expiring certificate once a day, not on every read", async () => {
     await persistTokens(pool, { orgRef, environment: "sandbox", tokens: futureTokens() });
     const env = {
