@@ -169,11 +169,17 @@ export function formatSekCompact(ore: number): string {
   return `${sign}${Math.round(abs).toLocaleString("sv-SE")} kr`;
 }
 
-export function formatChartDay(day: string): string {
+export function formatChartDay(day: string, withYear = false): string {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return day || "—";
   return new Intl.DateTimeFormat("sv-SE", {
     timeZone: STOCKHOLM,
     day: "numeric",
     month: "short",
+    year: withYear ? "numeric" : undefined,
   }).format(new Date(`${day}T12:00:00+02:00`));
+}
+
+export function formatChartRange(from: string, to: string): string {
+  const showYear = Boolean(from && to && from.slice(0, 4) !== to.slice(0, 4));
+  return `${formatChartDay(from, showYear)} – ${formatChartDay(to, showYear)}`;
 }

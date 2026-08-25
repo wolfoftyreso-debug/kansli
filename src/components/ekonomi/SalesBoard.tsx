@@ -5,6 +5,7 @@ import { formatSek } from "@/lib/ekonomi/money";
 import {
   PERIODS,
   formatChartDay,
+  formatChartRange,
   formatSekCompact,
   periodSummary,
   periodWindow,
@@ -152,7 +153,7 @@ export function SalesBoard({ points }: { points: DayPoint[] }) {
       />
 
       <p className="mt-2 text-xs text-muted">
-        {formatChartDay(visible[0]?.date ?? "")} – {formatChartDay(visible.at(-1)?.date ?? "")}
+        {formatChartRange(visible[0]?.date ?? "", visible.at(-1)?.date ?? "")}
         {activeDays <= 1
           ? " · Alla sälj i fönstret ligger på samma dag."
           : ` · ${activeDays} dagar med sälj`}
@@ -195,6 +196,9 @@ function SalesChart({
   const hoverPoint = hover != null ? points[hover] : null;
   const hoverLeft =
     hover != null ? Math.min(86, Math.max(8, ((x(hover) - pad.left) / innerW) * 100)) : 0;
+  const axisYear = Boolean(
+    points[0] && points.at(-1) && points[0].date.slice(0, 4) !== points.at(-1)!.date.slice(0, 4),
+  );
 
   return (
     <div className="relative mt-4">
@@ -283,7 +287,7 @@ function SalesChart({
         {points.length > 1 ? (
           <>
             <text x={pad.left} y={height - 6} className="fill-muted" fontSize="11">
-              {formatChartDay(points[0]?.date ?? "")}
+              {formatChartDay(points[0]?.date ?? "", axisYear)}
             </text>
             <text
               x={width - pad.right}
@@ -292,7 +296,7 @@ function SalesChart({
               className="fill-muted"
               fontSize="11"
             >
-              {formatChartDay(points.at(-1)?.date ?? "")}
+              {formatChartDay(points.at(-1)?.date ?? "", axisYear)}
             </text>
           </>
         ) : null}

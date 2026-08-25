@@ -4,6 +4,7 @@ import type { Payment } from "./payments.ts";
 import {
   buildDailyLedger,
   formatChartDay,
+  formatChartRange,
   formatSekCompact,
   periodSummary,
   periodWindow,
@@ -110,5 +111,8 @@ describe("sales series", () => {
     expect(stockholmDay("2026-08-25T23:30:00+02:00")).toBe("2026-08-25");
     expect(formatChartDay("2026-08-25")).toMatch(/25/);
     expect(formatChartDay("2026-08-25")).toMatch(/aug/i);
+    expect(formatChartRange("2026-07-27", "2026-08-25")).toMatch(/jul/);
+    expect(formatChartRange("2025-08-26", "2026-08-25")).toMatch(/2025/);
+    expect(formatChartRange("2025-08-26", "2026-08-25")).toMatch(/2026/);
   });
 });
