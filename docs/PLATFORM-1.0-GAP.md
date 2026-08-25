@@ -117,7 +117,7 @@ ingen syntetisk bevakning av login/MCP/docs.
 
 | Lager | Betyg | Vad som finns | Vad som saknas |
 | --- | --- | --- | --- |
-| 1. Platform Core | PARTIAL | Identity, org, session, `noun:verb`-behörighet, API Core, events, request-id | ABAC/OPA, entitlements, billing, feature flags, notifieringskärna, hemlighetsvalv, OTel, per-tjänst SLO |
+| 1. Platform Core | PARTIAL | Identity, org, session, `noun:verb`-behörighet, API Core, events, request-id, tunn SMS-kanal (`src/lib/platform/sms.ts`) för Ekonomi-sälj | ABAC/OPA, entitlements, billing, feature flags, notifieringskärna, hemlighetsvalv, OTel, per-tjänst SLO |
 | 2. Universal Integration | PARTIAL | REST + MCP mot samma `src/lib/{produkt}`. Revolut OAuth. | OpenAPI, webhooks, SDK, service accounts, OAuth-appar för tredje part |
 | 3. Developer Platform | PARTIAL | `/documentation`, MCP-docs, MCP-explorer | Sandbox, Try-it, recipes, changelog-data, status, request replay |
 | 4. App / Agent | PARTIAL | MCP + klientinstruktioner i docs | ChatGPT Apps, Apps SDK-UI, produktappar |
@@ -270,7 +270,8 @@ MCP-health och `server/discover` är inte samma sak som
 | Swish | planned | copy, ingen connector |
 | Fortnox | planned | nämns som problem, ingen connector |
 | Visma | planned | samma |
-| 46elks / Resend / Mapbox | secrets namngivna | `docs/INTEGRATIONS.md` — kärna inte byggd |
+| 46elks | PARTIAL | Tunn kanal `src/lib/platform/sms.ts`. Ekonomi-sälj-SMS går där. Inte en Notifications Core. |
+| Resend / Mapbox | secrets namngivna | `docs/INTEGRATIONS.md` — kärna inte byggd |
 | Apollo.io | planned | BRITT-connector namngiven, inte driftad |
 | ChatGPT Apps | missing | — |
 | Claude / Cursor / Codex som *app* | missing | MCP kan användas, ingen paketering |
