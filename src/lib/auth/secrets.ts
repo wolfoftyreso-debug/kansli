@@ -16,13 +16,13 @@ export function isHardenedRuntime(env: AuthEnv = process.env): boolean {
 }
 
 function rejectWeakSecret(name: string, value: string, knownDev: string[]): void {
+  if (knownDev.includes(value) || value.startsWith("kansli-dev")) {
+    throw new Error(`${name} must not be a development fallback when the runtime is hardened`);
+  }
   if (value.length < MIN_HARDENED_SECRET_LENGTH) {
     throw new Error(
       `${name} must be at least ${MIN_HARDENED_SECRET_LENGTH} characters when the runtime is hardened`,
     );
-  }
-  if (knownDev.includes(value) || value.startsWith("kansli-dev")) {
-    throw new Error(`${name} must not be a development fallback when the runtime is hardened`);
   }
 }
 
