@@ -1,7 +1,5 @@
 import type pg from "pg";
 import { isHardenedRuntime } from "../auth/secrets.ts";
-import { eventHeadline } from "./event-copy.ts";
-import { facadeRuntimeMark } from "./facade.ts";
 import type { OpsScope } from "./ops-view.ts";
 import type {
   OpsDebugHit,
@@ -43,7 +41,22 @@ function asRecord(value: unknown): Record<string, unknown> {
 }
 
 function headlineFrom(payload: Record<string, unknown>, fallback: string | null): string | null {
-  return eventHeadline(payload) ?? fallback;
+  for (const key of ["title", "headline", "companyName", "reason"] as const) {
+    const value = payload[key];
+    if (typeof value === "string" && value.trim()) return value.trim();
+  }
+  return fallback;
+}
+
+function runtimeMark(
+  env: Record<string, string | undefined>,
+): "produktion" | "förhandsvisning" | "lokal" {
+  if (env.VERCEL_ENV === "preview") return "förhandsvisning";
+  if (env.VERCEL_ENV === "development") return "lokal";
+  if (env.VERCEL_ENV === "production" || env.APP_ENV === "prod" || env.APP_ENV === "production") {
+    return "produktion";
+  }
+  return "lokal";
 }
 
 async function countOutbox(
@@ -203,7 +216,7 @@ export function loadRuntimeDebug(
   env: Record<string, string | undefined> = process.env,
 ): OpsRuntimeDebug {
   return {
-    mark: facadeRuntimeMark(env),
+    mark: runtimeMark(env),
     hardened: isHardenedRuntime(env),
     vercelEnv: env.VERCEL_ENV ?? null,
     appEnv: env.APP_ENV ?? null,

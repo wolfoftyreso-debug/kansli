@@ -1,6 +1,6 @@
-import { createPool } from "@pixdrift/db";
+import { createPool } from "../packages/db/src/index.ts";
+import { isHouseSession } from "../src/lib/kansli/intakes.ts";
 import { lookupOpsDebug } from "../src/lib/platform/ops-debug.ts";
-import { opsScopeFor } from "../src/lib/platform/ops.ts";
 
 function parseArgs(argv: string[]): { q: string | null; orgRef: string } {
   const args = argv.slice(2).filter((item) => !item.endsWith("ops-lookup.ts"));
@@ -37,7 +37,7 @@ async function main(): Promise<void> {
     statementTimeoutMs: 15_000,
   });
   try {
-    const scope = orgRef ? opsScopeFor(orgRef) : "house";
+    const scope = orgRef && !isHouseSession(orgRef) ? "org" : "house";
     const result = await lookupOpsDebug(pool, {
       q,
       scope,
