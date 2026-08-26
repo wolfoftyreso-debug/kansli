@@ -41,6 +41,21 @@ export const ALL_MODULES_LABEL = "Hela Pixdrift — alla moduler";
 export const PAYMENT_DAYS = 10;
 export const VAT_RATE_BPS = 2500;
 
+/**
+ * One year, ten instalments. You pay for ten months and get twelve. All ten
+ * invoices are issued at registration; the first is due in ten days, the rest
+ * every thirty days after.
+ */
+export const YEAR_INSTALMENTS = 10;
+export const INSTALMENT_INTERVAL_DAYS = 30;
+
+export function instalmentDueDays(part: number): number {
+  if (!Number.isInteger(part) || part < 1 || part > YEAR_INSTALMENTS) {
+    throw new Error(`del måste vara 1–${YEAR_INSTALMENTS}.`);
+  }
+  return PAYMENT_DAYS + (part - 1) * INSTALMENT_INTERVAL_DAYS;
+}
+
 export function moduleLine(id: SellableModule): string {
   const entry = MODULE_PRICING[id];
   return `${entry.label} — ${entry.blurb}`;
@@ -105,4 +120,67 @@ export function priceOrder(selected: SellableModule[]): PricedOrder {
       unitNetOre: MODULE_PRICING[id].monthlyNetOre,
     })),
   };
+}
+
+/** Net öre for the whole year: ten instalments at the monthly price. */
+export function yearNetOre(order: PricedOrder): number {
+  return order.monthlyNetOre * YEAR_INSTALMENTS;
+}
+
+function specDate(base: Date, days: number): string {
+  return new Date(base.getTime() + days * 86_400_000).toISOString().slice(0, 10);
+}
+
+/**
+ * The detailed order specification attached to every instalment invoice.
+ * The invoices themselves are one-row invoices; this is the full picture.
+ */
+export function orderSpecification(
+  order: PricedOrder,
+  input: {
+    companyName: string;
+    orgNumber?: string | null;
+    contactName: string;
+    contactEmail: string;
+    registeredAt: Date;
+  },
+): string {
+  const registered = input.registeredAt.toISOString().slice(0, 10);
+  const yearEnd = specDate(input.registeredAt, 365);
+  const gross = (ore: number) => kronor(ore + Math.round((ore * VAT_RATE_BPS) / 10_000));
+  const lines: string[] = [
+    "ORDERSPECIFIKATION — PIXDRIFT",
+    "",
+    `Kund: ${input.companyName}${input.orgNumber ? ` (${input.orgNumber})` : ""}`,
+    `Kontakt: ${input.contactName} · ${input.contactEmail}`,
+    `Registrerad: ${registered}`,
+    `Avtalsperiod: 12 månader, ${registered} – ${yearEnd}`,
+    "",
+    "MODULER",
+    ...(order.capped
+      ? [
+          `${ALL_MODULES_LABEL} · ${kronor(ALL_MODULES_MONTHLY_NET_ORE)}/mån exkl. moms`,
+          ...order.modules.map((id) => `${moduleLine(id)} · ingår`),
+        ]
+      : order.modules.map(
+          (id) => `${moduleLine(id)} · ${kronor(MODULE_PRICING[id].monthlyNetOre)}/mån exkl. moms`,
+        )),
+    "Kansli och plattformen ingår utan kostnad.",
+    "",
+    "PRIS",
+    `Månadspris: ${kronor(order.monthlyNetOre)} exkl. moms (${gross(order.monthlyNetOre)} inkl. moms)`,
+    `År: ${YEAR_INSTALMENTS} betalningar för 12 månader — ${kronor(yearNetOre(order))} exkl. moms (${gross(yearNetOre(order))} inkl. moms)`,
+    "",
+    `BETALPLAN — ${YEAR_INSTALMENTS} fakturor, utställda samtidigt`,
+    ...Array.from({ length: YEAR_INSTALMENTS }, (_, index) => {
+      const part = index + 1;
+      return `Del ${part} av ${YEAR_INSTALMENTS}: ${gross(order.monthlyNetOre)} inkl. moms · förfaller ${specDate(input.registeredAt, instalmentDueDays(part))}`;
+    }),
+    "",
+    "VILLKOR",
+    "Betald faktura i tid — allt fortsätter fungera. Förfaller en faktura obetald",
+    "pausas rummen tills den är betald. Inget raderas.",
+    "Inga live-leverantörspriser, ingen kvalificerad e-signatur, ingen Visma eller Fortnox.",
+  ];
+  return lines.join("\n");
 }

@@ -87,7 +87,7 @@ live("kansli.intakes (live Postgres)", () => {
     await pool.end();
   });
 
-  it("registers, provisions a login, and issues a priced 10-day invoice", async () => {
+  it("registers a year: login plus ten instalment invoices with the order spec attached", async () => {
     await migrateWorkspace({ ownerUrl: OWNER!, root: process.cwd(), appRole: "pixdrift_app" });
     const events = new EventLog(pool);
     const email = `inkop-${Date.now()}@bilia-test.se`;
@@ -101,13 +101,31 @@ live("kansli.intakes (live Postgres)", () => {
 
     expect(result.intake.companyName).toBe("Bilia Testverkstad AB");
     expect(result.intake.modules).toEqual(["tyra", "ekonomi"]);
-    // TYRA 349 + Ekonomi 349 = 698 kr net → 872,50 kr gross.
+    // TYRA 349 + Ekonomi 349 = 698 kr net → 872,50 kr gross per instalment.
     expect(result.intake.monthlyNetOre).toBe(69_800);
     expect(result.provision?.status).toBe("created");
     expect(result.passwordOnce).toMatch(/-/);
-    expect(result.invoice?.status).toBe("issued");
-    expect(result.invoice?.grossOre).toBe(87_250);
     expect(result.intake.blocked).toEqual([]);
+
+    // All ten invoices issued at once, one row each, spec attached to every one.
+    expect(result.invoices).toHaveLength(10);
+    expect(result.intake.invoiceNumbers).toHaveLength(10);
+    expect(result.invoice?.number).toBe(result.invoices[0]!.number);
+    for (const [index, item] of result.invoices.entries()) {
+      expect(item.status).toBe("issued");
+      expect(item.grossOre).toBe(87_250);
+      expect(item.lines).toHaveLength(1);
+      expect(item.lines[0]!.description).toContain(`del ${index + 1} av 10`);
+      expect(item.attachmentText).toContain("ORDERSPECIFIKATION — PIXDRIFT");
+      expect(item.attachmentText).toContain("BETALPLAN");
+      expect(item.dueAt).not.toBeNull();
+    }
+    // Due dates spread across the year: first ~10 days, last ~280 days out.
+    const daysOut = (iso: string) => Math.round((Date.parse(iso) - Date.now()) / 86_400_000);
+    expect(daysOut(result.invoices[0]!.dueAt!)).toBeGreaterThanOrEqual(9);
+    expect(daysOut(result.invoices[0]!.dueAt!)).toBeLessThanOrEqual(10);
+    expect(daysOut(result.invoices[9]!.dueAt!)).toBeGreaterThanOrEqual(279);
+    expect(daysOut(result.invoices[9]!.dueAt!)).toBeLessThanOrEqual(280);
 
     const once = await takePasswordOnce(pool, result.intake.id);
     expect(once).toBe(result.passwordOnce);

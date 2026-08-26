@@ -8,7 +8,15 @@ import {
   updateIntakeOutcome,
   type Intake,
 } from "./intakes.ts";
-import { PAYMENT_DAYS, priceOrder, VAT_RATE_BPS } from "./pricing.ts";
+import {
+  instalmentDueDays,
+  moduleLine,
+  ALL_MODULES_LABEL,
+  orderSpecification,
+  priceOrder,
+  VAT_RATE_BPS,
+  YEAR_INSTALMENTS,
+} from "./pricing.ts";
 import { provisionWorkshopAccount, type ProvisionResult } from "./provision.ts";
 import { createDraftInvoice, issueInvoice, type Invoice } from "../ekonomi/invoices.ts";
 
@@ -16,13 +24,18 @@ export interface SubmitIntakeResult {
   intake: Intake;
   passwordOnce: string | null;
   provision: ProvisionResult | null;
+  /** First instalment. */
   invoice: Invoice | null;
+  /** All ten instalments, issued at once. */
+  invoices: Invoice[];
 }
 
 /**
- * Self-service registration: the customer picks modules, gets a login, and an
- * invoice is issued with ten days to pay. No demo, no meeting. Paying the
- * invoice keeps the system running; an overdue one puts the rooms on hold.
+ * Self-service registration for one year: the customer picks modules and gets
+ * a login. All ten instalment invoices are issued at once — one-row invoices
+ * with the detailed order specification attached — the first due in ten days,
+ * the rest every thirty days. No demo, no meeting. Paying on time keeps the
+ * system running; an overdue instalment puts the rooms on hold.
  */
 export async function submitIntake(input: {
   pool: pg.Pool;
@@ -39,7 +52,7 @@ export async function submitIntake(input: {
   const blocked: string[] = [];
   let provision: ProvisionResult | null = null;
   let passwordOnce: string | null = null;
-  let invoice: Invoice | null = null;
+  const invoices: Invoice[] = [];
 
   await input.events.publish({
     system: "kansli",
@@ -96,48 +109,65 @@ export async function submitIntake(input: {
   }
 
   const orgRefForInvoice = provision?.orgRef ?? houseOrgRef;
+  const summary = order.capped ? ALL_MODULES_LABEL : order.modules.map(moduleLine).join(" · ");
+  const specification = orderSpecification(order, {
+    companyName: intake.companyName,
+    orgNumber: intake.orgNumber,
+    contactName: intake.contactName,
+    contactEmail: intake.contactEmail,
+    registeredAt: new Date(intake.createdAt),
+  });
   try {
-    const draftInvoice = await createDraftInvoice({
-      pool: input.pool,
-      events: input.events,
-      orgRef: orgRefForInvoice,
-      actorRef: provision?.userId ?? intake.contactEmail,
-      customerName: intake.companyName,
-      customerRef: intake.contactEmail,
-      sourceSystem: "kansli",
-      sourceRef: intake.id,
-      requestId: `intake-inv-${intake.id}`,
-      lines: order.lines.map((line) => ({
-        description: line.description,
-        quantity: line.quantity,
-        unitNetOre: line.unitNetOre,
-        vatRateBps: VAT_RATE_BPS,
-        kind: "service" as const,
-      })),
-    });
-    invoice = await issueInvoice({
-      pool: input.pool,
-      events: input.events,
-      orgRef: orgRefForInvoice,
-      actorRef: provision?.userId ?? intake.contactEmail,
-      invoiceId: draftInvoice.id,
-      dueDays: PAYMENT_DAYS,
-      requestId: `intake-issue-${intake.id}`,
-    });
+    for (let part = 1; part <= YEAR_INSTALMENTS; part += 1) {
+      const draftInvoice = await createDraftInvoice({
+        pool: input.pool,
+        events: input.events,
+        orgRef: orgRefForInvoice,
+        actorRef: provision?.userId ?? intake.contactEmail,
+        customerName: intake.companyName,
+        customerRef: intake.contactEmail,
+        sourceSystem: "kansli",
+        sourceRef: intake.id,
+        attachmentText: specification,
+        requestId: `intake-inv-${intake.id}-${part}`,
+        lines: [
+          {
+            description: `Pixdrift år 1, del ${part} av ${YEAR_INSTALMENTS} — ${summary}`,
+            quantity: 1,
+            unitNetOre: order.monthlyNetOre,
+            vatRateBps: VAT_RATE_BPS,
+            kind: "service" as const,
+          },
+        ],
+      });
+      invoices.push(
+        await issueInvoice({
+          pool: input.pool,
+          events: input.events,
+          orgRef: orgRefForInvoice,
+          actorRef: provision?.userId ?? intake.contactEmail,
+          invoiceId: draftInvoice.id,
+          dueDays: instalmentDueDays(part),
+          requestId: `intake-issue-${intake.id}-${part}`,
+        }),
+      );
+    }
   } catch (error) {
-    blocked.push(error instanceof Error ? error.message : "fakturan kunde inte utfärdas.");
+    blocked.push(error instanceof Error ? error.message : "fakturorna kunde inte utfärdas.");
   }
 
+  const first = invoices[0] ?? null;
   const updated = await updateIntakeOutcome(input.pool, intake.id, {
     provisionedOrgId: provision?.orgId,
     provisionedOrgRef: provision?.orgRef,
     provisionedUserId: provision?.userId,
     provisionedEmail: provision?.email,
-    invoiceId: invoice?.id,
-    invoiceNumber: invoice?.number,
+    invoiceId: first?.id,
+    invoiceNumber: first?.number,
+    invoiceNumbers: invoices.map((item) => item.number),
     passwordOnce,
     blocked,
   });
   if (updated) intake = updated;
-  return { intake, passwordOnce, provision, invoice };
+  return { intake, passwordOnce, provision, invoice: first, invoices };
 }

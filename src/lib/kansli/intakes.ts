@@ -22,6 +22,8 @@ export interface Intake {
   provisionedEmail: string | null;
   invoiceId: string | null;
   invoiceNumber: string | null;
+  /** All year instalments, issued at once at registration. */
+  invoiceNumbers: string[];
   houseOrgRef: string | null;
   blocked: string[];
   createdAt: string;
@@ -171,6 +173,7 @@ export async function updateIntakeOutcome(
     provisionedEmail?: string | null;
     invoiceId?: string | null;
     invoiceNumber?: string | null;
+    invoiceNumbers?: string[] | null;
     passwordOnce?: string | null;
     blocked?: string[];
   },
@@ -183,8 +186,9 @@ export async function updateIntakeOutcome(
         provisioned_email = coalesce($5, provisioned_email),
         invoice_id = coalesce($6, invoice_id),
         invoice_number = coalesce($7, invoice_number),
-        password_once = coalesce($8, password_once),
-        blocked = coalesce($9, blocked)
+        invoice_numbers = coalesce($8, invoice_numbers),
+        password_once = coalesce($9, password_once),
+        blocked = coalesce($10, blocked)
       where id = $1
       returning ${COLUMNS}`,
     [
@@ -195,6 +199,7 @@ export async function updateIntakeOutcome(
       patch.provisionedEmail ?? null,
       patch.invoiceId ?? null,
       patch.invoiceNumber ?? null,
+      patch.invoiceNumbers ?? null,
       patch.passwordOnce ?? null,
       patch.blocked ?? null,
     ],
@@ -206,7 +211,7 @@ const COLUMNS = `
   id, company_name, org_number, contact_name, contact_email, contact_title,
   modules, notes, honesty_accepted, invoice_net_ore,
   provisioned_org_id, provisioned_org_ref, provisioned_user_id, provisioned_email,
-  invoice_id, invoice_number, house_org_ref, blocked, created_at
+  invoice_id, invoice_number, invoice_numbers, house_org_ref, blocked, created_at
 `;
 
 const SELECT_SQL = `select ${COLUMNS} from kansli.intakes`;
@@ -239,6 +244,9 @@ function toIntake(row: Record<string, unknown>): Intake {
     provisionedEmail: row.provisioned_email ? String(row.provisioned_email) : null,
     invoiceId: row.invoice_id ? String(row.invoice_id) : null,
     invoiceNumber: row.invoice_number ? String(row.invoice_number) : null,
+    invoiceNumbers: Array.isArray(row.invoice_numbers)
+      ? (row.invoice_numbers as unknown[]).map(String)
+      : [],
     houseOrgRef: row.house_org_ref ? String(row.house_org_ref) : null,
     blocked: Array.isArray(row.blocked) ? row.blocked.map(String) : [],
     createdAt: new Date(String(row.created_at)).toISOString(),

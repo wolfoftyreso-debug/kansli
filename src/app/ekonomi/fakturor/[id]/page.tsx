@@ -72,6 +72,15 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
             </p>
           </section>
 
+          {invoice.attachmentText ? (
+            <section className="rounded-xl border border-line bg-surface px-4 py-4">
+              <h2 className="text-lg font-semibold">Bilaga — Orderspecifikation</h2>
+              <pre className="mt-3 whitespace-pre-wrap font-mono text-xs text-ink-soft">
+                {invoice.attachmentText}
+              </pre>
+            </section>
+          ) : null}
+
           {invoice.status === "draft" ? (
             <form action={issueInvoiceAction}>
               <input type="hidden" name="invoiceId" value={invoice.id} />

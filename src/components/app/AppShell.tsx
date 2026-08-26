@@ -45,7 +45,7 @@ export async function AppShell({
             Fakturan {hold.invoiceNumber} har förfallit
           </h1>
           <p className="pd-banner-blocked max-w-xl px-3 py-3 text-sm">
-            Registreringsfakturan på {kronor(hold.grossOre)} inkl. moms förföll{" "}
+            Abonnemangsfakturan på {kronor(hold.grossOre)} inkl. moms förföll{" "}
             {formatSwedishDateTime(hold.dueAt)}. Rummen är pausade tills den är betald — inget är
             raderat, allt finns kvar.
           </p>

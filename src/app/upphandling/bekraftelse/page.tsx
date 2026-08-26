@@ -5,7 +5,14 @@ import { readSession } from "@/lib/auth/session";
 import { formatSwedishDateTime } from "@/lib/format/datetime";
 import { getIntake, isHouseSession } from "@/lib/kansli/intakes";
 import { readIntakeReveal } from "@/lib/kansli/intake-reveal";
-import { kronor, MODULE_PRICING, PAYMENT_DAYS, VAT_RATE_BPS } from "@/lib/kansli/pricing";
+import {
+  instalmentDueDays,
+  kronor,
+  MODULE_PRICING,
+  PAYMENT_DAYS,
+  VAT_RATE_BPS,
+  YEAR_INSTALMENTS,
+} from "@/lib/kansli/pricing";
 import { tryRuntime } from "@/lib/platform/page";
 
 export const dynamic = "force-dynamic";
@@ -35,9 +42,12 @@ export default async function UpphandlingBekraftelsePage({
     intake?.monthlyNetOre != null
       ? intake.monthlyNetOre + Math.round((intake.monthlyNetOre * VAT_RATE_BPS) / 10_000)
       : null;
-  const dueAt = intake
-    ? new Date(new Date(intake.createdAt).getTime() + PAYMENT_DAYS * 86_400_000).toISOString()
-    : null;
+  const dueFor = (part: number): string | null =>
+    intake
+      ? new Date(
+          new Date(intake.createdAt).getTime() + instalmentDueDays(part) * 86_400_000,
+        ).toISOString()
+      : null;
 
   return (
     <AppShell current="upphandling" session={session}>
@@ -56,8 +66,9 @@ export default async function UpphandlingBekraftelsePage({
           <p className="pd-label text-faint">Registrering</p>
           <h1 className="text-2xl font-semibold tracking-tight">Ni är igång</h1>
           <p className="text-ink-soft">
-            {intake.companyName}. Allt fungerar från och med nu. Betala fakturan inom {PAYMENT_DAYS}{" "}
-            dagar så fortsätter allt att fungera.
+            {intake.companyName}. Allt fungerar från och med nu, i tolv månader. Alla{" "}
+            {YEAR_INSTALMENTS} fakturorna är utställda med orderspecifikationen som bilaga — den
+            första förfaller om {PAYMENT_DAYS} dagar. Betalda i tid — allt fortsätter fungera.
           </p>
           <section className="border border-line bg-surface px-5 py-5">
             <p className="text-sm text-ink-soft">Moduler</p>
@@ -95,14 +106,37 @@ export default async function UpphandlingBekraftelsePage({
           )}
           {showAccount && intake.invoiceNumber ? (
             <section className="border border-line bg-surface px-5 py-5">
-              <p className="text-sm text-ink-soft">Faktura — {PAYMENT_DAYS} dagars betalning</p>
-              <p className="mt-1 text-2xl font-semibold tabular-nums">
-                {grossOre != null ? `${kronor(grossOre)} inkl. moms` : intake.invoiceNumber}
+              <p className="text-sm text-ink-soft">
+                Betalplan — {YEAR_INSTALMENTS} fakturor för tolv månader, utställda nu
               </p>
-              <p className="mt-2 text-sm text-muted">
-                {intake.invoiceNumber}
-                {dueAt ? ` · förfaller ${formatSwedishDateTime(dueAt)}` : ""}. Betald i tid — allt
-                fortsätter fungera. Förfaller den obetald pausas rummen tills den är betald.
+              <p className="mt-1 text-2xl font-semibold tabular-nums">
+                {grossOre != null
+                  ? `${kronor(grossOre)} inkl. moms × ${YEAR_INSTALMENTS}`
+                  : intake.invoiceNumber}
+              </p>
+              <ul className="mt-3 flex flex-col gap-1">
+                {(intake.invoiceNumbers.length > 0
+                  ? intake.invoiceNumbers
+                  : [intake.invoiceNumber]
+                ).map((number, index) => {
+                  const due = dueFor(index + 1);
+                  return (
+                    <li
+                      key={number}
+                      className="flex items-baseline justify-between gap-3 border-b border-line py-1 text-sm last:border-b-0"
+                    >
+                      <span className="font-mono">{number}</span>
+                      <span className="text-muted">
+                        del {index + 1} av {YEAR_INSTALMENTS}
+                        {due ? ` · förfaller ${formatSwedishDateTime(due)}` : ""}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+              <p className="mt-3 text-sm text-muted">
+                Betalda i tid — allt fortsätter fungera. Förfaller en obetald pausas rummen tills
+                den är betald. Orderspecifikationen ligger som bilaga på varje faktura.
               </p>
             </section>
           ) : null}

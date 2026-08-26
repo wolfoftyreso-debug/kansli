@@ -159,7 +159,7 @@ export function evaluateFirstCustomerGates(input: {
       title: "Registreringen är självbetjäning",
       state: "ready",
       detail:
-        "Kunden registrerar sig själv, väljer moduler, får inloggning direkt och en månadsfaktura med tio dagars betalning. Betald faktura — allt fortsätter fungera. Inga demos, inga möten.",
+        "Kunden tecknar ett år själv: väljer moduler, får inloggning direkt och alla tio fakturor utställda samtidigt med orderspecifikation som bilaga. Första förfaller om tio dagar. Betalda i tid — allt fortsätter fungera. Inga demos, inga möten.",
     },
     {
       id: "honesty",

@@ -3,16 +3,18 @@ import { CheckField, Field, Notice, Submit } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import {
   ALL_MODULES_MONTHLY_NET_ORE,
+  INSTALMENT_INTERVAL_DAYS,
   kronor,
   MODULE_PRICING,
   PAYMENT_DAYS,
   SELLABLE_MODULES,
+  YEAR_INSTALMENTS,
 } from "@/lib/kansli/pricing";
 
 export const metadata = {
   title: "Registrera — Pixdrift",
   description:
-    "Välj moduler, registrera dig och betala fakturan inom tio dagar. Inga demos, inga möten.",
+    "Välj moduler och teckna ett år. Tio fakturor ställs ut direkt med orderspecifikation som bilaga. Inga demos, inga möten.",
 };
 
 /**
@@ -33,11 +35,15 @@ export default async function UpphandlingPage({
       <div className="grid gap-8 lg:grid-cols-[1fr_1.15fr] lg:items-start">
         <aside className="flex flex-col gap-4">
           <p className="pd-label text-faint">Registrera</p>
-          <h1 className="text-2xl font-semibold tracking-tight">Välj moduler och kom igång</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Välj moduler och teckna ett år
+          </h1>
           <p className="text-ink-soft">
-            Du registrerar dig själv. Inloggningen skapas direkt och en månadsfaktura ställs ut med{" "}
-            {PAYMENT_DAYS} dagars betalning. Betald faktura — allt fortsätter fungera. Så enkelt är
-            det.
+            Du registrerar dig själv och inloggningen skapas direkt. Ett år är{" "}
+            {YEAR_INSTALMENTS} betalningar för tolv månader. Alla {YEAR_INSTALMENTS} fakturorna
+            ställs ut samtidigt, med en detaljerad orderspecifikation som bilaga — den första
+            förfaller om {PAYMENT_DAYS} dagar, resten var {INSTALMENT_INTERVAL_DAYS}:e dag. Betalda
+            i tid — allt fortsätter fungera.
           </p>
           <ul className="flex flex-col gap-2 text-sm text-ink-soft">
             <li>Kansli och plattformen ingår alltid, utan kostnad.</li>
@@ -46,6 +52,7 @@ export default async function UpphandlingPage({
               Allt i Pixdrift kostar aldrig mer än {kronor(ALL_MODULES_MONTHLY_NET_ORE)}/mån exkl.
               moms. Når valet taket får du alla moduler.
             </li>
+            <li>Betala för {YEAR_INSTALMENTS} månader — få tolv.</li>
           </ul>
           <div className="border border-line bg-surface">
             {SELLABLE_MODULES.map((id) => (
@@ -112,9 +119,9 @@ export default async function UpphandlingPage({
             name="termsAccepted"
             required
             large
-            label={`Jag beställer de valda modulerna. Inloggning skapas nu och en månadsfaktura ställs ut med ${PAYMENT_DAYS} dagars betalning. Betalas den inte pausas rummen tills den är betald. Priser exkl. moms.`}
+            label={`Jag tecknar ett år med de valda modulerna. Inloggning skapas nu och alla ${YEAR_INSTALMENTS} fakturor ställs ut samtidigt med orderspecifikation som bilaga — den första förfaller om ${PAYMENT_DAYS} dagar, resten var ${INSTALMENT_INTERVAL_DAYS}:e dag. Förfaller en obetald pausas rummen tills den är betald. Priser exkl. moms.`}
           />
-          <Submit large>Registrera och få faktura</Submit>
+          <Submit large>Teckna året och få fakturorna</Submit>
         </form>
       </div>
     </AppShell>

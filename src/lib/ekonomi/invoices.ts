@@ -54,6 +54,8 @@ export interface Invoice {
   sourceSystem: string | null;
   sourceRef: string | null;
   issueTransactionId: string | null;
+  /** Order specification or similar bilaga, shown with the invoice. */
+  attachmentText: string | null;
   createdAt: string;
   lines: InvoiceLine[];
 }
@@ -75,6 +77,7 @@ function toInvoice(row: Record<string, unknown>, lines: InvoiceLine[]): Invoice 
     sourceSystem: row.source_system ? String(row.source_system) : null,
     sourceRef: row.source_ref ? String(row.source_ref) : null,
     issueTransactionId: row.issue_transaction_id ? String(row.issue_transaction_id) : null,
+    attachmentText: row.attachment_text ? String(row.attachment_text) : null,
     createdAt: new Date(String(row.created_at)).toISOString(),
     lines,
   };
@@ -185,6 +188,7 @@ export async function createDraftInvoice(input: {
   lines: InvoiceLineInput[];
   sourceSystem?: string;
   sourceRef?: string;
+  attachmentText?: string;
   requestId: string;
 }): Promise<Invoice> {
   const customerName = input.customerName.trim();
@@ -196,8 +200,8 @@ export async function createDraftInvoice(input: {
   await input.pool.query(
     `insert into ekonomi.invoices
        (id, org_ref, number, status, customer_name, customer_ref,
-        net_ore, vat_ore, gross_ore, source_system, source_ref)
-     values ($1,$2,$3,'draft',$4,$5,$6,$7,$8,$9,$10)`,
+        net_ore, vat_ore, gross_ore, source_system, source_ref, attachment_text)
+     values ($1,$2,$3,'draft',$4,$5,$6,$7,$8,$9,$10,$11)`,
     [
       id,
       input.orgRef,
@@ -209,6 +213,7 @@ export async function createDraftInvoice(input: {
       totals.grossOre,
       input.sourceSystem ?? null,
       input.sourceRef ?? null,
+      input.attachmentText?.trim() || null,
     ],
   );
   for (const line of lines) {

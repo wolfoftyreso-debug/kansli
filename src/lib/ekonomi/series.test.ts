@@ -34,6 +34,7 @@ function invoice(
     sourceSystem: null,
     sourceRef: null,
     issueTransactionId: null,
+    attachmentText: null,
     createdAt: issuedAt,
     lines: [],
   };
