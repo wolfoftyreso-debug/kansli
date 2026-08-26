@@ -10,7 +10,8 @@ export function SiteFooter() {
         <div className="max-w-[42ch] text-sm leading-[1.65] text-subtle">
           <div className="mb-2.5 text-xl font-bold tracking-[-0.02em] text-ink">Landvex</div>
           <p className="m-0 mb-5">
-            {site.tagline}. US HQ: Houston, Texas · EU HQ: Tyresö, Sweden.
+            {site.tagline}. A development company: we build it and hand it over. US HQ:
+            Houston, Texas · EU HQ: Tyresö, Sweden.
           </p>
           <CompanyAddress compact />
         </div>

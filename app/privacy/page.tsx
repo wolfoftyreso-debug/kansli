@@ -15,7 +15,7 @@ export default function PrivacyPage() {
     <DocPage
       eyebrow="Privacy"
       title="What happens to an enquiry."
-      lead="This notice covers landvex.com and the contact form. It does not describe systems we later run in a customer’s AWS accounts under a separate agreement."
+      lead="This notice covers landvex.com and the contact form. It does not describe systems we build for a customer and hand over, which run in their own accounts under a separate agreement."
     >
       <DocHeading>Controller</DocHeading>
       <DocText>
@@ -28,10 +28,10 @@ export default function PrivacyPage() {
 
       <DocHeading>What we collect and why</DocHeading>
       <DocText>
-        The form collects name, organisation, work email and a description of the
-        work between your systems. We use that to reply and, if you ask, to start a
-        technical review. The form is optional; without those details we cannot
-        reply. The legal basis is legitimate interests in answering a business
+        The form collects name, organisation, work email and a description of what
+        you need. We use that to reply and, if it goes further, to scope the work.
+        The form is optional; without those details we cannot reply. The legal
+        basis is legitimate interests in answering a business
         enquiry (GDPR art. 6(1)(f)), and taking steps prior to a contract if the
         conversation becomes an engagement (art. 6(1)(b)).
       </DocText>

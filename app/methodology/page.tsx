@@ -17,12 +17,16 @@ export default function MethodologyPage() {
     >
       <DocHeading>What we take on</DocHeading>
       <DocText>
-        Most of the work we take on lives between systems: a spreadsheet next to an
-        ERP, an inbox next to a GIS, a person reconciling two sources of truth. We
-        map that gap, define what &quot;correct&quot; looks like, and put a production
-        service in the middle — with monitoring, retries and an audit trail. Where
-        judgement is genuinely required, the system asks a human — and learns from
-        the answer.
+        The work usually lives between systems: a spreadsheet next to an ERP, an
+        inbox next to a GIS, a person reconciling two sources of truth. We map that
+        gap, define what &quot;correct&quot; looks like, and put a production service
+        in the middle — with monitoring, retries and an audit trail. Where judgement
+        is genuinely required, the system asks a human, and learns from the answer.
+      </DocText>
+      <DocText>
+        We take two to five project assignments a year. If the gap is not frequent
+        enough, expensive enough or well-defined enough to close, we say so at the
+        first call rather than at the first invoice.
       </DocText>
 
       <DocHeading>Step 01 — Find the gap</DocHeading>
@@ -58,23 +62,24 @@ export default function MethodologyPage() {
 
       <DocHeading>Step 04 — Hand over</DocHeading>
       <DocText>
-        The system ships as yours. White-label where that is the deal. Runbooks and
-        observability go with the code. We do not stay on as an operations team.
+        The system ships as yours, under your name where that is the deal. Runbooks,
+        dashboards and the code go with it, and we stay reachable for questions. We
+        do not stay on as an operations team.
       </DocText>
 
       <DocHeading>Own products and white label</DocHeading>
       <DocText>
-        Most of our time goes into products for our own companies. Most of those
-        systems we sell white-label to the organisations that need them most.
-        Alongside that we take two to five project assignments a year. We are
-        development only — we do not offer operations.
+        Most of the year goes into products for our own companies. Most of those
+        systems we then sell on to the organisations that need them most, under their
+        name and in their accounts. Assignments are the smaller half of the business,
+        which is why there are only a few of them.
       </DocText>
       <DocList
         items={[
-          "Own products — built for our companies, to production standard.",
-          "White label — sold to the organisations that need them. Your brand, your accounts, your operations.",
+          "Own products — built for our own companies, to the standard we would want handed to us.",
+          "White label — sold on to the organisations that need them. Your brand, your accounts, your operations.",
           "Selective assignments — two to five engagements a year, founder-led from first call to handover.",
-          "Development, not ops — no on-call, stay-on, or managed operations contract.",
+          "Development, not ops — no on-call, no staffing, no managed operations contract.",
         ]}
       />
     </DocPage>

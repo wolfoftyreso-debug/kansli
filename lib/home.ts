@@ -3,14 +3,14 @@ import { landvexAb } from "./site.ts";
 export const hero = {
   eyebrow: "Founder-led engineering",
   title: "We fill the gaps between the big systems.",
-  lede: "Landvex is a founder-led engineering company with offices in Stockholm and Houston. The platforms you already run each do their job. We design and build what sits in between — the handoffs, the exceptions, the data that never quite lines up. Development only: two to five project assignments a year, plus our own products, most of them sold white-label.",
+  lede: "Landvex is a founder-led engineering company in Stockholm and Houston. The platforms you already run each do their job — we build what sits in between: the handoffs, the exceptions, and the data that never quite lines up.",
 } as const;
 
 export const capabilities = [
   {
     n: "01",
     title: "Between systems",
-    body: "Pipelines that sit between the platforms you already run. Handoffs that waited for someone to notice now move on every event, with retries and an audit trail.",
+    body: "Services that sit between the platforms you already run. Handoffs that used to wait for someone to notice now move on every event, with retries and an audit trail.",
   },
   {
     n: "02",
@@ -25,17 +25,17 @@ export const capabilities = [
   {
     n: "04",
     title: "Data platforms",
-    body: "Ingest, storage and query layers built so every number can be traced back to its source. Lineage is a requirement, not a report we generate afterwards.",
+    body: "Ingest, storage and query layers built so every number can be traced back to its source. Lineage is a requirement, not a report generated afterwards.",
   },
   {
     n: "05",
     title: "Cloud foundation",
-    body: "Accounts, IAM, networking and infrastructure as code. EU and US data residency handled at the account boundary, not by policy documents.",
+    body: "Accounts, IAM, networking and infrastructure as code — built in your cloud account, under your billing. EU and US data residency is set at the account boundary.",
   },
   {
     n: "06",
     title: "White label & handover",
-    body: "We build, you run. Most of the systems we ship are white-label, in your accounts. We do not offer operations — delivery includes the code, the infrastructure as code, and a clean handover.",
+    body: "We build, you run. Most of what we ship carries your name, in your accounts. Delivery is the code, the infrastructure as code and the handover — not an operations contract.",
   },
 ] as const;
 
@@ -58,26 +58,26 @@ export const steps = [
   {
     n: "Step 04",
     title: "Hand over",
-    body: "The system ships as yours. White-label where that is the deal. Runbooks and observability go with the code. We do not stay on as an operations team.",
+    body: "The system ships as yours, under your name where that is the deal. Runbooks, dashboards and the code go with it. We do not stay on as an operations team.",
   },
 ] as const;
 
-export const products = [
+export const offers = [
   {
     n: "01 — Own products",
-    body: "We develop products for our own companies. That is the bulk of the work: systems we need, built to production standard.",
+    body: "We build products for our own companies. That is where most of the year goes, and it is where the engineering standard is set.",
   },
   {
     n: "02 — White label",
-    body: "Most of those systems we sell to the organisations that need them most. Your brand, your accounts, your operations.",
+    body: "Most of those systems we sell on to the organisations that need them most. Your brand, your accounts, your operations.",
   },
   {
     n: "03 — Selective assignments",
-    body: "Two to five project engagements a year. Founder-led, from first call to a working system in the same gaps we close for ourselves.",
+    body: "Two to five project engagements a year. Founder-led from the first call, chosen because the problem sits in a gap we know how to close.",
   },
   {
     n: "04 — Development, not ops",
-    body: "We design and build. We do not sell on-call, stay-on, or managed operations. When the work is done, the system is yours.",
+    body: "We design and build. We do not sell on-call, staffing or managed operations. When the work is done, the system is yours to run.",
   },
 ] as const;
 
@@ -86,48 +86,48 @@ export const offices = [
     city: "Stockholm",
     label: "EU HQ",
     region: "CET / CEST",
-    body: `${landvexAb.legalName} · ${landvexAb.street}, ${landvexAb.postalCode} ${landvexAb.city}, Sweden · Org.nr ${landvexAb.orgNr}. European engineering, EU regulatory work and data handled in region.`,
+    body: `${landvexAb.legalName} · ${landvexAb.street}, ${landvexAb.postalCode} ${landvexAb.city}, Sweden · Org.nr ${landvexAb.orgNr}. European engineering, EU regulatory work, and data kept in region.`,
   },
   {
     city: "Houston",
     label: "US HQ",
     region: "US Central",
-    body: "Landvex Inc. · Houston, Texas. The US headquarters, and our base for North American clients in energy, infrastructure and industry.",
+    body: "Landvex Inc. · Houston, Texas. The US headquarters, and where North American work is contracted and built.",
   },
 ] as const;
 
 export const principles = [
   {
     title: "Small by design",
-    body: "Senior engineers only. Two to five assignments a year. We spend the rest of the time on our own products.",
+    body: "Senior engineers only. Two to five assignments a year, so the ones we take get the whole team rather than a slice of it.",
   },
   {
     title: "Evidence over assertion",
-    body: "Accuracy, throughput and cost are measured against how the work runs today and reported as they are.",
+    body: "Accuracy, throughput and cost are measured against how the work runs today, and reported as they are.",
   },
   {
     title: "You own it",
-    body: "White-label by default. Code in your accounts, infrastructure as code, no proprietary lock-in, no ops contract attached.",
+    body: "White label by default. Code in your accounts, infrastructure as code, no proprietary lock-in and no operations contract attached.",
   },
 ] as const;
 
 export const glance = [
   {
-    value: "2",
-    sr: " engineering offices",
-    label:
-      "Engineering offices — Stockholm and Houston, overlapping working hours across EU and US Central",
-  },
-  {
-    value: "Between",
-    sr: " existing systems",
-    label:
-      "The layer between the platforms you already run — handoffs, exceptions, and the work that never quite made it in",
-  },
-  {
     value: "2–5",
     sr: " project assignments a year",
     label:
-      "Special project assignments a year. The rest of the time we develop our own products",
+      "Project assignments a year. The rest of the year goes to products for our own companies",
+  },
+  {
+    value: "2",
+    sr: " engineering offices",
+    label:
+      "Engineering offices — Stockholm and Houston, with overlapping hours across the EU and US Central day",
+  },
+  {
+    value: "0",
+    sr: " operations contracts",
+    label:
+      "Operations contracts. We are a development company: we build it, hand it over, and you run it",
   },
 ] as const;
