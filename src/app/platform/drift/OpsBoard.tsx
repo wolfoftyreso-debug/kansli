@@ -61,8 +61,8 @@ function ActivityChart({ points }: { points: OpsPoint[] }) {
   const axisHours = [0, Math.floor((points.length - 1) / 2), points.length - 1].filter(
     (index, pos, list) => points[index] && list.indexOf(index) === pos,
   );
-  const focus = hover ?? Math.max(0, points.length - 1);
-  const focusPoint = points[focus];
+  const focus = hover;
+  const focusPoint = focus == null ? null : points[focus];
 
   return (
     <div className="relative">
