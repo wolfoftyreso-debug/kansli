@@ -129,7 +129,7 @@ function ActivityChart({ points }: { points: OpsPoint[] }) {
             {hourLabel(points[index].at)}
           </text>
         ))}
-        {focusPoint ? (
+        {focus != null && focusPoint ? (
           <g>
             <line
               x1={x(focus)}
@@ -143,7 +143,7 @@ function ActivityChart({ points }: { points: OpsPoint[] }) {
           </g>
         ) : null}
       </svg>
-      {focusPoint ? (
+      {focus != null && focusPoint ? (
         <div
           className="pointer-events-none absolute top-2 border border-line bg-surface px-2 py-1"
           style={{

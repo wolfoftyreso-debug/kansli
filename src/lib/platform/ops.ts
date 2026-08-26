@@ -13,6 +13,7 @@ import { loadOpsDesk } from "./ops-desk.ts";
 import { loadFirstCustomerBoard } from "./first-customer.ts";
 import { hubStatus } from "./hub-status.ts";
 import type {
+  OpsEventMeasure,
   OpsPoint,
   OpsRecent,
   OpsSchemaMeasure,

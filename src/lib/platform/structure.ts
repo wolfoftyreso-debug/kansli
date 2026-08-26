@@ -105,10 +105,10 @@ export function knownProductKeys(): Set<string> {
 export function schemaOwner(schema: string): SystemId | "platform" | null {
   if (schema === "public") return "identity";
   if (schema === "platform") return "platform";
-  const module = SYSTEM_MODULES.find((item) => item.schema === schema);
-  return module?.id ?? null;
+  const owner = SYSTEM_MODULES.find((item) => item.schema === schema);
+  return owner?.id ?? null;
 }
 
 export function isKnownSchema(schema: string): boolean {
-  return schema === "public" || PRODUCT_SCHEMAS.includes(schema);
+  return schema === "public" || (PRODUCT_SCHEMAS as string[]).includes(schema);
 }

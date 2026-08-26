@@ -141,7 +141,7 @@ export type OpsSnapshot = {
   scope: OpsScope;
   orgRef: string;
   orgName: string | null;
-  runtime: "produktion" | "förhandsvisning" | "lokal";
+  runtime: "production" | "preview" | "local";
   hardened: boolean;
   contract: {
     engines: number;
