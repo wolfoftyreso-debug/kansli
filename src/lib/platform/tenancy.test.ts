@@ -4,7 +4,9 @@ import { EventLog } from "@pixdrift/events";
 import { createDraftInvoice, getInvoice, listInvoices } from "../ekonomi/invoices.ts";
 import { addTask, listTasks } from "../kansli/tasks.ts";
 import { createCase as createAlvaCase, getCase as getAlvaCase } from "../alva/cases.ts";
+import { createInquiry as createCreditaeInquiry, getInquiry } from "../creditae/inquiries.ts";
 import { createCase as createTyraCase, listCases as listTyraCases } from "../tyra/cases.ts";
+import { makeOrgNumber } from "./org-number.ts";
 import {
   TABLES_WITHOUT_ORG_REF,
   TENANT_SCHEMAS,
@@ -182,6 +184,25 @@ live("multi-tenant storage (live Postgres)", () => {
 
     expect(await getAlvaCase(poolA, orgA, alvaB.id)).toBeNull();
     expect(await getAlvaCase(poolB, orgB, alvaA.id)).toBeNull();
+
+    const creditA = await createCreditaeInquiry({
+      pool: poolA,
+      events: eventsA,
+      orgRef: orgA,
+      actorRef: "user-a",
+      subjectOrgNumber: makeOrgNumber(21),
+      requestId: `creditae-a-${stamp}`,
+    });
+    const creditB = await createCreditaeInquiry({
+      pool: poolB,
+      events: eventsB,
+      orgRef: orgB,
+      actorRef: "user-b",
+      subjectOrgNumber: makeOrgNumber(22),
+      requestId: `creditae-b-${stamp}`,
+    });
+    expect(await getInquiry(poolA, orgA, creditB.id)).toBeNull();
+    expect(await getInquiry(poolB, orgB, creditA.id)).toBeNull();
 
     const stolen = await poolA.query(`select id from ekonomi.invoices where id = $1`, [
       invoiceB.id,

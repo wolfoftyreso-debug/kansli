@@ -37,7 +37,9 @@ AI är aldrig source of truth; automation har uttrycklig nivå (L0–L4).
   generators, SEO engines or a second DevPortal until that matrix says the
   underlying cell is ready.
 - Products are only the ids in `@pixdrift/systems`. NORA, MOVA and SAGA are not
-  in this repository. Do not invent them.
+  in this repository. Do not invent them. CREDITAE is the counterpart-credit
+  room: org number + your assessment. Do not invent a bureau score, UC,
+  Creditsafe or TIC.
 - Capability Graph is generated from `src/lib/mcp/tools.ts`. Do not add a second
   handwritten catalog.
 - Standard commands: `pnpm format:check`, `pnpm lint`, `pnpm test`, `pnpm dev`.
@@ -93,3 +95,6 @@ AI är aldrig source of truth; automation har uttrycklig nivå (L0–L4).
   not call ElevenLabs themselves. IRMA listen is optional: guest
   `/api/irma/l/:token/speech` and org `/api/irma/agreements/:id/speech`.
   Tests mock the vendor. Do not send live speech from tests or page load.
+- CREDITAE lives at `/creditae`. One table `creditae.inquiries`. Products do
+  not call a credit bureau. The system never invents a score. Assessment is
+  go / watch / stop, written by the user.

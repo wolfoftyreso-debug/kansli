@@ -10,6 +10,7 @@ import { listObservations } from "@/lib/britt/observations";
 import { createAgreement } from "@/lib/irma/agreements";
 import { createCase as createTyraCase, parseIntent, parseOperations } from "@/lib/tyra/cases";
 import { createCase as createAlvaCase } from "@/lib/alva/cases";
+import { createInquiry as createCreditaeInquiry } from "@/lib/creditae/inquiries";
 import { needStore } from "./runtime";
 
 function orgOf(ctx: McpRuntime): Actor & { orgRef: string } {
@@ -692,6 +693,59 @@ export function buildPixdriftRegistry(): ToolRegistry {
           id: created.id,
           status: created.status,
           complaint: created.complaint,
+        };
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "register_credit_inquiry",
+      title: "Register credit inquiry",
+      description:
+        "Registers a CREDITAE counterpart by organisation number. Does not invent a credit score. Same createInquiry service as REST.",
+      system: "creditae",
+      domain: "credit",
+      inputSchema: {
+        type: "object",
+        properties: {
+          subjectOrgNumber: { type: "string" },
+          subjectName: { type: "string" },
+          reason: { type: "string" },
+          idempotency_key: { type: "string" },
+        },
+        required: ["subjectOrgNumber"],
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: "arende:write",
+      tenantScope: "org",
+      sideEffects: "write",
+      risk: 2,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "write",
+      whenToUse: "A counterpart should be assessed before credit or an agreement.",
+      whenNotToUse: "You want a bureau score — CREDITAE does not invent one.",
+      rest: { method: "POST", path: "/api/creditae/inquiries" },
+      flags: { ...readFlags(false), pii: true },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool, events } = needStore(ctx);
+        const created = await createCreditaeInquiry({
+          pool,
+          events,
+          orgRef: actor.orgRef,
+          actorRef: actor.sub,
+          subjectOrgNumber: String(input.subjectOrgNumber),
+          subjectName: typeof input.subjectName === "string" ? input.subjectName : undefined,
+          reason: typeof input.reason === "string" ? input.reason : undefined,
+          requestId: ctx.requestId,
+        });
+        return {
+          id: created.id,
+          status: created.status,
+          subjectOrgNumber: created.subjectOrgNumber,
         };
       },
     }),

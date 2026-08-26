@@ -8,6 +8,7 @@ import { createPool } from "@pixdrift/db";
 import { EventLog } from "@pixdrift/events";
 import { addObservation } from "../britt/observations.ts";
 import { createCase as createAlvaCase } from "../alva/cases.ts";
+import { createInquiry as createCreditaeInquiry } from "../creditae/inquiries.ts";
 import { addTask } from "../kansli/tasks.ts";
 import { submitIntake } from "../kansli/submit-intake.ts";
 import { createAgreement } from "../irma/agreements.ts";
@@ -176,10 +177,10 @@ async function runFleet(): Promise<{ passed: number; companies: number; failures
 
   const schemas = await pool.query<{ nspname: string }>(
     `select nspname from pg_namespace
-      where nspname in ('platform','kansli','ekonomi','tora','rita','britt','irma','tyra','alva')
+      where nspname in ('platform','kansli','ekonomi','tora','rita','britt','irma','tyra','alva','creditae')
       order by 1`,
   );
-  if (schemas.rowCount !== 9) {
+  if (schemas.rowCount !== 10) {
     throw new Error(`saknade scheman: ${schemas.rows.map((r) => r.nspname).join(",")}`);
   }
 
@@ -273,6 +274,17 @@ async function runFleet(): Promise<{ passed: number; companies: number; failures
         complaint: `Oljud ${n} hos ${companyName}`,
         vehicleRef: `LP${n}${String(stamp).slice(-3)}`,
         requestId: `fleet-alva-${n}-${stamp}`,
+      });
+
+      await createCreditaeInquiry({
+        pool,
+        events,
+        orgRef,
+        actorRef: intake.provision.userId,
+        subjectOrgNumber: orgNumber,
+        subjectName: companyName,
+        reason: `Liveprov ${n}`,
+        requestId: `fleet-creditae-${n}-${stamp}`,
       });
 
       await addObservation({
@@ -398,6 +410,15 @@ async function runFleet(): Promise<{ passed: number; companies: number; failures
         ),
       );
 
+      const creditae = await request(jar, "/api/creditae/inquiries");
+      report.checks.push(
+        check(
+          "creditae-api",
+          creditae.status === 200 && JSON.stringify(creditae.json).includes(companyName),
+          String(creditae.status),
+        ),
+      );
+
       const britt = await request(jar, "/api/britt/observations");
       report.checks.push(
         check(
@@ -433,6 +454,7 @@ async function runFleet(): Promise<{ passed: number; companies: number; failures
         [`/tyra/cases/${tyra.id}`, companyName],
         ["/irma", `Däckavtal ${companyName}`],
         ["/alva", `Oljud ${n}`],
+        ["/creditae", companyName],
         ["/britt", `Uppföljning ${companyName}`],
         ["/tora", companyName],
         ["/rita", companyName],

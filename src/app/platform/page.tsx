@@ -32,6 +32,7 @@ const PATH: Record<string, string> = {
   irma: "/irma",
   tyra: "/tyra",
   alva: "/alva",
+  creditae: "/creditae",
 };
 
 export default async function PlatformPage() {

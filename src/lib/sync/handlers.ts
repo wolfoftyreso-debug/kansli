@@ -189,6 +189,28 @@ export function registerSyncHandlers(events: EventLog, pool: pg.Pool): void {
     );
   });
 
+  events.subscribe("creditae.inquiry.created", async (event) => {
+    await record(
+      event.orgRef,
+      "creditae",
+      "CREDITAE har en ny motpart",
+      String(
+        event.payload["note"] ?? "Förfrågan är registrerad. CREDITAE sätter inget kreditbetyg.",
+      ),
+      event.subjectRef,
+    );
+  });
+
+  events.subscribe("creditae.assessment.recorded", async (event) => {
+    await record(
+      event.orgRef,
+      "creditae",
+      "CREDITAE har en bedömning",
+      String(event.payload["note"] ?? "Bedömningen är er, inte ett kreditbetyg från en byrå."),
+      event.subjectRef,
+    );
+  });
+
   events.subscribe("kansli.intake.received", async (event) => {
     await record(
       event.orgRef,

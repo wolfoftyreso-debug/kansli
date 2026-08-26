@@ -17,12 +17,12 @@ kansli/
 ├─ src/app/
 │  ├─ (site)/                 publik sajt
 │  ├─ idp/                    OIDC-mount
-│  ├─ kansli ekonomi tora rita britt irma tyra alva platform
-│  └─ api/{kansli,ekonomi,tora,rita,britt,irma,tyra,alva,platform,auth}
-├─ src/lib/{kansli,ekonomi,tora,rita,britt,irma,tyra,alva,platform,auth,sync}
+│  ├─ kansli ekonomi tora rita britt irma tyra alva creditae platform
+│  └─ api/{kansli,ekonomi,tora,rita,britt,irma,tyra,alva,creditae,platform,auth}
+├─ src/lib/{kansli,ekonomi,tora,rita,britt,irma,tyra,alva,creditae,platform,auth,sync}
 ├─ packages/                  @pixdrift/*
 ├─ integrations/              OIDC-adaptrar till fristående produktrepon
-├─ db/migrations/{platform,kansli,ekonomi,tora,rita,britt,irma,tyra,alva}/
+├─ db/migrations/{platform,kansli,ekonomi,tora,rita,britt,irma,tyra,alva,creditae}/
 └─ .github/workflows/ci.yml
 ```
 
@@ -60,6 +60,7 @@ faller om en yta saknas.
 | IRMA | `irma` | `/irma` | `/api/irma` | pilot (handshake; audit in `docs/irma/`) |
 | TYRA | `tyra` | `/tyra` | `/api/tyra` | pilot (sync kit; `docs/tyra/`) |
 | ALVA | `alva` | `/alva` | `/api/alva` | deferred |
+| CREDITAE | `creditae` | `/creditae` | `/api/creditae` | pilot (handshake; no bureau) |
 
 Produkterna synkar via `platform.events`. De skriver inte i varandras tabeller.
 RITA och TORA är skilda produkter. ALVA registrerar fall; diagnosmotorn väntar

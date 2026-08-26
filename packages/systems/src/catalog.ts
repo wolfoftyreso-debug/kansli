@@ -8,6 +8,7 @@ export const SYSTEM_IDS = [
   "irma",
   "tyra",
   "alva",
+  "creditae",
 ] as const;
 export type SystemId = (typeof SYSTEM_IDS)[number];
 
@@ -53,6 +54,8 @@ export const EVENT_KINDS = [
   "tyra.reminder.enqueued",
   "tyra.reminder.blocked",
   "alva.case.created",
+  "creditae.inquiry.created",
+  "creditae.assessment.recorded",
 ] as const;
 export type EventKind = (typeof EVENT_KINDS)[number];
 
@@ -238,6 +241,18 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
     domainDir: "src/lib/alva",
     eventKinds: ["alva.case.created"],
     capabilities: ["cases"],
+  },
+  {
+    id: "creditae",
+    name: "CREDITAE",
+    purpose: "Kreditbedömning av motpart. Er slutsats, inget påhittat betyg.",
+    status: "pilot",
+    schema: "creditae",
+    basePath: "/creditae",
+    apiBase: "/api/creditae",
+    domainDir: "src/lib/creditae",
+    eventKinds: ["creditae.inquiry.created", "creditae.assessment.recorded"],
+    capabilities: ["inquiries", "assess"],
   },
 ];
 
