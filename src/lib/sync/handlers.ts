@@ -194,7 +194,9 @@ export function registerSyncHandlers(events: EventLog, pool: pg.Pool): void {
       event.orgRef,
       "creditae",
       "CREDITAE har en ny motpart",
-      String(event.payload["note"] ?? "Förfrågan är registrerad. CREDITAE sätter inget kreditbetyg."),
+      String(
+        event.payload["note"] ?? "Förfrågan är registrerad. CREDITAE sätter inget kreditbetyg.",
+      ),
       event.subjectRef,
     );
   });

@@ -234,7 +234,8 @@ export const FAMILY_LINKS: readonly FamilyLink[] = [
     from: "creditae",
     to: "britt",
     via: "creditae.inquiry.created | creditae.assessment.recorded",
-    meaning: "En motpart är registrerad, eller ni har skrivit er slutsats. Inget kreditbetyg följer.",
+    meaning:
+      "En motpart är registrerad, eller ni har skrivit er slutsats. Inget kreditbetyg följer.",
   },
   {
     from: "ekonomi",

@@ -2,12 +2,7 @@ import { afterAll, describe, expect, it } from "vitest";
 import { createPool, migrateWorkspace } from "@pixdrift/db";
 import { EventLog } from "@pixdrift/events";
 import { makeOrgNumber } from "../platform/org-number.ts";
-import {
-  createInquiry,
-  getInquiry,
-  listInquiries,
-  recordAssessment,
-} from "./inquiries.ts";
+import { createInquiry, getInquiry, listInquiries, recordAssessment } from "./inquiries.ts";
 
 const OWNER = process.env.PIXDRIFT_TEST_OWNER_URL ?? process.env.PIXDRIFT_DB_OWNER_URL;
 const APP = process.env.PIXDRIFT_TEST_DATABASE_URL ?? process.env.DATABASE_URL;

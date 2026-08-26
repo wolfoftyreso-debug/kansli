@@ -16,11 +16,7 @@ export const metadata = {
   title: "Förfrågan — CREDITAE — Pixdrift",
 };
 
-export default async function CreditaeInquiryPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function CreditaeInquiryPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await readSession();
   const runtime = tryRuntime(session?.org?.ref);

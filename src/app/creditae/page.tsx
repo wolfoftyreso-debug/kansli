@@ -2,11 +2,7 @@ import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { EmptyState, Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
-import {
-  ASSESSMENT_LABELS,
-  INQUIRY_STATUS_LABELS,
-  listInquiries,
-} from "@/lib/creditae/inquiries";
+import { ASSESSMENT_LABELS, INQUIRY_STATUS_LABELS, listInquiries } from "@/lib/creditae/inquiries";
 import { readSession } from "@/lib/auth/session";
 import { formatSwedishDateTime } from "@/lib/format/datetime";
 import { tryRuntime } from "@/lib/platform/page";
@@ -29,12 +25,12 @@ export default async function CreditaePage() {
         <ProductCrumb crumbs={[{ href: "/creditae", label: "CREDITAE" }]} />
         <h1 className="text-3xl font-semibold tracking-tight">CREDITAE</h1>
         <p className="text-ink-soft">
-          CREDITAE tar emot vem ni ska bedöma och vad ni själva kom fram till. Systemet sätter
-          inget kreditbetyg.
+          CREDITAE tar emot vem ni ska bedöma och vad ni själva kom fram till. Systemet sätter inget
+          kreditbetyg.
         </p>
         <Notice>
-          Ingen kreditupplysningsbyrå är inkopplad. Bedömningen är er. Systemet hittar aldrig på
-          ett betyg.
+          Ingen kreditupplysningsbyrå är inkopplad. Bedömningen är er. Systemet hittar aldrig på ett
+          betyg.
         </Notice>
       </header>
 
