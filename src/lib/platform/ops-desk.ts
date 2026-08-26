@@ -312,7 +312,7 @@ export function buildOpsNotices(input: {
       id: "overdue",
       level: "larm",
       title: `${formatSek(facts.ledger.overdueOre)} förfallet`,
-      detail: `${facts.ledger.overdueCount} fakturor i reskontran har gått över tiden.`,
+      detail: `${facts.ledger.overdueCount} ${facts.ledger.overdueCount === 1 ? "faktura" : "fakturor"} i reskontran har gått över tiden.`,
       href: "/ekonomi",
       hrefLabel: "Öppna boken",
     });

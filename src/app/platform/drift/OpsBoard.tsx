@@ -268,7 +268,7 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
             hint={
               snapshot.ledger.overdueCount === 0
                 ? "inget förfallet"
-                : `${snapshot.ledger.overdueCount} fakturor`
+                : `${snapshot.ledger.overdueCount} ${snapshot.ledger.overdueCount === 1 ? "faktura" : "fakturor"}`
             }
             hintTone={snapshot.ledger.overdueOre > 0 ? "down" : "flat"}
           />
