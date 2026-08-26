@@ -285,6 +285,10 @@ async function runFleet(): Promise<{ passed: number; companies: number; failures
         subjectName: companyName,
         reason: `Liveprov ${n}`,
         requestId: `fleet-creditae-${n}-${stamp}`,
+        env: {},
+        fetchImpl: async () => {
+          throw new Error("tests must not call Creditsafe");
+        },
       });
 
       await addObservation({

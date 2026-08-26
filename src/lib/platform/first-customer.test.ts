@@ -28,6 +28,10 @@ describe("evaluateFirstCustomerGates", () => {
     expect(board.gates.find((g) => g.id === "rita")?.state).toBe("blocked");
     expect(board.gates.find((g) => g.id === "creditae")?.state).toBe("open");
     expect(board.gates.find((g) => g.id === "creditae")?.detail).toMatch(/kreditupplysning/);
+    const withBureau = evaluateFirstCustomerGates({ ...base, creditVendor: true });
+    expect(withBureau.gates.find((g) => g.id === "creditae")?.state).toBe("open");
+    expect(withBureau.gates.find((g) => g.id === "creditae")?.detail).toMatch(/inkopplad/);
+    expect(withBureau.gates.find((g) => g.id === "creditae")?.detail).toMatch(/slutsats/);
     expect(board.gates.find((g) => g.id === "upphandling")?.state).toBe("ready");
   });
 

@@ -1,14 +1,15 @@
 import { ApiError, requireOrg, requirePermission } from "@pixdrift/api-core";
 import { handleApi, json } from "@/lib/platform/http";
 import { createInquiry, listInquiries } from "@/lib/creditae/inquiries";
+import { creditConfigured } from "@/lib/platform/credit";
 
 export async function GET() {
   return handleApi(async ({ actor, pool }) => {
     const present = requireOrg(actor);
     return json({
       inquiries: await listInquiries(pool, present.orgRef),
-      bureau: null,
-      note: "Förfrågan är registrerad. CREDITAE sätter inget kreditbetyg.",
+      credit: { configured: creditConfigured() },
+      note: "CREDITAE sätter inget kreditbetyg. Byråns rapport är inte er slutsats.",
     });
   });
 }
@@ -35,7 +36,7 @@ export async function POST(request: Request) {
         reason: body.reason,
         requestId,
       });
-      return json({ inquiry: item, bureau: null }, 201);
+      return json({ inquiry: item, credit: { configured: creditConfigured() } }, 201);
     } catch (error) {
       throw new ApiError(
         "invalid_request",

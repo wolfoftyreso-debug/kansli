@@ -156,6 +156,7 @@ export type OpsSnapshot = {
     rita: { available: boolean; kind: string; modelReady: boolean };
     sms: boolean;
     tts: boolean;
+    credit: boolean;
     revolut: { configured: boolean; environment: string };
     mcp: {
       mcp_requests_total: number;

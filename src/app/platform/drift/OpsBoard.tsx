@@ -485,6 +485,8 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
             {" · "}
             Tal {snapshot.health.tts ? "på" : "av"}
             {" · "}
+            Kredit {snapshot.health.credit ? "på" : "av"}
+            {" · "}
             Revolut{" "}
             {snapshot.health.revolut.configured ? snapshot.health.revolut.environment : "av"}
           </p>

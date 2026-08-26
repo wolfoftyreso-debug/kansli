@@ -630,7 +630,8 @@ fordonsref mono faint, tid faint.
 | Jobb | Kreditbedömning av motpart. Er slutsats, inget påhittat betyg |
 | H1 | CREDITAE |
 
-Notice: ingen byrå. Systemet hittar aldrig på ett betyg.
+Notice: Kredit på/av. Systemet hittar aldrig på ett betyg. Byråns fält är inte
+er slutsats.
 
 Formulär Ny förfrågan. Lista: slutsats eller status accent versaler, namn
 eller orgnr som länk, orgnr mono faint, tid faint.

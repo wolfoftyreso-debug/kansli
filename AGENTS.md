@@ -38,8 +38,9 @@ AI är aldrig source of truth; automation har uttrycklig nivå (L0–L4).
   underlying cell is ready.
 - Products are only the ids in `@pixdrift/systems`. NORA, MOVA and SAGA are not
   in this repository. Do not invent them. CREDITAE is the counterpart-credit
-  room: org number + your assessment. Do not invent a bureau score, UC,
-  Creditsafe or TIC.
+  room: org number + your assessment. Credit reports go through
+  `src/lib/platform/credit.ts` (Creditsafe). Products must not call Creditsafe
+  themselves. Do not invent a bureau score, UC or TIC.
 - Capability Graph is generated from `src/lib/mcp/tools.ts`. Do not add a second
   handwritten catalog.
 - Standard commands: `pnpm format:check`, `pnpm lint`, `pnpm test`, `pnpm dev`.
@@ -95,6 +96,14 @@ AI är aldrig source of truth; automation har uttrycklig nivå (L0–L4).
   not call ElevenLabs themselves. IRMA listen is optional: guest
   `/api/irma/l/:token/speech` and org `/api/irma/agreements/:id/speech`.
   Tests mock the vendor. Do not send live speech from tests or page load.
-- CREDITAE lives at `/creditae`. One table `creditae.inquiries`. Products do
-  not call a credit bureau. The system never invents a score. Assessment is
-  go / watch / stop, written by the user.
+- Credit reports go through `src/lib/platform/credit.ts` (Creditsafe Connect).
+  Products must not call Creditsafe. CREDITAE stores pass-through fields only
+  when the vendor accepted. Tests mock the vendor. Do not live-call Creditsafe
+  from tests or page-load list.
+- CREDITAE lives at `/creditae`. One table `creditae.inquiries`. Credit reports
+  go through `src/lib/platform/credit.ts` (Creditsafe). Products must not call
+  Creditsafe. Tests mock the vendor. Do not live-call Creditsafe from tests or
+  page load. Fetched only if the vendor accepted. Do not auto-map a vendor
+  score to Kör/Bevaka/Stanna. Fail closed without `CREDITSAFE_USERNAME` and
+  `CREDITSAFE_PASSWORD`. The system never invents a score. Assessment is
+  go / watch / stop, written by the user. Do not invent UC or TIC.

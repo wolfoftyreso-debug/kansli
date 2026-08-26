@@ -6,9 +6,11 @@ import {
   ASSESSMENT_LABELS,
   ASSESSMENTS,
   INQUIRY_STATUS_LABELS,
+  VENDOR_STATUS_LABELS,
   getInquiry,
 } from "@/lib/creditae/inquiries";
 import { readSession } from "@/lib/auth/session";
+import { creditConfigured } from "@/lib/platform/credit";
 import { tryRuntime } from "@/lib/platform/page";
 import { saveCreditaeAssessment } from "../actions";
 
@@ -41,7 +43,11 @@ export default async function CreditaeInquiryPage({ params }: { params: Promise<
               ? ASSESSMENT_LABELS[item.assessment]
               : INQUIRY_STATUS_LABELS[item.status]}
           </p>
-          <Notice>Här fyller ni i slutsatsen själva. Systemet sätter inget kreditbetyg.</Notice>
+          <Notice>
+            {creditConfigured()
+              ? "Här fyller ni i slutsatsen själva. Byråns fält är inte er bedömning."
+              : "Här fyller ni i slutsatsen själva. Systemet sätter inget kreditbetyg."}
+          </Notice>
 
           <dl className="flex flex-col gap-3">
             <div>
@@ -58,6 +64,41 @@ export default async function CreditaeInquiryPage({ params }: { params: Promise<
               <div>
                 <dt className="text-sm text-ink-soft">Varför</dt>
                 <dd className="mt-1">{item.reason}</dd>
+              </div>
+            ) : null}
+            {item.vendorStatus ? (
+              <div>
+                <dt className="text-sm text-ink-soft">Kreditbyrån</dt>
+                <dd className="mt-1">{VENDOR_STATUS_LABELS[item.vendorStatus]}</dd>
+              </div>
+            ) : null}
+            {item.vendorStatus === "fetched" ? (
+              <>
+                {item.vendorName ? (
+                  <div>
+                    <dt className="text-sm text-ink-soft">Namn hos byrån</dt>
+                    <dd className="mt-1">{item.vendorName}</dd>
+                  </div>
+                ) : null}
+                {item.vendorScore ? (
+                  <div>
+                    <dt className="text-sm text-ink-soft">Byråns värde</dt>
+                    <dd className="mt-1 font-mono text-sm">{item.vendorScore}</dd>
+                  </div>
+                ) : null}
+                {item.vendorLimit ? (
+                  <div>
+                    <dt className="text-sm text-ink-soft">Byråns gräns</dt>
+                    <dd className="mt-1 font-mono text-sm">{item.vendorLimit}</dd>
+                  </div>
+                ) : null}
+                <p className="text-xs text-faint">Det är byråns fält, inte er slutsats.</p>
+              </>
+            ) : null}
+            {item.vendorStatus === "failed" && item.vendorReason ? (
+              <div>
+                <dt className="text-sm text-ink-soft">Varför rapporten saknas</dt>
+                <dd className="mt-1">{item.vendorReason}</dd>
               </div>
             ) : null}
             {item.notes ? (
