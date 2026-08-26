@@ -452,13 +452,17 @@ async function runFleet(): Promise<{ passed: number; companies: number; failures
       }
 
       const inbox = await request(jar, "/kansli/upphandling");
+      const inboxOk =
+        inbox.status === 200 &&
+        inbox.text.includes("kansliets inkorg") &&
+        !inbox.text.includes(email);
       report.checks.push(
         check(
           "house-inbox",
-          inbox.status === 200 &&
-            inbox.text.includes("kansliets inkorg") &&
-            !inbox.text.includes(email),
-          inbox.status === 200 ? "verkstad ser inte huslistan" : `status ${String(inbox.status)}`,
+          inboxOk,
+          inboxOk
+            ? "verkstad ser inte huslistan"
+            : `status ${String(inbox.status)} house=${String(inbox.text.includes("kansliets inkorg"))} email=${String(inbox.text.includes(email))}`,
         ),
       );
 

@@ -12,6 +12,7 @@ import {
 } from "./intakes.ts";
 import { generateWorkshopPassword, slugifyCompany } from "./provision.ts";
 import { submitIntake } from "./submit-intake.ts";
+import { listTasks } from "./tasks.ts";
 import { ownerDatabaseUrl } from "../platform/env.ts";
 
 describe("koncernupphandling domain", () => {
@@ -111,5 +112,12 @@ live("kansli.intakes (live Postgres)", () => {
     expect(await listIntakes(pool, "pixdrift:org:other-house")).toEqual([]);
     expect(await getHouseIntake(pool, house, result.intake.id)).not.toBeNull();
     expect(await getHouseIntake(pool, "pixdrift:org:other-house", result.intake.id)).toBeNull();
+
+    const houseTasks = await listTasks(pool, house);
+    expect(houseTasks.some((row) => row.title.startsWith("Förbered demo för"))).toBe(true);
+    const workshopTasks = result.provision?.orgRef
+      ? await listTasks(pool, result.provision.orgRef)
+      : [];
+    expect(workshopTasks.some((row) => row.title.startsWith("Förbered demo för"))).toBe(false);
   });
 });
