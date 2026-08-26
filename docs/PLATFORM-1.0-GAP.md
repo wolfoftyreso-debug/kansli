@@ -97,6 +97,9 @@ Se §5. Ingen locale-URL, ingen intent-graf, ingen Search Console-loop.
 **DESIGN — PARTIAL.**
 Tokens i `src/app/globals.css`. Gemensam stel fasad (`Facade`)
 med sidospår och statuslist. Inget `@pixdrift/design`-paket.
+Extrakt av allt som finns: `docs/DESIGN-SOURCE.md`. Inte låst än.
+Nästa steg är en gemensam Claude Design-fil, sedan införa och låsa.
+Inte ett andra utseende och inte ett design-paket innan dess.
 
 **BACKUP — PARTIAL.**
 `scripts/backup-postgres.sh`, `pnpm db:restore-drill`, CI kör drill.
