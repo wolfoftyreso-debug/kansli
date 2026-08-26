@@ -69,7 +69,7 @@ namn på en länk, inte en identifierad person.
 **Byggt:** återutfärda token; dagar kvar på listan; JSON-export av underlaget;
 DB-trigger mot ändring av signerat innehåll.
 
-**Inte byggt:** BankID, OCR, PDF, e-post, Document OS.
+**Inte byggt:** kvalificerad e-signatur, OCR, PDF, e-post, Document OS.
 
 IRMA: **52 → 60**. Handshake är hårdare. Affären “varje avtal” är inte här.
 
@@ -159,7 +159,7 @@ Kansli: **72 → 76**. Identity: **78 → 82**.
 | --- | --- |
 | Fullständig ALVA-diagnos | Motorn finns inte i det här repot |
 | TYRA live-pris / SMS SENT | Ingen adapter, konstitution art. 8–9 |
-| IRMA BankID / Document OS | Doktrin + IRMA-arkitektur |
+| IRMA e-sign / Document OS | Doktrin + IRMA-arkitektur |
 | RITA-garanti / fejkad motor | Skattjakt-disclaimer + resolve-engine |
 | BRITT Fortnox | FAMILY.md, art. 8 |
 | TORA live TED/HILMA | Ingen connector |
@@ -177,7 +177,7 @@ först. De rullar ut det som är sant.
 **Kan rullas ut till en första *pilotkund* nu, med kontraktet skrivet:**
 
 - Identity + Kansli: inloggning och nav
-- IRMA L0–L1: handslag, inte e-sign / inte BankID
+- IRMA L0–L1: handslag, inte kvalificerad e-signatur
 - TYRA: ärende, kundkort, hjulset, verifierad inspektion, offertutkast. Inte SMS. Inte live-pris
 - TORA: er bolagsprofil mot demonstrationsmarknad. Inte TED/HILMA
 - BRITT: inbox och klarmarkering

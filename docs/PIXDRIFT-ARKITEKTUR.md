@@ -246,8 +246,8 @@ Se `integrations/README.md` för modulmatrisen och de två referensmönstren
       Entitlement/tier finns nu i identitetsmodellen (org-nivå).
 - [x] **Publika klienter:** KLART — IdP stöder publika klienter (PKCE, ingen
       hemlighet). `tora-web` + audience `tora-opportunity` registrerade.
-- [x] **BankID:** utgår (beslut) — inte en inloggningsmetod. Tar bort broker,
-      certifikat och externt beroende.
+- [x] **E-legitimation som inloggning:** utgår (beslut) — inte en
+      inloggningsmetod. Tar bort broker, certifikat och externt beroende.
 - [ ] **Landa adaptrarna:** RITA/BRITT-PR:er kräver skrivåtkomst. **ALVA avvaktar
       tills vidare** (patchen är vilande, inte bortkastad).
 

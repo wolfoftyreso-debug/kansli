@@ -64,8 +64,8 @@ AI är aldrig source of truth; automation har uttrycklig nivå (L0–L4).
 - The workshop one-time password is shown only after form submit, via the
   `pd_intake_reveal` cookie. Anyone with the confirmation UUID must not see
   the password, email, or invoice.
-- BankID is not on the product surface the customer sees. Engineer docs that
-  say “do not build BankID” stay as rules.
+- Do not name e-ID brands on the product surface. Do not build qualified
+  e-sign or e-ID login. The handshake stays first-party.
 - Organisation numbers use Luhn (`src/lib/platform/org-number.ts`). RITA and
   `/upphandling` fail closed on a bad number. Live RITA demo uses
   `556016-0680` (`DEMO_ORG_NUMBER`).

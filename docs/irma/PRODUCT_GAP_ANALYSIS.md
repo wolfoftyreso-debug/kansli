@@ -4,7 +4,7 @@ Klassning: **IMPLEMENTED** / **PARTIAL** / **MOCK** / **MISSING** / **BROKEN** /
 
 Bedömningen gäller koden i `kansli` efter token-lifecycle, återkallelse och integritetskoll. Den gäller inte visionen.
 
-Ingen production-facing yta låtsas vara OCR, BankID, PDF-studio eller avtalsintelligens.
+Ingen production-facing yta låtsas vara OCR, kvalificerad e-signatur, PDF-studio eller avtalsintelligens.
 
 | # | Förmåga | Status | Vad som faktiskt finns |
 | --- | --- | --- | --- |

@@ -70,6 +70,6 @@ Sidospår: `cancelled` (återkallad länk), `expired` (TTL passerad; kan vara h�
 
 ## Vad som medvetet inte finns
 
-Document intake, structured document model, human verification av extraktion, template engine, PDF/HTML/JSON-outputmotor, PDF Design Studio, QR-verifiering, multilingual engine, avtalsregister/tidslinje/renewal/reminders, portfolio intelligence, jämförelse, förhandling, Ask IRMA, webhooks, bulkimport, branding, L2–L5-signering, Blob, BankID.
+Document intake, structured document model, human verification av extraktion, template engine, PDF/HTML/JSON-outputmotor, PDF Design Studio, QR-verifiering, multilingual engine, avtalsregister/tidslinje/renewal/reminders, portfolio intelligence, jämförelse, förhandling, Ask IRMA, webhooks, bulkimport, branding, L2–L5-signering, Blob, kvalificerad e-signatur.
 
 De sakerna ska inte låtsas finnas. Se `PRODUCT_GAP_ANALYSIS.md`.
