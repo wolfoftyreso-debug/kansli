@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PIXDRIFT — Fordon 3D</title>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.184.0/build/three.module.js",
+    "three/addons/controls/OrbitControls.js": "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js",
+    "three/addons/exporters/OBJExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js",
+    "three/addons/exporters/GLTFExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js"
+  },
+  "integrity": {
+    "https://unpkg.com/three@0.184.0/build/three.module.js": "sha384-8FCZ1eVO6it4+pbec2aDtnTrwjWXZLJRC+MAGCIPDgsYnUrl/E0A2YlF8ioMKI/J",
+    "https://unpkg.com/three@0.184.0/build/three.core.js": "sha384-dw2ooPewaEIrAgl6oFDBmmBWCE9oW9LxRGcfwZ0hLvEprzo202wXl7vCYHRlSnOT",
+    "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js": "sha384-4rziNxOBZKQ69i+w+f89KJ55TCYquwchVbByQwmaOeIOXdOU2PLDn3kOfXHwIJC9",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js": "sha384-nbwtoZENJD3Vq+ACK0CuGQdPMuDWHkamC2KJD70EV5nfg6jQjfppKOea07YJN+N3",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js": "sha384-VofkvpG6HERhFCYbsUOHeNXBCqID2nfqkQqnVzE1jc/oPcz+qJ13ADdXH08hE+cQ"
+  }
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; height: 100%; background: #fbfbf9; font-family: 'Geist', ui-sans-serif, system-ui, sans-serif; }
+  three-d-stage:not(:defined) { visibility: hidden; }
+  .bar { position: fixed; top: 0; left: 0; right: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; pointer-events: none; }
+  .wm { font-size: 12px; font-weight: 600; letter-spacing: 0.18em; color: #101317; }
+  .lbl { font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6a7078; }
+  three-d-stage { position: fixed; inset: 0; }
+  .picker { position: fixed; left: 16px; top: 44px; z-index: 10; display: flex; flex-direction: column; border: 1px solid #e6e5e0; background: #ffffff; max-height: calc(100vh - 120px); overflow: auto; }
+  .picker button { font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: #363b42; background: #ffffff; border: none; border-bottom: 1px solid #eef0f2; padding: 9px 16px; text-align: left; cursor: pointer; }
+  .picker button:last-child { border-bottom: none; }
+  .picker button:hover { background: #fbfbf9; }
+  .picker button.act { background: #101317; color: #fbfbf9; }
+</style>
+</head>
+<body>
+<div class="bar"><span class="wm">PIXDRIFT</span><span class="lbl">Vehicle library · 13 size classes · drag to orbit</span></div>
+<three-d-stage name="smabil" background="#fbfbf9" autorotate></three-d-stage>
+<div class="picker" id="picker"></div>
+<script>
+// @ds-adherence-ignore -- omelette starter scaffold (raw elements/hex/px by design)
+// Copied omelette starter. Re-running copy_starter_component with this kind overwrites this file with the latest version (page content is unaffected).
+
+
+(() => {
+  const stylesheet = `
+    :host {
+      position: relative;
+      display: block;
+      width: 100%;
+      height: 100vh;
+      background: var(--stage-bg, #f0eee6);
+      overflow: hidden;
+    }
+    canvas { display: block; outline: none; }
+    .toolbar {
+      position: absolute;
+      right: 16px;
+      bottom: 16px;
+      display: flex;
+      gap: 8px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .toolbar button {
+      appearance: none;
+      border: 1px solid rgba(20, 20, 19, 0.18);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.92);
+      color: #1a1915;
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 500;
+      line-height: 1;
+      padding: 9px 12px;
+      cursor: default;
+    }
+    .toolbar button:hover { background: #fff; }
+    .toolbar button:active { transform: translateY(1px); }
+    .toolbar button[disabled] { opacity: 0.5; pointer-events: none; }
+    .note {
+      position: absolute;
+      left: 16px;
+      bottom: 16px;
+      max-width: 60%;
+      font: 400 12px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: rgba(26, 25, 21, 0.55);
+      user-select: none;
+    }
+    .err {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      font: 500 14px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #8a2f20;
+      text-align: center;
+      white-space: pre-line;
+    }
+  `;
+
+  function download(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  }
+
+  /** Tell the host an export attempt settled — telemetry only. The host
+   *  (HTMLViewer) verifies the source and re-reads these fields defensively
+   *  before counting; nothing else crosses the frame boundary. Guarded so
+   *  telemetry can never break the download path. */
+  function notifyExport(format, ok) {
+    try {
+      window.parent.postMessage(
+        { type: 'omelette:notify-3d-export', format: format, ok: ok === true },
+        '*'
+      );
+    } catch (e) {}
+  }
+
+  class ThreeDStage extends HTMLElement {
+    constructor() {
+      super();
+      const root = this.attachShadow({ mode: 'open' });
+      const style = document.createElement('style');
+      style.textContent = stylesheet;
+      root.appendChild(style);
+      this._err = document.createElement('div');
+      this._err.className = 'err';
+      root.appendChild(this._err);
+      const note = document.createElement('div');
+      note.className = 'note';
+      note.textContent = 'Drag to orbit · scroll to zoom · right-drag to pan';
+      root.appendChild(note);
+      this._toolbar = document.createElement('div');
+      this._toolbar.className = 'toolbar';
+      this._objBtn = document.createElement('button');
+      this._objBtn.type = 'button';
+      this._objBtn.textContent = 'Download OBJ + MTL';
+      this._objBtn.addEventListener('click', () => this._runExport('obj'));
+      this._glbBtn = document.createElement('button');
+      this._glbBtn.type = 'button';
+      this._glbBtn.textContent = 'Download GLB';
+      this._glbBtn.addEventListener('click', () => this._runExport('glb'));
+      this._toolbar.appendChild(this._objBtn);
+      this._toolbar.appendChild(this._glbBtn);
+      root.appendChild(this._toolbar);
+      this._setButtonsEnabled(false);
+      /** Resolves with { THREE } once the scene is live — build the model
+       *  in `await stage.ready` so nothing races the library load. */
+      this.ready = new Promise((resolve, reject) => {
+        this._readyResolve = resolve;
+        this._readyReject = reject;
+      });
+    }
+
+    connectedCallback() {
+      if (this._booted) {
+        // Re-attached after a removal — resume what disconnected stopped.
+        if (this._renderer) {
+          this._renderer.setAnimationLoop(this._loop);
+          this._ro && this._ro.observe(this);
+        }
+        return;
+      }
+      this._booted = true;
+      this._boot().catch((err) => {
+        this._err.style.display = 'flex';
+        this._err.textContent =
+          'three.js failed to load.\n' +
+          'Check that the pinned <script type="importmap"> from the usage ' +
+          'notes is in <head> before any module script.\n\n' +
+          String(err && err.message ? err.message : err);
+        this._readyReject(err);
+      });
+    }
+
+    async _boot() {
+      const bg = this.getAttribute('background');
+      if (bg) this.style.setProperty('--stage-bg', bg);
+      const [THREE, controlsMod] = await Promise.all([
+        import('three'),
+        import('three/addons/controls/OrbitControls.js'),
+      ]);
+      this._THREE = THREE;
+      // preserveDrawingBuffer keeps the last frame readable after
+      // compositing (toDataURL / drawImage) — it's what lets the
+      // screenshot tools capture the scene instead of a blank canvas.
+      const renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true,
+        preserveDrawingBuffer: true,
+      });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      this._renderer = renderer;
+      this.shadowRoot.insertBefore(renderer.domElement, this._err);
+
+      const scene = new THREE.Scene();
+      this._scene = scene;
+
+      const camera = new THREE.PerspectiveCamera(45, 1, 0.01, 500);
+      camera.position.set(3, 2.2, 4);
+      this._camera = camera;
+
+      const controls = new controlsMod.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.08;
+      this._controls = controls;
+
+      // Neutral studio: soft sky/ground wash, a shadow-casting key light,
+      // and a dim fill from behind so silhouettes never go black.
+      scene.add(new THREE.HemisphereLight(0xffffff, 0xd8d2c4, 1.0));
+      const key = new THREE.DirectionalLight(0xffffff, 2.2);
+      key.position.set(4, 7, 5);
+      key.castShadow = true;
+      key.shadow.mapSize.set(2048, 2048);
+      key.shadow.bias = -0.0002;
+      this._key = key;
+      scene.add(key);
+      const fill = new THREE.DirectionalLight(0xfff4e6, 0.5);
+      fill.position.set(-5, 3, -4);
+      scene.add(fill);
+
+      const ground = new THREE.Mesh(
+        new THREE.PlaneGeometry(200, 200),
+        new THREE.ShadowMaterial({ opacity: 0.18 })
+      );
+      ground.rotation.x = -Math.PI / 2;
+      ground.receiveShadow = true;
+      this._ground = ground;
+      scene.add(ground);
+
+      this._autorotate = this.hasAttribute('autorotate');
+      controls.autoRotate = this._autorotate;
+      controls.autoRotateSpeed = 1.2;
+      controls.addEventListener('start', () => {
+        controls.autoRotate = false;
+      });
+
+      const fit = () => {
+        const w = this.clientWidth || 1;
+        const h = this.clientHeight || 1;
+        renderer.setSize(w, h);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      };
+      fit();
+      this._ro = new ResizeObserver(fit);
+      this._loop = () => {
+        controls.update();
+        renderer.render(scene, camera);
+      };
+      // Detached while three.js was fetching? Stay idle — the
+      // connectedCallback resume starts the loop and observer on
+      // reattach.
+      if (this.isConnected) {
+        this._ro.observe(this);
+        renderer.setAnimationLoop(this._loop);
+      }
+
+      this._readyResolve({ THREE });
+    }
+
+    disconnectedCallback() {
+      // Stop rendering and observing while detached; connectedCallback
+      // resumes both. (The renderer itself is kept — a move within the
+      // document must not rebuild the scene.)
+      if (this._renderer) this._renderer.setAnimationLoop(null);
+      if (this._ro) this._ro.disconnect();
+    }
+
+    /** Show (and own) the object. Replaces any previous object, enables
+     *  shadows on every mesh, rests it on the ground plane, and frames
+     *  the camera to its bounds. */
+    setObject(object) {
+      const THREE = this._THREE;
+      if (!THREE) throw new Error('three-d-stage: not ready — await stage.ready first');
+      if (this._object) this._scene.remove(this._object);
+      this._object = object;
+      object.traverse((o) => {
+        if (o.isMesh) {
+          o.castShadow = true;
+          o.receiveShadow = true;
+        }
+      });
+      const box = new THREE.Box3().setFromObject(object);
+      if (!box.isEmpty()) {
+        // Rest the object on the ground without moving its origin.
+        this._ground.position.y = box.min.y;
+        const sphere = box.getBoundingSphere(new THREE.Sphere());
+        const dist =
+          (sphere.radius / Math.tan((this._camera.fov * Math.PI) / 360)) * 1.35;
+        const dir = new THREE.Vector3(1, 0.55, 1.25).normalize();
+        this._camera.position
+          .copy(sphere.center)
+          .add(dir.multiplyScalar(dist));
+        this._camera.near = Math.max(dist / 100, 0.01);
+        this._camera.far = dist * 100;
+        this._camera.updateProjectionMatrix();
+        this._controls.target.copy(sphere.center);
+        this._controls.update();
+        const span = sphere.radius * 3;
+        this._key.shadow.camera.left = -span;
+        this._key.shadow.camera.right = span;
+        this._key.shadow.camera.top = span;
+        this._key.shadow.camera.bottom = -span;
+        this._key.shadow.camera.updateProjectionMatrix();
+      }
+      this._scene.add(object);
+      this._setButtonsEnabled(true);
+    }
+
+    get _basename() {
+      return (this.getAttribute('name') || 'model').replace(/[^\w.-]+/g, '_');
+    }
+
+    _setButtonsEnabled(on) {
+      this._objBtn.disabled = !on;
+      this._glbBtn.disabled = !on;
+    }
+
+    /** Every mesh and material needs a unique name for o/usemtl lines —
+     *  fill in stable fallbacks, and return the unique material list. */
+    _nameParts() {
+      const mats = [];
+      const seen = new Set();
+      let meshI = 0;
+      let matI = 0;
+      this._object.traverse((o) => {
+        if (!o.isMesh) return;
+        if (!o.name) o.name = 'part_' + meshI;
+        meshI += 1;
+        const list = Array.isArray(o.material) ? o.material : [o.material];
+        for (const m of list) {
+          if (!m || mats.includes(m)) continue;
+          if (!m.name) {
+            m.name = 'mat_' + matI;
+            matI += 1;
+          }
+          while (seen.has(m.name)) {
+            m.name = m.name + '_' + matI;
+            matI += 1;
+          }
+          seen.add(m.name);
+          mats.push(m);
+        }
+      });
+      return mats;
+    }
+
+    /** One export attempt, reported to the host however it settles.
+     *  Rethrows so a failure stays visible on the guest console exactly as
+     *  before. The no-object early return is not an attempt (the toolbar is
+     *  disabled until the model loads) and reports nothing. */
+    async _runExport(format) {
+      if (!this._object) return;
+      try {
+        await (format === 'obj' ? this._exportObj() : this._exportGlb());
+        notifyExport(format, true);
+      } catch (err) {
+        notifyExport(format, false);
+        throw err;
+      }
+    }
+
+    async _exportObj() {
+      if (!this._object) return;
+      const mod = await import('three/addons/exporters/OBJExporter.js');
+      const mats = this._nameParts();
+      const base = this._basename;
+      const obj =
+        'mtllib ' + base + '.mtl\n' + new mod.OBJExporter().parse(this._object);
+      let mtl = '# Exported by three-d-stage\n';
+      for (const m of mats) {
+        const c = m.color || { r: 0.8, g: 0.8, b: 0.8 };
+        const rough = typeof m.roughness === 'number' ? m.roughness : 0.5;
+        const opacity = typeof m.opacity === 'number' ? m.opacity : 1;
+        mtl += 'newmtl ' + m.name + '\n';
+        mtl +=
+          'Kd ' + c.r.toFixed(4) + ' ' + c.g.toFixed(4) + ' ' + c.b.toFixed(4) + '\n';
+        mtl += 'Ks 0.2000 0.2000 0.2000\n';
+        mtl += 'Ns ' + Math.round((1 - rough) * 200) + '\n';
+        mtl += 'd ' + opacity.toFixed(4) + '\n\n';
+      }
+      download(new Blob([obj], { type: 'text/plain' }), base + '.obj');
+      download(new Blob([mtl], { type: 'text/plain' }), base + '.mtl');
+    }
+
+    async _exportGlb() {
+      if (!this._object) return;
+      const mod = await import('three/addons/exporters/GLTFExporter.js');
+      this._nameParts();
+      const base = this._basename;
+      const buf = await new mod.GLTFExporter().parseAsync(this._object, {
+        binary: true,
+      });
+      download(
+        new Blob([buf], { type: 'model/gltf-binary' }),
+        base + '.glb'
+      );
+    }
+  }
+
+  customElements.define('three-d-stage', ThreeDStage);
+})();
+
+</script>
+<script type="module">
+const stage = document.querySelector('three-d-stage');
+const { THREE } = await stage.ready;
+
+const P = {
+  paint: new THREE.MeshStandardMaterial({ name: 'paint', color: 0x262b31, metalness: 0.35, roughness: 0.35 }),
+  glass: new THREE.MeshStandardMaterial({ name: 'glass', color: 0x10161f, metalness: 0.2, roughness: 0.08 }),
+  trim:  new THREE.MeshStandardMaterial({ name: 'trim',  color: 0x14181c, metalness: 0.0, roughness: 0.85 }),
+  tire:  new THREE.MeshStandardMaterial({ name: 'tire',  color: 0x121212, metalness: 0.0, roughness: 0.95 }),
+  rim:   new THREE.MeshStandardMaterial({ name: 'rim',   color: 0xb8bcc2, metalness: 0.4, roughness: 0.3 }),
+  head:  new THREE.MeshStandardMaterial({ name: 'headlight', color: 0xdfe6ee, metalness: 0.1, roughness: 0.2, emissive: 0x3a4b60, emissiveIntensity: 0.4 }),
+  tail:  new THREE.MeshStandardMaterial({ name: 'taillight', color: 0x7a1420, metalness: 0.1, roughness: 0.3, emissive: 0x40060c, emissiveIntensity: 0.5 })
+};
+function shapeFrom(pts) { const s = new THREE.Shape(); s.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) s.lineTo(pts[i][0], pts[i][1]); s.closePath(); return s; }
+function extr(g, pts, depth, mat, name, bevel) {
+  bevel = bevel == null ? 0.03 : bevel;
+  const geo = new THREE.ExtrudeGeometry(shapeFrom(pts), { depth: depth, bevelEnabled: true, bevelThickness: bevel, bevelSize: bevel, bevelSegments: 2, curveSegments: 10 });
+  geo.translate(0, 0, -depth / 2);
+  const m = new THREE.Mesh(geo, mat); m.name = name; g.add(m); return m;
+}
+function wheels(g, xs, r, halfW) {
+  xs.forEach(function (x, i) { [-1, 1].forEach(function (s) {
+    const t = new THREE.Mesh(new THREE.CylinderGeometry(r, r, 0.24, 28), P.tire); t.rotation.x = Math.PI / 2; t.position.set(x, r, s * (halfW - 0.1)); t.name = 'tire_' + i + (s > 0 ? 'l' : 'r'); g.add(t);
+    const rm = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.56, r * 0.56, 0.25, 20), P.rim); rm.rotation.x = Math.PI / 2; rm.position.set(x, r, s * (halfW - 0.1)); rm.name = 'rim_' + i + (s > 0 ? 'l' : 'r'); g.add(rm);
+  }); });
+}
+function lights(g, noseX, hlY, tailX, tlY, halfW) {
+  [-1, 1].forEach(function (s) {
+    const h = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.1, 0.4), P.head); h.position.set(noseX, hlY, s * (halfW - 0.35)); h.name = 'head' + (s > 0 ? 'l' : 'r'); g.add(h);
+    const t = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.12, 0.38), P.tail); t.position.set(tailX, tlY, s * (halfW - 0.35)); t.name = 'tail' + (s > 0 ? 'l' : 'r'); g.add(t);
+  });
+}
+function mirrors(g, x, y, halfW) {
+  [-1, 1].forEach(function (s) { const m = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.08, 0.15), P.paint); m.position.set(x, y, s * (halfW + 0.06)); m.name = 'mirror' + (s > 0 ? 'l' : 'r'); g.add(m); });
+}
+function threeBox(o) {
+  const g = new THREE.Group(); g.name = o.id;
+  extr(g, o.body, o.w, P.paint, 'body');
+  extr(g, o.cab, o.w - 0.16, P.glass, 'glass', 0.02);
+  const roof = new THREE.Mesh(new THREE.BoxGeometry(o.roof[2], 0.06, o.w - 0.2), P.paint); roof.name = 'roof'; roof.position.set(o.roof[0], o.roof[1], 0); g.add(roof);
+  if (o.rails) [-1, 1].forEach(function (s) { const rl = new THREE.Mesh(new THREE.BoxGeometry(o.roof[2] * 0.92, 0.05, 0.06), P.trim); rl.position.set(o.roof[0], o.roof[1] + 0.06, s * (o.w / 2 - 0.16)); rl.name = 'rail' + (s > 0 ? 'l' : 'r'); g.add(rl); });
+  wheels(g, o.wx, o.r, o.w / 2);
+  lights(g, o.nose, o.hl, o.tailX, o.tl, o.w / 2);
+  mirrors(g, o.mx, o.my, o.w / 2);
+  return g;
+}
+function van(o) {
+  const g = new THREE.Group(); g.name = o.id;
+  extr(g, o.body, o.w, P.paint, 'body');
+  extr(g, o.ws, o.w - 0.3, P.glass, 'windshield', 0.015);
+  o.win.forEach(function (wn, i) { [-1, 1].forEach(function (s) {
+    const b = new THREE.Mesh(new THREE.BoxGeometry(wn[1] - wn[0], wn[3] - wn[2], 0.03), P.glass);
+    b.position.set((wn[0] + wn[1]) / 2, (wn[2] + wn[3]) / 2, s * (o.w / 2)); b.name = 'win_' + i + (s > 0 ? 'l' : 'r'); g.add(b);
+  }); });
+  wheels(g, o.wx, o.r, o.w / 2);
+  lights(g, o.nose, o.hl, o.tailX, o.tl, o.w / 2);
+  mirrors(g, o.mx, o.my, o.w / 2);
+  return g;
+}
+function pickup() {
+  const g = new THREE.Group(); g.name = 'pickup';
+  extr(g, [[-2.45,0.46],[2.35,0.46],[2.45,0.6],[2.47,0.98],[2.2,1.08],[1.05,1.14],[-0.35,1.16],[-0.4,1.02],[-2.38,1.02],[-2.45,0.9]], 1.8, P.paint, 'body');
+  extr(g, [[1.0,1.11],[0.6,1.55],[-0.25,1.58],[-0.35,1.13]], 1.62, P.glass, 'glass', 0.02);
+  const roof = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.06, 1.58), P.paint); roof.name = 'roof'; roof.position.set(0.16, 1.585, 0); g.add(roof);
+  const bed = new THREE.Mesh(new THREE.BoxGeometry(1.85, 0.05, 1.46), P.trim); bed.name = 'bed_floor'; bed.position.set(-1.4, 1.0, 0); g.add(bed);
+  wheels(g, [1.5, -1.55], 0.4, 0.9);
+  lights(g, 2.47, 1.02, -2.44, 0.96, 0.9);
+  mirrors(g, 0.85, 1.24, 0.9);
+  return g;
+}
+const CLASSES = [
+  { id: 'smabil', label: 'Småbil', make: function () { return threeBox({ id: 'smabil', w: 1.6, body: [[-1.62,0.42],[1.55,0.42],[1.66,0.56],[1.68,0.88],[1.45,1.0],[0.62,1.06],[-1.5,1.1],[-1.62,0.94]], cab: [[0.6,1.03],[0.25,1.46],[-1.2,1.5],[-1.45,1.06]], roof: [-0.5,1.51,1.42], wx: [1.08,-1.08], r: 0.31, nose: 1.7, hl: 0.94, tailX: -1.62, tl: 1.0, mx: 0.42, my: 1.16 }); } },
+  { id: 'kompakt', label: 'Kompakt', make: function () { return threeBox({ id: 'kompakt', w: 1.7, body: [[-1.95,0.42],[1.9,0.42],[2.0,0.56],[2.02,0.9],[1.78,1.0],[0.75,1.06],[-1.82,1.12],[-1.95,0.95]], cab: [[0.72,1.03],[0.35,1.48],[-1.35,1.52],[-1.72,1.08]], roof: [-0.5,1.53,1.9], wx: [1.32,-1.32], r: 0.33, nose: 2.04, hl: 0.94, tailX: -1.96, tl: 1.0, mx: 0.5, my: 1.18 }); } },
+  { id: 'sedan', label: 'Sedan', make: function () { return threeBox({ id: 'sedan', w: 1.76, body: [[-2.3,0.44],[2.32,0.44],[2.42,0.58],[2.44,0.92],[2.2,1.0],[0.9,1.06],[-1.15,1.06],[-2.2,1.0],[-2.34,0.94]], cab: [[0.85,1.04],[0.45,1.44],[-0.95,1.46],[-1.35,1.05]], roof: [-0.25,1.47,1.6], wx: [1.45,-1.45], r: 0.34, nose: 2.46, hl: 0.96, tailX: -2.34, tl: 0.94, mx: 0.6, my: 1.16 }); } },
+  { id: 'kombi', label: 'Kombi', make: function () { return threeBox({ id: 'kombi', w: 1.76, rails: true, body: [[-2.3,0.44],[2.32,0.44],[2.42,0.58],[2.44,0.92],[2.2,1.0],[0.9,1.08],[-2.18,1.12],[-2.3,0.96]], cab: [[0.85,1.05],[0.45,1.48],[-1.98,1.52],[-2.15,1.1]], roof: [-0.7,1.53,2.5], wx: [1.45,-1.45], r: 0.34, nose: 2.46, hl: 0.96, tailX: -2.32, tl: 1.02, mx: 0.6, my: 1.18 }); } },
+  { id: 'kompakt-suv', label: 'Kompakt SUV', make: function () { return threeBox({ id: 'kompakt_suv', w: 1.72, rails: true, body: [[-2.18,0.42],[2.18,0.42],[2.28,0.56],[2.3,0.9],[2.08,1.02],[0.85,1.1],[-2.06,1.16],[-2.2,1.0],[-2.22,0.6]], cab: [[0.85,1.07],[0.42,1.58],[-1.42,1.62],[-1.92,1.12]], roof: [-0.52,1.635,1.92], wx: [1.32,-1.32], r: 0.38, nose: 2.31, hl: 0.97, tailX: -2.235, tl: 1.04, mx: 0.62, my: 1.22 }); } },
+  { id: 'stor-suv', label: 'Stor SUV', make: function () { return threeBox({ id: 'stor_suv', w: 1.85, rails: true, body: [[-2.45,0.46],[2.45,0.46],[2.56,0.6],[2.58,0.98],[2.32,1.1],[0.95,1.18],[-2.3,1.24],[-2.46,1.06],[-2.48,0.64]], cab: [[0.95,1.15],[0.5,1.72],[-1.7,1.76],[-2.18,1.2]], roof: [-0.6,1.78,2.2], wx: [1.5,-1.5], r: 0.42, nose: 2.59, hl: 1.04, tailX: -2.47, tl: 1.12, mx: 0.7, my: 1.3 }); } },
+  { id: 'el-sedan', label: 'El-sedan', make: function () { return threeBox({ id: 'el_sedan', w: 1.78, body: [[-2.25,0.42],[2.3,0.42],[2.4,0.54],[2.42,0.86],[2.1,0.96],[0.7,1.02],[-1.9,1.0],[-2.25,0.9]], cab: [[0.65,1.0],[0.15,1.4],[-1.5,1.42],[-1.85,0.98]], roof: [-0.65,1.43,1.5], wx: [1.48,-1.48], r: 0.36, nose: 2.43, hl: 0.9, tailX: -2.28, tl: 0.94, mx: 0.4, my: 1.12 }); } },
+  { id: 'el-suv', label: 'El-SUV', make: function () { return threeBox({ id: 'el_suv', w: 1.8, rails: true, body: [[-2.3,0.44],[2.34,0.44],[2.44,0.58],[2.46,0.92],[2.16,1.04],[0.85,1.1],[-2.15,1.14],[-2.32,0.98]], cab: [[0.8,1.07],[0.35,1.56],[-1.6,1.6],[-2.05,1.1]], roof: [-0.6,1.61,1.8], wx: [1.42,-1.42], r: 0.4, nose: 2.47, hl: 0.98, tailX: -2.34, tl: 1.04, mx: 0.55, my: 1.22 }); } },
+  { id: 'minibuss', label: 'Minibuss', make: function () { return van({ id: 'minibuss', w: 1.9, body: [[-2.45,0.42],[2.45,0.42],[2.55,0.56],[2.57,0.95],[2.3,1.05],[1.9,1.08],[1.35,1.85],[1.28,1.92],[-2.38,1.95],[-2.45,1.8]], ws: [[1.88,1.1],[1.42,1.82],[1.34,1.82],[1.8,1.1]], win: [[-2.15,1.15,1.25,1.62]], wx: [1.55,-1.55], r: 0.36, nose: 2.58, hl: 1.0, tailX: -2.44, tl: 1.3, mx: 1.85, my: 1.25 }); } },
+  { id: 'skapbil', label: 'Skåpbil', make: function () { return van({ id: 'skapbil', w: 1.9, body: [[-2.45,0.42],[2.45,0.42],[2.55,0.56],[2.57,0.95],[2.3,1.05],[1.9,1.08],[1.35,1.85],[1.28,1.92],[-2.38,1.95],[-2.45,1.8]], ws: [[1.88,1.1],[1.42,1.82],[1.34,1.82],[1.8,1.1]], win: [[0.6,1.25,1.2,1.6]], wx: [1.55,-1.55], r: 0.36, nose: 2.58, hl: 1.0, tailX: -2.44, tl: 1.3, mx: 1.85, my: 1.25 }); } },
+  { id: 'stor-transport', label: 'Stor transport', make: function () { return van({ id: 'stor_transport', w: 2.0, body: [[-2.9,0.46],[2.9,0.46],[3.0,0.6],[3.02,1.0],[2.75,1.12],[2.3,1.16],[1.75,2.2],[1.66,2.42],[-2.82,2.46],[-2.9,2.28]], ws: [[2.28,1.18],[1.82,2.16],[1.72,2.16],[2.18,1.18]], win: [[0.9,1.6,1.35,1.85]], wx: [1.9,-1.85], r: 0.4, nose: 3.03, hl: 1.05, tailX: -2.88, tl: 1.4, mx: 2.25, my: 1.35 }); } },
+  { id: 'pickup', label: 'Pickup', make: pickup },
+  { id: 'liten-skapbil', label: 'Liten skåpbil', make: function () { return van({ id: 'liten_skapbil', w: 1.78, body: [[-2.1,0.42],[2.1,0.42],[2.2,0.56],[2.22,0.9],[1.98,1.0],[1.6,1.04],[1.15,1.68],[1.08,1.76],[-2.04,1.8],[-2.1,1.65]], ws: [[1.58,1.06],[1.2,1.66],[1.12,1.66],[1.5,1.06]], win: [[0.5,1.15,1.1,1.5]], wx: [1.35,-1.35], r: 0.32, nose: 2.23, hl: 0.94, tailX: -2.09, tl: 1.2, mx: 1.55, my: 1.18 }); } }
+];
+const picker = document.getElementById('picker');
+const lbl = document.querySelector('.lbl');
+let btns = [];
+function show(cls) {
+  stage.setAttribute('name', cls.id);
+  stage.setObject(cls.make());
+  lbl.textContent = 'Vehicle library · ' + cls.label + ' · drag to orbit';
+  btns.forEach(function (b) { b.classList.toggle('act', b.dataset.id === cls.id); });
+}
+CLASSES.forEach(function (cls) {
+  const b = document.createElement('button');
+  b.textContent = cls.label; b.dataset.id = cls.id;
+  b.addEventListener('click', function () { show(cls); });
+  picker.appendChild(b); btns.push(b);
+});
+show(CLASSES[0]);
+</script>
+</body>
+</html>

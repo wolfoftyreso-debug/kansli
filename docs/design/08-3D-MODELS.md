@@ -1,6 +1,7 @@
 # 3D Vehicle Models — all size classes
-References: referens/tiguan-3d.html (Tiguan class, in this lock),
-referens/fordon-3d.html (full 13-class stage — next referens dump).
+References: referens/fordon-3d.html (all 13 classes, orbit and export),
+referens/tiguan-3d.html (one class as a smaller stage).
+3D stays in referens. Do not import three.js into product rooms.
 
 All 13 size classes exist as real, orbitable three.js models built from the same
 design: extruded side profiles matching the 2D library, ink paint (0x262B31),

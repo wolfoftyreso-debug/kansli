@@ -17,11 +17,13 @@ som körs.
 Ekonomi, TORA och CREDITAE stannar för att de finns i katalogen. TORA täcks
 inte av MOVA här — MOVA finns inte.
 
-**Referens-HTML** ligger i `docs/design/referens/` (Hem, Grafer, Illustrations,
-Karta, Regelverk, tiguan-3d). 357 figurer, fordonsbibliotek och hela 3D-flottan
-väntar på nästa dump. Inställningsytor BEA / COMPANY / LANGUAGE byggs inte som
-appar. Ekonomi använder det mutade 2.5D-diagramspråket. Launcher-rutorna bär
-illustrerade modeller för de nio katalogrummen.
+**Referens-HTML** ligger i `docs/design/referens/` — Galleri, Design, Hem,
+Grafer, Illustrations, Karta, Regelverk, Objektkatalog, Fordonsbibliotek,
+fordon-3d, tiguan-3d, plus `support.js` / `grafer.js` / `three-d-stage.js`.
+357 figurer och 13 fordonsklasser är låsta som bevis, inte som appar.
+3D stannar i referens. Inställningsytor BEA / COMPANY / LANGUAGE byggs inte
+som appar. Ekonomi använder det mutade 2.5D-diagramspråket. Launcher-rutorna
+bär illustrerade modeller för de nio katalogrummen.
 
 **ALVA-schema** ligger i `docs/design/alva/`. Det är rummets grammatik, inte
 ett andra utseende och inte diagnosmotorn. PIXDRIFT-chromet vinner i
