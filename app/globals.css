@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-navy: #000028;
+  --color-teal: #007580;
+  --color-accent: #00b3b3;
+  --color-ink: #000028;
+  --color-muted: #3c4650;
+  --color-subtle: #5a6570;
+  --color-line: #e3e6e8;
+  --color-edge: #c9ced2;
+  --color-wash: #f7f8f9;
+  --color-panel: #aab4bd;
+  --color-mist: #c3ccd3;
+  --font-sans: var(--font-archivo);
+  --font-mono: var(--font-ibm-plex-mono);
+  --breakpoint-site: 62.5rem;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #ffffff;
+  color: #000028;
+  font-family: var(--font-archivo), "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-wrap: pretty;
+}
+
+a {
+  color: #007580;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #000028;
+}
+
+:focus-visible {
+  outline: 2px solid #007580;
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -48px;
+  z-index: 100;
+  background: #000028;
+  color: #ffffff;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.skip-link:focus {
+  top: 16px;
+}
+
+.input {
+  font-family: var(--font-archivo), sans-serif;
+  font-size: 15px;
+  padding: 13px 14px;
+  border: 1px solid #c9ced2;
+  background: #ffffff;
+  color: #000028;
+  width: 100%;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #007580;
+}
+
+.eyebrow {
+  font-family: var(--font-ibm-plex-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
