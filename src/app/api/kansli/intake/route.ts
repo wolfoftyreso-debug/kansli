@@ -2,11 +2,24 @@ import { NextResponse } from "next/server";
 import { completeIntakeSubmit } from "@/lib/kansli/complete-intake";
 import { intakeRevealCookie } from "@/lib/kansli/intake-reveal";
 
+function hostName(value: string): string {
+  return value.replace(/:\d+$/, "").replace(/^localhost$/i, "127.0.0.1");
+}
+
+function requestBase(request: Request): string {
+  return (
+    request.headers.get("origin") ||
+    `${new URL(request.url).protocol}//${request.headers.get("host") || new URL(request.url).host}`
+  );
+}
+
 function sameOrigin(request: Request): boolean {
   const origin = request.headers.get("origin");
   if (!origin) return true;
   try {
-    return new URL(origin).host === new URL(request.url).host;
+    const fromOrigin = hostName(new URL(origin).host);
+    const fromRequest = hostName(request.headers.get("host") || new URL(request.url).host);
+    return fromOrigin === fromRequest;
   } catch {
     return false;
   }
@@ -23,11 +36,11 @@ export async function POST(request: Request) {
   } catch (error) {
     const message = error instanceof Error ? error.message : "";
     if (/stämmer inte|tio siffror|saknas/.test(message)) {
-      return NextResponse.redirect(new URL("/upphandling?fel=orgnr", request.url), 303);
+      return NextResponse.redirect(new URL("/upphandling?fel=orgnr", requestBase(request)), 303);
     }
     throw error;
   }
-  const response = NextResponse.redirect(new URL(result.path, request.url), 303);
+  const response = NextResponse.redirect(new URL(result.path, requestBase(request)), 303);
   if (result.reveal) {
     const cookie = await intakeRevealCookie(result.reveal);
     response.cookies.set(cookie);
