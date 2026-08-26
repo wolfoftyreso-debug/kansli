@@ -487,6 +487,8 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
             {" · "}
             Kredit {snapshot.health.credit ? "på" : "av"}
             {" · "}
+            Webbdata {snapshot.health.webintel ? "på" : "av"}
+            {" · "}
             Revolut{" "}
             {snapshot.health.revolut.configured ? snapshot.health.revolut.environment : "av"}
           </p>

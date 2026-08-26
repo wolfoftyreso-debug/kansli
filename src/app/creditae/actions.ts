@@ -2,13 +2,19 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createInquiry, parseAssessment, recordAssessment } from "@/lib/creditae/inquiries";
+import {
+  createInquiry,
+  fetchWebPresence,
+  parseAssessment,
+  recordAssessment,
+} from "@/lib/creditae/inquiries";
 import { requireOrgAction } from "@/lib/platform/actions";
 
 export async function registerCreditaeInquiry(formData: FormData) {
   const { session, pool, events } = await requireOrgAction("/creditae", "arende:write");
   const subjectOrgNumber = String(formData.get("subjectOrgNumber") ?? "").trim();
   const subjectName = String(formData.get("subjectName") ?? "").trim();
+  const subjectDomain = String(formData.get("subjectDomain") ?? "").trim();
   const reason = String(formData.get("reason") ?? "").trim();
   if (!subjectOrgNumber) return;
   let created;
@@ -20,6 +26,7 @@ export async function registerCreditaeInquiry(formData: FormData) {
       actorRef: session.sub,
       subjectOrgNumber,
       subjectName: subjectName || undefined,
+      subjectDomain: subjectDomain || undefined,
       reason: reason || undefined,
       requestId: crypto.randomUUID(),
     });
@@ -30,6 +37,29 @@ export async function registerCreditaeInquiry(formData: FormData) {
   revalidatePath("/kansli");
   revalidatePath("/platform/events");
   redirect(`/creditae/${created.id}`);
+}
+
+export async function fetchCreditaeWebPresence(formData: FormData) {
+  const { session, pool, events } = await requireOrgAction("/creditae", "arende:write");
+  const id = String(formData.get("id") ?? "").trim();
+  const domain = String(formData.get("domain") ?? "").trim();
+  if (!id) return;
+  try {
+    await fetchWebPresence({
+      pool,
+      events,
+      orgRef: session.org.ref,
+      actorRef: session.sub,
+      inquiryId: id,
+      domain: domain || undefined,
+      requestId: crypto.randomUUID(),
+    });
+  } catch {
+    return;
+  }
+  revalidatePath("/creditae");
+  revalidatePath(`/creditae/${id}`);
+  revalidatePath("/platform/events");
 }
 
 export async function saveCreditaeAssessment(formData: FormData) {

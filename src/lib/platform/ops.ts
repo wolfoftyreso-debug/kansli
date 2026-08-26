@@ -24,6 +24,7 @@ import type {
 import { creditConfigured } from "./credit.ts";
 import { smsConfigured } from "./sms.ts";
 import { ttsConfigured } from "./tts.ts";
+import { webintelConfigured } from "./webintel.ts";
 import {
   DATABASE_CONTRACT,
   IDENTITY_TABLES,
@@ -367,6 +368,7 @@ export async function loadOpsSnapshot(
       sms: smsConfigured(),
       tts: ttsConfigured(),
       credit: creditConfigured(),
+      webintel: webintelConfigured(),
       revolut: { configured: revolut.missing.length === 0, environment: revolut.environment },
       mcp: metricsSnapshot(),
     },

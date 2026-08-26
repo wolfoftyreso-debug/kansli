@@ -157,6 +157,7 @@ export type OpsSnapshot = {
     sms: boolean;
     tts: boolean;
     credit: boolean;
+    webintel: boolean;
     revolut: { configured: boolean; environment: string };
     mcp: {
       mcp_requests_total: number;
