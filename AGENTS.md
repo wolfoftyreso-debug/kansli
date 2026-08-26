@@ -18,6 +18,8 @@ Innan du ändrar något i familjen, läs och följ:
 - `docs/ARCHITECTURE-CONSTITUTION.md` — styrande, nästan juridiska artiklar.
 - `docs/PLATFORM-1.0.md` — fryst plattformsmålbild (en plattform, flera produkter).
 - `docs/PLATFORM-1.0-GAP.md` — PASS/PARTIAL/MISSING mot den målbilden. Läs innan du bygger.
+- `docs/DESIGN-SOURCE.md` — extraherad design för alla rum. Inte låst än.
+  Hitta inte på ett nytt utseende. Lås när Claude Design-filen är införd.
 - `docs/PIXDRIFT-ARKITEKTUR.md` — målarkitektur, sammanflätning, synk, sekvens.
 - `docs/REPO-INTAKE.md` — pipeline och klassificering (KEEP/MOVE/MERGE/REWRITE/
   DEPRECATE/DELETE/UNKNOWN; `UNKNOWN` utreds, gissas aldrig).
@@ -74,3 +76,6 @@ AI är aldrig source of truth; automation har uttrycklig nivå (L0–L4).
 - Twenty-workshop proof: `LIVE_FLEET=1 pnpm exec vitest run
   src/lib/platform/live-fleet.test.ts`. Default skip so CI does not create
   twenty orgs. Do not send another real SMS or copy 46elks to production.
+- Design source is `docs/DESIGN-SOURCE.md`. Extracted from current UI, not
+  invented. Do not start `@pixdrift/design` or a second look until that file
+  is locked after the shared Claude Design file is implemented.
