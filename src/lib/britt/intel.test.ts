@@ -2,6 +2,7 @@ import { afterAll, describe, expect, it } from "vitest";
 import { createPool, migrateWorkspace } from "@pixdrift/db";
 import { EventLog } from "@pixdrift/events";
 import { registerSyncHandlers } from "../sync/handlers.ts";
+import { DEMO_METRICS } from "./engine.ts";
 import { listFindings, runIntel } from "./intel.ts";
 
 const OWNER = process.env.PIXDRIFT_TEST_OWNER_URL ?? process.env.PIXDRIFT_DB_OWNER_URL;
@@ -21,12 +22,23 @@ live("BRITT intel (live Postgres)", () => {
     registerSyncHandlers(events, pool);
     const orgRef = `pixdrift:org:britt-intel-${Date.now()}`;
 
+    await expect(
+      runIntel({
+        pool,
+        events,
+        orgRef,
+        actorRef: "user-test",
+        requestId: "req-intel-denied",
+      }),
+    ).rejects.toThrow(/bara på huset/);
+
     const result = await runIntel({
       pool,
       events,
       orgRef,
       actorRef: "user-test",
       requestId: "req-intel",
+      facts: DEMO_METRICS,
     });
     expect(result.findings.length).toBe(3);
     expect(result.snapshot.period).toBe("2026-07");
