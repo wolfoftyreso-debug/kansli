@@ -4,6 +4,7 @@ import type { SystemId, SystemStatus } from "@pixdrift/systems";
  * What each system does *in this repo today*, and how they connect.
  * Marketing copy lives elsewhere. This is the operating map.
  * Machine fields (id, schema, paths, events) live in `@pixdrift/systems`.
+ * English is the source. UI translations live in `@/lib/i18n`.
  */
 export interface FamilySystem {
   id: SystemId;
@@ -18,50 +19,64 @@ export interface FamilySystem {
 }
 
 export interface FamilyLink {
+  id: string;
   from: string;
   to: string;
   via: string;
   meaning: string;
 }
 
+export interface FamilyStackRow {
+  id: string;
+  layer: string;
+  runs: string;
+}
+
 export const FAMILY_STATUS_LABEL: Record<SystemStatus, string> = {
-  operational: "Igång",
-  pilot: "På väg",
-  deferred: "Inte klart än",
+  operational: "Running",
+  pilot: "On the way",
+  deferred: "Not ready yet",
 };
 
 export const FAMILY_PRINCIPLE =
-  "Samma inloggning i alla system. Varje system sköter sitt. TORA tar upphandlingar. RITA tar skatt. De blandas inte.";
+  "The same sign-in in every system. Each system does its own job. TORA takes procurement. RITA takes tax. They are not mixed.";
 
 /** What this nav repo actually runs. Not the target architecture. */
-export const FAMILY_STACK: readonly { layer: string; runs: string }[] = [
+export const FAMILY_STACK: readonly FamilyStackRow[] = [
   {
-    layer: "Språk",
-    runs: "TypeScript 5 i hela systemet. SQL i databasen. RITA:s analys körs som ett eget program. ekonomi-ledger kontrollerar verifikat, postar inte i drift.",
+    id: "language",
+    layer: "Language",
+    runs: "TypeScript 5 across the system. SQL in the database. RITA's analysis runs as its own program. ekonomi-ledger checks vouchers, it does not post in production.",
   },
   {
-    layer: "Webb",
-    runs: "Next.js 16.3 App Router, React 19.2, Tailwind CSS 4. En process: sajt, /idp, produkter och API.",
+    id: "web",
+    layer: "Web",
+    runs: "Next.js 16.3 App Router, React 19.2, Tailwind CSS 4. One process: site, /idp, products and API.",
   },
   {
-    layer: "Identitet",
-    runs: "Egen inloggning, byggd på öppen standard. En cookie håller er inloggade. Samma inloggning i alla system.",
+    id: "identity",
+    layer: "Identity",
+    runs: "Own sign-in, built on an open standard. One cookie keeps you signed in. The same sign-in in every system.",
   },
   {
+    id: "data",
     layer: "Data",
-    runs: "PostgreSQL 16. Varje system har sin egen data. Inget system skriver i ett annat systems uppgifter.",
+    runs: "PostgreSQL 16. Each system has its own data. No system writes another system's records.",
   },
   {
-    layer: "Analys",
-    runs: "TORA räknar i samma process. RITA anropar en egen analys. Inga påhittade resultat i drift.",
+    id: "analysis",
+    layer: "Analysis",
+    runs: "TORA calculates in the same process. RITA calls its own analysis. No invented results in production.",
   },
   {
+    id: "automation",
     layer: "Automation",
-    runs: "Modeller går via Vercel-gateway. Svaret är en gissning, inte fakta.",
+    runs: "Models go through the Vercel gateway. The answer is a guess, not a fact.",
   },
   {
-    layer: "Drift och test",
-    runs: "Körs på Vercel. Tester mot Postgres 16. Ingen AWS SDK i det här systemet.",
+    id: "ops",
+    layer: "Operations and test",
+    runs: "Runs on Vercel. Tests against Postgres 16. No AWS SDK in this system.",
   },
 ];
 
@@ -69,31 +84,31 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
   {
     id: "identity",
     name: "PIXDRIFT Identity",
-    mission: "En inloggning till alla system.",
-    question: "Vem är du, och vilket bolag gäller det?",
-    does: "Du loggar in en gång. Sedan är du inne i Kansli, TORA, RITA och de andra.",
-    doesNot: "Här skickas inga fakturor och här finns ingen extra kod i mobilen än.",
+    mission: "One sign-in for every system.",
+    question: "Who are you, and which company does it apply to?",
+    does: "You sign in once. Then you are in Kansli, TORA, RITA and the others.",
+    doesNot: "No invoices are sent here, and there is no extra mobile code yet.",
     owns: ["public (users, orgs, clients, keys)"],
     status: "operational",
   },
   {
     id: "kansli",
     name: "Kansli",
-    mission: "Startsidan. Uppgifter och vägen in.",
-    question: "Var börjar jag, och vad ska vi göra internt?",
-    does: "Inloggning, intern uppgiftstavla och formuläret för nya kunder.",
-    doesNot: "Kansli räknar inte på upphandling, skatt eller däck. Det gör de andra systemen.",
+    mission: "The start page. Tasks and the way in.",
+    question: "Where do I start, and what should we do internally?",
+    does: "Sign-in, an internal task board and the form for new customers.",
+    doesNot: "Kansli does not calculate procurement, tax or tyres. The other systems do that.",
     owns: ["kansli.tasks", "kansli.intakes"],
     status: "operational",
   },
   {
     id: "ekonomi",
     name: "Ekonomi",
-    mission: "Fakturor, moms och hur pengarna kom in.",
-    question: "Vad är bokat, vad är förfallet, och hur kom pengarna in?",
-    does: "Skriver faktura på 10 dagar, bokför i öre, kopplar Stripe och Revolut, matchar inbetalningar när banken är ansluten.",
+    mission: "Invoices, VAT and how the money came in.",
+    question: "What is booked, what is overdue, and how did the money come in?",
+    does: "Writes a 10-day invoice, books in öre, connects Stripe and Revolut, matches incoming payments when the bank is connected.",
     doesNot:
-      "Inte Visma. Inte Fortnox. Ingen påhittad inbetalning. Kort kräver Stripe. Swish kräver att Swish är inkopplat.",
+      "Not Visma. Not Fortnox. No invented payment. Cards need Stripe. Swish needs Swish to be wired.",
     owns: [
       "ekonomi.accounts",
       "ekonomi.transactions",
@@ -109,51 +124,51 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
   {
     id: "tora",
     name: "TORA",
-    mission: "Vilka upphandlingar just ert bolag kan ta.",
-    question: "Kan vi lämna anbud här — och vad ska vi göra nu?",
-    does: "Jämför bolaget mot upphandlingarna: krav, luckor, belopp, datum och nästa steg.",
-    doesNot: "Tittar inte i räkenskaperna. Det gör RITA.",
+    mission: "Which procurements your company can take.",
+    question: "Can we bid here — and what should we do now?",
+    does: "Compares the company with the procurements: requirements, gaps, amounts, dates and the next step.",
+    doesNot: "Does not look in the books. RITA does that.",
     owns: ["tora.market_snapshots"],
     status: "pilot",
   },
   {
     id: "rita",
     name: "RITA",
-    mission: "Letar skattebesparingar i era böcker.",
-    question: "Vilka avdrag, moms och andra luckor sitter i bokslutet?",
-    does: "Läser bokslutet mot svenska skatteregler och lämnar förslag att kolla. Inte skatteråd.",
+    mission: "Looks for tax savings in your books.",
+    question: "Which deductions, VAT and other gaps sit in the annual accounts?",
+    does: "Reads the annual accounts against Swedish tax rules and leaves proposals to check. Not tax advice.",
     doesNot:
-      "Hittar inte på resultat. Säger inte om ni får lämna anbud. Ingen kundfil att ladda upp än.",
+      "Does not invent results. Does not say whether you may bid. No customer file to upload yet.",
     owns: ["rita.analyses"],
     status: "pilot",
   },
   {
     id: "britt",
     name: "BRITT",
-    mission: "Det som hänt och behöver följas upp.",
-    question: "Vad behöver ni göra nu, utifrån det som redan hänt?",
-    does: "Samlar saker som måste följas upp. En sak i taget, med nästa steg.",
-    doesNot: "BRITT är inte ett ärendesystem och inte en chatt.",
+    mission: "What happened and needs follow-up.",
+    question: "What do you need to do now, based on what already happened?",
+    does: "Collects things that must be followed up. One thing at a time, with the next step.",
+    doesNot: "BRITT is not a case system and not a chat.",
     owns: ["britt.observations", "britt.findings", "britt.metric_snapshots", "britt.analysis_runs"],
     status: "pilot",
   },
   {
     id: "irma",
     name: "IRMA",
-    mission: "Skicka ett avtal, se om det är läst och bekräftat.",
-    question: "Har motparten läst och bekräftat avtalet?",
-    does: "Skickar avtalet. Visar om det är öppnat, signerat eller avvisat.",
-    doesNot: "IRMA är inte e-post och inte ett arkiv för alla dokument.",
+    mission: "Send an agreement, see if it is read and confirmed.",
+    question: "Has the counterpart read and confirmed the agreement?",
+    does: "Sends the agreement. Shows whether it is opened, signed or rejected.",
+    doesNot: "IRMA is not email and not an archive for every document.",
     owns: ["irma.agreements"],
     status: "pilot",
   },
   {
     id: "tyra",
     name: "TYRA",
-    mission: "Kund, bil, hjul och vad som ska göras härnäst.",
-    question: "Vilken kund, vilken bil, vilka hjul — och vad är nästa steg?",
-    does: "Håller ihop kund, fordon och däck. Visar när det är dags att byta eller hämta.",
-    doesNot: "TYRA är inte ett allmänt kundregister för andra branscher.",
+    mission: "Customer, car, wheels and what to do next.",
+    question: "Which customer, which car, which wheels — and what is the next step?",
+    does: "Keeps customer, vehicle and tyres together. Shows when it is time to change or collect.",
+    doesNot: "TYRA is not a general customer register for other trades.",
     owns: [
       "tyra.customers",
       "tyra.vehicles",
@@ -167,20 +182,20 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
   {
     id: "alva",
     name: "ALVA",
-    mission: "Kundens fel, anteckningar och mätvärden. Diagnosen kommer senare.",
-    question: "Vad sa kunden, vad mättes — och vad är nästa steg?",
-    does: "Tar emot vad som sagts och mätts. Visar anteckningen. Ställer ingen diagnos själv.",
-    doesNot: "ALVA ställer ingen diagnos och ger inget råd.",
+    mission: "The customer's fault, notes and measurements. Diagnosis comes later.",
+    question: "What did the customer say, what was measured — and what is the next step?",
+    does: "Takes what was said and measured. Shows the note. Does not diagnose on its own.",
+    doesNot: "ALVA does not diagnose and does not give advice.",
     owns: ["alva.cases", "alva.case_observations", "alva.case_measurements"],
     status: "deferred",
   },
   {
     id: "creditae",
     name: "CREDITAE",
-    mission: "Kreditbedömning av motpart. Er slutsats, inget påhittat betyg.",
-    question: "Vem ska vi bedöma — och vad kom ni fram till?",
-    does: "Tar emot organisationsnummer och er bedömning. Hämtar byråns rapport via plattformens kreditkanal när den är kopplad. Kör, bevaka eller stanna.",
-    doesNot: "CREDITAE sätter inget kreditbetyg. Produkten anropar inte Creditsafe.",
+    mission: "Credit assessment of a counterpart. Your conclusion, no invented score.",
+    question: "Who should we assess — and what did you conclude?",
+    does: "Takes an organisation number and your assessment. Fetches the bureau report through the platform credit channel when it is wired. Go, watch or stop.",
+    doesNot: "CREDITAE sets no credit score. The product does not call Creditsafe.",
     owns: ["creditae.inquiries"],
     status: "pilot",
   },
@@ -188,134 +203,152 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
 
 export const FAMILY_LINKS: readonly FamilyLink[] = [
   {
+    id: "identity.products",
     from: "identity",
-    to: "alla produkter",
+    to: "products",
     via: "OIDC → kansli_session",
-    meaning: "En inloggning. Produkterna läser inte varandras användarlistor.",
+    meaning: "One sign-in. Products do not read each other's user lists.",
   },
   {
+    id: "identity.events",
     from: "identity",
     to: "platform.events",
     via: "identity.session.started",
-    meaning: "Lyckad inloggning skrivs i loggen. Det är ett kvitto, inte en uppgift att följa upp.",
+    meaning:
+      "A successful sign-in is written in the log. It is a receipt, not a task to follow up.",
   },
   {
+    id: "tora.britt",
     from: "tora",
     to: "britt",
     via: "tora.market.evaluated",
-    meaning: "Bara när någon publicerar. Att läsa marknaden skapar ingen händelse.",
+    meaning: "Only when someone publishes. Reading the market creates no event.",
   },
   {
+    id: "rita.britt",
     from: "rita",
     to: "britt",
     via: "rita.analysis.completed | rita.analysis.blocked",
     meaning:
-      "BRITT får bolagsnamn, hur många träffar det blev och om AI var med. Inte själva förslagen — de stannar i RITA.",
+      "BRITT gets the company name, how many hits it produced and whether automation was involved. Not the proposals themselves — those stay in RITA.",
   },
   {
+    id: "irma.britt",
     from: "irma",
     to: "britt",
     via: "irma.agreement.created | irma.agreement.viewed | irma.agreement.signed | irma.agreement.cancelled",
-    meaning: "Avtal skapat, öppnat, bekräftat eller återkallat.",
+    meaning: "Agreement created, opened, confirmed or withdrawn.",
   },
   {
+    id: "tyra.britt",
     from: "tyra",
     to: "britt",
     via: "tyra.case.created | tyra.case.completed | tyra.hub.link.issued | tyra.reminder.enqueued | tyra.reminder.blocked",
-    meaning: "Ärende, kundlänk eller påminnelse i kö. Stoppad kö betyder inte skickat.",
+    meaning:
+      "A case, a customer link or a reminder in the queue. A blocked queue does not mean sent.",
   },
   {
+    id: "alva.britt",
     from: "alva",
     to: "britt",
     via: "alva.case.created",
-    meaning: "Ett ärende är registrerat. Ingen diagnos följer förrän den är inkopplad.",
+    meaning: "A case is registered. No diagnosis follows until it is wired.",
   },
   {
+    id: "creditae.britt",
     from: "creditae",
     to: "britt",
     via: "creditae.inquiry.created | creditae.assessment.recorded | creditae.report.fetched | creditae.report.failed",
     meaning:
-      "En motpart är registrerad, ni har skrivit er slutsats, eller byråns rapport kom in eller stannade. Inget påhittat betyg följer.",
+      "A counterpart is registered, you have written your conclusion, or the bureau report arrived or stopped. No invented score follows.",
   },
   {
+    id: "ekonomi.britt",
     from: "ekonomi",
     to: "britt",
     via: "ekonomi.invoice.issued | ekonomi.payment.recorded | ekonomi.revolut.sync.blocked",
-    meaning: "Utfärdad faktura, bokad inbetalning eller en Revolut-hämtning som inte gick.",
+    meaning:
+      "An issued invoice, a booked incoming payment or a Revolut fetch that did not go through.",
   },
   {
+    id: "ekonomi.revolut",
     from: "ekonomi",
     to: "platform.events",
     via: "ekonomi.revolut.oauth.started | ekonomi.revolut.oauth.completed | ekonomi.revolut.oauth.failed | ekonomi.revolut.connection.action_required | ekonomi.revolut.connection.disconnected | ekonomi.revolut.certificate.expiry_warning",
     meaning:
-      "Bankanslutningens livscykel. Vanlig förnyelse loggas som drift, inte som något att följa upp.",
+      "The bank connection lifecycle. Ordinary renewal is logged as operations, not as something to follow up.",
   },
   {
+    id: "ekonomi.invoice",
     from: "ekonomi",
     to: "platform.events",
     via: "ekonomi.invoice.created",
-    meaning: "Utkast syns i loggen. Ingen bokföring förrän utfärdande.",
+    meaning: "A draft appears in the log. No bookkeeping until issue.",
   },
   {
+    id: "kansli.task",
     from: "kansli",
     to: "britt",
     via: "kansli.task.created",
-    meaning: "Intern uppgift syns hos BRITT. Kansli äger fortfarande uppgiften.",
+    meaning: "An internal task appears in BRITT. Kansli still owns the task.",
   },
   {
+    id: "kansli.intake",
     from: "kansli",
     to: "britt",
     via: "kansli.intake.received | kansli.account.provisioned",
-    meaning: "En anmälan har kommit in, eller ett verkstadskonto skapats inför demon.",
+    meaning: "An application has come in, or a workshop account was created for the demo.",
   },
   {
+    id: "britt.finding",
     from: "britt",
     to: "britt",
     via: "britt.finding.recorded",
     meaning:
-      "De viktigaste träffarna från exempelanalysen blir saker att följa upp. Resten stannar i BRITT.",
+      "The most important hits from the sample analysis become things to follow up. The rest stays in BRITT.",
   },
   {
+    id: "britt.events",
     from: "britt",
     to: "platform.events",
     via: "britt.observation.recorded",
-    meaning: "Varje sak att följa upp skrivs också i händelselistan.",
+    meaning: "Each thing to follow up is also written in the event list.",
   },
 ];
 
 export function familyPartyName(id: string): string {
-  if (id === "alla produkter") return "alla produkter";
-  if (id === "platform.events") return "händelselistan";
+  if (id === "products" || id === "alla produkter") return "every product";
+  if (id === "platform.events") return "the event list";
   return FAMILY_SYSTEMS.find((system) => system.id === id)?.name ?? id;
 }
 
-/** Produkter som tas in när de har egen data, sida och händelser. */
+/** Products taken in when they have their own data, page and events. */
 export const FAMILY_INCOMING =
-  "Fler system är på väg. De får samma inloggning och egna uppgifter. Namn kommer när de är redo — inte före.";
+  "More systems are on the way. They get the same sign-in and their own records. Names come when they are ready — not before.";
 
 export const FAMILY_BLOCKED = [
   {
-    id: "rita-engine",
-    need: "RITA:s analys måste vara inkopplad (på Vercel via URL, lokalt via programfilen) innan analyser kan köras.",
+    id: "rita",
+    need: "RITA's analysis must be wired (on Vercel via URL, locally via the program file) before analyses can run.",
   },
   {
-    id: "alva-repo",
-    need: "Den guidade diagnosen kopplas när den är klar. Ärendet kan registreras redan nu.",
+    id: "alva",
+    need: "The guided diagnosis is wired when it is ready. The case can be registered already.",
   },
   {
-    id: "irma-sign",
-    need: "IRMA stannar hos oss: enkel digital bekräftelse och en egen länk. Ingen juridisk e-signatur än.",
+    id: "irma",
+    need: "IRMA stays with us: a simple digital confirmation and its own link. No legal e-signature yet.",
   },
   {
-    id: "britt-intel",
-    need: "Fortnox, Revolut och BRITT:s profiler om exempelanalysen ska bli hela produkten.",
+    id: "britt",
+    need: "Fortnox, Revolut and BRITT's profiles if the sample analysis is to become the whole product.",
   },
   {
-    id: "ekonomi-rails",
-    need: "Stripe, Revolut och Swish när ni vill ta betalt den vägen. Faktura på 10 dagar fungerar utan dem.",
+    id: "ekonomi",
+    need: "Stripe, Revolut and Swish when you want to take payment that way. A 10-day invoice works without them.",
   },
   {
-    id: "creditae-bureau",
-    need: "CREDITAE går via plattformens kreditkanal. Produkter anropar inte Creditsafe. Utan nyckel hämtas ingen rapport. Bedömningen är fortfarande er.",
+    id: "creditae",
+    need: "CREDITAE goes through the platform credit channel. Products do not call Creditsafe. Without a key no report is fetched. The assessment is still yours.",
   },
 ] as const;

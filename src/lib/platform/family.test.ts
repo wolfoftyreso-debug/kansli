@@ -14,31 +14,31 @@ describe("family map", () => {
     for (const system of FAMILY_SYSTEMS) {
       expect(system.mission.length).toBeGreaterThan(8);
     }
-    expect(rita.mission.toLowerCase()).toMatch(/skatte/);
+    expect(rita.mission.toLowerCase()).toMatch(/tax/);
     for (const system of FAMILY_SYSTEMS) {
       expect(system.mission).not.toMatch(/hus|fabrik|Receptionen|CRM|legal basis/i);
       expect(system.question).not.toMatch(/hus|fabrik|Receptionen/i);
     }
-    expect(tora.mission.toLowerCase()).toMatch(/upphandling/);
+    expect(tora.mission.toLowerCase()).toMatch(/procurement/);
     expect(FAMILY_SYSTEMS.find((s) => s.id === "britt")!.mission.toLowerCase()).toMatch(
-      /följas upp/,
+      /follow-up/,
     );
   });
 
   it("describes the stack this repo actually runs", () => {
     expect(FAMILY_STACK.map((row) => row.layer)).toEqual([
-      "Språk",
-      "Webb",
-      "Identitet",
+      "Language",
+      "Web",
+      "Identity",
       "Data",
-      "Analys",
+      "Analysis",
       "Automation",
-      "Drift och test",
+      "Operations and test",
     ]);
     const blob = FAMILY_STACK.map((row) => row.runs).join(" ");
     expect(blob).toMatch(/TypeScript/);
     expect(blob).toMatch(/PostgreSQL 16/);
-    expect(blob).toMatch(/Ingen AWS SDK/);
+    expect(blob).toMatch(/No AWS SDK/);
   });
 
   it("only names event kinds that exist", () => {

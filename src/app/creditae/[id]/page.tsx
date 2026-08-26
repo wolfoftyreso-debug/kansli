@@ -90,28 +90,28 @@ export default async function CreditaeInquiryPage({ params }: { params: Promise<
                 ) : null}
                 {item.vendorScore ? (
                   <div>
-                    <dt className="text-sm text-ink-soft">Byråns värde</dt>
+                    <dt className="text-sm text-ink-soft">{t(locale, "creditae.vendorScore")}</dt>
                     <dd className="mt-1 font-mono text-sm">{item.vendorScore}</dd>
                   </div>
                 ) : null}
                 {item.vendorLimit ? (
                   <div>
-                    <dt className="text-sm text-ink-soft">Byråns gräns</dt>
+                    <dt className="text-sm text-ink-soft">{t(locale, "creditae.vendorLimit")}</dt>
                     <dd className="mt-1 font-mono text-sm">{item.vendorLimit}</dd>
                   </div>
                 ) : null}
-                <p className="text-xs text-faint">Det är byråns fält, inte er slutsats.</p>
+                <p className="text-xs text-faint">{t(locale, "creditae.vendorNotConclusion")}</p>
               </>
             ) : null}
             {item.vendorStatus === "failed" && item.vendorReason ? (
               <div>
-                <dt className="text-sm text-ink-soft">Varför rapporten saknas</dt>
+                <dt className="text-sm text-ink-soft">{t(locale, "creditae.vendorWhyMissing")}</dt>
                 <dd className="mt-1">{item.vendorReason}</dd>
               </div>
             ) : null}
             {item.notes ? (
               <div>
-                <dt className="text-sm text-ink-soft">Anteckning</dt>
+                <dt className="text-sm text-ink-soft">{t(locale, "creditae.notes")}</dt>
                 <dd className="mt-1">{item.notes}</dd>
               </div>
             ) : null}
@@ -121,10 +121,10 @@ export default async function CreditaeInquiryPage({ params }: { params: Promise<
             action={saveCreditaeAssessment}
             className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
           >
-            <h2 className="text-lg font-semibold">Er bedömning</h2>
+            <h2 className="text-lg font-semibold">{t(locale, "creditae.yourAssessment")}</h2>
             <input type="hidden" name="id" value={item.id} />
             <label className="flex flex-col gap-1">
-              <span className="text-sm text-ink-soft">Slutsats</span>
+              <span className="text-sm text-ink-soft">{t(locale, "creditae.conclusion")}</span>
               <select
                 name="assessment"
                 required

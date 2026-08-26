@@ -10,15 +10,20 @@ import {
   Submit,
 } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
+import { t } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 import { tryRuntime } from "@/lib/platform/page";
 import { TaskRow } from "@/components/tyra/Rows";
 import { CASE_STATUS_LABELS, INTENT_LABELS, listCases } from "@/lib/tyra/cases";
 import { createTyraCase } from "./actions";
 
-export const metadata = {
-  title: "TYRA — Pixdrift",
-  description: "Kund, bil, hjul och vad som ska göras härnäst.",
-};
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "tyra.metaTitle"),
+    description: t(locale, "tyra.metaDescription"),
+  };
+}
 
 function caseTone(status: string) {
   if (status === "DONE") return "good" as const;
@@ -29,6 +34,7 @@ function caseTone(status: string) {
 
 export default async function TyraPage() {
   const session = await readSession();
+  const locale = await readLocale();
   const runtime = tryRuntime(session?.org?.ref);
   const cases = session?.org?.ref && runtime ? await listCases(runtime.pool, session.org.ref) : [];
 
@@ -36,31 +42,34 @@ export default async function TyraPage() {
     <AppShell current="tyra" session={session}>
       <header className="flex flex-col gap-4 pt-4 sm:pt-8">
         <ProductCrumb crumbs={[{ href: "/tyra", label: "TYRA" }]} />
-        <h1 className="max-w-xl text-4xl font-semibold tracking-tight">Vilket fordon ska in?</h1>
-        <p className="max-w-xl text-ink-soft">
-          TYRA håller ihop kund, bil och hjul. Däck säljs här — ett klick bokar fakturan i Ekonomi.
-          Beloppen är era egna siffror. Inga live-priser än.
-        </p>
+        <h1 className="max-w-xl text-4xl font-semibold tracking-tight">
+          {t(locale, "tyra.heading")}
+        </h1>
+        <p className="max-w-xl text-ink-soft">{t(locale, "tyra.lead")}</p>
         <p className="text-sm">
           <Link
             href="/tyra/kunder"
             className="font-medium underline decoration-line underline-offset-4"
           >
-            Kundkort
+            {t(locale, "tyra.customers")}
           </Link>
           {" · "}
           <Link
             href="/tyra/integrations"
             className="font-medium underline decoration-line underline-offset-4"
           >
-            Integrationer
+            {t(locale, "tyra.integrations")}
           </Link>
         </p>
       </header>
 
       {!session?.org ? (
-        <SignInGate next="/tyra" title="Logga in för att öppna ärenden">
-          Samma inloggning som resten av Pixdrift. Inget extra konto för verkstaden.
+        <SignInGate
+          next="/tyra"
+          title={t(locale, "tyra.signInTitle")}
+          actionLabel={t(locale, "chrome.signIn")}
+        >
+          {t(locale, "tyra.signInBody")}
         </SignInGate>
       ) : (
         <>
@@ -131,10 +140,7 @@ export default async function TyraPage() {
         </>
       )}
 
-      <Notice>
-        Påminnelser läggs i kö men skickas inte än — det saknas en koppling till SMS och e-post.
-        Inga live-däckpriser.
-      </Notice>
+      <Notice>{t(locale, "tyra.notice")}</Notice>
     </AppShell>
   );
 }

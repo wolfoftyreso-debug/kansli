@@ -195,4 +195,182 @@ export const FI: Record<MessageKey, string> = {
   "family.tyra.mission": "Asiakas, auto, pyörät ja mitä seuraavaksi.",
   "family.alva.mission": "Asiakkaan vika, muistiinpanot ja mittaukset. Diagnoosi tulee myöhemmin.",
   "family.creditae.mission": "Vastapuolen luottoarvio. Teidän päätelmä, ei keksittyä arvosanaa.",
+  "family.identity.question": "Kuka olette, ja mitä yritystä se koskee?",
+  "family.identity.does":
+    "Kirjaudutte kerran. Sitten olette Kanslissa, TORASSA, RITASSA ja muissa.",
+  "family.identity.doesNot":
+    "Täällä ei lähetetä laskuja, eikä ylimääräistä koodia puhelimessa ole vielä.",
+  "family.kansli.question": "Mistä aloitan, ja mitä teemme sisäisesti?",
+  "family.kansli.does": "Kirjautuminen, sisäinen tehtävätaulu ja uusien asiakkaiden lomake.",
+  "family.kansli.doesNot":
+    "Kansli ei laske hankintaa, veroa eikä renkaita. Sen tekevät muut järjestelmät.",
+  "family.ekonomi.question": "Mitä on kirjattu, mikä on erääntynyt, ja miten raha tuli sisään?",
+  "family.ekonomi.does":
+    "Kirjoittaa 10 päivän laskun, kirjaa öreissä, kytkee Stripen ja Revolutin, täsmäyttää saapuvat maksut kun pankki on kytketty.",
+  "family.ekonomi.doesNot":
+    "Ei Vismaa. Ei Fortnoxia. Ei keksittyä maksua. Kortit vaativat Stripen. Swish vaatii, että Swish on kytketty.",
+  "family.tora.question": "Voimmeko tarjota tässä — ja mitä teemme nyt?",
+  "family.tora.does":
+    "Vertaa yritystä hankintoihin: vaatimukset, aukot, summat, päivämäärät ja seuraava askel.",
+  "family.tora.doesNot": "Ei katso kirjoja. Sen tekee RITA.",
+  "family.rita.question": "Mitkä vähennykset, ALV ja muut aukot ovat tilinpäätöksessä?",
+  "family.rita.does":
+    "Lukee tilinpäätöstä Ruotsin verosääntöjä vasten ja jättää ehdotuksia tarkistettavaksi. Ei veroneuvontaa.",
+  "family.rita.doesNot":
+    "Ei keksi tuloksia. Ei sano saatteko tarjota. Ei vielä asiakastiedostoa ladattavaksi.",
+  "family.britt.question": "Mitä teidän pitää tehdä nyt, sen perusteella mikä jo tapahtui?",
+  "family.britt.does":
+    "Kerää asiat jotka pitää seurata. Yksi kerrallaan, seuraavan askeleen kanssa.",
+  "family.britt.doesNot": "BRITT ei ole tapausjärjestelmä eikä keskustelu.",
+  "family.irma.question": "Onko vastapuoli lukenut ja vahvistanut sopimuksen?",
+  "family.irma.does": "Lähettää sopimuksen. Näyttää onko se avattu, allekirjoitettu vai hylätty.",
+  "family.irma.doesNot": "IRMA ei ole sähköposti eikä arkisto kaikille asiakirjoille.",
+  "family.tyra.question": "Mikä asiakas, mikä auto, mitkä pyörät — ja mikä on seuraava askel?",
+  "family.tyra.does":
+    "Pitää asiakkaan, ajoneuvon ja renkaat yhdessä. Näyttää milloin on aika vaihtaa tai noutaa.",
+  "family.tyra.doesNot": "TYRA ei ole yleinen asiakasrekisteri muille aloille.",
+  "family.alva.question": "Mitä asiakas sanoi, mitä mitattiin — ja mikä on seuraava askel?",
+  "family.alva.does": "Ottaa vastaan sanotun ja mitatun. Näyttää muistiinpanon. Ei diagnoi itse.",
+  "family.alva.doesNot": "ALVA ei diagnoi eikä anna neuvoa.",
+  "family.creditae.question": "Kenet meidän pitää arvioida — ja mihin päädyitte?",
+  "family.creditae.does":
+    "Ottaa vastaan organisaationumeron ja arvionne. Hakee toimiston raportin alustan luottokanavan kautta kun se on kytketty. Aja, seuraa tai pysäytä.",
+  "family.creditae.doesNot": "CREDITAE ei aseta luottoarvosanaa. Tuote ei kutsu Creditsafea.",
+  "family.stack.language": "Kieli",
+  "family.stack.language.runs":
+    "TypeScript 5 koko järjestelmässä. SQL tietokannassa. RITAN analyysi ajetaan omana ohjelmana. ekonomi-ledger tarkistaa tositteet, ei kirjaa tuotannossa.",
+  "family.stack.web": "Web",
+  "family.stack.web.runs":
+    "Next.js 16.3 App Router, React 19.2, Tailwind CSS 4. Yksi prosessi: sivusto, /idp, tuotteet ja API.",
+  "family.stack.identity": "Identiteetti",
+  "family.stack.identity.runs":
+    "Oma kirjautuminen, avoimen standardin päälle. Yksi eväste pitää teidät kirjautuneina. Sama kirjautuminen kaikissa järjestelmissä.",
+  "family.stack.data": "Data",
+  "family.stack.data.runs":
+    "PostgreSQL 16. Jokaisella järjestelmällä on omat tietonsa. Mikään järjestelmä ei kirjoita toisen tietoihin.",
+  "family.stack.analysis": "Analyysi",
+  "family.stack.analysis.runs":
+    "TORA laskee samassa prosessissa. RITA kutsuu omaa analyysiä. Ei keksittyjä tuloksia tuotannossa.",
+  "family.stack.automation": "Automaatio",
+  "family.stack.automation.runs":
+    "Mallit kulkevat Vercelin väylän kautta. Vastaus on arvaus, ei fakta.",
+  "family.stack.ops": "Käyttö ja testi",
+  "family.stack.ops.runs":
+    "Ajetaan Vercelissä. Testit Postgres 16:ta vastaan. Ei AWS SDK:ta tässä järjestelmässä.",
+  "family.link.identity.products":
+    "Yksi kirjautuminen. Tuotteet eivät lue toistensa käyttäjälistoja.",
+  "family.link.identity.events":
+    "Onnistunut kirjautuminen kirjoitetaan lokiin. Se on kuitti, ei seurattava tehtävä.",
+  "family.link.tora.britt": "Vain kun joku julkaisee. Markkinan lukeminen ei luo tapahtumaa.",
+  "family.link.rita.britt":
+    "BRITT saa yrityksen nimen, montako osumaa tuli ja oliko automaatio mukana. Ei itse ehdotuksia — ne jäävät RITAAN.",
+  "family.link.irma.britt": "Sopimus luotu, avattu, vahvistettu tai peruttu.",
+  "family.link.tyra.britt":
+    "Tapaus, asiakaslinkki tai muistutus jonossa. Estetty jono ei tarkoita lähetettyä.",
+  "family.link.alva.britt":
+    "Tapaus on rekisteröity. Diagnoosi ei seuraa ennen kuin se on kytketty.",
+  "family.link.creditae.britt":
+    "Vastapuoli on rekisteröity, olette kirjoittaneet päätelmän, tai toimiston raportti saapui tai pysähtyi. Keksittyä arvosanaa ei seuraa.",
+  "family.link.ekonomi.britt":
+    "Annettu lasku, kirjattu saapuva maksu tai Revolut-haku joka ei mennyt läpi.",
+  "family.link.ekonomi.revolut":
+    "Pankkiyhteyden elinkaari. Tavallinen uusinta kirjataan käyttönä, ei seurattavana.",
+  "family.link.ekonomi.invoice": "Luonnos näkyy lokissa. Ei kirjanpitoa ennen antoa.",
+  "family.link.kansli.task": "Sisäinen tehtävä näkyy BRITTISSÄ. Kansli omistaa tehtävän yhä.",
+  "family.link.kansli.intake": "Hakemus on tullut, tai korjaamotili luotiin demoa varten.",
+  "family.link.britt.finding":
+    "Esimerkkianalyysin tärkeimmät osumat muuttuvat seurattaviksi. Muu jää BRITTIIN.",
+  "family.link.britt.events": "Jokainen seurattava kirjoitetaan myös tapahtumalistaan.",
+  "family.blocked.rita":
+    "RITAN analyysi pitää olla kytketty (Vercelissä URL:n kautta, paikallisesti ohjelmatiedoston kautta) ennen kuin analyyseja voi ajaa.",
+  "family.blocked.alva":
+    "Ohjattu diagnoosi kytketään kun se on valmis. Tapauksen voi rekisteröidä jo nyt.",
+  "family.blocked.irma":
+    "IRMA pysyy meillä: yksinkertainen digitaalinen vahvistus ja oma linkki. Ei vielä juridista sähköistä allekirjoitusta.",
+  "family.blocked.britt":
+    "Fortnox, Revolut ja BRITTIN profiilit jos esimerkkianalyysistä pitää tulla koko tuote.",
+  "family.blocked.ekonomi":
+    "Stripe, Revolut ja Swish kun haluatte periä sillä tavalla. 10 päivän lasku toimii ilman niitä.",
+  "family.blocked.creditae":
+    "CREDITAE kulkee alustan luottokanavan kautta. Tuotteet eivät kutsu Creditsafea. Ilman avainta raporttia ei haeta. Arvio on yhä teidän.",
+  "tyra.metaTitle": "TYRA — Pixdrift",
+  "tyra.metaDescription": "Asiakas, auto, pyörät ja mitä seuraavaksi.",
+  "tyra.heading": "Mikä ajoneuvo tulee sisään?",
+  "tyra.lead":
+    "TYRA pitää asiakkaan, auton ja pyörät yhdessä. Renkaita myydään täällä — yksi klikkaus kirjaa laskun Ekonomiin. Summat ovat teidän omia lukuja. Ei vielä live-hintoja.",
+  "tyra.customers": "Asiakaskortit",
+  "tyra.integrations": "Integraatiot",
+  "tyra.signInTitle": "Kirjaudu avataksesi tapauksia",
+  "tyra.signInBody":
+    "Sama kirjautuminen kuin muussa Pixdriftissä. Ei ylimääräistä tiliä korjaamolle.",
+  "tyra.notice":
+    "Muistutukset menevät jonoon mutta niitä ei vielä lähetetä — SMS- tai sähköpostiyhteyttä ei ole. Ei live-rengashintoja.",
+  "ekonomi.metaTitle": "Ekonomi — Pixdrift",
+  "ekonomi.metaDescription": "Laskut, ALV ja miten raha tuli sisään.",
+  "ekonomi.heading": "Mitä on kirjattu?",
+  "ekonomi.lead":
+    "Kirjaa myynti kruunuina. Yksi klikkaus antaa laskun. TYRAN tarjoukset joita ei ole kirjattu ovat jonossa. Asiakas voi maksaa Swishillä, Stripellä tai 10 päivän laskulla. Kytke Revolut kerran, niin tiliotteet haetaan ja maksut täsmäytetään. Visma on seuraava yhteys — se ei ole täällä vielä.",
+  "ekonomi.signInTitle": "Kirjaudu nähdäksesi kirjan",
+  "ekonomi.signInBody": "Kirjat kuuluvat yrityksellenne. Kirjaudu nähdäksesi ne.",
+  "ekonomi.notice":
+    "Kirjoitatte kruunuja. Kirja tallentaa örejä. Jokainen tosite täsmää. Maksut kulkevat oikeasti vasta kun yhteydet ovat paikallaan — mitään ei simuloida ilman että olette sanoneet kyllä.",
+  "ekonomi.statements": "Tiliotteet",
+  "ekonomi.invoices": "Laskut",
+  "ekonomi.vouchers": "Tositteet",
+  "ekonomi.reports": "Raportit / ALV",
+  "ekonomi.connections": "Yhteydet",
+  "tora.metaTitle": "TORA — Pixdrift",
+  "tora.metaDescription": "Mitkä hankinnat yrityksenne voi ottaa.",
+  "tora.lead":
+    "TORA näyttää mihin hankintoihin {name} voi tarjota — ja miksi juuri te. Tässä on koko arvio: vaatimukset, aukot ja seuraava askel.",
+  "tora.noticeDemo":
+    "Hankinnat ovat esimerkkejä, eivät oikeita ilmoituksia. Näkymä on maksullinen tili, joten näette nimet, summat ja vaatimukset. Yritystiedot ovat esimerkkiyritys kunnes tallennatte oman profiilin.",
+  "tora.noticeSaved":
+    "Hankinnat ovat esimerkkejä, eivät oikeita ilmoituksia. Näkymä on maksullinen tili, joten näette nimet, summat ja vaatimukset. Yritystiedot ovat tallennettu profiilinne ({name}).",
+  "tora.calendar": "Kalenteri",
+  "tora.current": "Nykyinen",
+  "tora.upcoming": "Tulossa",
+  "tora.watch": "Seuranta",
+  "tora.publishedValue": "Julkaistu arvo",
+  "tora.yourCompany": "Yrityksenne",
+  "tora.profileLead": "Ilman tallennettua profiilia laskemme esimerkkiyrityksellä emmekä teillä.",
+  "rita.metaTitle": "RITA — Pixdrift",
+  "rita.metaDescription": "RITA etsii verosäästöjä kirjoistanne.",
+  "rita.lead":
+    "RITA etsii verosäästöjä kirjoistanne: vähennykset, ALV, K10, eläke ja T&K. Mitä RITA löytää on ehdotuksia tarkistettavaksi — ei veroneuvontaa.",
+  "rita.noticeReady":
+    "Analyysi on käynnissä. Osa vastauksesta tulee mallista ja voi vaatia toisen katsomisen.",
+  "rita.noticeRules":
+    "Analyysi on käynnissä, mutta ilman mallia juuri nyt. Vain kiinteät säännöt ovat käytössä.",
+  "rita.noticeBlocked":
+    "Analyysia ei ole vielä kytketty, joten uudet analyysit jäävät estetyiksi. Emme koskaan näytä keksittyjä tuloksia.",
+  "rita.noticeExample":
+    "Esimerkkitilinpäätös on sisäänrakennettu esimerkki — ei asiakkaan lataama.",
+  "rita.signInTitle": "Kirjaudu pyytääksesi analyysin",
+  "rita.signInBody":
+    "Analyysi tallennetaan RITAAN. BRITT saa seurattavaa kun analyysi valmistuu tai pysähtyy.",
+  "britt.metaTitle": "BRITT — Pixdrift",
+  "britt.metaDescription": "Se mikä tapahtui ja vaatii seurantaa.",
+  "britt.lead":
+    "BRITT kerää asiat jotka vaativat seurantaa. Luvut tässä ovat esimerkkejä — ei vielä Fortnox- tai Revolut-yhteyksiä.",
+  "britt.noticeDemo": "Luvut tässä ovat esimerkkejä talolle, eivät Fortnoxia eivätkä live-kassaa.",
+  "britt.noticeOwn": "Tässä seuraatte omia havaintojanne. Esimerkkiluvut ajetaan vain talolla.",
+  "britt.signInTitle": "Kirjaudu nähdäksesi havainnot",
+  "britt.signInBody":
+    "Havainnot kuuluvat yrityksellenne. Se mitä tapahtuu TORASSA, RITASSA ja IRMASSA näkyy täällä.",
+  "irma.metaTitle": "IRMA — Pixdrift",
+  "irma.metaDescription": "Lähetä sopimus, näe onko se luettu ja vahvistettu.",
+  "irma.heading": "Mikä sopimus lähtee?",
+  "irma.lead":
+    "IRMalla lähetätte sopimuksia digitaalisesti: luo, lähetä linkki, näe milloin vastapuoli on avannut ja vahvistanut. Vastapuoli ei tarvitse tiliä. Se on yksinkertainen digitaalinen vahvistus, ei juridinen sähköinen allekirjoitus. Asiakirja-arkistoa ei ole vielä.",
+  "irma.signInTitle": "Kirjaudu luodaksesi sopimuksia",
+  "irma.signInBody":
+    "Linkki näytetään kerran — kopioikaa se heti. Emme tallenna sitä luettavassa muodossa.",
+  "creditae.vendorScore": "Toimiston arvo",
+  "creditae.vendorLimit": "Toimiston raja",
+  "creditae.vendorNotConclusion": "Ne ovat toimiston kentät, eivät teidän päätelmänne.",
+  "creditae.vendorWhyMissing": "Miksi raportti puuttuu",
+  "creditae.notes": "Muistiinpano",
+  "creditae.yourAssessment": "Teidän arvionne",
+  "creditae.conclusion": "Päätelmä",
 };

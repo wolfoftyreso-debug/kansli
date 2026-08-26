@@ -200,4 +200,180 @@ export const NO: Record<MessageKey, string> = {
   "family.alva.mission": "Kundens feil, notater og målinger. Diagnosen kommer senere.",
   "family.creditae.mission":
     "Kredittvurdering av en motpart. Deres konklusjon, ingen funnet karakter.",
+  "family.identity.question": "Hvem er du, og hvilket selskap gjelder det?",
+  "family.identity.does":
+    "Du logger inn én gang. Deretter er du inne i Kansli, TORA, RITA og de andre.",
+  "family.identity.doesNot":
+    "Her sendes ingen fakturaer, og det finnes ingen ekstra kode i mobilen ennå.",
+  "family.kansli.question": "Hvor begynner jeg, og hva skal vi gjøre internt?",
+  "family.kansli.does": "Innlogging, intern oppgavetavle og skjemaet for nye kunder.",
+  "family.kansli.doesNot":
+    "Kansli regner ikke på anskaffelse, skatt eller dekk. Det gjør de andre systemene.",
+  "family.ekonomi.question": "Hva er bokført, hva er forfalt, og hvordan kom pengene inn?",
+  "family.ekonomi.does":
+    "Skriver en faktura på 10 dager, bokfører i øre, kobler Stripe og Revolut, matcher innbetalinger når banken er tilkoblet.",
+  "family.ekonomi.doesNot":
+    "Ikke Visma. Ikke Fortnox. Ingen påfunnet innbetaling. Kort krever Stripe. Swish krever at Swish er koblet inn.",
+  "family.tora.question": "Kan vi gi tilbud her — og hva skal vi gjøre nå?",
+  "family.tora.does":
+    "Sammenligner selskapet med anskaffelsene: krav, hull, beløp, datoer og neste steg.",
+  "family.tora.doesNot": "Ser ikke i regnskapet. Det gjør RITA.",
+  "family.rita.question": "Hvilke fradrag, merverdiavgift og andre hull sitter i årsregnskapet?",
+  "family.rita.does":
+    "Leser årsregnskapet mot svenske skatteregler og etterlater forslag å sjekke. Ikke skatteråd.",
+  "family.rita.doesNot":
+    "Finner ikke på resultater. Sier ikke om dere får gi tilbud. Ingen kundefil å laste opp ennå.",
+  "family.britt.question": "Hva trenger dere å gjøre nå, ut fra det som allerede har skjedd?",
+  "family.britt.does": "Samler ting som må følges opp. Én ting om gangen, med neste steg.",
+  "family.britt.doesNot": "BRITT er ikke et saksystem og ikke en prat.",
+  "family.irma.question": "Har motparten lest og bekreftet avtalen?",
+  "family.irma.does": "Sender avtalen. Viser om den er åpnet, signert eller avvist.",
+  "family.irma.doesNot": "IRMA er ikke e-post og ikke et arkiv for alle dokumenter.",
+  "family.tyra.question": "Hvilken kunde, hvilken bil, hvilke hjul — og hva er neste steg?",
+  "family.tyra.does":
+    "Holder kunde, kjøretøy og dekk samlet. Viser når det er på tide å bytte eller hente.",
+  "family.tyra.doesNot": "TYRA er ikke et allment kunderegister for andre bransjer.",
+  "family.alva.question": "Hva sa kunden, hva ble målt — og hva er neste steg?",
+  "family.alva.does":
+    "Tar imot det som er sagt og målt. Viser notatet. Stiller ingen diagnose selv.",
+  "family.alva.doesNot": "ALVA stiller ingen diagnose og gir ingen råd.",
+  "family.creditae.question": "Hvem skal vi vurdere — og hva kom dere fram til?",
+  "family.creditae.does":
+    "Tar imot organisasjonsnummer og deres vurdering. Henter byråets rapport via plattformens kredittkanal når den er koblet inn. Kjør, følg eller stans.",
+  "family.creditae.doesNot":
+    "CREDITAE setter ingen kredittkarakter. Produktet kaller ikke Creditsafe.",
+  "family.stack.language": "Språk",
+  "family.stack.language.runs":
+    "TypeScript 5 i hele systemet. SQL i databasen. RITAs analyse kjører som et eget program. ekonomi-ledger sjekker bilag, poster ikke i drift.",
+  "family.stack.web": "Nett",
+  "family.stack.web.runs":
+    "Next.js 16.3 App Router, React 19.2, Tailwind CSS 4. Én prosess: nettsted, /idp, produkter og API.",
+  "family.stack.identity": "Identitet",
+  "family.stack.identity.runs":
+    "Egen innlogging, bygget på åpen standard. Én informasjonskapsel holder dere innlogget. Samme innlogging i alle systemer.",
+  "family.stack.data": "Data",
+  "family.stack.data.runs":
+    "PostgreSQL 16. Hvert system har egne data. Ingen systemer skriver i et annet systems data.",
+  "family.stack.analysis": "Analyse",
+  "family.stack.analysis.runs":
+    "TORA regner i samme prosess. RITA kaller en egen analyse. Ingen påfunnede resultater i drift.",
+  "family.stack.automation": "Automatisering",
+  "family.stack.automation.runs":
+    "Modeller går via Vercel-gatewayen. Svaret er en gjetning, ikke fakta.",
+  "family.stack.ops": "Drift og test",
+  "family.stack.ops.runs":
+    "Kjører på Vercel. Tester mot Postgres 16. Ingen AWS SDK i dette systemet.",
+  "family.link.identity.products": "Én innlogging. Produktene leser ikke hverandres brukerlister.",
+  "family.link.identity.events":
+    "Vellykket innlogging skrives i loggen. Det er en kvittering, ikke en oppgave å følge opp.",
+  "family.link.tora.britt": "Bare når noen publiserer. Å lese markedet skaper ingen hendelse.",
+  "family.link.rita.britt":
+    "BRITT får selskapsnavn, hvor mange treff det ble og om automatisering var med. Ikke forslagene selv — de blir i RITA.",
+  "family.link.irma.britt": "Avtale opprettet, åpnet, bekreftet eller trukket tilbake.",
+  "family.link.tyra.britt":
+    "En sak, en kundelenke eller en påminnelse i kø. En stoppet kø betyr ikke sendt.",
+  "family.link.alva.britt": "En sak er registrert. Ingen diagnose følger før den er koblet inn.",
+  "family.link.creditae.britt":
+    "En motpart er registrert, dere har skrevet konklusjonen, eller byråets rapport kom inn eller stanset. Ingen påfunnet karakter følger.",
+  "family.link.ekonomi.britt":
+    "En utstedt faktura, en bokført innbetaling eller en Revolut-henting som ikke gikk.",
+  "family.link.ekonomi.revolut":
+    "Banktilkoblingens livssyklus. Vanlig fornyelse logges som drift, ikke som noe å følge opp.",
+  "family.link.ekonomi.invoice": "Et utkast vises i loggen. Ingen bokføring før utstedelse.",
+  "family.link.kansli.task": "En intern oppgave vises hos BRITT. Kansli eier fortsatt oppgaven.",
+  "family.link.kansli.intake":
+    "En søknad har kommet inn, eller en verkstedkonto er opprettet til demoen.",
+  "family.link.britt.finding":
+    "De viktigste treffene fra eksempelanalysen blir ting å følge opp. Resten blir i BRITT.",
+  "family.link.britt.events": "Hver ting å følge opp skrives også i hendelseslisten.",
+  "family.blocked.rita":
+    "RITAs analyse må være koblet inn (på Vercel via URL, lokalt via programfilen) før analyser kan kjøre.",
+  "family.blocked.alva":
+    "Den veiledede diagnosen kobles inn når den er klar. Saken kan registreres allerede nå.",
+  "family.blocked.irma":
+    "IRMA blir hos oss: en enkel digital bekreftelse og en egen lenke. Ingen juridisk e-signatur ennå.",
+  "family.blocked.britt":
+    "Fortnox, Revolut og BRITTs profiler hvis eksempelanalysen skal bli hele produktet.",
+  "family.blocked.ekonomi":
+    "Stripe, Revolut og Swish når dere vil ta betalt den veien. Faktura på 10 dager virker uten dem.",
+  "family.blocked.creditae":
+    "CREDITAE går via plattformens kredittkanal. Produkter kaller ikke Creditsafe. Uten nøkkel hentes ingen rapport. Vurderingen er fortsatt deres.",
+  "tyra.metaTitle": "TYRA — Pixdrift",
+  "tyra.metaDescription": "Kunde, bil, hjul og hva som skal gjøres nå.",
+  "tyra.heading": "Hvilket kjøretøy skal inn?",
+  "tyra.lead":
+    "TYRA holder kunde, bil og hjul samlet. Dekk selges her — ett klikk bokfører fakturaen i Ekonomi. Beløpene er deres egne tall. Ingen live-priser ennå.",
+  "tyra.customers": "Kundekort",
+  "tyra.integrations": "Integrasjoner",
+  "tyra.signInTitle": "Logg inn for å åpne saker",
+  "tyra.signInBody": "Samme innlogging som resten av Pixdrift. Ingen ekstra konto for verkstedet.",
+  "tyra.notice":
+    "Påminnelser legges i kø men sendes ikke ennå — det mangler en kobling til SMS og e-post. Ingen live-dekkpriser.",
+  "ekonomi.metaTitle": "Ekonomi — Pixdrift",
+  "ekonomi.metaDescription": "Fakturaer, merverdiavgift og hvordan pengene kom inn.",
+  "ekonomi.heading": "Hva er bokført?",
+  "ekonomi.lead":
+    "Bokfør salg i kroner. Ett klikk utsteder fakturaen. TYRA-tilbud som ikke er bokført ligger i køen. Kunden kan betale med Swish, Stripe eller faktura på 10 dager. Koble Revolut én gang, så hentes kontoutskrifter og betalinger matches. Visma er neste tilkobling — den er ikke her ennå.",
+  "ekonomi.signInTitle": "Logg inn for å se boken",
+  "ekonomi.signInBody": "Regnskapet tilhører selskapet deres. Logg inn for å se det.",
+  "ekonomi.notice":
+    "Dere skriver kroner. Boken lagrer øre. Hvert bilag balanserer. Betalinger kjører bare på ekte når koblingene er på plass — ingenting simuleres uten at du har sagt ja.",
+  "ekonomi.statements": "Kontoutskrifter",
+  "ekonomi.invoices": "Fakturaer",
+  "ekonomi.vouchers": "Bilag",
+  "ekonomi.reports": "Rapporter / merverdiavgift",
+  "ekonomi.connections": "Tilkoblinger",
+  "tora.metaTitle": "TORA — Pixdrift",
+  "tora.metaDescription": "Hvilke anskaffelser nettopp deres selskap kan ta.",
+  "tora.lead":
+    "TORA viser hvilke anskaffelser {name} kan gi tilbud på — og hvorfor nettopp dere. Her er hele vurderingen: krav, hull og neste steg.",
+  "tora.noticeDemo":
+    "Anskaffelsene er eksempler, ikke ekte kunngjøringer. Visningen er en betalt konto, så dere ser navn, beløp og krav. Selskapsfakta er eksempelselskapet til dere lagrer deres egen profil.",
+  "tora.noticeSaved":
+    "Anskaffelsene er eksempler, ikke ekte kunngjøringer. Visningen er en betalt konto, så dere ser navn, beløp og krav. Selskapsfakta er den lagrede profilen deres ({name}).",
+  "tora.calendar": "Kalender",
+  "tora.current": "Aktuelt",
+  "tora.upcoming": "Kommende",
+  "tora.watch": "Følg",
+  "tora.publishedValue": "Publisert verdi",
+  "tora.yourCompany": "Deres selskap",
+  "tora.profileLead": "Uten lagret profil regner vi på eksempelselskapet i stedet for på dere.",
+  "rita.metaTitle": "RITA — Pixdrift",
+  "rita.metaDescription": "RITA leter etter skattebesparelser i bøkene deres.",
+  "rita.lead":
+    "RITA leter etter skattebesparelser i bøkene deres: fradrag, merverdiavgift, K10, pensjon og FoU. Det RITA finner er forslag å sjekke videre — ikke skatteråd.",
+  "rita.noticeReady":
+    "Analysen kjører. Deler av svaret kommer fra en modell og kan trenge et nytt blikk.",
+  "rita.noticeRules": "Analysen kjører, men uten modell akkurat nå. Bare de faste reglene brukes.",
+  "rita.noticeBlocked":
+    "Analysen er ikke koblet inn ennå, så nye analyser blir stående blokkert. Vi viser aldri påfunnede resultater.",
+  "rita.noticeExample":
+    "Eksempelregnskapet er et innebygd eksempel — ikke noe en kunde har lastet opp.",
+  "rita.signInTitle": "Logg inn for å be om en analyse",
+  "rita.signInBody":
+    "Analysen lagres i RITA. BRITT får noe å følge opp når en analyse blir ferdig eller stanses.",
+  "britt.metaTitle": "BRITT — Pixdrift",
+  "britt.metaDescription": "Det som har skjedd og trenger oppfølging.",
+  "britt.lead":
+    "BRITT samler slikt som trenger oppfølging. Tallene her er eksempler — ingen Fortnox- eller Revolut-koblinger ennå.",
+  "britt.noticeDemo": "Tallene her er eksempler for huset, ikke Fortnox og ikke en livekasse.",
+  "britt.noticeOwn": "Her følger dere deres egne observasjoner. Eksempeltall kjøres bare på huset.",
+  "britt.signInTitle": "Logg inn for å se observasjoner",
+  "britt.signInBody":
+    "Observasjoner tilhører selskapet deres. Det som skjer i TORA, RITA og IRMA dukker opp her.",
+  "irma.metaTitle": "IRMA — Pixdrift",
+  "irma.metaDescription": "Send en avtale, se om den er lest og bekreftet.",
+  "irma.heading": "Hvilken avtale skal ut?",
+  "irma.lead":
+    "Med IRMA sender dere avtaler digitalt: opprett, send en lenke, se når motparten har åpnet og bekreftet. Motparten trenger ingen konto. Det er en enkel digital bekreftelse, ikke en juridisk e-signatur. Dokumentarkiv finnes ikke ennå.",
+  "irma.signInTitle": "Logg inn for å opprette avtaler",
+  "irma.signInBody":
+    "Lenken vises bare én gang — kopier den med en gang. Vi lagrer den ikke i lesbar form.",
+  "creditae.vendorScore": "Byråets verdi",
+  "creditae.vendorLimit": "Byråets grense",
+  "creditae.vendorNotConclusion": "Det er byråets felt, ikke deres konklusjon.",
+  "creditae.vendorWhyMissing": "Hvorfor rapporten mangler",
+  "creditae.notes": "Notat",
+  "creditae.yourAssessment": "Deres vurdering",
+  "creditae.conclusion": "Konklusjon",
 };

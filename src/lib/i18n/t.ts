@@ -1,3 +1,4 @@
+import { FAMILY_SYSTEMS } from "../platform/family.ts";
 import { DA } from "./da.ts";
 import { DE } from "./de.ts";
 import { EN, type MessageKey } from "./en.ts";
@@ -43,7 +44,15 @@ export function messageKeys(): MessageKey[] {
 }
 
 export function familyMission(locale: Locale, id: string): string {
-  const key = `family.${id}.mission` as MessageKey;
+  return familyField(locale, id, "mission");
+}
+
+export function familyField(
+  locale: Locale,
+  id: string,
+  field: "mission" | "question" | "does" | "doesNot",
+): string {
+  const key = `family.${id}.${field}` as MessageKey;
   return key in catalogs.en ? t(locale, key) : id;
 }
 
@@ -52,4 +61,25 @@ export function familyStatusLabel(
   status: "operational" | "pilot" | "deferred",
 ): string {
   return t(locale, `family.status.${status}`);
+}
+
+export function familyStackLine(locale: Locale, id: string, part: "layer" | "runs"): string {
+  const key = (part === "runs" ? `family.stack.${id}.runs` : `family.stack.${id}`) as MessageKey;
+  return key in catalogs.en ? t(locale, key) : id;
+}
+
+export function familyLinkMeaning(locale: Locale, id: string): string {
+  const key = `family.link.${id}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : id;
+}
+
+export function familyBlockedNeed(locale: Locale, id: string): string {
+  const key = `family.blocked.${id}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : id;
+}
+
+export function familyPartyLabel(locale: Locale, id: string): string {
+  if (id === "products" || id === "alla produkter") return t(locale, "family.party.products");
+  if (id === "platform.events") return t(locale, "family.party.events");
+  return FAMILY_SYSTEMS.find((system) => system.id === id)?.name ?? id;
 }

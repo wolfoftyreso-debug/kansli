@@ -14,16 +14,21 @@ import { getSalesAlertSettings, listSalesAlerts } from "@/lib/ekonomi/sales-aler
 import { listUnbookedTyraQuotes } from "@/lib/ekonomi/tyra-sales";
 import { smsConfigured } from "@/lib/platform/sms";
 import { readSession } from "@/lib/auth/session";
-import { formatSwedishDateTime } from "@/lib/format/datetime";
+import { formatDateTime } from "@/lib/format/datetime";
+import { t } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 import { tryRuntime } from "@/lib/platform/page";
 import { saveSalesAlertAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: "Ekonomi — Pixdrift",
-  description: "Fakturor, moms och hur pengarna kom in.",
-};
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "ekonomi.metaTitle"),
+    description: t(locale, "ekonomi.metaDescription"),
+  };
+}
 
 const ALERT_STATUS: Record<string, string> = {
   PENDING: "Väntar",
@@ -34,6 +39,7 @@ const ALERT_STATUS: Record<string, string> = {
 
 export default async function EkonomiPage() {
   const session = await readSession();
+  const locale = await readLocale();
   const runtime = tryRuntime(session?.org?.ref);
   const invoices =
     session?.org?.ref && runtime ? await listInvoices(runtime.pool, session.org.ref) : [];
@@ -56,31 +62,30 @@ export default async function EkonomiPage() {
     <AppShell current="ekonomi" session={session}>
       <header className="flex flex-col gap-3">
         <ProductCrumb crumbs={[{ href: "/ekonomi", label: "Ekonomi" }]} />
-        <h1 className="text-3xl font-semibold tracking-tight">Vad är bokat?</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">{t(locale, "ekonomi.heading")}</h1>
         <p className="max-w-xl text-ink-soft">
-          Boka sälj i kronor. Ett klick utfärdar fakturan. <SystemLink id="tyra">TYRA</SystemLink>
-          -offerter som inte är bokade ligger i kön. Kunden kan betala med Swish, Stripe eller
-          faktura på 10 dagar. Anslut <SystemLink id="revolut">Revolut</SystemLink> en gång, så
-          hämtas kontoutdrag och betalningar matchas. Visma är nästa anslutning — den finns inte här
-          än.
+          {t(locale, "ekonomi.lead")} <SystemLink id="tyra">TYRA</SystemLink>
+          {" · "}
+          <SystemLink id="revolut">Revolut</SystemLink>
         </p>
         <p className="text-sm">
           <Link href="/kansli/beredskap" className="underline decoration-line underline-offset-4">
-            Första kunden — checklista, inte datum
+            {t(locale, "kansli.firstCustomer")}
           </Link>
         </p>
       </header>
 
       {!session ? (
-        <SignInGate next="/ekonomi" title="Logga in för att se boken">
-          Ekonomin tillhör ert företag. Logga in för att se den.
+        <SignInGate
+          next="/ekonomi"
+          title={t(locale, "ekonomi.signInTitle")}
+          actionLabel={t(locale, "chrome.signIn")}
+        >
+          {t(locale, "ekonomi.signInBody")}
         </SignInGate>
       ) : (
         <>
-          <Notice>
-            Ni skriver kronor. Boken sparar öre. Varje verifikat balanserar. Betalningar körs bara
-            på riktigt när kopplingarna är på plats — inget simuleras utan att du sagt ja.
-          </Notice>
+          <Notice>{t(locale, "ekonomi.notice")}</Notice>
 
           <SalesDesk
             drafts={invoices.filter((invoice) => invoice.status === "draft")}
@@ -159,7 +164,7 @@ export default async function EkonomiPage() {
                       </p>
                       <p className="mt-1 text-ink-soft">{alert.body}</p>
                       <p className="mt-1 text-xs text-muted">
-                        {formatSwedishDateTime(alert.createdAt)}
+                        {formatDateTime(alert.createdAt, locale)}
                         {alert.lastError ? ` · ${alert.lastError}` : ""}
                       </p>
                     </li>
@@ -174,28 +179,28 @@ export default async function EkonomiPage() {
               className="underline decoration-line underline-offset-4"
               href="/ekonomi/kontoutdrag"
             >
-              Kontoutdrag
+              {t(locale, "ekonomi.statements")}
             </Link>
             <Link className="underline decoration-line underline-offset-4" href="/ekonomi/fakturor">
-              Fakturor
+              {t(locale, "ekonomi.invoices")}
             </Link>
             <Link
               className="underline decoration-line underline-offset-4"
               href="/ekonomi/verifikat"
             >
-              Verifikat
+              {t(locale, "ekonomi.vouchers")}
             </Link>
             <Link
               className="underline decoration-line underline-offset-4"
               href="/ekonomi/rapporter"
             >
-              Rapporter / moms
+              {t(locale, "ekonomi.reports")}
             </Link>
             <Link
               className="underline decoration-line underline-offset-4"
               href="/ekonomi/anslutningar"
             >
-              Anslutningar
+              {t(locale, "ekonomi.connections")}
             </Link>
           </nav>
 

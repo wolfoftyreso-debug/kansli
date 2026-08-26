@@ -202,4 +202,198 @@ export const FR: Record<MessageKey, string> = {
   "family.alva.mission": "La panne du client, notes et mesures. Le diagnostic vient plus tard.",
   "family.creditae.mission":
     "Évaluation de crédit d’une contrepartie. Votre conclusion, aucune note inventée.",
+  "family.identity.question": "Qui êtes-vous, et pour quelle entreprise cela vaut-il ?",
+  "family.identity.does":
+    "Vous vous connectez une fois. Ensuite vous êtes dans Kansli, TORA, RITA et les autres.",
+  "family.identity.doesNot":
+    "Aucune facture n’est envoyée ici, et il n’y a pas encore de code mobile supplémentaire.",
+  "family.kansli.question": "Par où commencer, et que devons-nous faire en interne ?",
+  "family.kansli.does":
+    "Connexion, un tableau de tâches interne et le formulaire des nouveaux clients.",
+  "family.kansli.doesNot":
+    "Kansli ne calcule ni les marchés, ni l’impôt, ni les pneus. Les autres systèmes le font.",
+  "family.ekonomi.question":
+    "Qu’est-ce qui est comptabilisé, qu’est-ce qui est en retard, et comment l’argent est-il entré ?",
+  "family.ekonomi.does":
+    "Écrit une facture à 10 jours, comptabilise en öre, relie Stripe et Revolut, rapproche les encaissements lorsque la banque est connectée.",
+  "family.ekonomi.doesNot":
+    "Pas Visma. Pas Fortnox. Aucun encaissement inventé. Les cartes exigent Stripe. Swish exige que Swish soit branché.",
+  "family.tora.question": "Pouvons-nous soumissionner ici — et que devons-nous faire maintenant ?",
+  "family.tora.does":
+    "Compare l’entreprise aux marchés : exigences, écarts, montants, dates et l’étape suivante.",
+  "family.tora.doesNot": "Ne regarde pas les livres. C’est RITA.",
+  "family.rita.question":
+    "Quelles déductions, TVA et autres écarts se trouvent dans les comptes annuels ?",
+  "family.rita.does":
+    "Lit les comptes annuels face aux règles fiscales suédoises et laisse des propositions à vérifier. Pas un conseil fiscal.",
+  "family.rita.doesNot":
+    "N’invente pas de résultats. Ne dit pas si vous pouvez soumissionner. Pas encore de fichier client à téléverser.",
+  "family.britt.question": "Que devez-vous faire maintenant, d’après ce qui s’est déjà passé ?",
+  "family.britt.does":
+    "Rassemble ce qui doit être suivi. Une chose à la fois, avec l’étape suivante.",
+  "family.britt.doesNot": "BRITT n’est pas un système de dossiers et n’est pas un chat.",
+  "family.irma.question": "La contrepartie a-t-elle lu et confirmé l’accord ?",
+  "family.irma.does": "Envoie l’accord. Montre s’il est ouvert, signé ou refusé.",
+  "family.irma.doesNot":
+    "IRMA n’est pas un courriel et n’est pas une archive de tous les documents.",
+  "family.tyra.question":
+    "Quel client, quelle voiture, quelles roues — et quelle est l’étape suivante ?",
+  "family.tyra.does":
+    "Tient ensemble client, véhicule et pneus. Montre quand il est temps de changer ou de récupérer.",
+  "family.tyra.doesNot": "TYRA n’est pas un registre clients général pour d’autres métiers.",
+  "family.alva.question": "Qu’a dit le client, qu’a-t-on mesuré — et quelle est l’étape suivante ?",
+  "family.alva.does":
+    "Prend ce qui a été dit et mesuré. Montre la note. Ne diagnostique pas tout seul.",
+  "family.alva.doesNot": "ALVA ne diagnostique pas et ne donne pas de conseil.",
+  "family.creditae.question": "Qui devons-nous évaluer — et à quoi êtes-vous arrivés ?",
+  "family.creditae.does":
+    "Prend un numéro d’organisation et votre évaluation. Récupère le rapport du bureau via le canal crédit de la plateforme lorsqu’il est branché. Avancer, surveiller ou arrêter.",
+  "family.creditae.doesNot":
+    "CREDITAE ne pose aucune note de crédit. Le produit n’appelle pas Creditsafe.",
+  "family.stack.language": "Langue",
+  "family.stack.language.runs":
+    "TypeScript 5 dans tout le système. SQL dans la base. L’analyse de RITA tourne comme un programme à part. ekonomi-ledger contrôle les pièces, ne comptabilise pas en production.",
+  "family.stack.web": "Web",
+  "family.stack.web.runs":
+    "Next.js 16.3 App Router, React 19.2, Tailwind CSS 4. Un processus : site, /idp, produits et API.",
+  "family.stack.identity": "Identité",
+  "family.stack.identity.runs":
+    "Connexion propre, sur une norme ouverte. Un cookie vous garde connecté. La même connexion dans chaque système.",
+  "family.stack.data": "Données",
+  "family.stack.data.runs":
+    "PostgreSQL 16. Chaque système a ses propres données. Aucun système n’écrit dans celles d’un autre.",
+  "family.stack.analysis": "Analyse",
+  "family.stack.analysis.runs":
+    "TORA calcule dans le même processus. RITA appelle sa propre analyse. Aucun résultat inventé en production.",
+  "family.stack.automation": "Automatisation",
+  "family.stack.automation.runs":
+    "Les modèles passent par la passerelle Vercel. La réponse est une hypothèse, pas un fait.",
+  "family.stack.ops": "Exploitation et test",
+  "family.stack.ops.runs":
+    "Tourne sur Vercel. Tests contre Postgres 16. Pas de AWS SDK dans ce système.",
+  "family.link.identity.products":
+    "Une connexion. Les produits ne lisent pas les listes d’utilisateurs des autres.",
+  "family.link.identity.events":
+    "Une connexion réussie est écrite dans le journal. C’est un reçu, pas une tâche à suivre.",
+  "family.link.tora.britt":
+    "Seulement quand quelqu’un publie. Lire le marché ne crée aucun événement.",
+  "family.link.rita.britt":
+    "BRITT reçoit le nom de l’entreprise, le nombre de résultats et si l’automatisation était impliquée. Pas les propositions elles-mêmes — elles restent dans RITA.",
+  "family.link.irma.britt": "Accord créé, ouvert, confirmé ou retiré.",
+  "family.link.tyra.britt":
+    "Un dossier, un lien client ou un rappel en file. Une file bloquée ne veut pas dire envoyé.",
+  "family.link.alva.britt":
+    "Un dossier est enregistré. Aucun diagnostic ne suit tant qu’il n’est pas branché.",
+  "family.link.creditae.britt":
+    "Une contrepartie est enregistrée, vous avez écrit votre conclusion, ou le rapport du bureau est arrivé ou s’est arrêté. Aucune note inventée ne suit.",
+  "family.link.ekonomi.britt":
+    "Une facture émise, un encaissement comptabilisé ou une récupération Revolut qui n’est pas passée.",
+  "family.link.ekonomi.revolut":
+    "Le cycle de vie de la connexion bancaire. Un renouvellement ordinaire est journalisé comme exploitation, pas comme quelque chose à suivre.",
+  "family.link.ekonomi.invoice":
+    "Un brouillon apparaît dans le journal. Pas de comptabilité avant émission.",
+  "family.link.kansli.task":
+    "Une tâche interne apparaît chez BRITT. Kansli reste propriétaire de la tâche.",
+  "family.link.kansli.intake":
+    "Une demande est arrivée, ou un compte atelier a été créé pour la démo.",
+  "family.link.britt.finding":
+    "Les résultats les plus importants de l’analyse d’exemple deviennent des choses à suivre. Le reste reste dans BRITT.",
+  "family.link.britt.events":
+    "Chaque chose à suivre est aussi écrite dans la liste des événements.",
+  "family.blocked.rita":
+    "L’analyse de RITA doit être branchée (sur Vercel via URL, en local via le fichier du programme) avant que les analyses puissent tourner.",
+  "family.blocked.alva":
+    "Le diagnostic guidé est branché lorsqu’il est prêt. Le dossier peut déjà être enregistré.",
+  "family.blocked.irma":
+    "IRMA reste chez nous : une confirmation numérique simple et son propre lien. Pas encore de signature électronique juridique.",
+  "family.blocked.britt":
+    "Fortnox, Revolut et les profils de BRITT si l’analyse d’exemple doit devenir tout le produit.",
+  "family.blocked.ekonomi":
+    "Stripe, Revolut et Swish lorsque vous voulez encaisser ainsi. Une facture à 10 jours fonctionne sans eux.",
+  "family.blocked.creditae":
+    "CREDITAE passe par le canal crédit de la plateforme. Les produits n’appellent pas Creditsafe. Sans clé aucun rapport n’est récupéré. L’évaluation reste la vôtre.",
+  "tyra.metaTitle": "TYRA — Pixdrift",
+  "tyra.metaDescription": "Client, voiture, roues et la suite.",
+  "tyra.heading": "Quel véhicule entre ?",
+  "tyra.lead":
+    "TYRA tient ensemble client, voiture et roues. Les pneus se vendent ici — un clic comptabilise la facture dans Ekonomi. Les montants sont vos propres chiffres. Pas encore de prix en direct.",
+  "tyra.customers": "Fiches clients",
+  "tyra.integrations": "Intégrations",
+  "tyra.signInTitle": "Connectez-vous pour ouvrir des dossiers",
+  "tyra.signInBody":
+    "La même connexion que le reste de Pixdrift. Pas de compte extra pour l’atelier.",
+  "tyra.notice":
+    "Les rappels vont en file mais ne sont pas encore envoyés — il manque une connexion SMS et courriel. Pas de prix pneus en direct.",
+  "ekonomi.metaTitle": "Ekonomi — Pixdrift",
+  "ekonomi.metaDescription": "Factures, TVA et comment l’argent est entré.",
+  "ekonomi.heading": "Qu’est-ce qui est comptabilisé ?",
+  "ekonomi.lead":
+    "Comptabilisez les ventes en couronnes. Un clic émet la facture. Les devis TYRA non comptabilisés restent en file. Le client peut payer avec Swish, Stripe ou une facture à 10 jours. Reliez Revolut une fois, les relevés sont récupérés et les paiements rapprochés. Visma est la prochaine connexion — elle n’est pas encore ici.",
+  "ekonomi.signInTitle": "Connectez-vous pour voir le livre",
+  "ekonomi.signInBody":
+    "Les livres appartiennent à votre entreprise. Connectez-vous pour les voir.",
+  "ekonomi.notice":
+    "Vous écrivez des couronnes. Le livre stocke des öre. Chaque pièce s’équilibre. Les paiements ne tournent pour de vrai que lorsque les connexions sont en place — rien n’est simulé sans votre accord.",
+  "ekonomi.statements": "Relevés",
+  "ekonomi.invoices": "Factures",
+  "ekonomi.vouchers": "Pièces",
+  "ekonomi.reports": "Rapports / TVA",
+  "ekonomi.connections": "Connexions",
+  "tora.metaTitle": "TORA — Pixdrift",
+  "tora.metaDescription": "Quels marchés votre entreprise peut prendre.",
+  "tora.lead":
+    "TORA montre quels marchés {name} peut soumissionner — et pourquoi vous. Voici toute l’évaluation : exigences, écarts et l’étape suivante.",
+  "tora.noticeDemo":
+    "Les marchés sont des exemples, pas de vrais avis. L’affichage est un compte payant, vous voyez donc noms, montants et exigences. Les faits entreprise sont l’entreprise d’exemple jusqu’à ce que vous enregistriez votre propre profil.",
+  "tora.noticeSaved":
+    "Les marchés sont des exemples, pas de vrais avis. L’affichage est un compte payant, vous voyez donc noms, montants et exigences. Les faits entreprise sont votre profil enregistré ({name}).",
+  "tora.calendar": "Calendrier",
+  "tora.current": "En cours",
+  "tora.upcoming": "À venir",
+  "tora.watch": "Surveillance",
+  "tora.publishedValue": "Valeur publiée",
+  "tora.yourCompany": "Votre entreprise",
+  "tora.profileLead":
+    "Sans profil enregistré nous calculons sur l’entreprise d’exemple au lieu de vous.",
+  "rita.metaTitle": "RITA — Pixdrift",
+  "rita.metaDescription": "RITA cherche des économies fiscales dans vos livres.",
+  "rita.lead":
+    "RITA cherche des économies fiscales dans vos livres : déductions, TVA, K10, pension et R&D. Ce que RITA trouve sont des propositions à vérifier — pas un conseil fiscal.",
+  "rita.noticeReady":
+    "L’analyse tourne. Une partie de la réponse vient d’un modèle et peut demander un second regard.",
+  "rita.noticeRules":
+    "L’analyse tourne, mais sans modèle pour l’instant. Seules les règles fixes sont utilisées.",
+  "rita.noticeBlocked":
+    "L’analyse n’est pas encore branchée, les nouvelles analyses restent donc bloquées. Nous ne montrons jamais de résultats inventés.",
+  "rita.noticeExample":
+    "Les comptes d’exemple sont un exemple intégré — pas quelque chose qu’un client a téléversé.",
+  "rita.signInTitle": "Connectez-vous pour demander une analyse",
+  "rita.signInBody":
+    "L’analyse est stockée dans RITA. BRITT reçoit quelque chose à suivre lorsqu’une analyse se termine ou s’arrête.",
+  "britt.metaTitle": "BRITT — Pixdrift",
+  "britt.metaDescription": "Ce qui s’est passé et doit être suivi.",
+  "britt.lead":
+    "BRITT rassemble ce qui doit être suivi. Les chiffres ici sont des exemples — pas encore de connexions Fortnox ou Revolut.",
+  "britt.noticeDemo":
+    "Les chiffres ici sont des exemples pour la maison, pas Fortnox et pas une caisse en direct.",
+  "britt.noticeOwn":
+    "Ici vous suivez vos propres observations. Les chiffres d’exemple ne tournent que sur la maison.",
+  "britt.signInTitle": "Connectez-vous pour voir les observations",
+  "britt.signInBody":
+    "Les observations appartiennent à votre entreprise. Ce qui se passe dans TORA, RITA et IRMA apparaît ici.",
+  "irma.metaTitle": "IRMA — Pixdrift",
+  "irma.metaDescription": "Envoyer un accord, voir s’il est lu et confirmé.",
+  "irma.heading": "Quel accord doit sortir ?",
+  "irma.lead":
+    "Avec IRMA vous envoyez des accords en numérique : créer, envoyer un lien, voir quand la contrepartie a ouvert et confirmé. La contrepartie n’a pas besoin de compte. C’est une confirmation numérique simple, pas une signature électronique juridique. Il n’y a pas encore d’archive de documents.",
+  "irma.signInTitle": "Connectez-vous pour créer des accords",
+  "irma.signInBody":
+    "Le lien s’affiche une fois — copiez-le tout de suite. Nous ne le stockons pas sous forme lisible.",
+  "creditae.vendorScore": "Valeur du bureau",
+  "creditae.vendorLimit": "Limite du bureau",
+  "creditae.vendorNotConclusion": "Ce sont les champs du bureau, pas votre conclusion.",
+  "creditae.vendorWhyMissing": "Pourquoi le rapport manque",
+  "creditae.notes": "Note",
+  "creditae.yourAssessment": "Votre évaluation",
+  "creditae.conclusion": "Conclusion",
 };

@@ -4,16 +4,19 @@ import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { Notice } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
-import { familyMission, familyStatusLabel, t } from "@/lib/i18n";
+import {
+  familyBlockedNeed,
+  familyField,
+  familyLinkMeaning,
+  familyMission,
+  familyPartyLabel,
+  familyStackLine,
+  familyStatusLabel,
+  t,
+} from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
 import { gatewaySnapshot } from "@/lib/platform/ai";
-import {
-  FAMILY_BLOCKED,
-  FAMILY_LINKS,
-  FAMILY_STACK,
-  FAMILY_SYSTEMS,
-  familyPartyName,
-} from "@/lib/platform/family";
+import { FAMILY_BLOCKED, FAMILY_LINKS, FAMILY_STACK, FAMILY_SYSTEMS } from "@/lib/platform/family";
 import { hubStatus, ritaStatusLine } from "@/lib/platform/hub-status";
 
 export async function generateMetadata() {
@@ -65,8 +68,8 @@ export default async function PlatformPage() {
               <p className="text-xs text-faint">{familyStatusLabel(locale, system.status)}</p>
             </div>
             <p className="mt-2 text-sm font-medium text-ink">{familyMission(locale, system.id)}</p>
-            <p className="mt-1 text-sm text-ink-soft">{system.does}</p>
-            <p className="mt-2 text-sm text-muted">{system.doesNot}</p>
+            <p className="mt-1 text-sm text-ink-soft">{familyField(locale, system.id, "does")}</p>
+            <p className="mt-2 text-sm text-muted">{familyField(locale, system.id, "doesNot")}</p>
           </article>
         ))}
       </section>
@@ -80,9 +83,9 @@ export default async function PlatformPage() {
               className="rounded-xl border border-line bg-surface px-4 py-3"
             >
               <p className="text-sm font-medium">
-                {familyPartyName(link.from)} → {familyPartyName(link.to)}
+                {familyPartyLabel(locale, link.from)} → {familyPartyLabel(locale, link.to)}
               </p>
-              <p className="mt-1 text-sm text-ink-soft">{link.meaning}</p>
+              <p className="mt-1 text-sm text-ink-soft">{familyLinkMeaning(locale, link.id)}</p>
             </li>
           ))}
         </ul>
@@ -101,7 +104,7 @@ export default async function PlatformPage() {
               key={item.id}
               className="rounded-xl border border-line bg-surface px-4 py-3 text-sm text-ink-soft"
             >
-              {item.need}
+              {familyBlockedNeed(locale, item.id)}
             </li>
           ))}
         </ul>
@@ -118,9 +121,13 @@ export default async function PlatformPage() {
         </p>
         <ul className="flex flex-col gap-2">
           {FAMILY_STACK.map((row) => (
-            <li key={row.layer} className="rounded-xl border border-line bg-surface px-4 py-3">
-              <p className="font-mono text-xs text-accent">{row.layer}</p>
-              <p className="mt-1 text-sm text-ink-soft">{row.runs}</p>
+            <li key={row.id} className="rounded-xl border border-line bg-surface px-4 py-3">
+              <p className="font-mono text-xs text-accent">
+                {familyStackLine(locale, row.id, "layer")}
+              </p>
+              <p className="mt-1 text-sm text-ink-soft">
+                {familyStackLine(locale, row.id, "runs")}
+              </p>
             </li>
           ))}
         </ul>
@@ -142,8 +149,10 @@ export default async function PlatformPage() {
         ) : null}
         {!gateway.configured ? (
           <p className="mt-3 text-sm text-muted">
-            Sätt <span className="font-mono">AI_GATEWAY_API_KEY</span> i Secrets eller{" "}
-            <span className="font-mono">VERCEL_OIDC_TOKEN</span> på Vercel.
+            {t(locale, "platform.gatewayHint", {
+              key: "AI_GATEWAY_API_KEY",
+              oidc: "VERCEL_OIDC_TOKEN",
+            })}
           </p>
         ) : null}
       </section>
