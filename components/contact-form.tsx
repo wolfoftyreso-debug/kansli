@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { sendEnquiry, type EnquiryState } from "@/app/actions/send-enquiry";
 import { CONTACT_LIMITS } from "@/lib/contact";
@@ -50,18 +50,47 @@ function Field({
 
 export function ContactForm() {
   const [state, action, pending] = useActionState(sendEnquiry, initialState);
+  const form = useRef<HTMLFormElement>(null);
+  const confirmation = useRef<HTMLDivElement>(null);
+
+  // Submitting moves focus nowhere on its own: on success the button under the
+  // cursor unmounts and focus falls to <body>; on a validation error the
+  // problem may sit above the fold. Both cases get an explicit landing spot.
+  useEffect(() => {
+    if (state.status === "success") {
+      confirmation.current?.focus();
+      return;
+    }
+    if (state.status !== "error") return;
+    const invalid = form.current?.querySelector<HTMLElement>('[aria-invalid="true"]');
+    (invalid ?? form.current?.querySelector<HTMLElement>('[role="alert"]'))?.focus();
+  }, [state]);
 
   if (state.status === "success") {
     return (
-      <div className="border border-line bg-white p-10" role="status" aria-live="polite">
+      <div
+        ref={confirmation}
+        tabIndex={-1}
+        className="border border-line bg-white p-10 outline-none"
+        role="status"
+      >
         <h2 className="title-md mt-0 mb-3">Enquiry sent.</h2>
-        <p className="m-0 text-[15px] leading-[1.65] text-muted">{state.message}</p>
+        <p className="m-0 mb-4 text-[15px] leading-[1.65] text-muted">{state.message}</p>
+        <p className="m-0 text-[15px] leading-[1.65] text-muted">
+          While you wait, the <Link href="/methodology">methodology</Link> covers the
+          ground a first call walks through.
+        </p>
       </div>
     );
   }
 
   return (
-    <form action={action} className="relative border border-line bg-white p-10" noValidate>
+    <form
+      ref={form}
+      action={action}
+      className="relative border border-line bg-white p-10"
+      noValidate
+    >
       <div className="grid gap-[22px]">
         <Field label="Name" errorId="name-error" error={state.errors?.name}>
           <input
@@ -137,7 +166,7 @@ export function ContactForm() {
           </label>
         </div>
         {state.status === "error" && !(state.errors && Object.keys(state.errors).length) ? (
-          <p className="m-0 text-sm text-danger" role="alert">
+          <p className="m-0 text-sm text-danger outline-none" role="alert" tabIndex={-1}>
             {state.message}
           </p>
         ) : null}

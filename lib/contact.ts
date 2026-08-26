@@ -29,7 +29,7 @@ export type ContactValues = {
 export type FieldErrors = Partial<Record<keyof ContactValues, string>>;
 
 export type ParsedContact =
-  | { ok: true; spam: true }
+  | { ok: true; spam: true; values: ContactValues }
   | { ok: true; spam: false; data: ContactValues }
   | { ok: false; error: string; errors?: FieldErrors; values: ContactValues };
 
@@ -93,8 +93,10 @@ export function parseContactFields(input: ContactFields): ParsedContact {
     email: asString(input.email).trim(),
   };
 
+  // Raw values ride along so the confirmation a bot sees is built from the
+  // same material as a real one, and stays indistinguishable from it.
   if (asString(input.website).trim()) {
-    return { ok: true, spam: true };
+    return { ok: true, spam: true, values };
   }
 
   const name = check(

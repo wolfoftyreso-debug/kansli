@@ -38,6 +38,16 @@ export type Mailer = {
 
 const PUBLIC_FAILURE = `We could not send that just now. Please email ${site.email}.`;
 
+// The form is replaced by this confirmation, so "this address" would point at
+// something no longer on screen. Echoing the address lets the sender catch a
+// typo in the one field a reply depends on.
+function sent(email: string): EnquiryState {
+  return {
+    status: "success",
+    message: `Thanks. A founder will reply to ${oneLine(email, 254)}.`,
+  };
+}
+
 function enquiryHtml(fields: ContactValues) {
   const name = escapeHtml(fields.name);
   const organisation = escapeHtml(fields.organisation);
@@ -81,10 +91,7 @@ export async function handleEnquiry(
 
   if (parsed.spam) {
     log("enquiry_discarded");
-    return {
-      status: "success",
-      message: "Thanks. A founder will reply to this address.",
-    };
+    return sent(parsed.values.email);
   }
 
   const emailKey = `email:${parsed.data.email}`;
@@ -95,7 +102,7 @@ export async function handleEnquiry(
     log("enquiry_throttled");
     return {
       status: "error",
-      message: "Please wait before sending another enquiry.",
+      message: `Please wait a while before sending another enquiry, or email ${site.email} directly.`,
       values: parsed.data,
     };
   }
@@ -146,8 +153,5 @@ export async function handleEnquiry(
   }
 
   log("enquiry_accepted");
-  return {
-    status: "success",
-    message: "Thanks. A founder will reply to this address.",
-  };
+  return sent(email);
 }

@@ -101,7 +101,13 @@ describe("parseContactFields", () => {
       ...valid,
       website: "https://spam.example",
     });
-    assert.deepEqual(result, { ok: true, spam: true });
+    assert.equal(result.ok, true);
+    if (result.ok) {
+      assert.equal(result.spam, true);
+    }
+    if (result.ok && result.spam) {
+      assert.equal(result.values.email, valid.email);
+    }
   });
 });
 

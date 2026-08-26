@@ -33,7 +33,8 @@ function recordingMailer() {
 describe("handleEnquiry", () => {
   it("sends through the mailer on a valid submission", async () => {
     const { mailer, sent } = recordingMailer();
-    const result = await handleEnquiry(fields("ok"), {
+    const payload = fields("ok");
+    const result = await handleEnquiry(payload, {
       mailer,
       env,
       clientKey: `ok-${Date.now()}`,
@@ -41,6 +42,24 @@ describe("handleEnquiry", () => {
 
     assert.equal(result.status, "success");
     assert.equal(sent.length, 1);
+    assert.ok(
+      result.message?.includes(payload.email),
+      "confirmation should echo the address the reply goes to",
+    );
+  });
+
+  it("confirms a honeypot submission without sending, same shape as a real one", async () => {
+    const { mailer, sent } = recordingMailer();
+    const payload = { ...fields("spam"), website: "https://spam.example" };
+    const result = await handleEnquiry(payload, {
+      mailer,
+      env,
+      clientKey: `spam-${Date.now()}`,
+    });
+
+    assert.equal(result.status, "success");
+    assert.equal(sent.length, 0);
+    assert.ok(result.message?.includes(payload.email));
   });
 
   it("does not claim success when the mailer rejects", async () => {
@@ -139,6 +158,11 @@ describe("handleEnquiry", () => {
     });
     assert.equal(blocked.status, "error");
     assert.match(blocked.message ?? "", /wait/i);
+    assert.match(
+      blocked.message ?? "",
+      /contact@landvex\.com/,
+      "a throttled sender should still have a way in",
+    );
   });
 });
 
