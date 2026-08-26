@@ -45,3 +45,11 @@ export const legalNav = [
   { href: "/privacy", label: "Privacy" },
   { href: "/security", label: "Security" },
 ] as const;
+
+export const indexedRoutes = [
+  { path: "/", changeFrequency: "weekly", priority: 1 },
+  { path: "/methodology", changeFrequency: "monthly", priority: 0.6 },
+  { path: "/company", changeFrequency: "monthly", priority: 0.6 },
+  { path: "/security", changeFrequency: "monthly", priority: 0.6 },
+  { path: "/privacy", changeFrequency: "monthly", priority: 0.6 },
+] as const;

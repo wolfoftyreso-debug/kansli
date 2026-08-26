@@ -46,7 +46,7 @@ export default function PrivacyPage() {
       <DocHeading>Who receives the data</DocHeading>
       <DocText>
         The message is emailed to {site.email} through Resend, which we use as a
-        processor for delivery. The site is hosted on Vercel. Both may process data
+        processor for delivery. The site is hosted on AWS. Resend may process data
         in the United States. Where GDPR applies, that is an international transfer;
         we rely on the provider’s Standard Contractual Clauses and their published
         data-processing terms. We do not sell personal data.

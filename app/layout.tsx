@@ -4,7 +4,9 @@ import { Archivo, IBM_Plex_Mono } from "next/font/google";
 import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { landvexAb, landvexInc, site } from "@/lib/site";
+import { brand } from "@/lib/brand";
+import { organizationJsonLd } from "@/lib/schema";
+import { site } from "@/lib/site";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -67,65 +69,9 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#000028",
+  themeColor: brand.navy,
   width: "device-width",
   initialScale: 1,
-};
-
-const organizationJsonLd = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": ["Organization", "ProfessionalService"],
-      "@id": `${site.url}/#organization`,
-      name: site.name,
-      legalName: landvexAb.legalName,
-      url: site.url,
-      email: site.email,
-      vatID: landvexAb.vat,
-      description: site.description,
-      slogan: site.tagline,
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: landvexAb.street,
-        postalCode: landvexAb.postalCode,
-        addressLocality: landvexAb.city,
-        addressCountry: landvexAb.countryCode,
-      },
-      location: [
-        {
-          "@type": "Place",
-          name: landvexAb.label,
-          address: {
-            "@type": "PostalAddress",
-            streetAddress: landvexAb.street,
-            postalCode: landvexAb.postalCode,
-            addressLocality: landvexAb.city,
-            addressCountry: landvexAb.countryCode,
-          },
-        },
-        {
-          "@type": "Place",
-          name: landvexInc.label,
-          address: {
-            "@type": "PostalAddress",
-            addressLocality: landvexInc.city,
-            addressRegion: landvexInc.region,
-            addressCountry: landvexInc.countryCode,
-          },
-        },
-      ],
-    },
-    {
-      "@type": "WebSite",
-      "@id": `${site.url}/#website`,
-      url: site.url,
-      name: site.name,
-      description: site.description,
-      publisher: { "@id": `${site.url}/#organization` },
-      inLanguage: "en",
-    },
-  ],
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

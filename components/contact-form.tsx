@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useActionState } from "react";
 import Link from "next/link";
 import { sendEnquiry, type EnquiryState } from "@/app/actions/send-enquiry";
@@ -13,6 +14,28 @@ function FieldError({ id, message }: { id: string; message?: string }) {
     <p id={id} className="m-0 text-sm text-danger" role="alert">
       {message}
     </p>
+  );
+}
+
+function Field({
+  label,
+  errorId,
+  error,
+  children,
+}: {
+  label: string;
+  errorId: string;
+  error?: string;
+  children: ReactNode;
+}) {
+  return (
+    <label className="grid gap-2">
+      <span className="text-[13px] font-semibold tracking-[0.02em]">
+        {label} <span className="sr-only">(required)</span>
+      </span>
+      {children}
+      <FieldError id={errorId} message={error} />
+    </label>
   );
 }
 
@@ -31,10 +54,7 @@ export function ContactForm() {
   return (
     <form action={action} className="relative border border-line bg-white p-10" noValidate>
       <div className="grid gap-[22px]">
-        <label className="grid gap-2">
-          <span className="text-[13px] font-semibold tracking-[0.02em]">
-            Name <span className="sr-only">(required)</span>
-          </span>
+        <Field label="Name" errorId="name-error" error={state.errors?.name}>
           <input
             className="input"
             type="text"
@@ -47,12 +67,12 @@ export function ContactForm() {
             aria-invalid={state.errors?.name ? true : undefined}
             aria-describedby={state.errors?.name ? "name-error" : undefined}
           />
-          <FieldError id="name-error" message={state.errors?.name} />
-        </label>
-        <label className="grid gap-2">
-          <span className="text-[13px] font-semibold tracking-[0.02em]">
-            Organisation <span className="sr-only">(required)</span>
-          </span>
+        </Field>
+        <Field
+          label="Organisation"
+          errorId="organisation-error"
+          error={state.errors?.organisation}
+        >
           <input
             className="input"
             type="text"
@@ -65,12 +85,8 @@ export function ContactForm() {
             aria-invalid={state.errors?.organisation ? true : undefined}
             aria-describedby={state.errors?.organisation ? "organisation-error" : undefined}
           />
-          <FieldError id="organisation-error" message={state.errors?.organisation} />
-        </label>
-        <label className="grid gap-2">
-          <span className="text-[13px] font-semibold tracking-[0.02em]">
-            Work email <span className="sr-only">(required)</span>
-          </span>
+        </Field>
+        <Field label="Work email" errorId="email-error" error={state.errors?.email}>
           <input
             className="input"
             type="email"
@@ -83,12 +99,12 @@ export function ContactForm() {
             aria-invalid={state.errors?.email ? true : undefined}
             aria-describedby={state.errors?.email ? "email-error" : undefined}
           />
-          <FieldError id="email-error" message={state.errors?.email} />
-        </label>
-        <label className="grid gap-2">
-          <span className="text-[13px] font-semibold tracking-[0.02em]">
-            The process you want automated <span className="sr-only">(required)</span>
-          </span>
+        </Field>
+        <Field
+          label="The process you want automated"
+          errorId="process-error"
+          error={state.errors?.process}
+        >
           <textarea
             className="input min-h-[120px] resize-y"
             name="process"
@@ -100,8 +116,7 @@ export function ContactForm() {
             aria-invalid={state.errors?.process ? true : undefined}
             aria-describedby={state.errors?.process ? "process-error" : undefined}
           />
-          <FieldError id="process-error" message={state.errors?.process} />
-        </label>
+        </Field>
         <div className="absolute -left-[9999px] h-px w-px overflow-hidden" aria-hidden="true">
           <label>
             Website

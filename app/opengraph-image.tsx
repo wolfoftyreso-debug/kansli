@@ -1,4 +1,6 @@
 import { ImageResponse } from "next/og";
+import { brand } from "@/lib/brand";
+import { hero } from "@/lib/home";
 import { site } from "@/lib/site";
 
 export const alt = site.title;
@@ -13,8 +15,8 @@ export default function OpenGraphImage() {
           width: "100%",
           height: "100%",
           display: "flex",
-          background: "#000028",
-          color: "#ffffff",
+          background: brand.navy,
+          color: brand.white,
           padding: "72px",
           flexDirection: "column",
           justifyContent: "space-between",
@@ -28,7 +30,7 @@ export default function OpenGraphImage() {
             fontSize: 22,
             letterSpacing: "0.16em",
             textTransform: "uppercase",
-            color: "#00b3b3",
+            color: brand.accent,
           }}
         >
           Landvex · Stockholm · Houston
@@ -43,10 +45,10 @@ export default function OpenGraphImage() {
               maxWidth: 920,
             }}
           >
-            We automate the work that used to need people.
+            {hero.title}
           </div>
-          <div style={{ fontSize: 26, color: "#c3ccd3", maxWidth: 720 }}>
-            Founder-led automation engineering on AWS.
+          <div style={{ fontSize: 26, color: brand.mist, maxWidth: 720 }}>
+            {site.tagline}
           </div>
         </div>
       </div>

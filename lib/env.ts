@@ -17,11 +17,13 @@ export function mailEnv(): MailEnv {
     apiKey: readEnv("RESEND_API_KEY"),
     from: readEnv("CONTACT_FROM"),
     to: readEnv("CONTACT_TO") ?? site.email,
-    production: process.env.VERCEL_ENV === "production",
+    production: process.env.NODE_ENV === "production",
   };
 }
 
 export function isCompanyFromAddress(from: string) {
   const value = from.trim();
-  return /<[^>\s]+@landvex\.com>$/i.test(value) || /^[^<>\s]+@landvex\.com$/i.test(value);
+  return (
+    /<[^>\s]+@landvex\.com>$/i.test(value) || /^[^<>\s]+@landvex\.com$/i.test(value)
+  );
 }

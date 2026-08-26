@@ -1,6 +1,6 @@
 # Landvex
 
-Company website for Landvex Inc. (Houston) and Landvex AB (Tyresö). Next.js on Vercel. The enquiry form sends mail with Resend, server-side only.
+Company site for Landvex Inc. (Houston) and Landvex AB (Tyresö). Next.js, hosted on AWS. The enquiry form sends mail with Resend, on the server only.
 
 ## Setup
 
@@ -21,7 +21,7 @@ npm run build
 
 ## Environment
 
-Names only. Values belong in Vercel / `.env.local`, never in git.
+Names only. Values belong in the host environment or `.env.local`, never in git.
 
 | Name | Server-only | Purpose |
 | --- | --- | --- |
@@ -29,8 +29,8 @@ Names only. Values belong in Vercel / `.env.local`, never in git.
 | `CONTACT_FROM` | yes | Verified sender, typically `Landvex <contact@landvex.com>` |
 | `CONTACT_TO` | yes | Inbox; defaults to `contact@landvex.com` |
 
-Do not put secrets in `NEXT_PUBLIC_*`. Rate limiting is in-process and therefore best-effort across serverless instances.
+Do not put secrets in `NEXT_PUBLIC_*`. Rate limiting is in-process and therefore best-effort across instances.
 
 ## Deploy
 
-Linked Vercel project. Preview and production use the same variable names. Production refuses a From address outside `landvex.com`.
+Production runs on AWS. Same variable names as local. Production refuses a From address outside `landvex.com`.

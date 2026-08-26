@@ -3,14 +3,14 @@
 import { randomUUID } from "node:crypto";
 import { headers } from "next/headers";
 import { Resend } from "resend";
-import { mailEnv } from "@/lib/env";
 import { handleEnquiry, type EnquiryState, type Mailer } from "@/lib/enquiry";
+import { mailEnv } from "@/lib/env";
 
 export type { EnquiryState };
 
 function clientKey(headerStore: Headers) {
-  const vercel = headerStore.get("x-vercel-forwarded-for")?.split(",")[0]?.trim();
-  if (vercel) return vercel;
+  const forwarded = headerStore.get("x-forwarded-for")?.split(",")[0]?.trim();
+  if (forwarded) return forwarded;
   const realIp = headerStore.get("x-real-ip")?.trim();
   if (realIp) return realIp;
   return "unknown";

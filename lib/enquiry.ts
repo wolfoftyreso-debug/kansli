@@ -1,22 +1,21 @@
+import { brand } from "./brand.ts";
 import {
   escapeHtml,
   oneLine,
   parseContactFields,
   type ContactFields,
+  type ContactValues,
+  type FieldErrors,
 } from "./contact.ts";
 import { isCompanyFromAddress, type MailEnv } from "./env.ts";
 import { allowRequest } from "./rate-limit.ts";
+import { site } from "./site.ts";
 
 export type EnquiryState = {
   status: "idle" | "success" | "error";
   message?: string;
-  errors?: Record<string, string>;
-  values?: {
-    name: string;
-    organisation: string;
-    email: string;
-    process: string;
-  };
+  errors?: FieldErrors;
+  values?: ContactValues;
 };
 
 export type MailMessage = {
@@ -37,28 +36,22 @@ export type Mailer = {
   send: (message: MailMessage) => Promise<MailResult>;
 };
 
-const PUBLIC_FAILURE =
-  "We could not send that just now. Please email contact@landvex.com.";
+const PUBLIC_FAILURE = `We could not send that just now. Please email ${site.email}.`;
 
-function enquiryHtml(fields: {
-  name: string;
-  organisation: string;
-  email: string;
-  process: string;
-}) {
+function enquiryHtml(fields: ContactValues) {
   const name = escapeHtml(fields.name);
   const organisation = escapeHtml(fields.organisation);
   const email = escapeHtml(fields.email);
   const process = escapeHtml(fields.process).replaceAll("\n", "<br />");
 
-  return `<div style="background:#f7f8f9;padding:32px 16px">
-  <div style="max-width:640px;margin:0 auto;background:#ffffff;border:1px solid #e3e6e8;padding:32px">
-    <p style="margin:0 0 8px;font-family:ui-monospace,monospace;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#007580">Landvex enquiry</p>
-    <h1 style="margin:0 0 24px;font-family:Helvetica,Arial,sans-serif;font-size:24px;font-weight:600;color:#000028">New technical review request</h1>
-    <p style="font-family:Helvetica,Arial,sans-serif;font-size:15px;color:#000028"><strong>Name</strong><br />${name}</p>
-    <p style="font-family:Helvetica,Arial,sans-serif;font-size:15px;color:#000028"><strong>Organisation</strong><br />${organisation}</p>
-    <p style="font-family:Helvetica,Arial,sans-serif;font-size:15px;color:#000028"><strong>Email</strong><br />${email}</p>
-    <p style="font-family:Helvetica,Arial,sans-serif;font-size:15px;color:#000028"><strong>Process</strong><br />${process}</p>
+  return `<div style="background:${brand.wash};padding:32px 16px">
+  <div style="max-width:640px;margin:0 auto;background:${brand.white};border:1px solid ${brand.line};padding:32px">
+    <p style="margin:0 0 8px;font-family:ui-monospace,monospace;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:${brand.teal}">Landvex enquiry</p>
+    <h1 style="margin:0 0 24px;font-family:Helvetica,Arial,sans-serif;font-size:24px;font-weight:600;color:${brand.navy}">New technical review request</h1>
+    <p style="font-family:Helvetica,Arial,sans-serif;font-size:15px;color:${brand.navy}"><strong>Name</strong><br />${name}</p>
+    <p style="font-family:Helvetica,Arial,sans-serif;font-size:15px;color:${brand.navy}"><strong>Organisation</strong><br />${organisation}</p>
+    <p style="font-family:Helvetica,Arial,sans-serif;font-size:15px;color:${brand.navy}"><strong>Email</strong><br />${email}</p>
+    <p style="font-family:Helvetica,Arial,sans-serif;font-size:15px;color:${brand.navy}"><strong>Process</strong><br />${process}</p>
   </div>
 </div>`;
 }
@@ -132,9 +125,13 @@ export async function handleEnquiry(
       replyTo: email,
       subject: `Enquiry from ${subjectOrg}`,
       html: enquiryHtml({ name, organisation, email, process }),
-      text: [`Name: ${name}`, `Organisation: ${organisation}`, `Email: ${email}`, "", process].join(
-        "\n",
-      ),
+      text: [
+        `Name: ${name}`,
+        `Organisation: ${organisation}`,
+        `Email: ${email}`,
+        "",
+        process,
+      ].join("\n"),
     });
 
     if (!result.accepted) {

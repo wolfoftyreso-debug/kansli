@@ -16,8 +16,6 @@ const securityHeaders = [
   },
   {
     key: "Content-Security-Policy",
-    // Next.js still emits small inline bootstrap scripts; a nonce pipeline is not justified here.
-    // React Refresh uses eval in development only.
     value: [
       "default-src 'self'",
       `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,

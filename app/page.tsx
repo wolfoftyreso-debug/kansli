@@ -1,110 +1,14 @@
 import { ContactForm } from "@/components/contact-form";
+import {
+  capabilities,
+  glance,
+  hero,
+  layers,
+  offices,
+  principles,
+  steps,
+} from "@/lib/home";
 import { landvexAb, site } from "@/lib/site";
-
-const capabilities = [
-  {
-    n: "01",
-    title: "Process automation",
-    body: "Event-driven pipelines on Lambda, Step Functions, SQS and EventBridge. Work that ran once a week when someone had time now runs on every event, in seconds.",
-  },
-  {
-    n: "02",
-    title: "Document & media processing",
-    body: "Extraction, classification and validation of documents, images and video at volume. Confidence scored per field, with exceptions routed to a reviewer instead of the whole batch.",
-  },
-  {
-    n: "03",
-    title: "Applied AI in production",
-    body: "Model orchestration on Bedrock and SageMaker, with evaluation harnesses, guardrails and cost ceilings. We treat inference as a line item, not a demo.",
-  },
-  {
-    n: "04",
-    title: "Data platforms",
-    body: "Ingest, storage and query layers built so every number can be traced back to its source. Lineage is a requirement, not a report we generate afterwards.",
-  },
-  {
-    n: "05",
-    title: "Cloud foundation",
-    body: "Multi-account AWS setups, IAM, networking and infrastructure as code. EU and US data residency handled at the account boundary, not by policy documents.",
-  },
-  {
-    n: "06",
-    title: "Run & operate",
-    body: "We stay on after launch. Observability, on-call, cost review and a roadmap for the next process to automate. Handover is optional, never abrupt.",
-  },
-] as const;
-
-const steps = [
-  {
-    n: "Step 01",
-    title: "Find the manual work",
-    body: "Two or three days with the people doing the task. We measure volume, handling time and error rate before proposing anything.",
-  },
-  {
-    n: "Step 02",
-    title: "Prove it on real data",
-    body: "A narrow slice in production within weeks, running alongside the manual process so the two can be compared directly.",
-  },
-  {
-    n: "Step 03",
-    title: "Scale what holds",
-    body: "Widen the scope only where accuracy and cost hold up. Everything is infrastructure as code from the first commit.",
-  },
-  {
-    n: "Step 04",
-    title: "Operate and extend",
-    body: "Monitoring, cost control and a standing review of the next process worth removing from someone's day.",
-  },
-] as const;
-
-const layers = [
-  {
-    n: "Layer 01 — Capture",
-    body: "Mobile, body, vehicle and drone capture. 4K/8K video with GPS, IMU and compass metadata. Original media immutable.",
-  },
-  {
-    n: "Layer 02 — Orchestration",
-    body: "An engine decides which specialist models run per observation: classification, detection, segmentation, depth, OCR.",
-  },
-  {
-    n: "Layer 03 — Active learning",
-    body: "Humans are asked only when the expected learning value clears a threshold. Validations take seconds, not sessions.",
-  },
-  {
-    n: "Layer 04 — Knowledge graph",
-    body: "Assets, relationships, condition and history, continuously indexed. Every output traceable to source, observation and model.",
-  },
-] as const;
-
-const offices = [
-  {
-    city: "Stockholm",
-    label: "EU HQ",
-    region: "CET / CEST · eu-north-1",
-    body: `${landvexAb.legalName} · ${landvexAb.street}, ${landvexAb.postalCode} ${landvexAb.city}, Sweden · Org.nr ${landvexAb.orgNr}. European engineering, EU regulatory work and data handled in region.`,
-  },
-  {
-    city: "Houston",
-    label: "US HQ",
-    region: "US Central",
-    body: "Landvex Inc. · Houston, Texas. The US headquarters, and our base for North American clients in energy, infrastructure and industry.",
-  },
-] as const;
-
-const principles = [
-  {
-    title: "Small by design",
-    body: "Senior engineers only. We take fewer engagements and stay in them longer.",
-  },
-  {
-    title: "Evidence over assertion",
-    body: "Accuracy, throughput and cost are measured against the manual baseline and reported as they are.",
-  },
-  {
-    title: "You own it",
-    body: "Code in your accounts, infrastructure as code, no proprietary lock-in on the automation we build for you.",
-  },
-] as const;
 
 export default function HomePage() {
   return (
@@ -114,15 +18,10 @@ export default function HomePage() {
           <div className="hero-copy">
             <div className="kicker mb-8">
               <span className="kicker-rule" aria-hidden="true" />
-              <span className="eyebrow text-teal">Founder-led · AWS engineering</span>
+              <span className="eyebrow text-teal">{hero.eyebrow}</span>
             </div>
-            <h1 className="display">We automate the work that used to need people.</h1>
-            <p className="lede mt-8">
-              Landvex is a founder-led engineering company with offices in Stockholm and
-              Houston. We design, build and operate automation on AWS — replacing manual
-              review, manual data entry and manual coordination with systems that run
-              continuously, and can be audited.
-            </p>
+            <h1 className="display">{hero.title}</h1>
+            <p className="lede mt-8">{hero.lede}</p>
             <div className="mt-11 flex flex-wrap gap-3.5">
               <a className="btn btn-primary" href="#contact">
                 Book a technical review
@@ -134,36 +33,15 @@ export default function HomePage() {
           </div>
           <aside className="hero-panel" aria-label="At a glance">
             <dl className="hero-facts">
-              <div>
-                <dt>
-                  <span className="hero-stat">2</span>
-                  <span className="sr-only"> engineering offices</span>
-                </dt>
-                <dd className="hero-stat-label">
-                  Engineering offices — Stockholm and Houston, overlapping working hours
-                  across EU and US Central
-                </dd>
-              </div>
-              <div>
-                <dt>
-                  <span className="hero-stat">AWS</span>
-                  <span className="sr-only"> native</span>
-                </dt>
-                <dd className="hero-stat-label">
-                  Native to the platform — event-driven services, managed inference,
-                  infrastructure as code
-                </dd>
-              </div>
-              <div>
-                <dt>
-                  <span className="hero-stat">24–72h</span>
-                  <span className="sr-only"> from task to delivered output</span>
-                </dt>
-                <dd className="hero-stat-label">
-                  From a defined task to structured, delivered output in our own
-                  production systems
-                </dd>
-              </div>
+              {glance.map((item) => (
+                <div key={item.value}>
+                  <dt>
+                    <span className="hero-stat">{item.value}</span>
+                    <span className="sr-only">{item.sr}</span>
+                  </dt>
+                  <dd className="hero-stat-label">{item.label}</dd>
+                </div>
+              ))}
             </dl>
           </aside>
         </div>

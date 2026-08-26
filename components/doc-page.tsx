@@ -14,16 +14,14 @@ export function DocPage({
   return (
     <main id="main">
       <section className="border-b border-line">
-        <div className="mx-auto max-w-[760px] px-6 py-16 site:px-10 site:py-[104px]">
+        <div className="doc doc-hero">
           <span className="eyebrow text-teal">{eyebrow}</span>
           <h1 className="headline mt-5 mb-5 max-w-[20ch]">{title}</h1>
           <p className="intro">{lead}</p>
         </div>
       </section>
       <section className="border-b border-line">
-        <div className="mx-auto max-w-[760px] px-6 py-16 site:px-10 site:py-20">
-          {children}
-        </div>
+        <div className="doc doc-body">{children}</div>
       </section>
     </main>
   );
