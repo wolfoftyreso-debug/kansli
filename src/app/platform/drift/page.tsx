@@ -7,12 +7,13 @@ import { loadOpsSnapshot, opsScopeFor } from "@/lib/platform/ops";
 import { tryRuntime } from "@/lib/platform/page";
 import { getRuntime } from "@/lib/platform/runtime";
 import { OpsBoard } from "./OpsBoard";
+import { OpsSmsForm } from "./OpsSmsForm";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Drift — Pixdrift",
-  description: "Live mätning av databasen, systemen och den gemensamma strukturen.",
+  description: "Sambandscentral: reskontra, ärenden, larm och live mätning.",
 };
 
 export default async function DriftPage() {
@@ -38,13 +39,13 @@ export default async function DriftPage() {
             { href: "/platform/drift", label: "Drift" },
           ]}
         />
-        <p className="pd-label">Översikt</p>
+        <p className="pd-label">Sambandscentral</p>
         <h1 className="text-3xl font-semibold tracking-tight">{session?.org?.name ?? "Drift"}</h1>
         <p className="text-ink-soft">
           {session?.org
             ? scope === "house"
-              ? "Senaste dygnet i hela flottan. Verkstäder ser bara sitt bolag."
-              : "Senaste dygnet i ert bolag. Inte andras rader."
+              ? "Reskontra, ärenden och larm för hela flottan. Verkstäder ser bara sitt bolag."
+              : "Reskontra, ärenden och larm i ert bolag. Inte andras rader."
             : "Logga in för att se live mätning."}
         </p>
       </header>
@@ -58,6 +59,7 @@ export default async function DriftPage() {
       ) : (
         <>
           <OpsBoard initial={snapshot} />
+          <OpsSmsForm sms={snapshot.sms} />
           <p className="text-sm text-faint">
             <Link href="/kansli/beredskap" className="underline decoration-line underline-offset-4">
               Beredskap

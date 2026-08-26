@@ -28,6 +28,9 @@ export type StructureTable = {
 /** Product tables created by `db/migrations`. Identity is bootstrapped separately. */
 export const PRODUCT_TABLES: readonly StructureTable[] = [
   { schema: "platform", table: "events", tenancy: "org_ref", system: "platform" },
+  { schema: "platform", table: "sms_routes", tenancy: "org_ref", system: "platform" },
+  { schema: "platform", table: "alarm_states", tenancy: "org_ref", system: "platform" },
+  { schema: "platform", table: "alarm_outbox", tenancy: "org_ref", system: "platform" },
   { schema: "kansli", table: "tasks", tenancy: "org_ref", system: "kansli" },
   { schema: "kansli", table: "intakes", tenancy: "house_org_ref", system: "kansli" },
   { schema: "ekonomi", table: "accounts", tenancy: "none", system: "ekonomi" },

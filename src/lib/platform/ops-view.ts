@@ -47,6 +47,93 @@ export type OpsReadinessGate = {
   detail: string;
 };
 
+export type OpsSmsKind = "overdue" | "support" | "sms_failed" | "readiness";
+
+export type OpsNoticeLevel = "larm" | "varning" | "info";
+
+export type OpsNotice = {
+  id: string;
+  level: OpsNoticeLevel;
+  title: string;
+  detail: string;
+  href: string | null;
+  hrefLabel: string | null;
+};
+
+export type OpsLedgerOpen = {
+  id: string;
+  number: string;
+  customerName: string;
+  openOre: number;
+  dueAt: string | null;
+  href: string;
+};
+
+export type OpsLedger = {
+  openCount: number;
+  notDueOre: number;
+  overdueOre: number;
+  overdueCount: number;
+  overdue: OpsLedgerOpen[];
+};
+
+export type OpsSupportKind = "observation" | "task" | "case" | "intake" | "alva";
+
+export type OpsSupportItem = {
+  id: string;
+  kind: OpsSupportKind;
+  title: string;
+  detail: string;
+  href: string;
+  at: string;
+};
+
+export type OpsSupport = {
+  open: number;
+  observations: number;
+  tasks: number;
+  cases: number;
+  intakes: number;
+  items: OpsSupportItem[];
+};
+
+export type OpsSmsRoute = {
+  kind: OpsSmsKind;
+  phone: string;
+  enabled: boolean;
+  updatedAt: string;
+};
+
+export type OpsSmsDesk = {
+  vendor: boolean;
+  phone: string;
+  routes: OpsSmsRoute[];
+  salesPhone: string | null;
+  salesEnabled: boolean;
+  outbox: {
+    id: string;
+    kind: string;
+    status: string;
+    body: string;
+    lastError: string | null;
+    createdAt: string;
+  }[];
+};
+
+export const OPS_SMS_KINDS: readonly OpsSmsKind[] = [
+  "overdue",
+  "support",
+  "sms_failed",
+  "readiness",
+];
+
+export const OPS_SMS_KIND_LABEL: Record<OpsSmsKind, string> = {
+  overdue: "Förfallen reskontra",
+  support: "Öppna ärenden",
+  sms_failed: "Misslyckat SMS",
+  readiness: "Blockerad beredskap",
+};
+
 export type OpsSnapshot = {
   takenAt: string;
   scope: OpsScope;
@@ -96,6 +183,10 @@ export type OpsSnapshot = {
     allSystemsReady: boolean;
     gates: OpsReadinessGate[];
   };
+  notices: OpsNotice[];
+  ledger: OpsLedger;
+  support: OpsSupport;
+  sms: OpsSmsDesk;
 };
 
 export function seriesTotal(points: OpsPoint[]): number {

@@ -129,5 +129,10 @@ live("ops snapshot (live Postgres)", () => {
     expect(house.series).toHaveLength(24);
     expect(shop.recent.length).toBeGreaterThan(0);
     expect(shop.recent[0]?.kind).toMatch(/^ekonomi\./);
+    expect(house.notices).toBeDefined();
+    expect(house.ledger).toBeDefined();
+    expect(house.support).toBeDefined();
+    expect(house.sms.routes).toHaveLength(4);
+    expect(shop.sms.routes).toHaveLength(4);
   });
 });

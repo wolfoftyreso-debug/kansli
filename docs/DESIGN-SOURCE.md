@@ -626,7 +626,7 @@ fordonsref mono faint, tid faint.
 | --- | --- |
 | `/` | Systemet — tabell över rum. “Inget visningslager ovanpå — det här är ytan.” |
 | `/platform` | Vad varje system gör. Princip + Notice + stack + länkar + blockerat |
-| `/platform/drift` | Översikt som Vercel Overview: stora siffror, 24h-kurva, rum, senast. Tabeller under |
+| `/platform/drift` | Sambandscentral: notiser, reskontra, ärenden, 24h-kurva, SMS-rutter. Tabeller under |
 | `/platform/events` | Händelselista |
 | `/platform/mcp` | MCP-yta i fasaden |
 | `/upphandling` | Underlag för demo och uppföljningsmöte. Två kolumner. Formulär POST |

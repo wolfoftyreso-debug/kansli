@@ -8,6 +8,7 @@ import { isHouseSession } from "../kansli/intakes.ts";
 import { ritaEngineSnapshot } from "../rita/resolve-engine.ts";
 import { gatewaySnapshot } from "./ai.ts";
 import { facadeRuntimeMark, orgIdFromRef } from "./facade.ts";
+import { loadOpsDesk } from "./ops-desk.ts";
 import { loadFirstCustomerBoard } from "./first-customer.ts";
 import { hubStatus } from "./hub-status.ts";
 import type {
@@ -335,6 +336,13 @@ export async function loadOpsSnapshot(
     Promise.all([loadSeries(pool, scope, input.orgRef), loadRecent(pool, scope, input.orgRef)]),
   ]);
   const [{ series, previousWindow }, recent] = activity;
+  const blockedGates = readiness.gates.filter((gate) => gate.state === "blocked").length;
+  const desk = await loadOpsDesk(pool, {
+    orgRef: input.orgRef,
+    scope,
+    blockedGates,
+    databaseDown: status.database === "down",
+  });
 
   return {
     takenAt: new Date().toISOString(),
@@ -360,6 +368,10 @@ export async function loadOpsSnapshot(
     previousWindow,
     recent,
     readiness,
+    notices: desk.notices,
+    ledger: desk.ledger,
+    support: desk.support,
+    sms: desk.sms,
   };
 }
 

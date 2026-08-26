@@ -1,11 +1,15 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { SYSTEM_MODULES } from "@pixdrift/systems";
+import { formatSek } from "@/lib/ekonomi/money";
 import { FAMILY_STATUS_LABEL } from "@/lib/platform/family";
 import {
+  OPS_SMS_KIND_LABEL,
   seriesChangePct,
   seriesTotal,
+  type OpsNotice,
   type OpsPoint,
   type OpsSnapshot,
 } from "@/lib/platform/ops-view";
@@ -68,7 +72,7 @@ function ActivityChart({ points }: { points: OpsPoint[] }) {
     <div className="relative">
       <svg
         viewBox={`0 0 ${width} ${height}`}
-        className="h-52 w-full"
+        className="h-44 w-full sm:h-52"
         role="img"
         aria-label="Händelser de senaste 24 timmarna"
         onMouseLeave={() => setHover(null)}
@@ -184,7 +188,7 @@ function MetricCell({
       }
     >
       <p className="pd-label">{label}</p>
-      <p className="mt-2 text-4xl font-semibold tracking-tight tabular-nums">{value}</p>
+      <p className="mt-2 text-3xl font-semibold tracking-tight tabular-nums sm:text-4xl">{value}</p>
       <p
         className={
           hintTone === "up"
@@ -200,22 +204,57 @@ function MetricCell({
   );
 }
 
+function DeskNotice({ notice }: { notice: OpsNotice }) {
+  const box =
+    notice.level === "larm"
+      ? "border-line-strong bg-accent-soft"
+      : notice.level === "varning"
+        ? "border-line bg-surface"
+        : "border-line bg-accent-soft";
+  return (
+    <div className={`border px-4 py-3 ${box}`}>
+      <p className="pd-label">{notice.level}</p>
+      <p className="mt-1 text-base font-medium">{notice.title}</p>
+      <p className="mt-1 text-sm text-ink-soft">{notice.detail}</p>
+      {notice.href ? (
+        <Link
+          href={notice.href}
+          className="mt-3 inline-flex min-h-11 items-center text-sm underline decoration-line underline-offset-4"
+        >
+          {notice.hrefLabel ?? "Öppna"}
+        </Link>
+      ) : null}
+    </div>
+  );
+}
+
 function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
   const statusById = new Map(SYSTEM_MODULES.map((module) => [module.id, module.status]));
   const last24 = seriesTotal(snapshot.series);
   const change = changeCopy(last24, snapshot.previousWindow);
-  const invoices =
-    snapshot.tables.find((table) => table.schema === "ekonomi" && table.table === "invoices")
-      ?.rows ?? null;
   const ready = snapshot.readiness.gates.filter((gate) => gate.state === "ready").length;
   const blocked = snapshot.readiness.gates.filter((gate) => gate.state === "blocked").length;
   const extra = snapshot.tables.filter((table) => !table.expected);
   const missing = snapshot.tables.filter((table) => table.expected && table.rows === null);
+  const openOre = snapshot.ledger.notDueOre + snapshot.ledger.overdueOre;
+  const alarmsOn = snapshot.sms.routes.filter((route) => route.enabled).length;
 
   return (
     <>
+      {snapshot.notices.length > 0 ? (
+        <section className="flex flex-col gap-2" aria-label="Notiser">
+          {snapshot.notices.map((notice) => (
+            <DeskNotice key={notice.id} notice={notice} />
+          ))}
+        </section>
+      ) : (
+        <p className="border border-line bg-accent-soft px-4 py-3 text-sm text-ink-soft">
+          Inget larm just nu. Reskontra, ärenden och rutter syns nedan.
+        </p>
+      )}
+
       <section className="border border-line bg-surface">
-        <div className="grid sm:grid-cols-4">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3">
           <MetricCell
             selected
             label="Händelser"
@@ -224,11 +263,34 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
             hintTone={change.tone}
           />
           <MetricCell
-            label="Bolag"
-            value={numberSv(snapshot.identity.organizations)}
-            hint={`${numberSv(snapshot.identity.users)} användare`}
+            label="Förfallet"
+            value={formatSek(snapshot.ledger.overdueOre)}
+            hint={
+              snapshot.ledger.overdueCount === 0
+                ? "inget förfallet"
+                : `${snapshot.ledger.overdueCount} fakturor`
+            }
+            hintTone={snapshot.ledger.overdueOre > 0 ? "down" : "flat"}
           />
-          <MetricCell label="Fakturor" value={numberSv(invoices)} hint="rader i boken" />
+          <MetricCell
+            label="Reskontra"
+            value={formatSek(openOre)}
+            hint={`${snapshot.ledger.openCount} öppna fakturor`}
+          />
+          <MetricCell
+            label="Ärenden"
+            value={numberSv(snapshot.support.open)}
+            hint={
+              snapshot.support.open === 0
+                ? "inget öppet"
+                : `${snapshot.support.cases} TYRA · ${snapshot.support.tasks} Kansli`
+            }
+          />
+          <MetricCell
+            label="Larm"
+            value={`${alarmsOn}/${snapshot.sms.routes.length}`}
+            hint={snapshot.sms.vendor ? "telefon kopplad" : "telefon saknas"}
+          />
           <MetricCell
             label="Beredskap"
             value={`${ready}/${snapshot.readiness.gates.length}`}
@@ -241,6 +303,72 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
             <p className="pd-label">24 timmar</p>
           </div>
           <ActivityChart points={snapshot.series} />
+        </div>
+      </section>
+
+      <section className="grid gap-8 lg:grid-cols-2">
+        <div>
+          <div className="flex items-baseline justify-between gap-3 border-b border-line pb-2">
+            <h2 className="text-lg font-semibold">Reskontra</h2>
+            <Link
+              href="/ekonomi"
+              className="min-h-11 text-sm underline decoration-line underline-offset-4"
+            >
+              Boken
+            </Link>
+          </div>
+          {snapshot.ledger.overdue.length === 0 ? (
+            <p className="py-3 text-sm text-muted">Inget förfallet i det här fönstret.</p>
+          ) : (
+            <ul>
+              {snapshot.ledger.overdue.map((invoice) => (
+                <li key={invoice.id} className="border-b border-line py-3">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <Link
+                      href={invoice.href}
+                      className="min-h-11 text-sm underline decoration-line underline-offset-4"
+                    >
+                      {invoice.number} · {invoice.customerName}
+                    </Link>
+                    <p className="shrink-0 text-sm tabular-nums">{formatSek(invoice.openOre)}</p>
+                  </div>
+                  <p className="mt-1 font-mono text-xs text-faint">
+                    Förföll {invoice.dueAt ? when(invoice.dueAt) : "—"}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        <div>
+          <div className="flex items-baseline justify-between gap-3 border-b border-line pb-2">
+            <h2 className="text-lg font-semibold">Ärenden</h2>
+            <Link
+              href="/kansli"
+              className="min-h-11 text-sm underline decoration-line underline-offset-4"
+            >
+              Kansli
+            </Link>
+          </div>
+          {snapshot.support.items.length === 0 ? (
+            <p className="py-3 text-sm text-muted">Inga öppna ärenden i det här fönstret.</p>
+          ) : (
+            <ul>
+              {snapshot.support.items.map((item) => (
+                <li key={`${item.kind}-${item.id}`} className="border-b border-line py-3">
+                  <Link
+                    href={item.href}
+                    className="min-h-11 text-sm underline decoration-line underline-offset-4"
+                  >
+                    {item.title}
+                  </Link>
+                  <p className="mt-1 text-xs text-faint">
+                    {item.detail} · {when(item.at)}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </section>
 
@@ -323,7 +451,7 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
       </section>
 
       <details className="border border-line bg-surface px-4 py-3">
-        <summary className="cursor-pointer list-none text-sm font-medium [&::-webkit-details-marker]:hidden">
+        <summary className="min-h-11 cursor-pointer list-none text-sm font-medium [&::-webkit-details-marker]:hidden">
           Tabeller och scheman
         </summary>
         <p className="mt-3 text-sm text-ink-soft">
@@ -376,7 +504,7 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
       </details>
 
       <details className="border border-line bg-surface px-4 py-3">
-        <summary className="cursor-pointer list-none text-sm font-medium [&::-webkit-details-marker]:hidden">
+        <summary className="min-h-11 cursor-pointer list-none text-sm font-medium [&::-webkit-details-marker]:hidden">
           Beredskap och MCP
         </summary>
         <p className="mt-3 font-mono text-xs text-faint">
@@ -400,6 +528,15 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
               <p className="mt-1 text-sm text-ink-soft">{gate.detail}</p>
             </li>
           ))}
+        </ul>
+        <ul className="mt-3 text-sm text-muted">
+          {snapshot.sms.routes
+            .filter((route) => route.enabled)
+            .map((route) => (
+              <li key={route.kind}>
+                {OPS_SMS_KIND_LABEL[route.kind]} → {route.phone || "inget nummer"}
+              </li>
+            ))}
         </ul>
       </details>
     </>
