@@ -134,5 +134,9 @@ live("ops snapshot (live Postgres)", () => {
     expect(house.support).toBeDefined();
     expect(house.sms.routes).toHaveLength(4);
     expect(shop.sms.routes).toHaveLength(4);
+    expect(house.queues.sales.pending + house.queues.sales.sent).toBeGreaterThanOrEqual(0);
+    expect(shop.queues).toBeDefined();
+    expect(house.lastErrors).toBeDefined();
+    expect(house.runtimeDebug.mark).toMatch(/produktion|förhandsvisning|lokal/);
   });
 });

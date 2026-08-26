@@ -110,10 +110,13 @@ produktions-restore. Ingen per-tjänst RPO/RTO-kontrakt.
 `GET /api/platform/health`, `x-request-id`, event-logg,
 MCP-metrics i processen, `/api/mcp/health`.
 Live driftvy `/platform/drift` och `GET /api/platform/ops`:
-scheman, tabellcount, händelser per system, identitet, beredskap.
+scheman, tabellcount, händelser per system, identitet, beredskap,
+reskontra, ärenden, köer, senaste fel, runtime-märken utan hemligheter.
+Sök på request-id: `GET /api/platform/ops/debug?q=` och `pnpm ops:lookup`.
+Sök är on-demand, inte i 15s-poll. Snapshot-poll skickar inte SMS.
 Huset ser flottan. Verkstad ser sitt bolag.
 Ingen OpenTelemetry-export, ingen Grafana, ingen PagerDuty,
-ingen syntetisk bevakning av login/MCP/docs.
+ingen syntetisk bevakning av login/MCP/docs. Hemligheter dumpas inte.
 
 ---
 
@@ -225,7 +228,7 @@ Mål: kall extern utvecklare gör första anropet på en kvart.
 | Första REST-anrop | PARTIAL | Går mot `/api/...` med session. Ingen Try-it mot sandbox. |
 | Koppla MCP | PARTIAL | `POST /mcp` + `/documentation/mcp/clients`. Inga färdiga Cursor/ChatGPT-installationspaket med OAuth. |
 | Första tool | PARTIAL | Inloggad explorer `/platform/mcp`. Extern klient måste bära token själv. |
-| Inspektera trace | PARTIAL | `x-request-id` syns. Ingen trace-backend. |
+| Inspektera trace | PARTIAL | `x-request-id` syns. Sök i `/platform/drift` och `pnpm ops:lookup`. Ingen trace-backend. |
 | Webhook | MISSING | Finns inte. |
 | SDK | MISSING | Finns inte. |
 

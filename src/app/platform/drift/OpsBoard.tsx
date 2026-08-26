@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { SYSTEM_MODULES } from "@pixdrift/systems";
 import { formatSek } from "@/lib/ekonomi/money";
 import { FAMILY_STATUS_LABEL } from "@/lib/platform/family";
+import type { OpsDebugLookup, OpsQueueCounts } from "@/lib/platform/ops-debug-view";
 import {
   OPS_SMS_KIND_LABEL,
   seriesChangePct,
@@ -156,6 +157,22 @@ function ActivityChart({ points }: { points: OpsPoint[] }) {
       ) : null}
     </div>
   );
+}
+
+const QUEUE_STATUS: Record<string, string> = {
+  PENDING: "Väntar",
+  SENT: "Skickat",
+  FAILED: "Misslyckades",
+  BLOCKED: "Stoppat",
+};
+
+function queueHint(counts: OpsQueueCounts): string {
+  if (counts.failed + counts.blocked > 0) {
+    return `${counts.failed + counts.blocked} stoppade`;
+  }
+  if (counts.pending > 0) return `${counts.pending} väntar`;
+  if (counts.sent > 0) return `${counts.sent} skickade`;
+  return "tom kö";
 }
 
 function StatusDot({ ok }: { ok: boolean }) {
@@ -372,6 +389,74 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
         </div>
       </section>
 
+      <section className="border border-line bg-surface">
+        <div className="grid sm:grid-cols-3">
+          <MetricCell
+            label="Sälj-SMS"
+            value={numberSv(
+              snapshot.queues.sales.pending +
+                snapshot.queues.sales.failed +
+                snapshot.queues.sales.blocked,
+            )}
+            hint={queueHint(snapshot.queues.sales)}
+            hintTone={
+              snapshot.queues.sales.failed + snapshot.queues.sales.blocked > 0 ? "down" : "flat"
+            }
+          />
+          <MetricCell
+            label="Driftslarm"
+            value={numberSv(
+              snapshot.queues.alarms.pending +
+                snapshot.queues.alarms.failed +
+                snapshot.queues.alarms.blocked,
+            )}
+            hint={queueHint(snapshot.queues.alarms)}
+            hintTone={
+              snapshot.queues.alarms.failed + snapshot.queues.alarms.blocked > 0 ? "down" : "flat"
+            }
+          />
+          <MetricCell
+            label="Däckpåminnelser"
+            value={numberSv(
+              snapshot.queues.reminders.pending +
+                snapshot.queues.reminders.failed +
+                snapshot.queues.reminders.blocked,
+            )}
+            hint={queueHint(snapshot.queues.reminders)}
+            hintTone={
+              snapshot.queues.reminders.failed + snapshot.queues.reminders.blocked > 0
+                ? "down"
+                : "flat"
+            }
+          />
+        </div>
+      </section>
+
+      <section>
+        <div className="flex items-baseline justify-between gap-3 border-b border-line pb-2">
+          <h2 className="text-lg font-semibold">Senaste fel</h2>
+          <p className="pd-label">Misslyckat och stoppat</p>
+        </div>
+        {snapshot.lastErrors.length === 0 ? (
+          <p className="py-3 text-sm text-muted">Inga fel i det här fönstret.</p>
+        ) : (
+          <ul>
+            {snapshot.lastErrors.slice(0, 8).map((item) => (
+              <li key={`${item.system}-${item.id}`} className="border-b border-line py-3">
+                <div className="flex items-baseline justify-between gap-3">
+                  <p className="text-sm">{item.headline ?? item.kind}</p>
+                  <p className="shrink-0 font-mono text-xs text-faint">{when(item.at)}</p>
+                </div>
+                <p className="mt-1 font-mono text-xs text-accent">{item.kind}</p>
+                {item.requestId ? (
+                  <p className="mt-1 break-all font-mono text-xs text-faint">{item.requestId}</p>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
       <section className="grid gap-px border border-line bg-line sm:grid-cols-3">
         <div className="bg-surface px-4 py-4">
           <p className="pd-label">Postgres</p>
@@ -543,9 +628,105 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
   );
 }
 
+function RuntimeMarks({ snapshot }: { snapshot: OpsSnapshot }) {
+  const marks = snapshot.runtimeDebug;
+  const flags = [
+    marks.hardened ? "härdad" : "öppen",
+    marks.seedDemo ? "demofrö" : null,
+    marks.cronSet ? "cron satt" : "cron saknas",
+    marks.smsSet ? "sms på" : "sms av",
+    marks.sessionSecretSet ? "session satt" : "session saknas",
+    marks.cookieSecure ? "cookie låst" : "cookie öppen",
+  ].filter(Boolean);
+  return (
+    <p className="text-sm text-muted">
+      {marks.mark}
+      {marks.vercelEnv ? ` · ${marks.vercelEnv}` : ""}
+      {marks.appEnv ? ` · ${marks.appEnv}` : ""}
+      {" · "}
+      {flags.join(" · ")}
+    </p>
+  );
+}
+
+function OpsSearch() {
+  const [q, setQ] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<OpsDebugLookup | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function onSubmit(event: FormEvent) {
+    event.preventDefault();
+    setBusy(true);
+    setError(null);
+    try {
+      const response = await fetch(`/api/platform/ops/debug?q=${encodeURIComponent(q.trim())}`, {
+        headers: { accept: "application/json" },
+      });
+      if (!response.ok) throw new Error("Kunde inte söka.");
+      setResult((await response.json()) as OpsDebugLookup);
+    } catch (caught) {
+      setResult(null);
+      setError(caught instanceof Error ? caught.message : "Kunde inte söka.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <section className="border border-line bg-surface px-4 py-4">
+      <form onSubmit={onSubmit} className="flex flex-col gap-3">
+        <label className="flex flex-col gap-1">
+          <span className="text-sm text-ink-soft">Sök request-id eller ärende</span>
+          <input
+            type="search"
+            value={q}
+            onChange={(event) => setQ(event.target.value)}
+            minLength={3}
+            placeholder="Minst tre tecken"
+            className="min-h-12 w-full border border-line bg-paper px-4 py-3 text-base"
+            autoComplete="off"
+            enterKeyHint="search"
+          />
+        </label>
+        <button
+          type="submit"
+          disabled={busy || q.trim().length < 3}
+          className="min-h-12 w-full bg-ink px-4 py-3 text-base font-medium text-paper hover:bg-ink-soft disabled:opacity-50 sm:w-auto"
+        >
+          {busy ? "Söker…" : "Sök"}
+        </button>
+      </form>
+      {error ? <p className="mt-3 text-sm text-muted">{error}</p> : null}
+      {result?.note ? <p className="mt-3 text-sm text-muted">{result.note}</p> : null}
+      {result && result.events.length + result.outbox.length > 0 ? (
+        <ul className="mt-4">
+          {result.events.map((item) => (
+            <li key={`event-${item.id}`} className="border-b border-line py-3">
+              <p className="text-sm">{item.kind}</p>
+              <p className="mt-1 font-mono text-xs text-faint">
+                {item.system} · {when(item.at)}
+                {item.requestId ? ` · ${item.requestId}` : ""}
+              </p>
+            </li>
+          ))}
+          {result.outbox.map((item) => (
+            <li key={`outbox-${item.source}-${item.id}`} className="border-b border-line py-3">
+              <p className="pd-label">{QUEUE_STATUS[item.status] ?? item.status}</p>
+              <p className="mt-1 text-sm">{item.body}</p>
+              {item.lastError ? <p className="mt-1 text-sm text-muted">{item.lastError}</p> : null}
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </section>
+  );
+}
+
 export function OpsBoard({ initial }: { initial: OpsSnapshot }) {
   const [snapshot, setSnapshot] = useState(initial);
   const [error, setError] = useState<string | null>(null);
+  const [requestId, setRequestId] = useState<string | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -557,6 +738,7 @@ export function OpsBoard({ initial }: { initial: OpsSnapshot }) {
         });
         if (!response.ok) throw new Error("Kunde inte läsa mätningen.");
         setSnapshot((await response.json()) as OpsSnapshot);
+        setRequestId(response.headers.get("x-request-id"));
         setError(null);
       } catch (caught) {
         if (controller.signal.aborted) return;
@@ -579,7 +761,12 @@ export function OpsBoard({ initial }: { initial: OpsSnapshot }) {
         </p>
         <p className="pd-label">{when(snapshot.takenAt)}</p>
       </div>
+      <RuntimeMarks snapshot={snapshot} />
+      {requestId ? (
+        <p className="break-all font-mono text-xs text-faint">Senaste mätning · {requestId}</p>
+      ) : null}
       {error ? <p className="text-sm text-muted">{error}</p> : null}
+      <OpsSearch />
       <OpsView snapshot={snapshot} />
     </div>
   );

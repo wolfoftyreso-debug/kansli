@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Drift — Pixdrift",
-  description: "Sambandscentral: reskontra, ärenden, larm och live mätning.",
+  description: "Sambandscentral: reskontra, ärenden, larm, köer och sök i händelser.",
 };
 
 export default async function DriftPage() {
@@ -44,8 +44,8 @@ export default async function DriftPage() {
         <p className="text-ink-soft">
           {session?.org
             ? scope === "house"
-              ? "Reskontra, ärenden och larm för hela flottan. Verkstäder ser bara sitt bolag."
-              : "Reskontra, ärenden och larm i ert bolag. Inte andras rader."
+              ? "Reskontra, ärenden, larm och sök för hela flottan. Verkstäder ser bara sitt bolag."
+              : "Reskontra, ärenden, larm och sök i ert bolag. Inte andras rader."
             : "Logga in för att se live mätning."}
         </p>
       </header>
@@ -78,6 +78,13 @@ export default async function DriftPage() {
             {" · "}
             <Link href="/api/platform/ops" className="underline decoration-line underline-offset-4">
               /api/platform/ops
+            </Link>
+            {" · "}
+            <Link
+              href="/api/platform/ops/debug"
+              className="underline decoration-line underline-offset-4"
+            >
+              /api/platform/ops/debug
             </Link>
           </p>
         </>

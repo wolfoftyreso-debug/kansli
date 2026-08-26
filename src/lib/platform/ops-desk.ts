@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type pg from "pg";
 import { formatSek } from "../ekonomi/money.ts";
+import { countBlockedReminders } from "./ops-debug.ts";
 import {
   OPS_SMS_KIND_LABEL,
   OPS_SMS_KINDS,
@@ -19,6 +20,7 @@ export type OpsDeskFacts = {
   ledger: OpsLedger;
   support: OpsSupport;
   smsFailed: number;
+  remindersBlocked: number;
   blockedGates: number;
   databaseDown: boolean;
   vendor: boolean;
@@ -344,6 +346,16 @@ export function buildOpsNotices(input: {
       hrefLabel: "Sälj-SMS",
     });
   }
+  if (facts.remindersBlocked > 0) {
+    notices.push({
+      id: "reminders_blocked",
+      level: "varning",
+      title: "Däckpåminnelser stoppade",
+      detail: `${facts.remindersBlocked} påminnelser är stoppade eller misslyckade de senaste sju dagarna.`,
+      href: "/tyra",
+      hrefLabel: "TYRA",
+    });
+  }
   if (facts.blockedGates > 0) {
     notices.push({
       id: "readiness",
@@ -607,16 +619,18 @@ export async function loadOpsDesk(
   support: OpsSupport;
   sms: OpsSmsDesk;
 }> {
-  const [ledger, support, smsFailed, sms] = await Promise.all([
+  const [ledger, support, smsFailed, remindersBlocked, sms] = await Promise.all([
     loadOpsLedger(pool, input.scope, input.orgRef),
     loadOpsSupport(pool, input.scope, input.orgRef),
     countFailedSms(pool, input.scope, input.orgRef),
+    countBlockedReminders(pool, input.scope, input.orgRef),
     loadOpsSmsDesk(pool, input.scope, input.orgRef),
   ]);
   const facts: OpsDeskFacts = {
     ledger,
     support,
     smsFailed,
+    remindersBlocked,
     blockedGates: input.blockedGates,
     databaseDown: input.databaseDown,
     vendor: sms.vendor,

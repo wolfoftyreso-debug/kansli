@@ -3,6 +3,8 @@
  * Do not import `ops.ts` from a Client Component — that file loads Postgres.
  */
 
+import type { OpsErrorRow, OpsQueues, OpsRuntimeDebug } from "./ops-debug-view";
+
 export type OpsScope = "house" | "org";
 
 export type OpsTableMeasure = {
@@ -187,6 +189,9 @@ export type OpsSnapshot = {
   ledger: OpsLedger;
   support: OpsSupport;
   sms: OpsSmsDesk;
+  queues: OpsQueues;
+  lastErrors: OpsErrorRow[];
+  runtimeDebug: OpsRuntimeDebug;
 };
 
 export function seriesTotal(points: OpsPoint[]): number {

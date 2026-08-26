@@ -18,6 +18,7 @@ const emptyFacts = (): OpsDeskFacts => ({
   ledger: { openCount: 0, notDueOre: 0, overdueOre: 0, overdueCount: 0, overdue: [] },
   support: { open: 0, observations: 0, tasks: 0, cases: 0, intakes: 0, items: [] },
   smsFailed: 0,
+  remindersBlocked: 0,
   blockedGates: 0,
   databaseDown: false,
   vendor: false,
@@ -34,6 +35,13 @@ describe("ops desk notices", () => {
     expect(notices.map((item) => item.id)).toContain("overdue");
     expect(notices.map((item) => item.id)).toContain("support");
     expect(notices.find((item) => item.id === "overdue")?.href).toBe("/ekonomi");
+  });
+
+  it("warns when TYRA reminders are blocked", () => {
+    const facts = emptyFacts();
+    facts.remindersBlocked = 3;
+    const notices = buildOpsNotices({ facts, routes: [] });
+    expect(notices.find((item) => item.id === "reminders_blocked")?.href).toBe("/tyra");
   });
 
   it("warns when a route is on but the vendor is missing", () => {
