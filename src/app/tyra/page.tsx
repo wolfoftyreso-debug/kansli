@@ -29,7 +29,7 @@ function caseTone(status: string) {
 
 export default async function TyraPage() {
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const cases = session?.org?.ref && runtime ? await listCases(runtime.pool, session.org.ref) : [];
 
   return (
@@ -38,8 +38,8 @@ export default async function TyraPage() {
         <ProductCrumb crumbs={[{ href: "/tyra", label: "TYRA" }]} />
         <h1 className="max-w-xl text-4xl font-semibold tracking-tight">Vilket fordon ska in?</h1>
         <p className="max-w-xl text-ink-soft">
-          TYRA håller ihop kund, bil och hjul, och visar vad som ska göras härnäst. Offert och lager
-          är era egna siffror — inga live-priser än.
+          TYRA håller ihop kund, bil och hjul. Däck säljs här — ett klick bokar fakturan i Ekonomi.
+          Beloppen är era egna siffror. Inga live-priser än.
         </p>
         <p className="text-sm">
           <Link
@@ -100,7 +100,7 @@ export default async function TyraPage() {
               <CheckField name="wash" label="Tvätt" defaultChecked />
               <CheckField name="balance" label="Balansering" defaultChecked />
               <CheckField name="storageIn" label="Lägga in hjul" />
-              <CheckField name="quote" label="Förbered offert" />
+              <CheckField name="quote" label="Sälj däck" />
             </fieldset>
             <Submit>Öppna ärende</Submit>
           </form>

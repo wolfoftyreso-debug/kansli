@@ -93,7 +93,7 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     question: "Vad är bokat, vad är förfallet, och hur kom pengarna in?",
     does: "Skriver faktura på 10 dagar, bokför i öre, kopplar Stripe och Revolut, matchar inbetalningar när banken är ansluten.",
     doesNot:
-      "Inte Fortnox. Ingen påhittad inbetalning. Kort kräver Stripe. Swish kräver att Swish är inkopplat.",
+      "Inte Visma. Inte Fortnox. Ingen påhittad inbetalning. Kort kräver Stripe. Swish kräver att Swish är inkopplat.",
     owns: [
       "ekonomi.accounts",
       "ekonomi.transactions",
@@ -101,6 +101,8 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
       "ekonomi.invoices",
       "ekonomi.payments",
       "ekonomi.connectors",
+      "ekonomi.sales_alert_settings",
+      "ekonomi.sales_alert_outbox",
     ],
     status: "pilot",
   },
@@ -285,7 +287,7 @@ export const FAMILY_BLOCKED = [
   },
   {
     id: "irma-sign",
-    need: "IRMA stannar hos oss: enkel digital bekräftelse och en egen länk. Ingen BankID och ingen juridisk e-signatur än.",
+    need: "IRMA stannar hos oss: enkel digital bekräftelse och en egen länk. Ingen juridisk e-signatur än.",
   },
   {
     id: "britt-intel",

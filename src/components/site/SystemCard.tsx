@@ -22,12 +22,7 @@ export function SystemCard({ system }: { system: PixSystem }) {
           <span className="pd-label">{system.category}</span>
           <RegionIndicator regions={system.regions} />
         </div>
-        <span className="text-sm font-medium text-accent">
-          Explore system{" "}
-          <span aria-hidden className="transition-transform group-hover:translate-x-0.5">
-            →
-          </span>
-        </span>
+        <span className="text-sm font-medium text-ink">Öppna</span>
       </div>
     </Link>
   );

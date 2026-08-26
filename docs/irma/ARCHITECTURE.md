@@ -5,7 +5,7 @@
 IRMA är en modul i kansli-processen, inte en egen app. Den äger `irma.*` och publicerar events. Den läser inte `rita.*` eller `tora.*`.
 
 Signering *idag* är hashed acknowledgement. Det är medvetet. Inga externa
-e-signleverantörer, ingen BankID. Mobbin används bara som designreferens för
+e-signleverantörer, ingen e-legitimation som inloggning. Mobbin används bara som designreferens för
 agenten — produkten anropar den inte. Runtime-anrop ut ur processen är bara
 våra API-vendorer (`docs/AI-PROVIDERS.md` / `docs/INTEGRATIONS.md`). IRMA
 anropar ingen av dem ännu.
@@ -48,7 +48,8 @@ Allt byggs i det här navet. Inga nya leverantörer.
    e-signleverantörs vault).
 2. Deterministisk PDF från redan strukturerade fält — inte från fri LLM-text.
 3. Starkare verifiering (OTP via 46elks, e-post via Resend) bakom samma
-   `verification_level`, om affären kräver det. Inte BankID. Inte Scrive.
+   `verification_level`, om affären kräver det. Inte kvalificerad e-signatur.
+   Inte extern e-signleverantör.
 4. Påminnelser mot `token_expires_at` via jobb i denna process.
 
 Bygg inte 2–4 innan 1 och en ärlig nivåetikett finns kvar.

@@ -20,7 +20,7 @@ export const metadata = {
 
 export default async function ToraPage() {
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const company = await resolveCompany(runtime?.pool ?? null, session?.org?.ref ?? null);
   const profile =
     session?.org?.ref && runtime ? await getCompanyProfile(runtime.pool, session.org.ref) : null;

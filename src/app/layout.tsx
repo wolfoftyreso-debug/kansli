@@ -16,18 +16,16 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://pixdrift.com"),
   title: {
-    default: "PIXDRIFT — The layer between systems",
+    default: "PIXDRIFT",
     template: "%s",
   },
-  description:
-    "PIXDRIFT develops focused software for the operational gaps, connections and workflows that remain between the systems organizations already use. Developed by Landvex.",
+  description: "Ett rum per jobb. Samma inloggning.",
   applicationName: "PIXDRIFT",
   openGraph: {
     type: "website",
     siteName: "PIXDRIFT",
-    title: "PIXDRIFT — The layer between systems",
-    description:
-      "Focused software for the operational gaps between the systems organizations already use. Developed by Landvex. Stockholm · Houston.",
+    title: "PIXDRIFT",
+    description: "Ett rum per jobb. Samma inloggning.",
     url: "https://pixdrift.com",
   },
   twitter: { card: "summary" },
@@ -35,7 +33,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="sv" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">{children}</body>
     </html>
   );

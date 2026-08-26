@@ -4,7 +4,8 @@ import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { EmptyState, SignInGate } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { formatSwedishDateTime } from "@/lib/format/datetime";
-import { listIntakes } from "@/lib/kansli/intakes";
+import { Notice } from "@/components/app/SignInGate";
+import { houseOrgRefFromEnv, isHouseSession, listIntakes } from "@/lib/kansli/intakes";
 import { tryRuntime } from "@/lib/platform/page";
 
 export const dynamic = "force-dynamic";
@@ -17,7 +18,9 @@ export const metadata = {
 export default async function KansliUpphandlingPage() {
   const session = await readSession();
   const runtime = tryRuntime();
-  const intakes = session && runtime ? await listIntakes(runtime.pool) : [];
+  const houseOrgRef = houseOrgRefFromEnv();
+  const house = isHouseSession(session?.org?.ref);
+  const intakes = session && house && runtime ? await listIntakes(runtime.pool, houseOrgRef) : [];
 
   return (
     <AppShell current="upphandling" session={session}>
@@ -35,6 +38,10 @@ export default async function KansliUpphandlingPage() {
         <SignInGate next="/kansli/upphandling" title="Logga in för att läsa anmälningarna">
           Det här är kansliets inkorg. Det öppna formuläret finns på sidan Upphandling.
         </SignInGate>
+      ) : !house ? (
+        <Notice>
+          Det här är kansliets inkorg, inte verkstadens. Du ser den bara när du är inne som huset.
+        </Notice>
       ) : intakes.length === 0 ? (
         <EmptyState>Inga anmälningar ännu.</EmptyState>
       ) : (

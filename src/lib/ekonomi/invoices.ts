@@ -3,7 +3,14 @@ import type pg from "pg";
 import type { EventLog } from "@pixdrift/events";
 import { salesAccount, vatAccount } from "./chart.ts";
 import { postJournal, type JournalLine } from "./journal.ts";
-import { assertOre, lineTotals, parseVatRateBps, type VatRateBps } from "./money.ts";
+import {
+  assertOre,
+  lineTotals,
+  parseKronorToOre,
+  parseVatRateBps,
+  type VatRateBps,
+} from "./money.ts";
+import { notifySaleIssued } from "./sales-alerts.ts";
 
 export const INVOICE_STATUSES = ["draft", "issued", "part_paid", "paid", "void"] as const;
 export type InvoiceStatus = (typeof INVOICE_STATUSES)[number];
@@ -109,6 +116,7 @@ export function buildLines(raw: InvoiceLineInput[]): InvoiceLine[] {
       unitNetOre: line.unitNetOre,
       vatRateBps: line.vatRateBps,
     });
+    salesAccount(line.kind, line.vatRateBps);
     return {
       id: randomUUID(),
       description,
@@ -281,7 +289,86 @@ export async function issueInvoice(input: {
     requestId: input.requestId,
     payload: { title: invoice.number, dueDays: days, transactionId: posted.id },
   });
-  return (await getInvoice(input.pool, input.orgRef, invoice.id))!;
+  const issued = (await getInvoice(input.pool, input.orgRef, invoice.id))!;
+  try {
+    await notifySaleIssued({
+      pool: input.pool,
+      events: input.events,
+      orgRef: input.orgRef,
+      actorRef: input.actorRef,
+      invoiceId: issued.id,
+      invoiceNumber: issued.number,
+      customerName: issued.customerName,
+      grossOre: issued.grossOre,
+      requestId: input.requestId,
+    });
+  } catch {
+    // A missed SMS must not roll back a booked sale.
+  }
+  return issued;
+}
+
+export async function findInvoiceBySource(
+  pool: pg.Pool,
+  orgRef: string,
+  sourceSystem: string,
+  sourceRef: string,
+): Promise<Invoice | null> {
+  const { rows } = await pool.query(
+    `select * from ekonomi.invoices
+      where org_ref = $1 and source_system = $2 and source_ref = $3
+      order by created_at asc
+      limit 1`,
+    [orgRef, sourceSystem, sourceRef],
+  );
+  if (!rows[0]) return null;
+  return toInvoice(rows[0], await loadLines(pool, orgRef, rows[0].id));
+}
+
+/** Draft then issue. A missed SMS still cannot roll this back. */
+export async function bookSale(input: {
+  pool: pg.Pool;
+  events: EventLog;
+  orgRef: string;
+  actorRef: string;
+  customerName: string;
+  customerRef?: string;
+  lines: InvoiceLineInput[];
+  sourceSystem?: string;
+  sourceRef?: string;
+  dueDays?: number;
+  requestId: string;
+}): Promise<Invoice> {
+  if (input.sourceSystem && input.sourceRef) {
+    const existing = await findInvoiceBySource(
+      input.pool,
+      input.orgRef,
+      input.sourceSystem,
+      input.sourceRef,
+    );
+    if (existing) throw new Error("sälj med samma källa är redan bokat.");
+  }
+  const draft = await createDraftInvoice({
+    pool: input.pool,
+    events: input.events,
+    orgRef: input.orgRef,
+    actorRef: input.actorRef,
+    customerName: input.customerName,
+    customerRef: input.customerRef,
+    lines: input.lines,
+    sourceSystem: input.sourceSystem,
+    sourceRef: input.sourceRef,
+    requestId: input.requestId,
+  });
+  return issueInvoice({
+    pool: input.pool,
+    events: input.events,
+    orgRef: input.orgRef,
+    actorRef: input.actorRef,
+    invoiceId: draft.id,
+    dueDays: input.dueDays,
+    requestId: `${input.requestId}-issue`,
+  });
 }
 
 export async function listInvoices(pool: pg.Pool, orgRef: string): Promise<Invoice[]> {
@@ -312,7 +399,8 @@ export async function getInvoice(
 export function parseInvoiceLinesFromForm(form: {
   descriptions: string[];
   quantities: string[];
-  unitNetOre: string[];
+  unitNetOre?: string[];
+  unitNetKronor?: string[];
   vatRates: string[];
   kinds: string[];
 }): InvoiceLineInput[] {
@@ -320,10 +408,23 @@ export function parseInvoiceLinesFromForm(form: {
   for (let i = 0; i < form.descriptions.length; i += 1) {
     const description = form.descriptions[i]?.trim() ?? "";
     if (!description) continue;
+    const kronor = form.unitNetKronor?.[i]?.trim() ?? "";
+    const oreRaw = form.unitNetOre?.[i]?.trim() ?? "";
+    let unitNetOre: number;
+    if (kronor) {
+      unitNetOre = parseKronorToOre(kronor, "á-pris");
+    } else if (oreRaw) {
+      unitNetOre = Number(oreRaw);
+      if (!Number.isInteger(unitNetOre)) {
+        throw new Error("á-pris i öre måste vara ett heltal.");
+      }
+    } else {
+      throw new Error("á-pris saknas.");
+    }
     lines.push({
       description,
       quantity: Number(form.quantities[i] ?? "1"),
-      unitNetOre: Number(form.unitNetOre[i] ?? "0"),
+      unitNetOre,
       vatRateBps: parseVatRateBps(form.vatRates[i]),
       kind: parseLineKind(form.kinds[i] ?? "service"),
     });

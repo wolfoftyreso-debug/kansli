@@ -94,7 +94,7 @@ export function buildCustomerCard(input: {
 
   const nextAction: CustomerCard["nextAction"] =
     openWheelSetIds.size > 0
-      ? { kind: "prepare_quote", label: "Förbered offert" }
+      ? { kind: "prepare_quote", label: "Sälj däck" }
       : hasPick
         ? { kind: "pick", label: "Plocka hjul" }
         : hasCheckIn

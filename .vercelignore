@@ -1,0 +1,7 @@
+local.db
+*.db
+.env*
+.secrets
+.worktrees
+backups
+crates/**/target

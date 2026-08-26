@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  assertHardenedIdentityBoot,
   bootIdentityFromEnv,
   isHardenedIdentityRuntime,
   withDeploymentRedirects,
@@ -42,7 +43,49 @@ describe("identity boot on Vercel", () => {
     await expect(
       bootIdentityFromEnv({
         issuer: "https://kansli.vercel.app/idp",
-        env: { VERCEL_ENV: "production", APP_ENV: "prod" },
+        env: {
+          VERCEL_ENV: "production",
+          APP_ENV: "prod",
+          DATABASE_URL: "postgres://prod",
+        },
+      }),
+    ).rejects.toThrow(/SESSION_SECRET/);
+  });
+
+  it("refuses production without a database, with demo seed, or with insecure cookies", () => {
+    expect(() => assertHardenedIdentityBoot({ VERCEL_ENV: "production" })).toThrow(/DATABASE_URL/);
+    expect(() =>
+      assertHardenedIdentityBoot({
+        VERCEL_ENV: "production",
+        DATABASE_URL: "postgres://prod",
+        PIXDRIFT_SEED_DEMO: "true",
+      }),
+    ).toThrow(/PIXDRIFT_SEED_DEMO/);
+    expect(() =>
+      assertHardenedIdentityBoot({
+        APP_ENV: "prod",
+        DATABASE_URL: "postgres://prod",
+        COOKIE_SECURE: "false",
+      }),
+    ).toThrow(/COOKIE_SECURE/);
+    expect(() =>
+      assertHardenedIdentityBoot({
+        VERCEL_ENV: "preview",
+        APP_ENV: "prod",
+        PIXDRIFT_SEED_DEMO: "true",
+      }),
+    ).not.toThrow();
+  });
+
+  it("rejects a short production session secret before connecting", async () => {
+    await expect(
+      bootIdentityFromEnv({
+        issuer: "https://kansli.vercel.app/idp",
+        env: {
+          VERCEL_ENV: "production",
+          DATABASE_URL: "postgres://prod",
+          SESSION_SECRET: "too-short",
+        },
       }),
     ).rejects.toThrow(/SESSION_SECRET/);
   });

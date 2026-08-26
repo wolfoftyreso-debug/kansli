@@ -88,7 +88,10 @@ export async function offerPayment(input: {
      values ($1,$2,$3,$4,$5,$6,$7)`,
     [id, input.orgRef, invoice.id, input.rail, status, amount, rail.offerable ? null : rail.reason],
   );
-  const { rows } = await input.pool.query(`select * from ekonomi.payments where id = $1`, [id]);
+  const { rows } = await input.pool.query(
+    `select * from ekonomi.payments where org_ref = $1 and id = $2`,
+    [input.orgRef, id],
+  );
   return toPayment(rows[0]);
 }
 
@@ -159,6 +162,9 @@ export async function recordReceivedPayment(input: {
       transactionId: posted.id,
     },
   });
-  const { rows } = await input.pool.query(`select * from ekonomi.payments where id = $1`, [id]);
+  const { rows } = await input.pool.query(
+    `select * from ekonomi.payments where org_ref = $1 and id = $2`,
+    [input.orgRef, id],
+  );
   return toPayment(rows[0]);
 }

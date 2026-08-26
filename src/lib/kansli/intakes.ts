@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import type pg from "pg";
+import { normalizeOrgNumber, orgNumberError } from "../platform/org-number.ts";
 
 export const DEMO_MODULES = ["tyra", "irma", "ekonomi", "tora", "britt", "rita", "alva"] as const;
 export type DemoModule = (typeof DEMO_MODULES)[number];
@@ -146,6 +147,11 @@ export function parseIntakeForm(form: FormData, houseOrgRef: string): IntakeDraf
   if (!honestyAccepted) {
     throw new Error("ärlighetsrutan måste kryssas. Anmälan är inte ett sålt avtal.");
   }
+  const rawOrgNumber = optional(form, "orgNumber");
+  if (rawOrgNumber && orgNumberError(rawOrgNumber)) {
+    throw new Error(orgNumberError(rawOrgNumber)!);
+  }
+  const orgNumber = rawOrgNumber ? (normalizeOrgNumber(rawOrgNumber) ?? rawOrgNumber) : undefined;
   const kronor = String(form.get("invoiceKronor") ?? "").trim();
   let invoiceNetOre: number | undefined;
   if (kronor) {
@@ -157,7 +163,7 @@ export function parseIntakeForm(form: FormData, houseOrgRef: string): IntakeDraf
   }
   return {
     companyName,
-    orgNumber: optional(form, "orgNumber"),
+    orgNumber,
     contactName,
     contactEmail,
     contactTitle: optional(form, "contactTitle"),
@@ -189,6 +195,14 @@ export function houseOrgRefFromEnv(
   env: Record<string, string | undefined> = process.env as Record<string, string | undefined>,
 ): string {
   return env.PIXDRIFT_HOUSE_ORG_REF?.trim() || "pixdrift:org:org-exempelbolaget";
+}
+
+/** House CRM is not a workshop board. Only the active house org may read it. */
+export function isHouseSession(
+  orgRef: string | null | undefined,
+  env: Record<string, string | undefined> = process.env as Record<string, string | undefined>,
+): boolean {
+  return Boolean(orgRef && orgRef === houseOrgRefFromEnv(env));
 }
 
 export async function insertIntake(
@@ -225,13 +239,28 @@ export async function insertIntake(
   return toIntake(rows[0]!);
 }
 
-export async function listIntakes(pool: pg.Pool): Promise<Intake[]> {
-  const { rows } = await pool.query(`${SELECT_SQL} order by created_at desc`);
+export async function listIntakes(pool: pg.Pool, houseOrgRef: string): Promise<Intake[]> {
+  const { rows } = await pool.query(
+    `${SELECT_SQL} where house_org_ref = $1 order by created_at desc`,
+    [houseOrgRef],
+  );
   return rows.map(toIntake);
 }
 
 export async function getIntake(pool: pg.Pool, id: string): Promise<Intake | null> {
   const { rows } = await pool.query(`${SELECT_SQL} where id = $1`, [id]);
+  return rows[0] ? toIntake(rows[0]) : null;
+}
+
+export async function getHouseIntake(
+  pool: pg.Pool,
+  houseOrgRef: string,
+  id: string,
+): Promise<Intake | null> {
+  const { rows } = await pool.query(`${SELECT_SQL} where id = $1 and house_org_ref = $2`, [
+    id,
+    houseOrgRef,
+  ]);
   return rows[0] ? toIntake(rows[0]) : null;
 }
 

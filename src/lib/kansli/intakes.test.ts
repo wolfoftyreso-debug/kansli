@@ -1,15 +1,35 @@
 import { afterAll, describe, expect, it } from "vitest";
 import { createPool, migrateWorkspace } from "@pixdrift/db";
 import { EventLog } from "@pixdrift/events";
-import { meetingAtFrom, parseIntakeForm, takePasswordOnce } from "./intakes.ts";
+import {
+  getHouseIntake,
+  houseOrgRefFromEnv,
+  isHouseSession,
+  listIntakes,
+  meetingAtFrom,
+  parseIntakeForm,
+  takePasswordOnce,
+} from "./intakes.ts";
 import { generateWorkshopPassword, slugifyCompany } from "./provision.ts";
 import { submitIntake } from "./submit-intake.ts";
+import { listTasks } from "./tasks.ts";
 import { ownerDatabaseUrl } from "../platform/env.ts";
+import { DEMO_ORG_NUMBER } from "../rita/request.ts";
 
 describe("koncernupphandling domain", () => {
   it("books the meeting ten days after now", () => {
     const now = new Date("2026-08-24T12:00:00.000Z");
     expect(meetingAtFrom(now).toISOString()).toBe("2026-09-03T08:00:00.000Z");
+  });
+
+  it("refuses a form with a broken organisation number", () => {
+    const form = new FormData();
+    form.set("companyName", "Bilia Personbilar AB");
+    form.set("contactName", "Anna Inköp");
+    form.set("contactEmail", "anna@bilia.se");
+    form.set("honestyAccepted", "on");
+    form.set("orgNumber", "556000-0000");
+    expect(() => parseIntakeForm(form, "pixdrift:org:org-exempelbolaget")).toThrow(/stämmer inte/);
   });
 
   it("refuses a form that skips the honesty box", () => {
@@ -18,6 +38,13 @@ describe("koncernupphandling domain", () => {
     form.set("contactName", "Anna Inköp");
     form.set("contactEmail", "anna@bilia.se");
     expect(() => parseIntakeForm(form, "pixdrift:org:org-exempelbolaget")).toThrow(/ärlighet/i);
+  });
+
+  it("keeps the house inbox on the house org", () => {
+    expect(houseOrgRefFromEnv({})).toBe("pixdrift:org:org-exempelbolaget");
+    expect(isHouseSession("pixdrift:org:org-exempelbolaget")).toBe(true);
+    expect(isHouseSession("pixdrift:org:org-holm-dack-umea-ab")).toBe(false);
+    expect(isHouseSession(null)).toBe(false);
   });
 
   it("slugifies a Swedish company name", () => {
@@ -35,7 +62,7 @@ const live = OWNER && APP ? describe : describe.skip;
 function filledForm(email: string): FormData {
   const form = new FormData();
   form.set("companyName", "Bilia Testverkstad AB");
-  form.set("orgNumber", "556010-1010");
+  form.set("orgNumber", DEMO_ORG_NUMBER);
   form.set("contactName", "Test Inköp");
   form.set("contactEmail", email);
   form.set("contactTitle", "IT-inköp");
@@ -89,5 +116,19 @@ live("kansli.intakes (live Postgres)", () => {
     const once = await takePasswordOnce(pool, result.intake.id);
     expect(once).toBe(result.passwordOnce);
     expect(await takePasswordOnce(pool, result.intake.id)).toBeNull();
+
+    const house = result.intake.houseOrgRef!;
+    const listed = await listIntakes(pool, house);
+    expect(listed.some((row) => row.id === result.intake.id)).toBe(true);
+    expect(await listIntakes(pool, "pixdrift:org:other-house")).toEqual([]);
+    expect(await getHouseIntake(pool, house, result.intake.id)).not.toBeNull();
+    expect(await getHouseIntake(pool, "pixdrift:org:other-house", result.intake.id)).toBeNull();
+
+    const houseTasks = await listTasks(pool, house);
+    expect(houseTasks.some((row) => row.title.startsWith("Förbered demo för"))).toBe(true);
+    const workshopTasks = result.provision?.orgRef
+      ? await listTasks(pool, result.provision.orgRef)
+      : [];
+    expect(workshopTasks.some((row) => row.title.startsWith("Förbered demo för"))).toBe(false);
   });
 });

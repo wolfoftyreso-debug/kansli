@@ -67,7 +67,7 @@ export default async function RevolutConnectionPage({
   const session = await readSession();
   const params = await searchParams;
   const config = revolutConfigState();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const health =
     session?.org?.ref && runtime ? await revolutHealth(runtime.pool, session.org.ref) : null;
 

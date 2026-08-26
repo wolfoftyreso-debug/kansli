@@ -87,12 +87,6 @@ export async function submitIntake(input: {
             status: provision.status,
           },
         });
-        await addTask(input.pool, {
-          orgRef: provision.orgRef,
-          title: meetingTitle,
-          owner: intake.contactName,
-          createdBy: provision.userId,
-        });
       } catch (error) {
         blocked.push(error instanceof Error ? error.message : "kontot kunde inte skapas.");
       }

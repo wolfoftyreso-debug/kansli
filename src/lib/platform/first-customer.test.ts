@@ -14,6 +14,10 @@ describe("evaluateFirstCustomerGates", () => {
     tyraQuotes: 1,
     irmaAgreements: 1,
     ritaAvailable: false,
+    ekonomiIssued: 0,
+    ekonomiPaid: 0,
+    smsVendor: false,
+    smsEnabled: false,
   };
 
   it("allows a pilot offer when the database is up, even if RITA and ALVA are missing", () => {
@@ -45,5 +49,45 @@ describe("evaluateFirstCustomerGates", () => {
     const board = evaluateFirstCustomerGates({ ...base, seedDemo: true });
     expect(board.gates.find((g) => g.id === "demo")?.state).toBe("open");
     expect(board.pilotOfferable).toBe(true);
+  });
+
+  it("blocks production when the demo seed is still on", () => {
+    const board = evaluateFirstCustomerGates({
+      ...base,
+      appEnv: "production",
+      seedDemo: true,
+    });
+    expect(board.gates.find((g) => g.id === "demo")?.state).toBe("blocked");
+    expect(board.pilotOfferable).toBe(false);
+  });
+
+  it("blocks a hardened Vercel production even when APP_ENV is empty", () => {
+    const board = evaluateFirstCustomerGates({
+      ...base,
+      appEnv: "",
+      hardened: true,
+      seedDemo: true,
+    });
+    expect(board.gates.find((g) => g.id === "demo")?.state).toBe("blocked");
+    expect(board.gates.find((g) => g.id === "secrets")?.state).toBe("ready");
+  });
+
+  it("treats an issued invoice as an Ekonomi book, not as Visma", () => {
+    const empty = evaluateFirstCustomerGates(base);
+    expect(empty.gates.find((g) => g.id === "ekonomi")?.state).toBe("open");
+    expect(empty.gates.find((g) => g.id === "ekonomi")?.detail).toMatch(/Visma/);
+    const booked = evaluateFirstCustomerGates({ ...base, ekonomiIssued: 5, ekonomiPaid: 1 });
+    expect(booked.gates.find((g) => g.id === "ekonomi")?.state).toBe("ready");
+    expect(booked.gates.find((g) => g.id === "ekonomi")?.detail).toMatch(/5 utfärdade/);
+    expect(booked.gates.find((g) => g.id === "honesty")?.detail).toMatch(/Visma/);
+    expect(booked.gates.find((g) => g.id === "honesty")?.detail).not.toMatch(/BankID/i);
+    expect(booked.gates.find((g) => g.id === "irma")?.detail).not.toMatch(/BankID/i);
+  });
+
+  it("does not call SMS ready unless the vendor is on and the owner said yes", () => {
+    const vendorOnly = evaluateFirstCustomerGates({ ...base, smsVendor: true, smsEnabled: false });
+    expect(vendorOnly.gates.find((g) => g.id === "sms")?.state).toBe("open");
+    const opted = evaluateFirstCustomerGates({ ...base, smsVendor: true, smsEnabled: true });
+    expect(opted.gates.find((g) => g.id === "sms")?.state).toBe("ready");
   });
 });

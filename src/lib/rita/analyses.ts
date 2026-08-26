@@ -10,6 +10,7 @@ import {
 } from "./request.ts";
 import { findingsFromAnalysis } from "./findings.ts";
 import { resolveRitaEngine, ritaEngineUnavailableReason } from "./resolve-engine.ts";
+import { orgNumberError } from "../platform/org-number.ts";
 
 export interface Analysis {
   id: string;
@@ -49,6 +50,11 @@ export async function requestAnalysis(input: {
     payload: { companyName: input.companyName },
   });
 
+  const numberIssue = orgNumberError(input.orgNumber);
+  if (numberIssue) {
+    return fail(input, id, "invalid_org_number", numberIssue);
+  }
+
   const resolved = resolveRitaEngine();
   if (!resolved) {
     return fail(input, id, "engine_unavailable", ritaEngineUnavailableReason());
@@ -79,9 +85,9 @@ export async function requestAnalysis(input: {
     );
     await input.pool.query(
       `update rita.analyses
-          set status = 'completed', result = $2::jsonb, updated_at = now()
-        where id = $1`,
-      [id, JSON.stringify(envelope)],
+          set status = 'completed', result = $3::jsonb, updated_at = now()
+        where org_ref = $1 and id = $2`,
+      [input.orgRef, id, JSON.stringify(envelope)],
     );
     const findings = findingsFromAnalysis(envelope);
     await input.events.publish({
@@ -113,9 +119,9 @@ async function fail(
 ): Promise<Analysis> {
   await input.pool.query(
     `update rita.analyses
-        set status = 'blocked', blocked_reason = $2, updated_at = now()
-      where id = $1`,
-    [id, reason],
+        set status = 'blocked', blocked_reason = $3, updated_at = now()
+      where org_ref = $1 and id = $2`,
+    [input.orgRef, id, reason],
   );
   await input.events.publish({
     system: "rita",

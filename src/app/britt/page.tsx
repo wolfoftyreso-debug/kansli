@@ -3,7 +3,7 @@ import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { EmptyState, Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
 import { observationHref, sourceLabel } from "@/lib/britt/links";
-import { listFindings, listRuns, listSnapshots } from "@/lib/britt/intel";
+import { canRunDemoIntel, listFindings, listRuns, listSnapshots } from "@/lib/britt/intel";
 import { listObservations, type Observation } from "@/lib/britt/observations";
 import { readSession } from "@/lib/auth/session";
 import { formatSwedishDateTime } from "@/lib/format/datetime";
@@ -30,7 +30,7 @@ export default async function BrittPage({
   searchParams: Promise<{ status?: string; mine?: string }>;
 }) {
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const orgRef = session?.org?.ref;
   const params = await searchParams;
   const status =
@@ -49,6 +49,7 @@ export default async function BrittPage({
   const snapshots = orgRef && runtime ? await listSnapshots(runtime.pool, orgRef) : [];
   const runs = orgRef && runtime ? await listRuns(runtime.pool, orgRef) : [];
   const latest = snapshots[0];
+  const demoIntel = Boolean(orgRef && canRunDemoIntel(orgRef));
 
   return (
     <AppShell current="britt" session={session}>
@@ -60,8 +61,9 @@ export default async function BrittPage({
           till Fortnox eller Revolut än.
         </p>
         <Notice>
-          Siffrorna gäller exempelbolaget, inte er riktiga bokföring. Viktiga fynd dyker upp som
-          observationer i inkorgen.
+          {demoIntel
+            ? "Siffrorna här är exempel för huset, inte Fortnox och inte en livekassa."
+            : "Här följer ni era egna observationer. Exempelsiffror körs bara på huset."}
         </Notice>
       </header>
 
@@ -71,26 +73,32 @@ export default async function BrittPage({
         </SignInGate>
       ) : (
         <>
-          <form action={runBrittIntel} className="rounded-xl border border-line bg-surface p-4">
-            <h2 className="text-lg font-semibold">Demonstrationsanalys</h2>
-            <p className="mt-1 text-sm text-ink-soft">
-              Jämför omsättning mot plan, kollar kassan och hur beroende ni är av er största kund —
-              med exempelsiffror.
-            </p>
-            {runs[0] ? (
-              <p className="mt-1 text-xs text-faint">
-                {runs[0].findingCount} fynd · {formatSwedishDateTime(runs[0].createdAt)}
+          {demoIntel ? (
+            <form action={runBrittIntel} className="rounded-xl border border-line bg-surface p-4">
+              <h2 className="text-lg font-semibold">Demonstrationsanalys</h2>
+              <p className="mt-1 text-sm text-ink-soft">
+                Jämför omsättning mot plan, kollar kassan och hur beroende ni är av er största kund
+                — med exempelsiffror för huset.
               </p>
-            ) : null}
-            <div className="mt-3">
-              <Submit>Kör analys</Submit>
-            </div>
-          </form>
+              {runs[0] ? (
+                <p className="mt-1 text-xs text-faint">
+                  {runs[0].findingCount} fynd · {formatSwedishDateTime(runs[0].createdAt)}
+                </p>
+              ) : null}
+              <div className="mt-3">
+                <Submit>Kör analys</Submit>
+              </div>
+            </form>
+          ) : null}
 
           <section className="flex flex-col gap-3">
             <h2 className="text-lg font-semibold">Fynd</h2>
             {findings.length === 0 ? (
-              <EmptyState>Inga fynd ännu. Kör demonstrationsanalysen.</EmptyState>
+              <EmptyState>
+                {demoIntel
+                  ? "Inga fynd ännu. Kör demonstrationsanalysen."
+                  : "Inga fynd ännu. Observationer från TORA, RITA och IRMA hamnar här."}
+              </EmptyState>
             ) : (
               <ul className="flex flex-col gap-3">
                 {findings.map((item) => (
@@ -215,7 +223,7 @@ export default async function BrittPage({
             )}
           </section>
 
-          {latest ? (
+          {demoIntel && latest ? (
             <details className="rounded-xl border border-line bg-surface px-4 py-3">
               <summary className="cursor-pointer text-sm font-medium">
                 Visa demonstrationssiffror · {latest.period}

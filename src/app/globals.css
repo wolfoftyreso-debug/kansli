@@ -38,7 +38,7 @@
   --tyra-border: var(--color-line);
   --tyra-panel: var(--color-paper);
   --tyra-focus: var(--color-accent);
-  --tyra-radius: 20px;
+  --tyra-radius: 0;
 }
 
 * {
@@ -77,6 +77,64 @@ body {
   color: var(--color-muted);
 }
 
+/* Dual range slider + mini sparkline for the Ekonomi sales board. */
+.ek-brush {
+  position: relative;
+  height: 3.4rem;
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  border-radius: 0;
+  background: var(--color-paper);
+}
+.ek-brush-spark {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.ek-range {
+  position: absolute;
+  inset: 0;
+}
+.ek-range input[type="range"] {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background: transparent;
+  pointer-events: none;
+  appearance: none;
+}
+.ek-range input[type="range"]::-webkit-slider-runnable-track {
+  height: 100%;
+  background: transparent;
+}
+.ek-range input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  pointer-events: auto;
+  width: 14px;
+  height: 3.1rem;
+  border-radius: 2px;
+  border: 2px solid var(--color-accent);
+  background: color-mix(in srgb, var(--color-surface) 70%, transparent);
+  cursor: ew-resize;
+}
+.ek-range input[type="range"]::-moz-range-track {
+  height: 100%;
+  background: transparent;
+}
+.ek-range input[type="range"]::-moz-range-thumb {
+  pointer-events: auto;
+  width: 14px;
+  height: 3.1rem;
+  border: 0;
+  border-radius: 2px;
+  border: 2px solid var(--color-accent);
+  background: color-mix(in srgb, var(--color-surface) 70%, transparent);
+  cursor: ew-resize;
+}
+
 .pd-crumb a {
   color: inherit;
   text-decoration: underline;
@@ -86,6 +144,19 @@ body {
 
 .pd-crumb a:hover {
   color: var(--color-ink);
+}
+
+/* Stiff facade: no marketing softness inside the frame. */
+.pd-facade .rounded-xl,
+.pd-facade .rounded-lg,
+.pd-facade .rounded-md,
+.pd-facade .rounded-2xl,
+.pd-facade .rounded {
+  border-radius: 0;
+}
+.pd-facade .shadow-sm,
+.pd-facade .shadow {
+  box-shadow: none;
 }
 
 /* Hairline dividers used throughout the system. */

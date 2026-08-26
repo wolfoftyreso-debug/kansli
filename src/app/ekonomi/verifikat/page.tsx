@@ -10,7 +10,7 @@ export const metadata = { title: "Verifikat — Ekonomi" };
 
 export default async function VerifikatPage() {
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const rows =
     session?.org?.ref && runtime ? await listTransactions(runtime.pool, session.org.ref) : [];
 

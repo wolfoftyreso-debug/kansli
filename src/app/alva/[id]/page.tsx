@@ -26,7 +26,7 @@ export const metadata = {
 export default async function AlvaCasePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const item =
     session?.org?.ref && runtime ? await getCase(runtime.pool, session.org.ref, id) : null;
   const observations =

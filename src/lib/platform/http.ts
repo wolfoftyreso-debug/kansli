@@ -1,6 +1,6 @@
 import { problemResponse, type Actor } from "@pixdrift/api-core";
 import { readSession, type AppSession } from "@/lib/auth/session";
-import { getRuntime, type PlatformRuntime } from "./runtime";
+import { getRuntime, runtimeForOrg, type PlatformRuntime } from "./runtime";
 
 export interface ApiContext extends PlatformRuntime {
   requestId: string;
@@ -26,10 +26,11 @@ export async function handleApi(
   const requestId = crypto.randomUUID();
   try {
     const session = await readSession();
+    const actor = actorFromSession(session);
     const ctx: ApiContext = {
       requestId,
-      actor: actorFromSession(session),
-      ...getRuntime(),
+      actor,
+      ...(actor?.orgRef ? runtimeForOrg(actor.orgRef) : getRuntime()),
     };
     const response = await handler(ctx);
     response.headers.set("x-request-id", requestId);

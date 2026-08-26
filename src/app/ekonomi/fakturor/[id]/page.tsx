@@ -4,7 +4,7 @@ import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
 import { INVOICE_STATUS_LABELS, getInvoice, remainingOre } from "@/lib/ekonomi/invoices";
-import { formatSek, vatLabel } from "@/lib/ekonomi/money";
+import { formatKronorInput, formatSek, vatLabel } from "@/lib/ekonomi/money";
 import { listPayments } from "@/lib/ekonomi/payments";
 import { getTransactionEntries } from "@/lib/ekonomi/journal";
 import { railSnapshot } from "@/lib/ekonomi/rails";
@@ -19,7 +19,7 @@ export const dynamic = "force-dynamic";
 export default async function InvoicePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const invoice =
     session?.org?.ref && runtime ? await getInvoice(runtime.pool, session.org.ref, id) : null;
   if (session && runtime && !invoice) notFound();
@@ -138,10 +138,10 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
                   <option value="revolut">Revolut</option>
                 </select>
                 <Field
-                  name="amountOre"
-                  label="Belopp, öre"
+                  name="amountKronor"
+                  label="Belopp, kr"
                   required
-                  defaultValue={String(remainingOre(invoice))}
+                  defaultValue={formatKronorInput(remainingOre(invoice))}
                 />
                 <Field
                   name="externalRef"

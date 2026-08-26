@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireOrgAction } from "@/lib/platform/actions";
-import { runIntel } from "@/lib/britt/intel";
+import { canRunDemoIntel, runIntel } from "@/lib/britt/intel";
 import {
   addObservation,
   setObservationAssignee,
@@ -69,6 +69,7 @@ export async function assignObservationToMe(formData: FormData) {
 
 export async function runBrittIntel() {
   const { session, pool, events } = await requireOrgAction("/britt", "finding:read");
+  if (!canRunDemoIntel(session.org.ref)) return;
   await runIntel({
     pool,
     events,

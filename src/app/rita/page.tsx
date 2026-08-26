@@ -25,11 +25,12 @@ export const metadata = {
 export default async function RitaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ status?: string; fel?: string }>;
 }) {
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const params = await searchParams;
+  const orgNumberWrong = params.fel === "orgnr";
   const status =
     params.status === "completed" || params.status === "blocked" || params.status === "requested"
       ? params.status
@@ -72,6 +73,9 @@ export default async function RitaPage({
               className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
             >
               <h2 className="text-lg font-semibold">Ny analys</h2>
+              {orgNumberWrong ? (
+                <Notice>Organisationsnumret stämmer inte. Kontrollera siffrorna.</Notice>
+              ) : null}
               <Field name="companyName" label="Bolagsnamn" required placeholder="Ert bolagsnamn" />
               <Field
                 name="orgNumber"

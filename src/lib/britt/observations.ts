@@ -76,8 +76,8 @@ export async function addObservation(input: {
   });
   const { rows } = await input.pool.query(
     `select id, source_system, title, body, severity, subject_ref, status, assignee_ref, created_at
-       from britt.observations where id = $1`,
-    [id],
+       from britt.observations where org_ref = $1 and id = $2`,
+    [input.orgRef, id],
   );
   return toObservation(rows[0]!);
 }

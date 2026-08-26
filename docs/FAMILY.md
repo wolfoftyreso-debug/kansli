@@ -121,7 +121,7 @@ där tiden och pappersjakten sitter.
 återkallas). Klartext-token visas en gång i en httpOnly-cookie. Motparten
 öppnar `/irma/l/<token>` utan konto. Första öppning = `viewed`. Bekräftelse
 (nivå 1) = `signed` + SHA-256-artefakt. Nivå 0 är information. Lista och sök
-finns. Inte BankID. Inte kvalificerad e-signatur. Ingen fillagring. Ingen OCR.
+finns. Inte kvalificerad e-signatur. Ingen fillagring. Ingen OCR.
 Nivå 2–5 finns inte. Det är handslaget, inte hela dokument-OS:et.
 
 ### TYRA — däckhotellets administration
@@ -149,7 +149,7 @@ protokoll.
 - Köra RITA:s Rust-motor på Vercel utan HTTP-host. Lokalt: `RITA_ENGINE_BINARY`
   plus demonstrationsbokslutet.
 - Diagnostisera i ALVA (saknar repo)
-- Kvalificerat e-signera (finns inte i navet; byggs inte mot BankID eller
-  extern e-signleverantör)
+- Kvalificerat e-signera (finns inte i navet; byggs inte mot extern
+  e-signleverantör)
 - Lagra filer i IRMA (ingen object store än; läggs i detta system om det behövs)
 - Köra BRITT som full underrättelseprodukt mot livebokföring

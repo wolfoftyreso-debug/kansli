@@ -21,7 +21,7 @@ const ERRORS = [
 
 export default function McpErrorsPage() {
   return (
-    <Container className="py-16 lg:py-24">
+    <Container>
       <McpDocNav current="/documentation/mcp/errors" />
       <div className="mt-10">
         <SectionHeading

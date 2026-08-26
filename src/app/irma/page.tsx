@@ -66,7 +66,7 @@ export default async function IrmaPage({
   searchParams: Promise<{ issued?: string; q?: string; status?: string }>;
 }) {
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const params = await searchParams;
   const query = params.q?.trim() ?? "";
   const status = parseStatusFilter(params.status);
@@ -88,7 +88,8 @@ export default async function IrmaPage({
         <h1 className="max-w-xl text-4xl font-semibold tracking-tight">Vilket avtal ska ut?</h1>
         <p className="max-w-xl text-ink-soft">
           Med IRMA skickar ni avtal digitalt: skapa, skicka en länk, se när motparten öppnat och
-          bekräftat. Motparten behöver inget konto. BankID och dokumentarkiv finns inte än.
+          bekräftat. Motparten behöver inget konto. Det är en enkel digital bekräftelse, inte en
+          juridisk e-signatur. Dokumentarkiv finns inte än.
         </p>
       </header>
 

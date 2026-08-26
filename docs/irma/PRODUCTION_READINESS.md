@@ -10,7 +10,7 @@ IRMA kan driftsättas **som handshake-modul** i samma Vercel-projekt som navet. 
 - Events append-only i `platform.events`.
 - Inga IRMA-hemligheter i git.
 - CI: lint, typecheck, test, build (navets workflow).
-- Explicit copy att det inte är BankID / kvalificerad e-signatur.
+- Explicit copy att det inte är kvalificerad e-signatur.
 
 ## Krav som saknas för “Document OS i produktion”
 
@@ -42,4 +42,4 @@ Samma uppdelning som navet: development, test, (eventuell) staging, production. 
 
 Nästa verkliga steg är inte fler audit-filer. Det är antingen (a) lämna
 handshake som den är, eller (b) bygga PDF/fil/OTP **i detta repo** mot Postgres
-och befintliga vendorer. Inte BankID. Inte extern e-sign. Inte Mobbin.
+och befintliga vendorer. Inte extern e-sign. Inte Mobbin.

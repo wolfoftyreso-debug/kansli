@@ -4,6 +4,7 @@ import { listAgreements } from "../irma/agreements.ts";
 import { ritaEngineSnapshot } from "../rita/resolve-engine.ts";
 import { getCompanyProfile } from "../tora/profile.ts";
 import { listCases } from "../tyra/cases.ts";
+import { smsConfigured } from "./sms.ts";
 import { hubStatus } from "./hub-status.ts";
 
 export type GateState = "ready" | "open" | "blocked";
@@ -35,8 +36,13 @@ export function evaluateFirstCustomerGates(input: {
   tyraQuotes: number;
   irmaAgreements: number;
   ritaAvailable: boolean;
+  ekonomiIssued: number;
+  ekonomiPaid: number;
+  smsVendor: boolean;
+  smsEnabled: boolean;
+  hardened?: boolean;
 }): FirstCustomerBoard {
-  const hardened = input.appEnv === "prod" || input.appEnv === "production";
+  const hardened = input.hardened ?? (input.appEnv === "prod" || input.appEnv === "production");
   const gates: FirstCustomerGate[] = [
     {
       id: "database",
@@ -59,9 +65,11 @@ export function evaluateFirstCustomerGates(input: {
     {
       id: "demo",
       title: "Inte ett öppet demoläge mot kund",
-      state: input.seedDemo ? "open" : "ready",
+      state: input.seedDemo ? (hardened ? "blocked" : "open") : "ready",
       detail: input.seedDemo
-        ? "PIXDRIFT_SEED_DEMO=true. Stäng av innan första kunden loggar in."
+        ? hardened
+          ? "PIXDRIFT_SEED_DEMO=true i produktion. Processen ska inte starta."
+          : "PIXDRIFT_SEED_DEMO=true. Stäng av innan första kunden loggar in."
         : "Exempelläget är av.",
     },
     {
@@ -92,7 +100,7 @@ export function evaluateFirstCustomerGates(input: {
       state: input.irmaAgreements > 0 ? "ready" : "open",
       detail:
         input.irmaAgreements > 0
-          ? `${input.irmaAgreements} underlag. Fortfarande inte BankID.`
+          ? `${input.irmaAgreements} underlag. Enkel bekräftelse, inte e-signatur.`
           : "Inget underlag skapat. Enkel bekräftelse, inte e-signatur.",
     },
     {
@@ -118,6 +126,25 @@ export function evaluateFirstCustomerGates(input: {
       detail: "Diagnosen byggs separat. Här registrerar ni bara ärenden.",
     },
     {
+      id: "ekonomi",
+      title: "Ekonomi är en bok, inte Visma",
+      state: input.ekonomiIssued > 0 ? "ready" : "open",
+      detail:
+        input.ekonomiIssued === 0
+          ? "Ingen utfärdad faktura ännu. Boken tar 10-dagarsfaktura och verifikat. Visma och Fortnox är inte inkopplade."
+          : `${input.ekonomiIssued} utfärdade, ${input.ekonomiPaid} betalda. Visma är inte anslutet. Stripe och Swish bara med nyckel.`,
+    },
+    {
+      id: "sms",
+      title: "SMS vid sälj är valt, inte påtvingat",
+      state: input.smsVendor && input.smsEnabled ? "ready" : "open",
+      detail: input.smsVendor
+        ? input.smsEnabled
+          ? "Telefonen är kopplad och ni har sagt ja. Ett missat SMS rullar inte tillbaka en bokad sälj."
+          : "Telefonen är kopplad. SMS är avstängt tills ni säger ja."
+        : "Numret kan sparas. SMS går inte ut förrän telefonen är kopplad i drift.",
+    },
+    {
       id: "upphandling",
       title: "Koncernupphandling är ett formulär",
       state: "ready",
@@ -129,12 +156,14 @@ export function evaluateFirstCustomerGates(input: {
       title: "Kunden skriver under vad produkten inte är",
       state: "open",
       detail:
-        "Ingen BankID-signering, inga live-däckpriser, inga SMS-utskick, ingen koppling till upphandlingsdatabaser eller Fortnox. Stripe och Revolut bara när de är inkopplade. Detta kryssar kunden i på formuläret.",
+        "Ingen kvalificerad e-signatur, inga live-däckpriser, ingen Visma eller Fortnox, ingen ALVA-diagnos. SMS vid sälj bara när telefonen är kopplad och ni sagt ja. TYRA-påminnelser skickas inte. Stripe och Revolut bara när de är inkopplade.",
     },
   ];
 
   const blockingPilot = gates.filter(
-    (gate) => (gate.id === "database" || gate.id === "secrets") && gate.state === "blocked",
+    (gate) =>
+      (gate.id === "database" || gate.id === "secrets" || gate.id === "demo") &&
+      gate.state === "blocked",
   );
   const pilotOfferable = blockingPilot.length === 0;
   return {
@@ -155,9 +184,12 @@ export async function loadFirstCustomerBoard(
   let tyraInspections = 0;
   let tyraQuotes = 0;
   let irmaAgreements = 0;
+  let ekonomiIssued = 0;
+  let ekonomiPaid = 0;
+  let smsEnabled = false;
 
   if (pool && orgRef) {
-    const [profile, cases, inspections, quotes, agreements] = await Promise.all([
+    const [profile, cases, inspections, quotes, agreements, issued, paid, sms] = await Promise.all([
       getCompanyProfile(pool, orgRef),
       listCases(pool, orgRef),
       pool.query<{ n: string }>(
@@ -169,19 +201,38 @@ export async function loadFirstCustomerBoard(
         [orgRef],
       ),
       listAgreements(pool, orgRef),
+      pool.query<{ n: string }>(
+        `select count(*)::text as n from ekonomi.invoices
+          where org_ref = $1 and status in ('issued','part_paid','paid')`,
+        [orgRef],
+      ),
+      pool.query<{ n: string }>(
+        `select count(*)::text as n from ekonomi.invoices where org_ref = $1 and status = 'paid'`,
+        [orgRef],
+      ),
+      pool.query<{ enabled: boolean }>(
+        `select enabled from ekonomi.sales_alert_settings where org_ref = $1`,
+        [orgRef],
+      ),
     ]);
     toraProfileSaved = Boolean(profile);
     tyraCases = cases.length;
     tyraInspections = Number(inspections.rows[0]?.n ?? 0);
     tyraQuotes = Number(quotes.rows[0]?.n ?? 0);
     irmaAgreements = agreements.length;
+    ekonomiIssued = Number(issued.rows[0]?.n ?? 0);
+    ekonomiPaid = Number(paid.rows[0]?.n ?? 0);
+    smsEnabled = Boolean(sms.rows[0]?.enabled);
   }
 
+  const session = process.env.APP_SESSION_SECRET?.trim() ?? "";
   return evaluateFirstCustomerGates({
     databaseUp: status.database === "up",
     appEnv: process.env.APP_ENV ?? "",
+    hardened: isHardenedRuntime(),
     seedDemo: process.env.PIXDRIFT_SEED_DEMO === "true",
-    sessionSecretSet: Boolean(process.env.APP_SESSION_SECRET?.trim()) || !isHardenedRuntime(),
+    sessionSecretSet:
+      (session.length >= 32 && !session.startsWith("kansli-dev")) || !isHardenedRuntime(),
     cronSecretSet: Boolean(process.env.CRON_SECRET?.trim()),
     toraProfileSaved,
     tyraCases,
@@ -189,5 +240,9 @@ export async function loadFirstCustomerBoard(
     tyraQuotes,
     irmaAgreements,
     ritaAvailable: rita.available,
+    ekonomiIssued,
+    ekonomiPaid,
+    smsVendor: smsConfigured(),
+    smsEnabled,
   });
 }

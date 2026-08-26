@@ -2,11 +2,51 @@ import { afterAll, describe, expect, it } from "vitest";
 import { createPool, migrateWorkspace } from "@pixdrift/db";
 import { EventLog } from "@pixdrift/events";
 import { accountBalance } from "./journal.ts";
-import { createDraftInvoice, getInvoice, issueInvoice } from "./invoices.ts";
+import {
+  bookSale,
+  createDraftInvoice,
+  getInvoice,
+  issueInvoice,
+  parseInvoiceLinesFromForm,
+} from "./invoices.ts";
+import { bookTyraQuote, listBookedTyraQuotes, listUnbookedTyraQuotes } from "./tyra-sales.ts";
+import { createCase } from "../tyra/cases.ts";
+import { markQuoteInvoiced, saveQuoteDraft } from "../tyra/quotes.ts";
 import { recordReceivedPayment } from "./payments.ts";
 import { encryptSecret, last4Of } from "./connectors.ts";
 import { syncRevolut } from "./revolut.ts";
 import { vatReport } from "./reports.ts";
+
+describe("invoice form lines", () => {
+  it("prefers kronor and still accepts öre", () => {
+    expect(
+      parseInvoiceLinesFromForm({
+        descriptions: ["Hjulskifte", ""],
+        quantities: ["1", "2"],
+        unitNetKronor: ["2500", ""],
+        vatRates: ["2500", "2500"],
+        kinds: ["service", "service"],
+      }),
+    ).toEqual([
+      {
+        description: "Hjulskifte",
+        quantity: 1,
+        unitNetOre: 250_000,
+        vatRateBps: 2500,
+        kind: "service",
+      },
+    ]);
+    expect(
+      parseInvoiceLinesFromForm({
+        descriptions: ["Lagring"],
+        quantities: ["1"],
+        unitNetOre: ["4000"],
+        vatRates: ["2500"],
+        kinds: ["service"],
+      })[0]?.unitNetOre,
+    ).toBe(4000);
+  });
+});
 
 describe("connector wrapping", () => {
   it("never returns the raw token from last4", () => {
@@ -155,5 +195,93 @@ live("ekonomi ledger (live Postgres)", () => {
     expect(result.blocked).toBe(false);
     expect(result.matched).toBe(1);
     expect((await getInvoice(pool, orgRef, issued.id))?.status).toBe("paid");
+  });
+
+  it("books a sale in one step and refuses a second book of the same TYRA quote", async () => {
+    await migrateWorkspace({ ownerUrl: OWNER!, root: process.cwd(), appRole: "pixdrift_app" });
+    const events = new EventLog(pool);
+    const orgRef = `pixdrift:org:ekonomi-book-${Date.now()}`;
+    const booked = await bookSale({
+      pool,
+      events,
+      orgRef,
+      actorRef: "user-test",
+      customerName: "Holm AB",
+      lines: [
+        {
+          description: "Hjulskifte",
+          quantity: 1,
+          unitNetOre: 10_000,
+          vatRateBps: 2500,
+          kind: "service",
+        },
+      ],
+      requestId: "req-book-1",
+    });
+    expect(booked.status).toBe("issued");
+    expect(booked.grossOre).toBe(12_500);
+    expect(await accountBalance(pool, orgRef, "1510")).toBe(12_500);
+
+    const created = await createCase({
+      pool,
+      events,
+      orgRef,
+      actorRef: "user-test",
+      customerName: "Erik",
+      registrationNumber: "BOOK01",
+      intent: "QUOTE_ONLY",
+      operations: ["TIRE_QUOTE"],
+      requestId: "req-tyra-book-case",
+    });
+    const quote = await saveQuoteDraft({
+      pool,
+      orgRef,
+      tireCaseId: created.id,
+      title: "Vinterdäck",
+      quantity: 4,
+      unitCostOre: 120_000,
+      installationOrePerTyre: 15_000,
+      environmentalOrePerTyre: 2_500,
+      markupPercent: 20,
+    });
+    const waiting = await listUnbookedTyraQuotes(pool, orgRef);
+    expect(waiting.map((row) => row.id)).toContain(quote.id);
+
+    const fromQuote = await bookTyraQuote({
+      pool,
+      events,
+      orgRef,
+      actorRef: "user-test",
+      quoteId: quote.id,
+      requestId: "req-tyra-book-1",
+    });
+    expect(fromQuote.status).toBe("issued");
+    expect(fromQuote.sourceSystem).toBe("tyra");
+    expect(fromQuote.sourceRef).toBe(quote.id);
+    expect(fromQuote.customerName).toBe("Erik");
+    expect(fromQuote.grossOre).toBe(quote.snapshot.totalCustomerPriceOre);
+    expect(fromQuote.lines[0]?.kind).toBe("goods");
+    expect(await listUnbookedTyraQuotes(pool, orgRef)).toHaveLength(0);
+    await markQuoteInvoiced(pool, orgRef, quote.id);
+    const bookedQuotes = await listBookedTyraQuotes(pool, orgRef, created.id);
+    expect(bookedQuotes).toEqual([
+      { quoteId: quote.id, invoiceId: fromQuote.id, invoiceNumber: fromQuote.number },
+    ]);
+    const status = await pool.query<{ commercial_status: string }>(
+      `select commercial_status from tyra.tire_cases where org_ref = $1 and id = $2`,
+      [orgRef, created.id],
+    );
+    expect(status.rows[0]?.commercial_status).toBe("INVOICED");
+
+    await expect(
+      bookTyraQuote({
+        pool,
+        events,
+        orgRef,
+        actorRef: "user-test",
+        quoteId: quote.id,
+        requestId: "req-tyra-book-2",
+      }),
+    ).rejects.toThrow(/redan bokad/);
   });
 });

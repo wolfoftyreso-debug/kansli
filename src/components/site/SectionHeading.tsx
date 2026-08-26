@@ -18,13 +18,13 @@ export function SectionHeading({
       <Title
         className={
           as === "h1"
-            ? "max-w-4xl text-4xl font-semibold tracking-tight text-ink sm:text-6xl"
-            : "max-w-3xl text-2xl font-semibold tracking-tight text-ink sm:text-3xl"
+            ? "max-w-3xl text-2xl font-semibold tracking-tight text-ink sm:text-3xl"
+            : "max-w-3xl text-xl font-semibold tracking-tight text-ink"
         }
       >
         {title}
       </Title>
-      {intro ? <p className="max-w-2xl text-lg leading-relaxed text-ink-soft">{intro}</p> : null}
+      {intro ? <p className="max-w-2xl text-sm text-ink-soft">{intro}</p> : null}
     </div>
   );
 }

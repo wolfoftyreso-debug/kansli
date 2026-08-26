@@ -115,4 +115,45 @@ export async function listQuoteDrafts(
   }));
 }
 
+export function parseTyraQuoteForm(form: FormData): {
+  title: string;
+  quantity: number;
+  unitCostOre: number;
+  installationOrePerTyre: number;
+  environmentalOrePerTyre: number;
+  markupPercent: number;
+  note: string;
+} {
+  const kronor = (name: string) =>
+    Math.round(Number(String(form.get(name) ?? "0").replace(",", ".")) * 100);
+  return {
+    title: String(form.get("title") ?? "").trim(),
+    quantity: Number(form.get("quantity") ?? 4) || 4,
+    unitCostOre: kronor("unitCostSek"),
+    installationOrePerTyre: kronor("installationSek"),
+    environmentalOrePerTyre: kronor("environmentalSek"),
+    markupPercent: Number(String(form.get("markupPercent") ?? "0").replace(",", ".")) || 0,
+    note: String(form.get("note") ?? "").trim(),
+  };
+}
+
+export async function markQuoteInvoiced(
+  pool: pg.Pool,
+  orgRef: string,
+  quoteId: string,
+): Promise<void> {
+  const { rows } = await pool.query<{ tire_case_id: string }>(
+    `select tire_case_id from tyra.quote_drafts where org_ref = $1 and id = $2 limit 1`,
+    [orgRef, quoteId],
+  );
+  const tireCaseId = rows[0]?.tire_case_id;
+  if (!tireCaseId) return;
+  await pool.query(
+    `update tyra.tire_cases
+        set commercial_status = 'INVOICED', updated_at = now()
+      where org_ref = $1 and id = $2`,
+    [orgRef, tireCaseId],
+  );
+}
+
 export { formatSekFromOre };

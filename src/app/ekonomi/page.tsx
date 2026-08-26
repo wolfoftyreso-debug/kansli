@@ -1,14 +1,22 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb, SystemLink } from "@/components/app/ProductCrumb";
-import { Notice, SignInGate } from "@/components/app/SignInGate";
+import { SalesBoard } from "@/components/ekonomi/SalesBoard";
+import { SalesDesk } from "@/components/ekonomi/SalesDesk";
+import { CheckField, Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
 import { listInvoices } from "@/lib/ekonomi/invoices";
 import { listPayments } from "@/lib/ekonomi/payments";
 import { railSnapshot } from "@/lib/ekonomi/rails";
 import { agedReceivables } from "@/lib/ekonomi/reports";
 import { formatSek } from "@/lib/ekonomi/money";
+import { buildDailyLedger } from "@/lib/ekonomi/series";
+import { getSalesAlertSettings, listSalesAlerts } from "@/lib/ekonomi/sales-alerts";
+import { listUnbookedTyraQuotes } from "@/lib/ekonomi/tyra-sales";
+import { smsConfigured } from "@/lib/platform/sms";
 import { readSession } from "@/lib/auth/session";
+import { formatSwedishDateTime } from "@/lib/format/datetime";
 import { tryRuntime } from "@/lib/platform/page";
+import { saveSalesAlertAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -17,15 +25,32 @@ export const metadata = {
   description: "Fakturor, moms och hur pengarna kom in.",
 };
 
+const ALERT_STATUS: Record<string, string> = {
+  PENDING: "Väntar",
+  SENT: "Skickat",
+  FAILED: "Misslyckades",
+  BLOCKED: "Stoppat",
+};
+
 export default async function EkonomiPage() {
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const invoices =
     session?.org?.ref && runtime ? await listInvoices(runtime.pool, session.org.ref) : [];
+  const quotes =
+    session?.org?.ref && runtime ? await listUnbookedTyraQuotes(runtime.pool, session.org.ref) : [];
   const payments =
     session?.org?.ref && runtime ? await listPayments(runtime.pool, session.org.ref) : [];
+  const alerts =
+    session?.org?.ref && runtime ? await listSalesAlerts(runtime.pool, session.org.ref) : [];
+  const alertSettings =
+    session?.org?.ref && runtime
+      ? await getSalesAlertSettings(runtime.pool, session.org.ref)
+      : null;
   const aged = agedReceivables(invoices);
   const rails = railSnapshot();
+  const points = buildDailyLedger(invoices, payments);
+  const vendorReady = smsConfigured();
 
   return (
     <AppShell current="ekonomi" session={session}>
@@ -33,11 +58,16 @@ export default async function EkonomiPage() {
         <ProductCrumb crumbs={[{ href: "/ekonomi", label: "Ekonomi" }]} />
         <h1 className="text-3xl font-semibold tracking-tight">Vad är bokat?</h1>
         <p className="max-w-xl text-ink-soft">
-          Fakturor, moms och hur pengarna kom in. <SystemLink id="tyra">TYRA</SystemLink>,{" "}
-          <SystemLink id="irma">IRMA</SystemLink> och de andra lägger sina fakturor här. Kunden kan
-          betala med Swish, Stripe eller faktura på 10 dagar. Anslut{" "}
-          <SystemLink id="revolut">Revolut</SystemLink> en gång, så hämtas kontoutdrag och
-          betalningar matchas.
+          Boka sälj i kronor. Ett klick utfärdar fakturan. <SystemLink id="tyra">TYRA</SystemLink>
+          -offerter som inte är bokade ligger i kön. Kunden kan betala med Swish, Stripe eller
+          faktura på 10 dagar. Anslut <SystemLink id="revolut">Revolut</SystemLink> en gång, så
+          hämtas kontoutdrag och betalningar matchas. Visma är nästa anslutning — den finns inte här
+          än.
+        </p>
+        <p className="text-sm">
+          <Link href="/kansli/beredskap" className="underline decoration-line underline-offset-4">
+            Första kunden — checklista, inte datum
+          </Link>
         </p>
       </header>
 
@@ -48,9 +78,18 @@ export default async function EkonomiPage() {
       ) : (
         <>
           <Notice>
-            Allt bokförs i öre mot BAS-kontoplanen, och varje verifikat balanserar. Betalningar körs
-            bara på riktigt när kopplingarna är på plats — inget simuleras utan att du sagt ja.
+            Ni skriver kronor. Boken sparar öre. Varje verifikat balanserar. Betalningar körs bara
+            på riktigt när kopplingarna är på plats — inget simuleras utan att du sagt ja.
           </Notice>
+
+          <SalesDesk
+            drafts={invoices.filter((invoice) => invoice.status === "draft")}
+            open={aged.notDue}
+            overdue={aged.overdue}
+            quotes={quotes}
+          />
+
+          <SalesBoard points={points} />
 
           <section className="grid gap-3 sm:grid-cols-3">
             <article className="rounded-xl border border-line bg-surface px-4 py-4">
@@ -78,6 +117,56 @@ export default async function EkonomiPage() {
                 {payments.filter((item) => item.status === "received").length} bokade
               </p>
             </article>
+          </section>
+
+          <section className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
+            <form
+              action={saveSalesAlertAction}
+              className="flex flex-col gap-3 rounded-xl border border-line bg-surface px-4 py-4"
+            >
+              <h2 className="text-lg font-semibold">SMS när ni säljer</h2>
+              <p className="text-sm text-ink-soft">
+                Ett kort meddelande går ut när en faktura utfärdas. Inte när ett utkast sparas.
+                {vendorReady
+                  ? " Telefonen är kopplad."
+                  : " Numret sparas nu. SMS går inte ut förrän telefonen är kopplad i drift."}
+              </p>
+              <Field
+                name="phone"
+                label="Mobilnummer"
+                type="tel"
+                required
+                defaultValue={alertSettings?.phone ?? ""}
+                placeholder="070-123 45 67"
+              />
+              <CheckField
+                name="enabled"
+                label="Skicka SMS vid sälj"
+                defaultChecked={alertSettings?.enabled ?? true}
+              />
+              <Submit>Spara SMS</Submit>
+            </form>
+            <div className="rounded-xl border border-line bg-surface px-4 py-4">
+              <h2 className="text-lg font-semibold">Senaste SMS</h2>
+              {alerts.length === 0 ? (
+                <p className="mt-2 text-sm text-muted">Inga säljnotiser ännu.</p>
+              ) : (
+                <ul className="mt-3 flex flex-col gap-3">
+                  {alerts.slice(0, 5).map((alert) => (
+                    <li key={alert.id} className="text-sm">
+                      <p className="text-xs uppercase tracking-wide text-muted">
+                        {ALERT_STATUS[alert.status] ?? alert.status}
+                      </p>
+                      <p className="mt-1 text-ink-soft">{alert.body}</p>
+                      <p className="mt-1 text-xs text-muted">
+                        {formatSwedishDateTime(alert.createdAt)}
+                        {alert.lastError ? ` · ${alert.lastError}` : ""}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </section>
 
           <nav className="flex flex-wrap gap-3 text-sm">

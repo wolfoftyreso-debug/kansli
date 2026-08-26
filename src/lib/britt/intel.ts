@@ -1,7 +1,12 @@
 import { randomUUID } from "node:crypto";
 import type pg from "pg";
 import type { EventLog } from "@pixdrift/events";
+import { isHouseSession } from "../kansli/intakes.ts";
 import { DEMO_METRICS, evaluateMetrics, type FindingDraft, type MetricFacts } from "./engine.ts";
+
+export function canRunDemoIntel(orgRef: string): boolean {
+  return isHouseSession(orgRef);
+}
 
 export interface MetricSnapshot {
   id: string;
@@ -82,6 +87,9 @@ export async function runIntel(input: {
   requestId: string;
   facts?: MetricFacts;
 }): Promise<{ run: AnalysisRun; findings: StoredFinding[]; snapshot: MetricSnapshot }> {
+  if (!input.facts && !canRunDemoIntel(input.orgRef)) {
+    throw new Error("Demonstrationssiffror körs bara på huset.");
+  }
   const facts = input.facts ?? DEMO_METRICS;
   const drafts = evaluateMetrics(facts);
   const snapshotId = randomUUID();

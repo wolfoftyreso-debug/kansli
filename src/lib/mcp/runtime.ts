@@ -5,7 +5,7 @@ import type pg from "pg";
 import { tryRuntime } from "@/lib/platform/page";
 
 export function attachRuntime(base: Omit<McpRuntime, "pool" | "events">): McpRuntime {
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(base.actor?.orgRef);
   return {
     ...base,
     pool: runtime?.pool ?? null,

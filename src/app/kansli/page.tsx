@@ -6,6 +6,7 @@ import { eventLine } from "@/lib/platform/event-copy";
 import { FAMILY_SYSTEMS } from "@/lib/platform/family";
 import { hubStatus, ritaStatusLine } from "@/lib/platform/hub-status";
 import { readSession } from "@/lib/auth/session";
+import { listTasks } from "@/lib/kansli/tasks";
 import { tryRuntime } from "@/lib/platform/page";
 import TaskBoard from "../TaskBoard";
 
@@ -32,19 +33,20 @@ export default async function KansliHub({
   searchParams: Promise<{ task?: string }>;
 }) {
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const status = hubStatus();
   const highlightId = (await searchParams).task?.trim() || null;
   const events =
     session?.org?.ref && runtime
       ? await runtime.events.list({ orgRef: session.org.ref, limit: 8, order: "desc" })
       : [];
+  const tasks = session?.org?.ref && runtime ? await listTasks(runtime.pool, session.org.ref) : [];
 
   return (
     <AppShell current="kansli" session={session}>
       <header className="flex flex-col gap-3">
         <ProductCrumb crumbs={[{ href: "/kansli", label: "Kansli" }]} />
-        <h1 className="text-3xl font-semibold tracking-tight">Kansli</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">Kansli</h1>
         <p className="text-ink-soft">
           Här börjar allt. Samma inloggning i alla system, och en egen uppgiftstavla för det
           interna.
@@ -137,7 +139,7 @@ export default async function KansliHub({
           <Notice>
             När en uppgift skapas får BRITT en sak att följa upp. Kansli äger fortfarande uppgiften.
           </Notice>
-          <TaskBoard highlightId={highlightId} />
+          <TaskBoard highlightId={highlightId} initialTasks={tasks} />
         </>
       )}
     </AppShell>

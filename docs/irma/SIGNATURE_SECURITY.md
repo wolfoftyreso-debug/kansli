@@ -22,7 +22,7 @@ Deklarationen sparas inte i klartext. Den är en konstant i koden (`ACKNOWLEDGEM
 | 4 | ID-kontroll | Inte byggt |
 | 5 | ID + liveness | Inte byggt |
 
-UI säger uttryckligen: inte BankID, inte kvalificerad e-signatur enligt eIDAS.
+UI säger uttryckligen: inte kvalificerad e-signatur enligt eIDAS.
 
 ## Evidence package (det som faktiskt finns)
 
@@ -54,4 +54,4 @@ Det finns ingen “ändra avtalet”-väg. Därför finns ingen version 2. En ny
 
 ## Missbruk att bevaka
 
-Att visa en ritad canvas och kalla den nivå 2. Att sätta `verification_level` till 4 i UI utan ett flöde **i detta system**. Att koppla BankID, Scrive eller annan e-signleverantör. Allt det är förbjudet.
+Att visa en ritad canvas och kalla den nivå 2. Att sätta `verification_level` till 4 i UI utan ett flöde **i detta system**. Att koppla Scrive eller annan e-signleverantör. Allt det är förbjudet.

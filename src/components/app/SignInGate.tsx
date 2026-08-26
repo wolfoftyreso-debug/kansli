@@ -11,14 +11,14 @@ export function SignInGate({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-xl border border-line bg-surface px-5 py-6">
+    <section className="border border-line bg-surface px-4 py-4">
       <h2 className="text-lg font-semibold">{title}</h2>
       <div className="mt-2 text-sm text-ink-soft">{children}</div>
       <a
         href={`/api/auth/login?next=${encodeURIComponent(next)}`}
-        className="mt-4 inline-flex rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper hover:bg-ink-soft"
+        className="mt-4 inline-flex bg-ink px-4 py-2 text-sm font-medium text-paper hover:bg-ink-soft"
       >
-        Logga in med Pixdrift
+        Logga in
       </a>
     </section>
   );
@@ -30,9 +30,7 @@ export function EmptyState({ children }: { children: ReactNode }) {
 
 export function Notice({ children }: { children: ReactNode }) {
   return (
-    <p className="rounded-md border border-line bg-accent-soft px-3 py-2 text-sm text-ink-soft">
-      {children}
-    </p>
+    <p className="border border-line bg-accent-soft px-3 py-2 text-sm text-ink-soft">{children}</p>
   );
 }
 
@@ -56,8 +54,8 @@ export function Field({
   type?: "text" | "email" | "tel";
 }) {
   const cls = large
-    ? "min-h-12 rounded-lg border border-line bg-paper px-4 py-3 text-base"
-    : "rounded-md border border-line bg-paper px-3 py-2 text-sm";
+    ? "min-h-12 border border-line bg-paper px-4 py-3 text-base"
+    : "border border-line bg-paper px-3 py-2 text-sm";
   const mark = required ? " *" : "";
   return (
     <label className="flex flex-col gap-1">
@@ -122,8 +120,8 @@ export function Submit({ children, large }: { children: ReactNode; large?: boole
       type="submit"
       className={
         large
-          ? "min-h-12 w-full rounded-lg bg-ink px-4 py-3 text-base font-medium text-paper hover:bg-ink-soft"
-          : "self-start rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper hover:bg-ink-soft"
+          ? "min-h-12 w-full bg-ink px-4 py-3 text-base font-medium text-paper hover:bg-ink-soft"
+          : "self-start bg-ink px-4 py-2 text-sm font-medium text-paper hover:bg-ink-soft"
       }
     >
       {children}

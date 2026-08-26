@@ -14,7 +14,7 @@ export const metadata = { title: "Kontoutdrag — Ekonomi" };
 
 export default async function KontoutdragPage() {
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const statement =
     session?.org?.ref && runtime
       ? await loadRevolutStatement({

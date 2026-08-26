@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb } from "@/components/app/ProductCrumb";
@@ -14,11 +15,14 @@ import { listCaseEvents } from "@/lib/tyra/hotel";
 import { INSPECTION_POSITIONS } from "@/lib/tyra/inspections";
 import { peekIssuedHubLink, publicTyraUrl } from "@/lib/tyra/issued-link";
 import { formatSekFromOre, listQuoteDrafts } from "@/lib/tyra/quotes";
+import { listBookedTyraQuotes, listUnbookedTyraQuotes } from "@/lib/ekonomi/tyra-sales";
+import { bookTyraQuoteAction } from "@/app/ekonomi/actions";
 import {
   cancelTyraCase,
   enqueueTyraReminder,
   issueTyraHubLink,
   recordTyraInspection,
+  saveAndBookTyraQuote,
   saveTyraCaseNotes,
   saveTyraCustomer,
   saveTyraQuote,
@@ -55,7 +59,7 @@ export default async function TyraCasePage({
   const { id } = await params;
   const query = await searchParams;
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const card =
     session?.org?.ref && runtime ? await getCaseWorkCard(runtime.pool, session.org.ref, id) : null;
   const timeline =
@@ -66,6 +70,16 @@ export default async function TyraCasePage({
     session?.org?.ref && runtime && card
       ? await listQuoteDrafts(runtime.pool, session.org.ref, id)
       : [];
+  const unbookedQuotes =
+    session?.org?.ref && runtime && card
+      ? await listUnbookedTyraQuotes(runtime.pool, session.org.ref, id)
+      : [];
+  const bookedQuotes =
+    session?.org?.ref && runtime && card
+      ? await listBookedTyraQuotes(runtime.pool, session.org.ref, id)
+      : [];
+  const unbookedIds = new Set(unbookedQuotes.map((quote) => quote.id));
+  const bookedByQuoteId = new Map(bookedQuotes.map((row) => [row.quoteId, row]));
   if (session?.org && !card) notFound();
   const issued = query.issued === "1" ? await peekIssuedHubLink() : null;
   const senderName = session?.org?.name ?? "Verkstaden";
@@ -286,11 +300,12 @@ export default async function TyraCasePage({
           </section>
 
           <section className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4">
-            <h2 className="text-lg font-semibold">Offertutkast</h2>
+            <h2 className="text-lg font-semibold">Sälj däck</h2>
             <p className="text-sm text-ink-soft">
-              Verkstadens egna belopp. Inte live-leverantör, inte skickad.
+              Era egna belopp. Ett klick bokar fakturan i Ekonomi, inklusive 25 % moms. Inte
+              live-leverantör.
             </p>
-            <form action={saveTyraQuote} className="grid gap-3 sm:grid-cols-2">
+            <form action={saveAndBookTyraQuote} className="grid gap-3 sm:grid-cols-2">
               <input type="hidden" name="id" value={id} />
               <label className="flex flex-col gap-1 sm:col-span-2">
                 <span className="text-sm text-ink-soft">Rubrik</span>
@@ -347,18 +362,49 @@ export default async function TyraCasePage({
                   className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
                 />
               </label>
-              <div className="sm:col-span-2">
-                <Submit>Beräkna utkast</Submit>
+              <div className="flex flex-wrap gap-3 sm:col-span-2">
+                <Submit>Boka sälj</Submit>
+                <button
+                  type="submit"
+                  formAction={saveTyraQuote}
+                  className="self-start border border-line bg-paper px-4 py-2 text-sm"
+                >
+                  Spara utkast
+                </button>
               </div>
             </form>
             {quotes.length > 0 ? (
               <ul className="flex flex-col gap-2">
-                {quotes.map((quote) => (
-                  <li key={quote.id} className="text-sm text-ink-soft">
-                    {quote.title}: {formatSekFromOre(quote.snapshot.totalCustomerPriceOre)} ·{" "}
-                    {formatSwedishDateTime(quote.createdAt)}
-                  </li>
-                ))}
+                {quotes.map((quote) => {
+                  const booked = bookedByQuoteId.get(quote.id);
+                  return (
+                    <li
+                      key={quote.id}
+                      className="flex flex-wrap items-center justify-between gap-3 text-sm text-ink-soft"
+                    >
+                      <span>
+                        {quote.title}: {formatSekFromOre(quote.snapshot.totalCustomerPriceOre)} ·{" "}
+                        {formatSwedishDateTime(quote.createdAt)}
+                      </span>
+                      {unbookedIds.has(quote.id) ? (
+                        <form action={bookTyraQuoteAction}>
+                          <input type="hidden" name="quoteId" value={quote.id} />
+                          <input type="hidden" name="tireCaseId" value={id} />
+                          <Submit>Boka sälj</Submit>
+                        </form>
+                      ) : booked ? (
+                        <Link
+                          href={`/ekonomi/fakturor/${booked.invoiceId}`}
+                          className="underline decoration-line underline-offset-4"
+                        >
+                          Bokad {booked.invoiceNumber}
+                        </Link>
+                      ) : (
+                        <span>Bokad i Ekonomi</span>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             ) : null}
           </section>

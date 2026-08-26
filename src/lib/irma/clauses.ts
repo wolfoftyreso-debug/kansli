@@ -19,7 +19,7 @@ export const DEFAULT_CLAUSES: readonly AgreementClause[] = [
   {
     id: "bekraftelse",
     heading: "Bekräftelse",
-    text: "Bekräftelsen är en enkel digital bekräftelse. Den är inte BankID och inte en juridiskt kvalificerad e-signatur.",
+    text: "Bekräftelsen är en enkel digital bekräftelse. Den är inte en juridiskt kvalificerad e-signatur.",
   },
 ];
 

@@ -275,7 +275,7 @@ på motorer.
 8. TYRA hjulset + kundkort, IRMA återutfärda, RITA-fyndkort, ALVA-intag,
    BRITT-djuplänkar. Se `docs/CRITICAL-REVISION.md`.
 
-Inte byggt (medvetet): SMS-adapter, live-pris, ALVA-diagnos, BankID, Redis,
+Inte byggt (medvetet): SMS-adapter, live-pris, ALVA-diagnos, e-legitimation, Redis,
 AWS-IaC, fejkad RITA på Vercel.
 
 ---

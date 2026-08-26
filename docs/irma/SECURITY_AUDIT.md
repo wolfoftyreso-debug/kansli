@@ -22,7 +22,7 @@ Ett system utan filuppladdning, utan SQL-strängkonkatenering och med org-scoped
 | H2 | In-memory throttle (20/15 min) per instans. På Vercel kan varje isolate ha egen karta. API svarar 404 (samma som ogiltig länk) så lockout inte läcker. | Öppen. Inte en ersättning för edge-rate-limit. |
 | H3 | GET öppnar och sätter `viewed`. Prefetch, preview-bots och länkskanners räknas som öppning | Öppen, medvetet. Dokumenterat. Första lyckade UPDATE vinner; dubbel-publish är stoppad. |
 | H4 | Token är bearer. Ingen OTP, ingen device bind. Den som har länken är motparten | Öppen. Acceptabelt för L1. Otillåtet att kalla detta L3–L5. |
-| H5 | L2–L5 saknas. Risken är produktmissbruk (sälja L1 som kvalificerad underskrift). BankID och extern e-sign ska inte fyllas i med en leverantör. | Mitigeras i UI-copy. Inte en kodbugg. |
+| H5 | L2–L5 saknas. Risken är produktmissbruk (sälja L1 som kvalificerad underskrift). Extern e-sign ska inte fyllas i med en leverantör. | Mitigeras i UI-copy. Inte en kodbugg. |
 
 ## Medium
 

@@ -27,7 +27,7 @@ från det repots `PIXDRIFT_SYNC.md`.
 - NextAuth, `/login`, `/signup`, TYRA `organizations`/`users`
 - Live-pris, demo-leverantör, Fortnox
 - Faktisk SMS/e-postleverans (46elks/Resend-nyckel räcker inte — adaptern saknas)
-- BankID
+- Kvalificerad e-signatur / e-legitimation som inloggning
 - Full ops-yta (pick, quotes, hardware, settings)
 
 ## Ytor

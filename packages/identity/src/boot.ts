@@ -23,6 +23,22 @@ export function isHardenedIdentityRuntime(env: NodeJS.ProcessEnv = process.env):
   return env.APP_ENV === "prod" || env.APP_ENV === "production" || env.VERCEL_ENV === "production";
 }
 
+const MIN_HARDENED_SECRET_LENGTH = 32;
+
+/** Fail closed at Identity boot. Preview and local memory store stay available. */
+export function assertHardenedIdentityBoot(env: NodeJS.ProcessEnv = process.env): void {
+  if (!isHardenedIdentityRuntime(env)) return;
+  if (!env.DATABASE_URL?.trim()) {
+    throw new Error("Identity vägrar starta i produktion utan DATABASE_URL.");
+  }
+  if (env.PIXDRIFT_SEED_DEMO === "true") {
+    throw new Error("Identity vägrar starta i produktion med PIXDRIFT_SEED_DEMO=true.");
+  }
+  if (env.COOKIE_SECURE === "false") {
+    throw new Error("Identity vägrar starta i produktion med COOKIE_SECURE=false.");
+  }
+}
+
 function vercelHttpsOrigins(env: NodeJS.ProcessEnv): string[] {
   const hosts = [env.VERCEL_BRANCH_URL, env.VERCEL_URL]
     .map((raw) =>
@@ -162,21 +178,30 @@ export async function bootIdentityFromEnv(opts: BootOptions = {}): Promise<Fasti
   const host = env.HOST ?? "127.0.0.1";
   const issuer = opts.issuer ?? env.ISSUER ?? `http://${host}:${port}`;
   const isProd = isHardenedIdentityRuntime(env);
+  assertHardenedIdentityBoot(env);
 
   // Fail closed in production: no weak/default signing secret for IdP sessions.
-  if (isProd && (!env.SESSION_SECRET || env.SESSION_SECRET === DEV_SESSION_SECRET)) {
+  const sessionSecret = env.SESSION_SECRET ?? env.APP_SESSION_SECRET ?? DEV_SESSION_SECRET;
+  if (
+    isProd &&
+    (!sessionSecret ||
+      sessionSecret === DEV_SESSION_SECRET ||
+      sessionSecret.length < MIN_HARDENED_SECRET_LENGTH)
+  ) {
     throw new Error("SESSION_SECRET måste sättas till ett starkt, unikt värde i produktion");
   }
-  const sessionSecret = env.SESSION_SECRET ?? env.APP_SESSION_SECRET ?? DEV_SESSION_SECRET;
   // Secure cookies by default over HTTPS; overridable with COOKIE_SECURE.
-  const cookieSecure =
-    env.COOKIE_SECURE !== undefined ? env.COOKIE_SECURE === "true" : issuer.startsWith("https://");
+  // Hardened runtime always sets the Secure flag.
+  const cookieSecure = isProd
+    ? true
+    : env.COOKIE_SECURE !== undefined
+      ? env.COOKIE_SECURE === "true"
+      : issuer.startsWith("https://");
 
   const clients = withPreviewClientSecret(withDeploymentRedirects(clientsFromEnv(env), env), env);
-  // Demo deployments (PIXDRIFT_SEED_DEMO) prefill the login form so the known
-  // demo account can sign in with a single click.
+  // Demo prefill is local/preview only. Production refuses PIXDRIFT_SEED_DEMO.
   const demoLogin =
-    env.PIXDRIFT_SEED_DEMO === "true"
+    !isProd && env.PIXDRIFT_SEED_DEMO === "true"
       ? { email: "demo@exempelbolaget.se", password: "demo-losenord-1234" }
       : undefined;
 
@@ -212,6 +237,10 @@ export async function bootIdentityFromEnv(opts: BootOptions = {}): Promise<Fasti
       cookieSecure,
       demoLogin,
     });
+  }
+
+  if (isProd) {
+    throw new Error("Identity vägrar starta i produktion utan DATABASE_URL.");
   }
 
   const { store } = await seededStore();

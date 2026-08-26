@@ -24,7 +24,7 @@ const areas = [
 
 export default function DocumentationPage() {
   return (
-    <Container className="py-20 lg:py-28">
+    <Container>
       <SectionHeading
         as="h1"
         eyebrow="Documentation"

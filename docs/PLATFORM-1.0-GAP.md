@@ -1,6 +1,6 @@
 # PIXDRIFT PLATFORM 1.0 — inventering och luckor
 
-Datum: 2026-08-25.
+Datum: 2026-08-25 (datalagring: en Neon, `org_ref` + RLS, två-org-test).
 Målbild: [`PLATFORM-1.0.md`](PLATFORM-1.0.md).
 Metod: läst ur kod i det här repot. Inte ur önskelistor.
 
@@ -95,10 +95,8 @@ MCP kan anropas av en generisk klient. Det är inte en ChatGPT-app.
 Se §5. Ingen locale-URL, ingen intent-graf, ingen Search Console-loop.
 
 **DESIGN — PARTIAL.**
-Tokens i `src/app/globals.css`. Gemensam sajt och `pd-label`.
-Inget `@pixdrift/design`-paket. Ingen design constitution.
-Produktsidorna är samma mall — det är bra — men app-ytorna
-har börjat egna mönster (TYRA-variabler i `:root`).
+Tokens i `src/app/globals.css`. Gemensam stel fasad (`Facade`)
+med sidospår och statuslist. Inget `@pixdrift/design`-paket.
 
 **BACKUP — PARTIAL.**
 `scripts/backup-postgres.sh`, `pnpm db:restore-drill`, CI kör drill.
@@ -117,7 +115,7 @@ ingen syntetisk bevakning av login/MCP/docs.
 
 | Lager | Betyg | Vad som finns | Vad som saknas |
 | --- | --- | --- | --- |
-| 1. Platform Core | PARTIAL | Identity, org, session, `noun:verb`-behörighet, API Core, events, request-id | ABAC/OPA, entitlements, billing, feature flags, notifieringskärna, hemlighetsvalv, OTel, per-tjänst SLO |
+| 1. Platform Core | PARTIAL | Identity, org, session, `noun:verb`-behörighet, API Core, events, request-id, `org_ref` + RLS när `app.org_ref` är satt, tunn SMS-kanal (`src/lib/platform/sms.ts`) för Ekonomi-sälj | ABAC/OPA, entitlements, billing, feature flags, notifieringskärna, hemlighetsvalv, OTel, per-tjänst SLO, sandbox-tenant |
 | 2. Universal Integration | PARTIAL | REST + MCP mot samma `src/lib/{produkt}`. Revolut OAuth. | OpenAPI, webhooks, SDK, service accounts, OAuth-appar för tredje part |
 | 3. Developer Platform | PARTIAL | `/documentation`, MCP-docs, MCP-explorer | Sandbox, Try-it, recipes, changelog-data, status, request replay |
 | 4. App / Agent | PARTIAL | MCP + klientinstruktioner i docs | ChatGPT Apps, Apps SDK-UI, produktappar |
@@ -173,7 +171,7 @@ Publika sidor i dag: `/`, `/systems`, `/systems/{slug}`,
 `/why`, `/company`.
 Sitemap: `src/app/sitemap.ts` (saknade tidigare MCP-URL:er).
 Robots: tillåt `/`, blockera `/kansli`, `/api/`, `/idp/`.
-Locale: `html lang="en"`. Inga `/en/` `/sv/` `/de/`.
+Locale: `html lang="sv"`. Inga `/en/` `/sv/` `/de/`.
 Ingen hreflang. Canonical är implicit via `metadataBase`.
 
 | Produkt | Kärnentiteter | Problemkluster | Roller | Bransch | Flöden | Integrationer | Språk | Befintliga sidor | Saknade sidor (målbild) | Teknisk SEO | Länkar | Kvalitetslucka |
@@ -201,7 +199,7 @@ Skapa inte ALVA “guided diagnostics” förrän motorn är inkopplad.
 - ingen hreflang, inga locale-URL:er
 - sitemap saknade MCP-dokumentation (rättas i samma ändring)
 - ingen structured data-generator
-- ingen `/llms.txt` (medvetet inte Google-hack; saknas för AI-klienter)
+- `/llms.txt` finns som ärlig maskintext, inte som sökhack
 - ingen knowledge-, tools-, comparisons-yta
 - `/company` har bolagsnamn och städer, inte org.nr, DPA, privacy, terms
 - statusyta är `planned` i `platform.ts`
@@ -256,7 +254,7 @@ MCP-health och `server/discover` är inte samma sak som
 | HTTP-status | PARTIAL | inte syntetiskt bevakat |
 | Prestanda | MISSING | ingen Lighthouse-gate |
 | Mobil | PARTIAL | layout finns, ingen bevakad svit |
-| Locale | MISSING | bara `en` i `html` |
+| Locale | PARTIAL | `html lang="sv"`. Inga locale-URL:er |
 
 ---
 
@@ -270,7 +268,8 @@ MCP-health och `server/discover` är inte samma sak som
 | Swish | planned | copy, ingen connector |
 | Fortnox | planned | nämns som problem, ingen connector |
 | Visma | planned | samma |
-| 46elks / Resend / Mapbox | secrets namngivna | `docs/INTEGRATIONS.md` — kärna inte byggd |
+| 46elks | PARTIAL | Tunn kanal `src/lib/platform/sms.ts`. Ekonomi-sälj-SMS går där. Inte en Notifications Core. |
+| Resend / Mapbox | secrets namngivna | `docs/INTEGRATIONS.md` — kärna inte byggd |
 | Apollo.io | planned | BRITT-connector namngiven, inte driftad |
 | ChatGPT Apps | missing | — |
 | Claude / Cursor / Codex som *app* | missing | MCP kan användas, ingen paketering |

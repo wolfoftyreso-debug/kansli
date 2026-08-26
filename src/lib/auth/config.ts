@@ -1,5 +1,5 @@
 import { authPublicUrls } from "./origin.ts";
-import { resolveClientSecret, resolveSessionSecret } from "./secrets.ts";
+import { isHardenedRuntime, resolveClientSecret, resolveSessionSecret } from "./secrets.ts";
 
 const urls = authPublicUrls();
 
@@ -15,8 +15,9 @@ export const authConfig = {
   redirectUri: urls.redirectUri,
   baseUrl: urls.origin,
   sessionSecret: resolveSessionSecret(),
-  cookieSecure:
-    process.env.COOKIE_SECURE !== undefined
+  cookieSecure: isHardenedRuntime()
+    ? true
+    : process.env.COOKIE_SECURE !== undefined
       ? process.env.COOKIE_SECURE === "true"
       : urls.origin.startsWith("https://"),
 } as const;

@@ -36,9 +36,11 @@ Detta är det enda som inte kan göras från kod (kräver dashboard-åtgärd):
    `DATABASE_URL` (och `POSTGRES_URL`) som miljövariabler.
 2. Kör schema/bootstrap **en gång** (se avsnitt 3).
 
-Utan `DATABASE_URL` faller `/idp` tillbaka på en in-memory-store per instans —
-det räcker för `pnpm dev` (en process) men **inte** för serverless på Vercel
-(flera instanser delar inte minne). Postgres krävs alltså i drift.
+Utan `DATABASE_URL` faller `/idp` tillbaka på en in-memory-store **bara utanför
+produktion**. Preview och `pnpm dev` får minneslagret. `VERCEL_ENV=production`
+eller `APP_ENV=prod|production` vägrar starta utan Postgres, utan hemligheter
+på minst 32 tecken, med `PIXDRIFT_SEED_DEMO=true` eller med `COOKIE_SECURE=false`.
+`NODE_ENV=production` räknas inte som produktion (Vercel preview sätter den).
 
 ## 2. Miljövariabler (Production, projektet `kansli`)
 
@@ -60,8 +62,9 @@ CLIENT_SECRET=<KANSLI_CLIENT_SECRET>        # måste vara SAMMA som PIXDRIFT_CLI
 REDIRECT_URIS=https://<host>/api/auth/callback
 POST_LOGOUT_URIS=https://<host>/
 SESSION_SECRET=<SESSION_SECRET, 32+ tecken>
-APP_ENV=prod                                # fail-closed: kräver starkt SESSION_SECRET
+APP_ENV=prod                                # fail-closed tillsammans med VERCEL_ENV=production
 # DATABASE_URL sätts automatiskt av Vercel Postgres-integrationen
+# Sätt inte PIXDRIFT_SEED_DEMO=true i Production — processen vägrar starta.
 ```
 
 Andra moduler (ALVA, RITA, TORA, BRITT, IRMA) registreras via egna
@@ -79,6 +82,10 @@ Schemat/nyckeln/klientregistret skapas av en **owner**-roll. Enklast:
   kör som app-rollen (`DATABASE_URL`).
 - Alternativt kör migreringen separat som owner och registrera klienter med
   `pnpm onboard -- --id … --redirect … --audience …`.
+
+**Kvitto 2026-08-25:** produkt-scheman (kansli, ekonomi, tora, rita, britt,
+irma, tyra, alva) kördes mot Neon. `PIXDRIFT_SEED_DEMO` togs bort från
+Production. `CRON_SECRET` sattes. TYRA-påminnelser läggs ändå bara i kö.
 
 ## 4. Boring-AWS-baslinje (långsiktigt mål)
 
@@ -99,11 +106,34 @@ Lokal + CI-övning: `pnpm db:restore-drill` (`scripts/restore-drill.sh`) dumpar
 på produktion är leverantörens väg — den är inte övad från den här repot förrän
 en person kör restore i Neon-konsolen och antecknar resultatet här.
 
+## 4b. Datalagring och flera verkstäder
+
+En Postgres (Neon). Inget Redis, ingen andra databas. Produkter äger egna
+scheman: `platform`, `kansli`, `ekonomi`, `tora`, `rita`, `britt`, `irma`,
+`tyra`, `alva`. Identity ligger i `public` och är plattformsglobal (inloggning
+måste läsa över orgar).
+
+Kundrader har `org_ref` (`pixdrift:org:<id>`). Undantag: `ekonomi.accounts`
+(gemensam kontoplan), `kansli.intakes` (husets CRM, `house_org_ref`),
+`schema_migrations`.
+
+Runtime är `pixdrift_app` (`DATABASE_URL`). Owner (`PIXDRIFT_DB_OWNER_URL`)
+äger tabellerna och kör migrering. App-rollen äger inget.
+
+Isolation: SQL filtrerar `org_ref`. Request-vägen sätter dessutom
+`app.org_ref` (`bindOrgPool` / `tryRuntime(session.org.ref)`). RLS på
+kundtabeller följer den inställningen. Tom inställning (cron, gästlänk med
+token, hus-intakes) lämnar RLS öppen så token och köer fortsätter fungera.
+Bevis: `src/lib/platform/tenancy.test.ts`.
+
+Sätt inte `DATABASE_URL` till owner-rollen. Då slår RLS inte.
+
 ## 5. Verifieringschecklista (efter Postgres + env)
 
 | Kontroll | URL/kommando | Förväntat |
 | --- | --- | --- |
-| kansli live | `https://<host>/` | Inloggningsgrind renderas |
+| kansli live | `https://<host>/` | Systemkatalog + sidospår |
+| hälsa | `https://<host>/api/platform/health` | `{"ok":true,"database":"up"}` i prod |
 | IdP hälsa | `https://<host>/idp/halsa` | `{"status":"ok","lage":"drift"}` |
 | OIDC discovery | `https://<host>/idp/.well-known/openid-configuration` | `issuer` = `https://<host>/idp` |
 | JWKS | `https://<host>/idp/jwks.json` | ES256-nyckel, stabil `kid` (persisterad i Postgres) |

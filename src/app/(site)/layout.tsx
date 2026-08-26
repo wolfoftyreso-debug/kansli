@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
-import { Header } from "@/components/site/Header";
-import { Footer } from "@/components/site/Footer";
+import { Facade } from "@/components/app/Facade";
+import { readSession } from "@/lib/auth/session";
+import { facadeRuntimeMark } from "@/lib/platform/facade";
 import { brand } from "@/lib/pixdrift/brand";
 
 const organizationLd = {
@@ -20,7 +21,8 @@ const organizationLd = {
   })),
 };
 
-export default function SiteLayout({ children }: { children: ReactNode }) {
+export default async function SiteLayout({ children }: { children: ReactNode }) {
+  const session = await readSession();
   return (
     <>
       <script
@@ -31,13 +33,11 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:border focus:border-line-strong focus:bg-surface focus:px-4 focus:py-2 focus:text-sm"
       >
-        Skip to content
+        Hoppa till innehållet
       </a>
-      <Header />
-      <main id="main" className="flex-1">
+      <Facade session={session} runtime={facadeRuntimeMark()}>
         {children}
-      </main>
-      <Footer />
+      </Facade>
     </>
   );
 }

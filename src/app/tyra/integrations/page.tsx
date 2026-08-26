@@ -15,7 +15,7 @@ export const metadata = {
 
 export default async function TyraIntegrationsPage() {
   const session = await readSession();
-  const runtime = tryRuntime();
+  const runtime = tryRuntime(session?.org?.ref);
   const orgRef = session?.org?.ref;
   const accounts = orgRef && runtime ? await listSupplierAccounts(runtime.pool, orgRef) : [];
   const outbox = orgRef && runtime ? await listOutbox(runtime.pool, orgRef) : [];

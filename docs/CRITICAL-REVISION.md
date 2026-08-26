@@ -69,7 +69,7 @@ namn på en länk, inte en identifierad person.
 **Byggt:** återutfärda token; dagar kvar på listan; JSON-export av underlaget;
 DB-trigger mot ändring av signerat innehåll.
 
-**Inte byggt:** BankID, OCR, PDF, e-post, Document OS.
+**Inte byggt:** kvalificerad e-signatur, OCR, PDF, e-post, Document OS.
 
 IRMA: **52 → 60**. Handshake är hårdare. Affären “varje avtal” är inte här.
 
@@ -141,7 +141,8 @@ Kansli: **72 → 76**. Identity: **78 → 82**.
 5. **TORA-marknaden är demo.** Bolagsprofilen är er. TED/HILMA saknas.
 6. **Permissions täcker skrivvägarna.** Inte varje GET. Inte Kansli-tasks.
 7. **Inga HTTP-tester mot `route.ts`.** Domäntester är täta. Ytan är inte
-   bevisad. Events-läckan hade fångats av en enda org-isolationstest.
+   bevisad. Två-org-isolation för faktura/uppgift/ärende ligger i
+   `src/lib/platform/tenancy.test.ts`. HTTP-ytan är fortfarande obevisad.
 8. **Backup är CI-verklig och prod-falsk** tills någon skriver en daterad
    Neon-restore i `DEPLOYMENT.md`.
 9. **Throttle är per instans.** Vercel Fluid gör in-memory till teater.
@@ -158,7 +159,7 @@ Kansli: **72 → 76**. Identity: **78 → 82**.
 | --- | --- |
 | Fullständig ALVA-diagnos | Motorn finns inte i det här repot |
 | TYRA live-pris / SMS SENT | Ingen adapter, konstitution art. 8–9 |
-| IRMA BankID / Document OS | Doktrin + IRMA-arkitektur |
+| IRMA e-sign / Document OS | Doktrin + IRMA-arkitektur |
 | RITA-garanti / fejkad motor | Skattjakt-disclaimer + resolve-engine |
 | BRITT Fortnox | FAMILY.md, art. 8 |
 | TORA live TED/HILMA | Ingen connector |
@@ -176,7 +177,7 @@ först. De rullar ut det som är sant.
 **Kan rullas ut till en första *pilotkund* nu, med kontraktet skrivet:**
 
 - Identity + Kansli: inloggning och nav
-- IRMA L0–L1: handslag, inte e-sign / inte BankID
+- IRMA L0–L1: handslag, inte kvalificerad e-signatur
 - TYRA: ärende, kundkort, hjulset, verifierad inspektion, offertutkast. Inte SMS. Inte live-pris
 - TORA: er bolagsprofil mot demonstrationsmarknad. Inte TED/HILMA
 - BRITT: inbox och klarmarkering

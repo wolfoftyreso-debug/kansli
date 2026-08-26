@@ -1,5 +1,6 @@
 import { ApiError, requireOrg, requirePermission } from "@pixdrift/api-core";
 import { handleApi, json } from "@/lib/platform/http";
+import { orgNumberError } from "@/lib/platform/org-number";
 import { listAnalyses, requestAnalysis } from "@/lib/rita/analyses";
 
 export async function GET() {
@@ -20,6 +21,8 @@ export async function POST(request: Request) {
     if (!body?.companyName?.trim() || !body.orgNumber?.trim()) {
       throw new ApiError("invalid_request", "companyName och orgNumber krävs.");
     }
+    const numberIssue = orgNumberError(body.orgNumber);
+    if (numberIssue) throw new ApiError("invalid_request", numberIssue);
     const analysis = await requestAnalysis({
       pool,
       events,
