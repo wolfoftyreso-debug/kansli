@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CompanyAddress } from "@/components/company-address";
+import { FooterGrain } from "@/components/footer-grain";
 import { legalNav, nav, site } from "@/lib/site";
 
 export function SiteFooter() {
@@ -36,8 +37,11 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-line">
-        <div className="mx-auto max-w-[1240px] px-6 py-6 text-[13px] text-subtle site:px-10">
-          © {site.copyrightYear} {site.name}
+        <div className="mx-auto max-w-[1240px] overflow-hidden px-6 py-6 site:px-10">
+          <div className="text-[13px] text-subtle">
+            © {site.copyrightYear} {site.name}
+          </div>
+          <FooterGrain />
         </div>
       </div>
     </footer>
