@@ -2,7 +2,7 @@ export const CONTACT_LIMITS = {
   name: { min: 2, max: 120 },
   organisation: { min: 2, max: 160 },
   email: { max: 254 },
-  process: { min: 8, max: 4000 },
+  brief: { min: 8, max: 4000 },
 } as const;
 
 const EMAIL_PATTERN = /^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$/i;
@@ -12,7 +12,7 @@ export type ContactFields = {
   name: unknown;
   organisation: unknown;
   email: unknown;
-  process: unknown;
+  brief: unknown;
   website?: unknown;
 };
 
@@ -20,7 +20,7 @@ export type ContactValues = {
   name: string;
   organisation: string;
   email: string;
-  process: string;
+  brief: string;
 };
 
 export type FieldErrors = Partial<Record<keyof ContactValues, string>>;
@@ -53,7 +53,7 @@ export function parseContactFields(input: ContactFields): ParsedContact {
   const values: ContactValues = {
     name: asString(input.name).trim(),
     organisation: asString(input.organisation).trim(),
-    process: asString(input.process).trim(),
+    brief: asString(input.brief).trim(),
     email: asString(input.email).trim(),
   };
 
@@ -63,7 +63,7 @@ export function parseContactFields(input: ContactFields): ParsedContact {
 
   const name = readField(input.name, CONTACT_LIMITS.name.max);
   const organisation = readField(input.organisation, CONTACT_LIMITS.organisation.max);
-  const process = readField(input.process, CONTACT_LIMITS.process.max);
+  const brief = readField(input.brief, CONTACT_LIMITS.brief.max);
   const email = readEmail(input.email);
 
   const errors: FieldErrors = {};
@@ -76,8 +76,8 @@ export function parseContactFields(input: ContactFields): ParsedContact {
   if (!email) {
     errors.email = "Please add a valid work email.";
   }
-  if (!process || process.length < CONTACT_LIMITS.process.min) {
-    errors.process = "Please describe where the work sits between your systems.";
+  if (!brief || brief.length < CONTACT_LIMITS.brief.min) {
+    errors.brief = "Please describe what you need, in a sentence or two.";
   }
 
   if (Object.keys(errors).length > 0) {
@@ -89,7 +89,7 @@ export function parseContactFields(input: ContactFields): ParsedContact {
     };
   }
 
-  if (!name || !organisation || !email || !process) {
+  if (!name || !organisation || !email || !brief) {
     return {
       ok: false,
       error: "Please check the highlighted fields.",
@@ -100,7 +100,7 @@ export function parseContactFields(input: ContactFields): ParsedContact {
   return {
     ok: true,
     spam: false,
-    data: { name, organisation, email, process },
+    data: { name, organisation, email, brief },
   };
 }
 

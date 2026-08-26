@@ -6,7 +6,7 @@ const valid = {
   name: "Alex Founder",
   organisation: "Northwind",
   email: "alex@northwind.example",
-  process: "Weekly invoice matching still happens in a spreadsheet.",
+  brief: "Weekly invoice matching still happens in a spreadsheet.",
 };
 
 describe("parseContactFields", () => {
@@ -24,7 +24,7 @@ describe("parseContactFields", () => {
       ...valid,
       name: "Åke Öberg",
       organisation: "Göteborgs Åkeri",
-      process: "Manuell granskning 😀 في ملمو. Enough text.",
+      brief: "Manuell granskning 😀 في ملمو. Enough text.",
     });
     assert.equal(result.ok, true);
     if (result.ok && !result.spam) {
@@ -32,8 +32,8 @@ describe("parseContactFields", () => {
     }
   });
 
-  it("rejects a missing process description", () => {
-    const result = parseContactFields({ ...valid, process: "   " });
+  it("rejects a missing brief", () => {
+    const result = parseContactFields({ ...valid, brief: "   " });
     assert.equal(result.ok, false);
   });
 
@@ -42,7 +42,7 @@ describe("parseContactFields", () => {
       name: 12,
       organisation: ["Northwind"],
       email: null,
-      process: { text: "nope" },
+      brief: { text: "nope" },
     });
     assert.equal(result.ok, false);
   });
@@ -78,10 +78,10 @@ describe("parseContactFields", () => {
 
   it("keeps markup as text rather than executing it", () => {
     const payload = `<script>alert(1)</script> and weekly invoice matching.`;
-    const result = parseContactFields({ ...valid, process: payload });
+    const result = parseContactFields({ ...valid, brief: payload });
     assert.equal(result.ok, true);
     if (result.ok && !result.spam) {
-      assert.equal(result.data.process, payload);
+      assert.equal(result.data.brief, payload);
     }
   });
 

@@ -42,16 +42,16 @@ function enquiryHtml(fields: ContactValues) {
   const name = escapeHtml(fields.name);
   const organisation = escapeHtml(fields.organisation);
   const email = escapeHtml(fields.email);
-  const process = escapeHtml(fields.process).replaceAll("\n", "<br />");
+  const brief = escapeHtml(fields.brief).replaceAll("\n", "<br />");
 
   return `<div style="background:${brand.wash};padding:32px 16px">
   <div style="max-width:640px;margin:0 auto;background:${brand.white};border:1px solid ${brand.line};padding:32px">
     <p style="margin:0 0 8px;font-family:ui-monospace,monospace;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:${brand.teal}">Landvex enquiry</p>
-    <h1 style="margin:0 0 24px;font-family:Helvetica,Arial,sans-serif;font-size:24px;font-weight:600;color:${brand.navy}">New technical review request</h1>
+    <h1 style="margin:0 0 24px;font-family:Helvetica,Arial,sans-serif;font-size:24px;font-weight:600;color:${brand.navy}">New enquiry</h1>
     <p style="font-family:Helvetica,Arial,sans-serif;font-size:15px;color:${brand.navy}"><strong>Name</strong><br />${name}</p>
     <p style="font-family:Helvetica,Arial,sans-serif;font-size:15px;color:${brand.navy}"><strong>Organisation</strong><br />${organisation}</p>
     <p style="font-family:Helvetica,Arial,sans-serif;font-size:15px;color:${brand.navy}"><strong>Email</strong><br />${email}</p>
-    <p style="font-family:Helvetica,Arial,sans-serif;font-size:15px;color:${brand.navy}"><strong>Process</strong><br />${process}</p>
+    <p style="font-family:Helvetica,Arial,sans-serif;font-size:15px;color:${brand.navy}"><strong>What they need</strong><br />${brief}</p>
   </div>
 </div>`;
 }
@@ -115,7 +115,7 @@ export async function handleEnquiry(
     return { status: "error", message: PUBLIC_FAILURE, values: parsed.data };
   }
 
-  const { name, organisation, email, process } = parsed.data;
+  const { name, organisation, email, brief } = parsed.data;
   const subjectOrg = oneLine(organisation, 80);
 
   try {
@@ -124,13 +124,13 @@ export async function handleEnquiry(
       to: ctx.env.to,
       replyTo: email,
       subject: `Enquiry from ${subjectOrg}`,
-      html: enquiryHtml({ name, organisation, email, process }),
+      html: enquiryHtml({ name, organisation, email, brief }),
       text: [
         `Name: ${name}`,
         `Organisation: ${organisation}`,
         `Email: ${email}`,
         "",
-        process,
+        brief,
       ].join("\n"),
     });
 

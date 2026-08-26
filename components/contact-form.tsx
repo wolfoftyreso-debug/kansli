@@ -19,11 +19,15 @@ function FieldError({ id, message }: { id: string; message?: string }) {
 
 function Field({
   label,
+  hint,
+  hintId,
   errorId,
   error,
   children,
 }: {
   label: string;
+  hint?: string;
+  hintId?: string;
   errorId: string;
   error?: string;
   children: ReactNode;
@@ -33,6 +37,11 @@ function Field({
       <span className="text-[13px] font-semibold tracking-[0.02em]">
         {label} <span className="sr-only">(required)</span>
       </span>
+      {hint ? (
+        <span id={hintId} className="text-[13px] leading-[1.55] text-subtle">
+          {hint}
+        </span>
+      ) : null}
       {children}
       <FieldError id={errorId} message={error} />
     </label>
@@ -45,7 +54,7 @@ export function ContactForm() {
   if (state.status === "success") {
     return (
       <div className="border border-line bg-white p-10" role="status" aria-live="polite">
-        <h2 className="mt-0 mb-3 text-[21px] font-semibold">Enquiry sent.</h2>
+        <h2 className="title-md mt-0 mb-3">Enquiry sent.</h2>
         <p className="m-0 text-[15px] leading-[1.65] text-muted">{state.message}</p>
       </div>
     );
@@ -101,20 +110,24 @@ export function ContactForm() {
           />
         </Field>
         <Field
-          label="Where the work sits between systems"
-          errorId="process-error"
-          error={state.errors?.process}
+          label="What you need"
+          hint="A system to license, or a gap between the platforms you run. How the work happens today is the useful part."
+          hintId="brief-hint"
+          errorId="brief-error"
+          error={state.errors?.brief}
         >
           <textarea
             className="input min-h-[120px] resize-y"
-            name="process"
+            name="brief"
             rows={4}
             required
-            minLength={CONTACT_LIMITS.process.min}
-            maxLength={CONTACT_LIMITS.process.max}
-            defaultValue={state.values?.process}
-            aria-invalid={state.errors?.process ? true : undefined}
-            aria-describedby={state.errors?.process ? "process-error" : undefined}
+            minLength={CONTACT_LIMITS.brief.min}
+            maxLength={CONTACT_LIMITS.brief.max}
+            defaultValue={state.values?.brief}
+            aria-invalid={state.errors?.brief ? true : undefined}
+            aria-describedby={
+              state.errors?.brief ? "brief-hint brief-error" : "brief-hint"
+            }
           />
         </Field>
         <div className="absolute -left-[9999px] h-px w-px overflow-hidden" aria-hidden="true">

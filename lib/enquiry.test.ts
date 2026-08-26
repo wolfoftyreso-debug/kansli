@@ -8,7 +8,7 @@ function fields(id: string) {
     name: "Alex Founder",
     organisation: "Northwind",
     email: `alex+${id}@northwind.example`,
-    process: "Weekly invoice matching still happens in a spreadsheet.",
+    brief: "Weekly invoice matching still happens in a spreadsheet.",
   };
 }
 
@@ -91,7 +91,7 @@ describe("handleEnquiry", () => {
     await handleEnquiry(
       {
         ...fields("html"),
-        process: `<img src=x onerror="alert(1)"> invoice matching work.`,
+        brief: `<img src=x onerror="alert(1)"> invoice matching work.`,
       },
       { mailer, env, clientKey: `html-${Date.now()}` },
     );

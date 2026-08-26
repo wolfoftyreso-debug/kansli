@@ -46,7 +46,7 @@ export async function sendEnquiry(
       name: formData.get("name"),
       organisation: formData.get("organisation"),
       email: formData.get("email"),
-      process: formData.get("process"),
+      brief: formData.get("brief"),
       website: formData.get("website"),
     },
     {
