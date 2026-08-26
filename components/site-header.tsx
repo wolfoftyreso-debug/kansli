@@ -8,11 +8,11 @@ export function SiteHeader() {
       <div className="wrap flex h-[4.75rem] items-center justify-between gap-8">
         <Link
           href="/"
-          className="flex items-baseline gap-3 text-ink hover:text-ink"
+          className="flex items-center gap-3 text-ink hover:text-ink"
           aria-label="Landvex home"
         >
           <span className="text-[22px] font-bold tracking-[-0.02em]">Landvex</span>
-          <span className="hidden h-[18px] w-px bg-edge min-[520px]:inline-block" />
+          <span className="ml-[10mm] hidden h-[18px] w-px bg-edge min-[520px]:inline-block" />
           <span className="eyebrow hidden text-subtle min-[520px]:inline">
             Stockholm · Houston
           </span>
