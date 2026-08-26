@@ -34,10 +34,20 @@ export type LauncherTile = {
   category: string;
   description: string;
   href: string;
-  mark: string;
 };
 
-const BLOCKED_NAMES = ["nora", "mova", "saga", "nova", "carina", "maja", "mona", "lena", "academy"];
+const BLOCKED_NAMES = [
+  "nora",
+  "mova",
+  "saga",
+  "nova",
+  "carina",
+  "maja",
+  "mona",
+  "lena",
+  "academy",
+  "bea",
+];
 
 export function launcherTiles(locale: Locale = DEFAULT_LOCALE): LauncherTile[] {
   return productModules().map((module) => {
@@ -49,7 +59,6 @@ export function launcherTiles(locale: Locale = DEFAULT_LOCALE): LauncherTile[] {
       category: t(locale, CATEGORY[id]),
       description: t(locale, MISSION[id]) || family?.mission || module.purpose,
       href: appPath(module.id) ?? module.basePath,
-      mark: module.name.slice(0, 1),
     };
   });
 }

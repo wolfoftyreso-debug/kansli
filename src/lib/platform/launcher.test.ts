@@ -10,7 +10,6 @@ describe("launcher", () => {
     expect(ids).toEqual(SYSTEM_IDS.filter((id) => id !== "identity"));
     for (const tile of tiles) {
       expect(tile.href.startsWith("/")).toBe(true);
-      expect(tile.mark).toHaveLength(1);
       expect(tile.category.length).toBeGreaterThan(2);
     }
   });

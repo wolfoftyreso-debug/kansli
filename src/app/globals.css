@@ -120,6 +120,28 @@ body {
   text-decoration: none;
 }
 
+@keyframes pd-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.pd-launch-mark {
+  width: 64px;
+  height: 42px;
+  position: relative;
+  filter: drop-shadow(0 2px 3px rgba(16, 19, 23, 0.22));
+}
+
+.pd-launch-float {
+  animation: pd-float 5s ease-in-out infinite;
+  transform-origin: center;
+}
+
 .pd-launch-icon {
   width: 92px;
   height: 92px;
@@ -275,6 +297,10 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
+  .pd-launch-float {
+    animation: none;
+  }
+
   .pd-launch-tile:hover .pd-launch-icon {
     transform: none;
   }

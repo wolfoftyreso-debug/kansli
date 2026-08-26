@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body { margin: 0; background: #fbfbf9; color: #101317; font-family: 'Geist', ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+a { color: #101317; text-decoration: underline; text-decoration-color: #cfcec8; text-underline-offset: 4px; }
+a:hover { text-decoration-color: #101317; }
+</style>
+<script>
+(function () {
+  'use strict';
+  var T = { ink: ['#5a6068', '#33383f', '#20242a'], accent: ['#8fa7c4', '#5f7ea3', '#46607f'], green: ['#8fac97', '#63836d', '#4a6353'], lblue: ['#c3d2e0', '#a4bacd', '#7f97ac'], red: ['#b98d92', '#96626a', '#71454c'], gray: ['#c2c6cb', '#a5aab0', '#7d838a'] };
+  var st = { mA: 'vol', foc: 11, mB: 'depth', mC: 'disc', mE: 'field', mF: 'wf', pD: '12m' };
+  function poly(pts, fill) { return '<polygon points="' + pts + '" fill="' + fill + '"/>'; }
+  function box(x, yb, w, h, tr, dx, dy, noTop) {
+    dx = dx || 14; dy = dy || 7;
+    var s = '';
+    if (!noTop) s += poly(x + ',' + (yb - h) + ' ' + (x + w) + ',' + (yb - h) + ' ' + (x + w + dx) + ',' + (yb - h - dy) + ' ' + (x + dx) + ',' + (yb - h - dy), tr[0]);
+    s += poly(x + ',' + (yb - h) + ' ' + (x + w) + ',' + (yb - h) + ' ' + (x + w) + ',' + yb + ' ' + x + ',' + yb, tr[1]);
+    s += poly((x + w) + ',' + (yb - h) + ' ' + (x + w + dx) + ',' + (yb - h - dy) + ' ' + (x + w + dx) + ',' + (yb - dy) + ' ' + (x + w) + ',' + yb, tr[2]);
+    return s;
+  }
+  function txt(x, y, label, fill, anchor) { return '<text x="' + x + '" y="' + y + '" text-anchor="' + (anchor || 'middle') + '" font-family="Geist Mono, monospace" font-size="10" fill="' + fill + '">' + label + '</text>'; }
+  function ln(x1, y1, x2, y2, stroke, dash) { return '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="' + stroke + '" stroke-width="1"' + (dash ? ' stroke-dasharray="' + dash + '"' : '') + '/>'; }
+  function pth(d, fill, stroke, sw) { return '<path d="' + d + '" fill="' + fill + '"' + (stroke ? ' stroke="' + stroke + '" stroke-width="' + sw + '"' : '') + '/>'; }
+  function fmt(n) { return (n * 1000).toLocaleString('sv-SE') + ' kr'; }
+
+  var A = [122, 138, 131, 150, 164, 158, 172, 185, 178, 196, 208, 224];
+  var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'];
+  function renderA() {
+    var baseA = 252, x0 = 56, step = 56, w = 34, s = '';
+    var P = A.map(function (v, i) { return [x0 + i * step + w / 2, baseA - v / 240 * 175]; });
+    s += ln(40, baseA, 740, baseA, '#cfcec8');
+    if (st.mA === 'vol') {
+      A.forEach(function (v, i) { s += box(x0 + i * step, baseA, w, v / 240 * 175, i === st.foc ? T.accent : T.ink); });
+      s += txt(P[st.foc][0] + 7, P[st.foc][1] - 16, fmt(A[st.foc]), '#5f7ea3');
+    } else if (st.mA === 'band') {
+      var dx = 20, dy = 10;
+      var front = P.map(function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); });
+      var back = P.map(function (p) { return (p[0] + dx).toFixed(1) + ',' + (p[1] - dy).toFixed(1); }).reverse();
+      s += pth('M' + P.map(function (p) { return p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' L') + ' L' + P[11][0] + ' ' + baseA + ' L' + P[0][0] + ' ' + baseA + ' Z', T.accent[1]);
+      s += poly(front.concat(back).join(' '), T.accent[0]);
+      s += poly(P[11][0] + ',' + P[11][1].toFixed(1) + ' ' + (P[11][0] + dx) + ',' + (P[11][1] - dy).toFixed(1) + ' ' + (P[11][0] + dx) + ',' + (baseA - dy) + ' ' + P[11][0] + ',' + baseA, T.accent[2]);
+      s += '<circle cx="' + P[st.foc][0] + '" cy="' + P[st.foc][1].toFixed(1) + '" r="4" fill="#46607f"/>';
+      s += txt(P[st.foc][0], P[st.foc][1] - 16, fmt(A[st.foc]), '#46607f');
+    } else {
+      [0, 60, 120, 180, 240].forEach(function (v) {
+        var y = baseA - v / 240 * 175;
+        s += ln(48, y.toFixed(1), 740, y.toFixed(1), '#e6e5e0');
+        s += txt(42, (y + 3).toFixed(1), v === 0 ? '0' : v + ' tkr', '#9aa0a7', 'end');
+      });
+      s += pth('M' + P.map(function (p) { return p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' L') + ' L' + P[11][0] + ' ' + baseA + ' L' + P[0][0] + ' ' + baseA + ' Z', '#eef2f6');
+      s += pth('M' + P.map(function (p) { return p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' L'), 'none', '#5f7ea3', 2);
+      s += '<circle cx="' + P[st.foc][0] + '" cy="' + P[st.foc][1].toFixed(1) + '" r="4" fill="#5f7ea3"/>';
+      s += txt(P[st.foc][0], P[st.foc][1] - 16, fmt(A[st.foc]), '#46607f');
+    }
+    A.forEach(function (v, i) { s += txt(P[i][0] + (st.mA === 'vol' ? 7 : 0), 280, MON[i], i === st.foc ? '#5f7ea3' : '#9aa0a7'); });
+    A.forEach(function (v, i) { s += '<rect x="' + (x0 + i * step - 8) + '" y="20" width="' + step + '" height="260" fill="transparent" style="cursor:pointer" data-i="' + i + '"/>'; });
+    document.getElementById('svgA').innerHTML = s;
+    document.getElementById('focValue').textContent = fmt(A[st.foc]);
+    document.getElementById('focMonth').textContent = MON[st.foc] + ' 2026 · click any month';
+  }
+
+  var SB = [
+    { name: 'TYRA', tr: T.ink, v: [420, 460, 510, 540] },
+    { name: 'MOVA', tr: T.accent, v: [380, 410, 455, 490] },
+    { name: 'SAGA', tr: T.lblue, v: [120, 180, 240, 310] }
+  ];
+  function renderB() {
+    var baseB = 252, x0 = 100, qstep = 156, w = 52, s = '';
+    if (st.mB === 'depth') {
+      s += ln(60, baseB, 740, baseB, '#cfcec8');
+      for (var q = 0; q < 4; q++) {
+        (function (qq) {
+          SB.forEach(function (r, si) { s += box(x0 + qq * qstep + si * 42, baseB, 32, r.v[qq] / 600 * 195, r.tr, 10, 5); });
+        })(q);
+        s += txt(x0 + q * qstep + 60, 280, 'Q' + (q + 1), '#9aa0a7');
+      }
+    } else if (st.mB === 'tower') {
+      s += ln(60, baseB, 740, baseB, '#cfcec8');
+      for (var q2 = 0; q2 < 4; q2++) {
+        var acc = 0;
+        SB.forEach(function (r, si) {
+          var h0 = acc / 1400 * 205, h1 = (acc + r.v[q2]) / 1400 * 205;
+          s += box(x0 + q2 * qstep + 20, baseB - h0, w, h1 - h0, r.tr, 14, 7, si < 2);
+          acc += r.v[q2];
+        });
+        s += txt(x0 + q2 * qstep + 20 + w / 2, 280, 'Q' + (q2 + 1), '#9aa0a7');
+        s += txt(x0 + q2 * qstep + 20 + w / 2 + 7, (baseB - acc / 1400 * 205 - 14).toFixed(0), acc + ' tkr', '#363b42');
+      }
+    } else {
+      [0, 150, 300, 450, 600].forEach(function (v) {
+        var y = baseB - v / 600 * 200;
+        s += ln(56, y.toFixed(1), 740, y.toFixed(1), '#e6e5e0');
+        s += txt(50, (y + 3).toFixed(1), v === 0 ? '0' : v + '', '#9aa0a7', 'end');
+      });
+      for (var q3 = 0; q3 < 4; q3++) {
+        (function (qq) {
+          SB.forEach(function (r, si) {
+            var h = r.v[qq] / 600 * 200, bw = 32, x = x0 + qq * qstep + si * (bw + 6);
+            s += poly(x + ',' + (baseB - h) + ' ' + (x + bw) + ',' + (baseB - h) + ' ' + (x + bw) + ',' + baseB + ' ' + x + ',' + baseB, r.tr[1]);
+          });
+        })(q3);
+        s += txt(x0 + q3 * qstep + 51, 280, 'Q' + (q3 + 1), '#9aa0a7');
+      }
+    }
+    document.getElementById('svgB').innerHTML = s;
+  }
+
+  var CD = [
+    { label: 'TYRA', v: 32, tr: T.ink },
+    { label: 'MOVA', v: 26, tr: T.accent },
+    { label: 'BRITT', v: 18, tr: T.lblue },
+    { label: 'SAGA', v: 14, tr: T.green },
+    { label: 'Övriga', v: 10, tr: T.gray }
+  ];
+  function renderC() {
+    var s = '';
+    if (st.mC === 'disc') {
+      document.getElementById('svgC').setAttribute('viewBox', '0 0 400 250');
+      var cx = 200, cy = 112, rx = 150, ry = 68, th = 30;
+      var a0 = -Math.PI / 2, walls = '', tops = '';
+      CD.forEach(function (sl) {
+        var a1 = a0 + sl.v / 100 * 2 * Math.PI, N = 16, samples = [];
+        for (var i = 0; i <= N; i++) samples.push(a0 + (a1 - a0) * i / N);
+        var pts = samples.map(function (a) { return [cx + rx * Math.cos(a), cy + ry * Math.sin(a)]; });
+        var front = [];
+        samples.forEach(function (a, i) { if (Math.sin(a) > -0.02) front.push(pts[i]); });
+        if (front.length > 1) {
+          walls += pth('M' + front.map(function (p) { return p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' L') + ' L' + front.slice().reverse().map(function (p) { return p[0].toFixed(1) + ' ' + (p[1] + th).toFixed(1); }).join(' L') + ' Z', sl.tr[2]);
+        }
+        tops += pth('M' + cx + ' ' + cy + ' L' + pts.map(function (p) { return p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' L') + ' Z', sl.tr[1]);
+        a0 = a1;
+      });
+      s = walls + tops;
+    } else {
+      document.getElementById('svgC').setAttribute('viewBox', '0 0 200 200');
+      var CIRC = 2 * Math.PI * 70, acc = 0;
+      CD.forEach(function (sl) {
+        var seg = sl.v / 100 * CIRC;
+        s += '<circle cx="100" cy="100" r="70" fill="none" stroke="' + sl.tr[1] + '" stroke-width="26" stroke-dasharray="' + (seg - 3).toFixed(1) + ' ' + (CIRC - seg + 3).toFixed(1) + '" stroke-dashoffset="' + (-acc).toFixed(1) + '" transform="rotate(-90 100 100)"/>';
+        acc += seg;
+      });
+      s += '<text x="100" y="96" text-anchor="middle" font-size="20" font-weight="600" fill="#101317" font-family="Geist, sans-serif">2,41 mkr</text>';
+      s += '<text x="100" y="114" text-anchor="middle" font-size="10" font-family="Geist Mono, monospace" fill="#9aa0a7">TOTAL · 2026</text>';
+    }
+    document.getElementById('svgC').innerHTML = s;
+  }
+
+  var days = ['Mån', 'Tis', 'Ons', 'Tor', 'Fre', 'Lör', 'Sön'];
+  function hv(d, sl) { return d < 5 ? (sl >= 4 && sl <= 8 ? 8 + ((d * 3 + sl) % 5) : 2 + ((d + sl) % 4)) : (sl >= 5 && sl <= 9 ? 4 + ((d + sl) % 3) : (d + sl) % 2); }
+  function renderE() {
+    var s = '';
+    if (st.mE === 'field') {
+      var triosE = [['#e8ecef', '#d5dae0', '#b9c0c8'], T.lblue, T.accent, T.ink];
+      for (var r = 6; r >= 0; r--) {
+        var yb = 268 - r * 22, xr = r * 16;
+        s += txt(40 + xr - 8, yb - 2, days[r], '#9aa0a7', 'end');
+        for (var c = 0; c < 12; c++) {
+          var v = hv(r, c);
+          s += box(48 + c * 48 + xr, yb, 30, 5 + v * 7.5, triosE[Math.min(3, Math.floor(v / 3.3))], 11, 6);
+        }
+      }
+      for (var c2 = 0; c2 < 12; c2++) s += txt(48 + c2 * 48 + 15, 292, (c2 * 2 < 10 ? '0' : '') + c2 * 2, '#9aa0a7');
+    } else {
+      var flat = ['#eef0f2', '#d5dee6', '#a4bacd', '#5f7ea3', '#33475c'];
+      for (var d = 0; d < 7; d++) {
+        s += txt(54, 30 + d * 34 + 15, days[d], '#9aa0a7', 'end');
+        for (var c3 = 0; c3 < 12; c3++) {
+          var v2 = hv(d, c3), x = 64 + c3 * 56, y = 30 + d * 34;
+          s += poly(x + ',' + y + ' ' + (x + 52) + ',' + y + ' ' + (x + 52) + ',' + (y + 30) + ' ' + x + ',' + (y + 30), flat[Math.min(4, Math.floor(v2 / 2.7))]);
+        }
+      }
+      for (var c4 = 0; c4 < 12; c4++) s += txt(64 + c4 * 56 + 26, 292, (c4 * 2 < 10 ? '0' : '') + c4 * 2, '#9aa0a7');
+    }
+    document.getElementById('svgE').innerHTML = s;
+  }
+
+  var wfDef = [
+    { l: 'Ingående', top: 180, tr: T.ink, val: '180' },
+    { l: 'Försäljning', top: 276, tr: T.green, val: '+96' },
+    { l: 'Kostnader', top: 276, tr: T.red, val: '−54' },
+    { l: 'Skatt', top: 222, tr: T.red, val: '−22' },
+    { l: 'Övrigt', top: 212, tr: T.green, val: '+12' },
+    { l: 'Utgående', top: 212, tr: T.accent, val: '212' }
+  ];
+  function renderF() {
+    var yW = function (v) { return 240 - v / 300 * 185; };
+    var x0 = 64, step = 114, w = 62, s = '';
+    s += ln(48, yW(0).toFixed(1), 744, yW(0).toFixed(1), '#cfcec8');
+    wfDef.forEach(function (b, i) {
+      s += txt(x0 + i * step + w / 2 + 7, 282, b.l, '#9aa0a7');
+      s += txt(x0 + i * step + w / 2 + 7, (yW(b.top) - 12).toFixed(1), b.val + ' tkr', b.tr[1]);
+    });
+    if (st.mF === 'wf') {
+      var steps = [
+        { old: 0, nw: 180, kind: 'base' },
+        { old: 180, nw: 276, kind: 'plus' },
+        { old: 276, nw: 222, kind: 'minus' },
+        { old: 222, nw: 200, kind: 'minus' },
+        { old: 200, nw: 212, kind: 'plus' },
+        { old: 212, nw: 212, kind: 'end' }
+      ];
+      steps.forEach(function (p, i) {
+        var x = x0 + i * step;
+        if (p.kind === 'base') { s += box(x, yW(0), w, yW(0) - yW(p.nw), T.ink); return; }
+        if (p.kind === 'end') { s += box(x, yW(0), w, yW(0) - yW(p.nw), T.accent); return; }
+        var lo = Math.min(p.old, p.nw);
+        s += box(x, yW(0), w, yW(0) - yW(lo), T.gray);
+        if (p.kind === 'plus') {
+          s += box(x, yW(lo), w, yW(lo) - yW(p.nw), T.green, 14, 7);
+        } else {
+          s += '<rect x="' + x + '" y="' + yW(p.old).toFixed(1) + '" width="' + w + '" height="' + (yW(p.nw) - yW(p.old)).toFixed(1) + '" fill="#96626a" fill-opacity="0.16" stroke="#96626a" stroke-dasharray="4 3"/>';
+        }
+      });
+      [180, 276, 222, 200, 212].forEach(function (v, i) { s += ln(x0 + i * step + w, yW(v).toFixed(1), x0 + (i + 1) * step, yW(v).toFixed(1), '#a5aab0', '4 3'); });
+      [180, 276, 222, 200, 212, 212].forEach(function (v, i) { s += txt(x0 + i * step + w / 2 + 7, yW(0) + 16, '= ' + v, '#7d838a'); });
+    } else {
+      var pts = [180, 276, 222, 200, 212, 212].map(function (v, i) { return [x0 + i * step + w / 2, yW(v)]; });
+      var dx = 20, dy = 10;
+      s += pth('M' + pts.map(function (p) { return p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' L') + ' L' + pts[5][0] + ' ' + yW(0) + ' L' + pts[0][0] + ' ' + yW(0) + ' Z', T.accent[1]);
+      s += poly(pts.map(function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).concat(pts.map(function (p) { return (p[0] + dx).toFixed(1) + ',' + (p[1] - dy).toFixed(1); }).reverse()).join(' '), T.accent[0]);
+    }
+    document.getElementById('svgF').innerHTML = s;
+  }
+
+  var KD = [
+    { label: 'SOLD', u: 'kr', d: [[5.2, 6.1, 5.8, 6.4, 6.0, 6.8, 7.1, 6.6, 7.4, 7.2, 7.8, 8.1], [38, 42, 40, 45, 47, 44, 49, 52, 50, 54, 56, 58], [122, 138, 131, 150, 164, 158, 172, 185, 178, 196, 208, 224]] },
+    { label: 'PAID', u: 'kr', d: [[4.8, 5.2, 5.5, 5.1, 5.9, 6.2, 5.8, 6.5, 6.3, 6.9, 7.2, 7.5], [34, 37, 39, 36, 41, 44, 42, 46, 48, 47, 51, 53], [108, 121, 126, 118, 139, 146, 141, 158, 164, 161, 176, 182]] },
+    { label: 'AGREEMENTS', u: 'st', d: [[2, 3, 2, 4, 3, 5, 4, 4, 6, 5, 6, 7], [9, 11, 10, 13, 12, 14, 15, 14, 17, 16, 18, 19], [24, 28, 26, 31, 34, 33, 38, 41, 40, 45, 48, 52]] },
+    { label: 'UPTIME', u: '%', d: [[99.98, 99.97, 100, 99.99, 100, 100, 99.96, 100, 100, 99.99, 100, 100], [99.95, 99.97, 99.96, 99.98, 99.97, 99.99, 99.98, 99.97, 99.99, 99.98, 99.99, 99.99], [99.92, 99.94, 99.95, 99.93, 99.96, 99.97, 99.96, 99.98, 99.97, 99.98, 99.99, 99.99]] }
+  ];
+  function fmtU(v, u) { return u === 'kr' ? Math.round(v * 1000).toLocaleString('sv-SE') + ' kr' : u === 'st' ? v + ' st' : v.toFixed(2).replace('.', ',') + ' %'; }
+  function renderD() {
+    var pi = { '30': 0, '90': 1, '12m': 2 }[st.pD], html = '';
+    KD.forEach(function (k) {
+      var arr = k.d[pi], mn = Math.min.apply(null, arr), mx = Math.max.apply(null, arr);
+      var sx = function (i) { return 4 + 186 * i / (arr.length - 1); }, sy = function (v) { return 42 - 32 * (v - mn) / ((mx - mn) || 1); };
+      var p = 'M' + arr.map(function (v, i) { return sx(i).toFixed(1) + ' ' + sy(v).toFixed(1); }).join(' L');
+      var back = 'M' + arr.map(function (v, i) { return (sx(i) + 8).toFixed(1) + ' ' + (sy(v) - 4).toFixed(1); }).join(' L') + ' L' + (sx(11) + 8).toFixed(1) + ' 42 L12 42 Z';
+      var first = arr[0], last = arr[arr.length - 1], dp = (last - first) / first * 100;
+      html += '<div style="background:#ffffff;padding:18px;display:flex;flex-direction:column;gap:8px;min-width:0">'
+        + '<span style="font-family:\'Geist Mono\',monospace;font-size:10px;letter-spacing:0.12em;color:#6a7078">' + k.label + '</span>'
+        + '<span style="font-size:22px;font-weight:600;font-variant-numeric:tabular-nums">' + fmtU(last, k.u) + '</span>'
+        + '<span style="font-family:\'Geist Mono\',monospace;font-size:11px;color:' + (dp >= 0 ? '#63836d' : '#96626a') + '">' + (dp >= 0 ? '+' : '−') + Math.abs(dp).toFixed(1).replace('.', ',') + ' %</span>'
+        + '<svg viewBox="0 0 200 48" style="width:100%;height:auto"><path d="' + back + '" fill="#d7e0e9"/><path d="' + p + ' L' + sx(11).toFixed(1) + ' 46 L4 46 Z" fill="#eef2f6"/><path d="' + p + '" fill="none" stroke="#5f7ea3" stroke-width="1.6"/></svg></div>';
+    });
+    document.getElementById('kpiRow').innerHTML = html;
+  }
+
+  function wireSeg(segKey, stateKey, rerender) {
+    var wrap = document.querySelector('[data-seg="' + segKey + '"]');
+    if (!wrap) return;
+    if (wrap.dataset.pdWired) return;
+    wrap.dataset.pdWired = '1';
+    var btns = wrap.querySelectorAll('button[data-v]');
+    function paint() {
+      btns.forEach(function (b) {
+        var act = b.getAttribute('data-v') === st[stateKey];
+        b.style.background = act ? '#101317' : '#ffffff';
+        b.style.color = act ? '#fbfbf9' : '#363b42';
+      });
+    }
+    btns.forEach(function (b) {
+      b.addEventListener('click', function () { st[stateKey] = b.getAttribute('data-v'); paint(); rerender(); });
+    });
+    paint();
+  }
+
+  function wireAll() {
+    wireSeg('A', 'mA', renderA); wireSeg('B', 'mB', renderB); wireSeg('C', 'mC', renderC);
+    wireSeg('E', 'mE', renderE); wireSeg('F', 'mF', renderF); wireSeg('D', 'pD', renderD);
+    var a = document.getElementById('svgA');
+    if (a && !a.dataset.pdWired) {
+      a.dataset.pdWired = '1';
+      a.addEventListener('click', function (e) {
+        var t = e.target.closest ? e.target.closest('[data-i]') : null;
+        if (t) { st.foc = parseInt(t.getAttribute('data-i'), 10); renderA(); }
+      });
+    }
+  }
+  function renderAll() { renderA(); renderB(); renderC(); renderE(); renderF(); renderD(); }
+  function init() {
+    if (!document.getElementById('svgA')) { setTimeout(init, 120); return; }
+    wireAll(); renderAll();
+    setInterval(function () {
+      var a = document.getElementById('svgA');
+      if (a && a.childElementCount === 0) { wireAll(); renderAll(); }
+    }, 500);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
+
+</script>
+</helmet>
+<div style="max-width: 1160px; margin: 0 auto; padding: 56px 40px 120px 40px; display: flex; flex-direction: column; gap: 40px">
+
+  <header style="display: flex; flex-direction: column; gap: 12px; border-bottom: 1px solid #101317; padding-bottom: 28px">
+    <div style="display: flex; justify-content: space-between; align-items: baseline">
+      <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.18em">PIXDRIFT</div>
+      <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6a7078">Charts · 2.5D · <a href="PIXDRIFT Galleri.dc.html" style="text-transform: none; letter-spacing: 0">gallery</a></div>
+    </div>
+    <h1 style="margin: 0; font-size: 36px; font-weight: 600; letter-spacing: -0.02em">Charts in 2.5D.</h1>
+    <p style="margin: 0; font-size: 15px; color: #363b42; max-width: 660px">The chart language for BRITT and every room that shows numbers — built from the same extruded volumes as the illustration system: three tones per body, light from upper left. Every chart switches view mode. Click a month to interrogate it.</p>
+  </header>
+
+  <section style="border: 1px solid #e6e5e0; background: #ffffff; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap">
+      <div>
+        <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6a7078; margin-bottom: 8px">Sold · 12 months</div>
+        <div id="focValue" style="font-size: 34px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums">224 000 kr</div>
+        <div id="focMonth" style="font-size: 13px; color: #6a7078; margin-top: 2px">Dec 2026 · click any month</div>
+      </div>
+      <div data-seg="A" style="display: flex; border: 1px solid #e6e5e0">
+        <button data-v="vol" style="background: #101317; color: #fbfbf9; border: none; padding: 8px 16px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer">Volym</button>
+        <button data-v="band" style="background: #ffffff; color: #363b42; border: none; padding: 8px 16px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer">Band</button>
+        <button data-v="flat" style="background: #ffffff; color: #363b42; border: none; padding: 8px 16px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer">Platt</button>
+      </div>
+    </div>
+    <svg id="svgA" viewBox="0 0 760 300" style="width: 100%; height: auto"></svg>
+  </section>
+
+  <section style="border: 1px solid #e6e5e0; background: #ffffff; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap">
+      <div>
+        <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6a7078; margin-bottom: 8px">Rooms compared · quarterly</div>
+        <div style="display: flex; gap: 20px; margin-top: 6px">
+          <span style="display: inline-flex; align-items: center; gap: 8px"><span style="width: 10px; height: 10px; background: #33383f"></span><span style="font-size: 13px; color: #363b42">TYRA</span></span>
+          <span style="display: inline-flex; align-items: center; gap: 8px"><span style="width: 10px; height: 10px; background: #5f7ea3"></span><span style="font-size: 13px; color: #363b42">MOVA</span></span>
+          <span style="display: inline-flex; align-items: center; gap: 8px"><span style="width: 10px; height: 10px; background: #a4bacd"></span><span style="font-size: 13px; color: #363b42">SAGA</span></span>
+        </div>
+      </div>
+      <div data-seg="B" style="display: flex; border: 1px solid #e6e5e0">
+        <button data-v="depth" style="background: #101317; color: #fbfbf9; border: none; padding: 8px 16px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer">Djup</button>
+        <button data-v="tower" style="background: #ffffff; color: #363b42; border: none; padding: 8px 16px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer">Torn</button>
+        <button data-v="flat" style="background: #ffffff; color: #363b42; border: none; padding: 8px 16px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer">Platt</button>
+      </div>
+    </div>
+    <svg id="svgB" viewBox="0 0 760 300" style="width: 100%; height: auto"></svg>
+  </section>
+
+  <section style="border: 1px solid #e6e5e0; background: #ffffff; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap">
+      <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6a7078">Share of revenue · per application</div>
+      <div data-seg="C" style="display: flex; border: 1px solid #e6e5e0">
+        <button data-v="disc" style="background: #101317; color: #fbfbf9; border: none; padding: 8px 16px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer">Skiva</button>
+        <button data-v="ring" style="background: #ffffff; color: #363b42; border: none; padding: 8px 16px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer">Ring</button>
+      </div>
+    </div>
+    <div style="display: flex; gap: 40px; align-items: center; flex-wrap: wrap">
+      <svg id="svgC" viewBox="0 0 400 250" style="width: 400px; max-width: 100%; height: auto; flex-shrink: 0"></svg>
+      <div style="display: flex; flex-direction: column; gap: 10px; min-width: 260px; flex: 1">
+        <div style="display: grid; grid-template-columns: 14px 90px 1fr 52px; gap: 12px; align-items: center"><span style="width: 10px; height: 10px; background: #33383f"></span><span style="font-size: 13px; color: #363b42">TYRA</span><span style="height: 4px; background: #eef0f2; position: relative; display: block"><span style="position: absolute; inset: 0; right: auto; width: 83%; background: #33383f"></span></span><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #6a7078; text-align: right">32 %</span></div>
+        <div style="display: grid; grid-template-columns: 14px 90px 1fr 52px; gap: 12px; align-items: center"><span style="width: 10px; height: 10px; background: #5f7ea3"></span><span style="font-size: 13px; color: #363b42">MOVA</span><span style="height: 4px; background: #eef0f2; position: relative; display: block"><span style="position: absolute; inset: 0; right: auto; width: 68%; background: #5f7ea3"></span></span><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #6a7078; text-align: right">26 %</span></div>
+        <div style="display: grid; grid-template-columns: 14px 90px 1fr 52px; gap: 12px; align-items: center"><span style="width: 10px; height: 10px; background: #a4bacd"></span><span style="font-size: 13px; color: #363b42">BRITT</span><span style="height: 4px; background: #eef0f2; position: relative; display: block"><span style="position: absolute; inset: 0; right: auto; width: 47%; background: #a4bacd"></span></span><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #6a7078; text-align: right">18 %</span></div>
+        <div style="display: grid; grid-template-columns: 14px 90px 1fr 52px; gap: 12px; align-items: center"><span style="width: 10px; height: 10px; background: #63836d"></span><span style="font-size: 13px; color: #363b42">SAGA</span><span style="height: 4px; background: #eef0f2; position: relative; display: block"><span style="position: absolute; inset: 0; right: auto; width: 36%; background: #63836d"></span></span><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #6a7078; text-align: right">14 %</span></div>
+        <div style="display: grid; grid-template-columns: 14px 90px 1fr 52px; gap: 12px; align-items: center"><span style="width: 10px; height: 10px; background: #a5aab0"></span><span style="font-size: 13px; color: #363b42">Övriga</span><span style="height: 4px; background: #eef0f2; position: relative; display: block"><span style="position: absolute; inset: 0; right: auto; width: 26%; background: #a5aab0"></span></span><span style="font-family: 'Geist Mono', monospace; font-size: 11px; color: #6a7078; text-align: right">10 %</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="border: 1px solid #e6e5e0; background: #ffffff; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap">
+      <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6a7078">Activity · week × hours</div>
+      <div data-seg="E" style="display: flex; border: 1px solid #e6e5e0">
+        <button data-v="field" style="background: #101317; color: #fbfbf9; border: none; padding: 8px 16px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer">Höjdfält</button>
+        <button data-v="flat" style="background: #ffffff; color: #363b42; border: none; padding: 8px 16px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer">Platt</button>
+      </div>
+    </div>
+    <svg id="svgE" viewBox="0 0 760 310" style="width: 100%; height: auto"></svg>
+  </section>
+
+  <section style="border: 1px solid #e6e5e0; background: #ffffff; padding: 28px; display: flex; flex-direction: column; gap: 16px">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap">
+      <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6a7078">Cash flow · from opening to closing</div>
+      <div data-seg="F" style="display: flex; border: 1px solid #e6e5e0">
+        <button data-v="wf" style="background: #101317; color: #fbfbf9; border: none; padding: 8px 16px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer">Vattenfall</button>
+        <button data-v="line" style="background: #ffffff; color: #363b42; border: none; padding: 8px 16px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer">Kumulativt</button>
+      </div>
+    </div>
+    <svg id="svgF" viewBox="0 0 760 290" style="width: 100%; height: auto"></svg>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 16px">
+    <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #e6e5e0; padding-bottom: 8px">
+      <span style="font-size: 18px; font-weight: 600">Key figures</span>
+      <div data-seg="D" style="display: flex; border: 1px solid #e6e5e0">
+        <button data-v="30" style="background: #ffffff; color: #363b42; border: none; padding: 8px 16px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer">30 d</button>
+        <button data-v="90" style="background: #ffffff; color: #363b42; border: none; padding: 8px 16px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer">90 d</button>
+        <button data-v="12m" style="background: #101317; color: #fbfbf9; border: none; padding: 8px 16px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer">12 mån</button>
+      </div>
+    </div>
+    <div id="kpiRow" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: #e6e5e0; border: 1px solid #e6e5e0"></div>
+  </section>
+
+</div>
+</x-dc>
+</body>
+</html>

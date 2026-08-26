@@ -1,4 +1,6 @@
 # Rulebook — anyone must understand
+Reference: referens/PIXDRIFT Regelverk.html (open in browser; markup is the spec).
+
 A person who reads no Swedish and no English still understands who does what,
 with what, and how it went. Words are captions, never carriers.
 
