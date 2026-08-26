@@ -35,6 +35,9 @@ export async function POST(request: Request) {
     result = await completeIntakeSubmit(form);
   } catch (error) {
     const message = error instanceof Error ? error.message : "";
+    if (/minst en modul/.test(message)) {
+      return NextResponse.redirect(new URL("/upphandling?fel=moduler", requestBase(request)), 303);
+    }
     if (/stämmer inte|tio siffror|saknas/.test(message)) {
       return NextResponse.redirect(new URL("/upphandling?fel=orgnr", requestBase(request)), 303);
     }

@@ -156,10 +156,10 @@ export function evaluateFirstCustomerGates(input: {
     },
     {
       id: "upphandling",
-      title: "Koncernupphandling är ett formulär",
+      title: "Registreringen är självbetjäning",
       state: "ready",
       detail:
-        "Formuläret på Upphandling samlar in system, miljö och kontakt, skapar konto och utfärdar faktura med tio dagars betalning. Mötet läggs klockan 10.00 tio dagar senare.",
+        "Kunden registrerar sig själv, väljer moduler, får inloggning direkt och en månadsfaktura med tio dagars betalning. Betald faktura — allt fortsätter fungera. Inga demos, inga möten.",
     },
     {
       id: "honesty",

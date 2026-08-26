@@ -155,15 +155,10 @@ function filledForm(company: string, email: string, orgNumber: string): FormData
   form.set("contactName", "Test Kontakt");
   form.set("contactEmail", email);
   form.set("contactTitle", "Verkstadschef");
-  form.set("sites", "En anläggning");
-  form.set("brands", "Volvo, Kia");
-  form.set("honestyAccepted", "on");
-  form.set("provisionAccount", "on");
-  form.set("issueInvoice", "on");
-  form.set("invoiceKronor", "2500");
-  form.append("demoModules", "tyra");
-  form.append("demoModules", "ekonomi");
-  form.append("demoModules", "irma");
+  form.set("termsAccepted", "on");
+  form.append("modules", "tyra");
+  form.append("modules", "ekonomi");
+  form.append("modules", "irma");
   return form;
 }
 
@@ -382,7 +377,7 @@ async function runFleet(): Promise<{ passed: number; companies: number; failures
           "kansli-api",
           tasks.status === 200 &&
             taskList.some((row) => row.title === `Verkstadstavla ${companyName}`) &&
-            !taskList.some((row) => row.title.startsWith("Förbered demo för")),
+            !taskList.some((row) => row.title.startsWith("Ny registrering:")),
           `${String(taskList.length)} uppgifter`,
         ),
       );

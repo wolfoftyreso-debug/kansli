@@ -4,12 +4,8 @@ import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { Notice, SignInGate } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { formatSwedishDateTime } from "@/lib/format/datetime";
-import {
-  DEMO_MODULE_LABELS,
-  getHouseIntake,
-  houseOrgRefFromEnv,
-  isHouseSession,
-} from "@/lib/kansli/intakes";
+import { getHouseIntake, houseOrgRefFromEnv, isHouseSession } from "@/lib/kansli/intakes";
+import { kronor, moduleLine } from "@/lib/kansli/pricing";
 import { tryRuntime } from "@/lib/platform/page";
 
 export const dynamic = "force-dynamic";
@@ -30,36 +26,33 @@ export default async function KansliIntakePage({ params }: { params: Promise<{ i
       <ProductCrumb
         crumbs={[
           { href: "/kansli", label: "Kansli" },
-          { href: "/kansli/upphandling", label: "Upphandling" },
+          { href: "/kansli/upphandling", label: "Registreringar" },
         ]}
       />
       {!session ? (
-        <SignInGate next="/kansli/upphandling" title="Logga in för att läsa anmälan">
-          Anmälan tillhör kansliet.
+        <SignInGate next="/kansli/upphandling" title="Logga in för att läsa registreringen">
+          Registreringen tillhör kansliet.
         </SignInGate>
       ) : intake ? (
         <>
           <h1 className="text-3xl font-semibold tracking-tight">{intake.companyName}</h1>
           <p className="text-ink-soft">
-            Möte {formatSwedishDateTime(intake.meetingAt)}. Demo byggs mot raderna nedan.
+            Registrerade sig {formatSwedishDateTime(intake.createdAt)}. Konto och faktura skapades
+            direkt.
           </p>
           {intake.blocked.length > 0 ? <Notice>{intake.blocked.join(" ")}</Notice> : null}
           <dl className="flex flex-col gap-3">
             <Row label="Kontakt" value={`${intake.contactName} · ${intake.contactEmail}`} />
             <Row label="Roll" value={intake.contactTitle} />
             <Row label="Org.nr" value={intake.orgNumber} />
-            <Row label="Anläggningar" value={intake.sites} />
-            <Row label="Märken" value={intake.brands} />
-            <Row label="DMS" value={intake.dms} />
-            <Row label="Ekonomi" value={intake.economySystem} />
-            <Row label="Däckhotell" value={intake.tireHotel} />
-            <Row label="SMS" value={intake.smsProvider} />
-            <Row label="Identitet" value={intake.identitySystem} />
-            <Row label="Miljö" value={intake.environment} />
-            <Row label="OIDC / allowlist" value={intake.oidcNotes} />
+            <Row label="Moduler" value={intake.modules.map(moduleLine).join(" · ")} />
             <Row
-              label="Demo"
-              value={intake.demoModules.map((id) => DEMO_MODULE_LABELS[id]).join(" · ")}
+              label="Månadspris"
+              value={
+                intake.monthlyNetOre != null
+                  ? `${kronor(intake.monthlyNetOre)}/mån exkl. moms`
+                  : null
+              }
             />
             <Row label="Anteckning" value={intake.notes} />
             <Row label="Konto" value={intake.provisionedEmail} />
@@ -74,7 +67,7 @@ export default async function KansliIntakePage({ params }: { params: Promise<{ i
 function Row({ label, value }: { label: string; value: string | null | undefined }) {
   if (!value) return null;
   return (
-    <div className="rounded-xl border border-line bg-surface px-4 py-3">
+    <div className="border border-line bg-surface px-4 py-3">
       <dt className="text-sm text-ink-soft">{label}</dt>
       <dd className="mt-1">{value}</dd>
     </div>

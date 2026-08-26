@@ -237,8 +237,8 @@ export function registerSyncHandlers(events: EventLog, pool: pg.Pool): void {
     await record(
       event.orgRef,
       "kansli",
-      "Ny anmälan om upphandling",
-      String(event.payload["title"] ?? "En ny anmälan väntar. Möte om 10 dagar."),
+      "Ny registrering",
+      String(event.payload["title"] ?? "En kund registrerade sig. Faktura med 10 dagars betalning."),
       event.subjectRef,
     );
   });
@@ -247,7 +247,7 @@ export function registerSyncHandlers(events: EventLog, pool: pg.Pool): void {
     await record(
       event.orgRef,
       "kansli",
-      "Verkstadskonto skapat för demo",
+      "Verkstadskonto skapat",
       String(event.payload["title"] ?? "Kontot finns. Lösenordet visades en gång."),
       event.subjectRef,
     );

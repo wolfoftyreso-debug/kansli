@@ -6,38 +6,46 @@ import {
   houseOrgRefFromEnv,
   isHouseSession,
   listIntakes,
-  meetingAtFrom,
   parseIntakeForm,
   takePasswordOnce,
 } from "./intakes.ts";
 import { generateWorkshopPassword, slugifyCompany } from "./provision.ts";
+import { registrationHold } from "./registration-hold.ts";
 import { submitIntake } from "./submit-intake.ts";
 import { listTasks } from "./tasks.ts";
 import { ownerDatabaseUrl } from "../platform/env.ts";
 import { DEMO_ORG_NUMBER } from "../rita/request.ts";
 
-describe("koncernupphandling domain", () => {
-  it("books the meeting ten days after now", () => {
-    const now = new Date("2026-08-24T12:00:00.000Z");
-    expect(meetingAtFrom(now).toISOString()).toBe("2026-09-03T08:00:00.000Z");
-  });
-
+describe("self-service registration domain", () => {
   it("refuses a form with a broken organisation number", () => {
     const form = new FormData();
     form.set("companyName", "Bilia Personbilar AB");
     form.set("contactName", "Anna Inköp");
     form.set("contactEmail", "anna@bilia.se");
-    form.set("honestyAccepted", "on");
+    form.set("termsAccepted", "on");
+    form.append("modules", "tyra");
     form.set("orgNumber", "556000-0000");
     expect(() => parseIntakeForm(form, "pixdrift:org:org-exempelbolaget")).toThrow(/stämmer inte/);
   });
 
-  it("refuses a form that skips the honesty box", () => {
+  it("refuses a form that skips the terms box", () => {
     const form = new FormData();
     form.set("companyName", "Bilia Personbilar AB");
     form.set("contactName", "Anna Inköp");
     form.set("contactEmail", "anna@bilia.se");
-    expect(() => parseIntakeForm(form, "pixdrift:org:org-exempelbolaget")).toThrow(/ärlighet/i);
+    form.append("modules", "tyra");
+    expect(() => parseIntakeForm(form, "pixdrift:org:org-exempelbolaget")).toThrow(/villkor/i);
+  });
+
+  it("refuses a registration without modules", () => {
+    const form = new FormData();
+    form.set("companyName", "Bilia Personbilar AB");
+    form.set("contactName", "Anna Inköp");
+    form.set("contactEmail", "anna@bilia.se");
+    form.set("termsAccepted", "on");
+    expect(() => parseIntakeForm(form, "pixdrift:org:org-exempelbolaget")).toThrow(
+      /minst en modul/,
+    );
   });
 
   it("keeps the house inbox on the house org", () => {
@@ -66,21 +74,9 @@ function filledForm(email: string): FormData {
   form.set("contactName", "Test Inköp");
   form.set("contactEmail", email);
   form.set("contactTitle", "IT-inköp");
-  form.set("sites", "Göteborg, Stockholm");
-  form.set("brands", "Volkswagen, Audi");
-  form.set("dms", "Autovista");
-  form.set("economySystem", "Fortnox");
-  form.set("tireHotel", "Eget Excel");
-  form.set("smsProvider", "Ingen");
-  form.set("identitySystem", "Entra");
-  form.set("environment", "cloud");
-  form.set("oidcNotes", "Whitelist mermaid.pixdrift.se");
-  form.append("demoModules", "tyra");
-  form.append("demoModules", "ekonomi");
-  form.set("honestyAccepted", "on");
-  form.set("provisionAccount", "on");
-  form.set("issueInvoice", "on");
-  form.set("invoiceKronor", "2500");
+  form.append("modules", "tyra");
+  form.append("modules", "ekonomi");
+  form.set("termsAccepted", "on");
   return form;
 }
 
@@ -91,7 +87,7 @@ live("kansli.intakes (live Postgres)", () => {
     await pool.end();
   });
 
-  it("persists the brief, provisions a login, and issues a 10-day invoice", async () => {
+  it("registers, provisions a login, and issues a priced 10-day invoice", async () => {
     await migrateWorkspace({ ownerUrl: OWNER!, root: process.cwd(), appRole: "pixdrift_app" });
     const events = new EventLog(pool);
     const email = `inkop-${Date.now()}@bilia-test.se`;
@@ -101,16 +97,16 @@ live("kansli.intakes (live Postgres)", () => {
       form: filledForm(email),
       ownerUrl: ownerDatabaseUrl() ?? OWNER,
       houseOrgRef: `pixdrift:org:intake-house-${Date.now()}`,
-      now: new Date("2026-08-24T08:00:00.000Z"),
     });
 
     expect(result.intake.companyName).toBe("Bilia Testverkstad AB");
-    expect(result.intake.meetingAt.startsWith("2026-09-03")).toBe(true);
-    expect(result.intake.demoModules).toEqual(["tyra", "ekonomi"]);
+    expect(result.intake.modules).toEqual(["tyra", "ekonomi"]);
+    // TYRA 349 + Ekonomi 349 = 698 kr net → 872,50 kr gross.
+    expect(result.intake.monthlyNetOre).toBe(69_800);
     expect(result.provision?.status).toBe("created");
     expect(result.passwordOnce).toMatch(/-/);
     expect(result.invoice?.status).toBe("issued");
-    expect(result.invoice?.grossOre).toBe(312_500);
+    expect(result.invoice?.grossOre).toBe(87_250);
     expect(result.intake.blocked).toEqual([]);
 
     const once = await takePasswordOnce(pool, result.intake.id);
@@ -125,10 +121,27 @@ live("kansli.intakes (live Postgres)", () => {
     expect(await getHouseIntake(pool, "pixdrift:org:other-house", result.intake.id)).toBeNull();
 
     const houseTasks = await listTasks(pool, house);
-    expect(houseTasks.some((row) => row.title.startsWith("Förbered demo för"))).toBe(true);
+    expect(houseTasks.some((row) => row.title.startsWith("Ny registrering:"))).toBe(true);
     const workshopTasks = result.provision?.orgRef
       ? await listTasks(pool, result.provision.orgRef)
       : [];
-    expect(workshopTasks.some((row) => row.title.startsWith("Förbered demo för"))).toBe(false);
+    expect(workshopTasks.some((row) => row.title.startsWith("Ny registrering:"))).toBe(false);
+
+    // Inside the 10-day window nothing is held; force the invoice overdue and it is.
+    const orgRef = result.provision!.orgRef;
+    expect(await registrationHold(pool, orgRef)).toBeNull();
+    await pool.query(
+      `update ekonomi.invoices set due_at = now() - interval '1 day' where id = $1`,
+      [result.invoice!.id],
+    );
+    const hold = await registrationHold(pool, orgRef);
+    expect(hold?.invoiceNumber).toBe(result.invoice!.number);
+    expect(hold?.grossOre).toBe(87_250);
+    // Settle it and the hold lifts.
+    await pool.query(
+      `update ekonomi.invoices set status = 'paid', paid_ore = gross_ore where id = $1`,
+      [result.invoice!.id],
+    );
+    expect(await registrationHold(pool, orgRef)).toBeNull();
   });
 });
