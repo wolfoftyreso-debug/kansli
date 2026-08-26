@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body { margin: 0; background: #fbfbf9; color: #101317; font-family: 'Geist', ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+a { color: #101317; text-decoration: underline; text-decoration-color: #e6e5e0; text-underline-offset: 4px; }
+a:hover { text-decoration-color: #101317; }
+::selection { background: #1f4b8f; color: #fff; }
+@keyframes pd-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@keyframes pd-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pd-flow { 0% { opacity: 0.12; } 10% { opacity: 1; } 28% { opacity: 0.12; } 100% { opacity: 0.12; } }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+</style>
+</helmet>
+<div style="max-width: 1160px; margin: 0 auto; padding: 64px 40px 120px 40px; display: flex; flex-direction: column; gap: 64px">
+
+  <header style="display: flex; flex-direction: column; gap: 16px; border-bottom: 1px solid #101317; padding-bottom: 36px">
+    <div style="display: flex; justify-content: space-between; align-items: baseline">
+      <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.18em">PIXDRIFT</div>
+      <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6a7078">Rulebook · the system environment · <a href="PIXDRIFT Karta.dc.html" style="text-transform: none; letter-spacing: 0">map</a></div>
+    </div>
+    <h1 style="margin: 0; font-size: 44px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; max-width: 760px; text-wrap: pretty">Anyone must understand.</h1>
+    <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #363b42; max-width: 660px; text-wrap: pretty">The rulebook for every PIXDRIFT surface — screens, documentation, education, print. The premise is absolute: a person who reads no Swedish and no English still understands who does what, with what, and how it went. Words are captions, never carriers. These rules bind every system that exists and every system that comes.</p>
+  </header>
+
+  <section style="display: grid; grid-template-columns: 220px 1fr; gap: 40px">
+    <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6a7078">01 · Five laws</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #e6e5e0; border: 1px solid #e6e5e0">
+      <div style="background: #ffffff; padding: 24px"><div style="font-size: 15px; font-weight: 600; margin-bottom: 6px">1 · One figure, one meaning</div><div style="font-size: 14px; line-height: 1.55; color: #363b42">Every figure means exactly one thing, everywhere. A tire is always the tire. A check is always done. Nothing is reused decoratively.</div></div>
+      <div style="background: #ffffff; padding: 24px"><div style="font-size: 15px; font-weight: 600; margin-bottom: 6px">2 · State is shape plus color</div><div style="font-size: 14px; line-height: 1.55; color: #363b42">Done is a green check. Blocked is a red bar. Waiting is gray dots. Color never carries meaning alone — the colorblind reader gets the same message from the shape.</div></div>
+      <div style="background: #ffffff; padding: 24px"><div style="font-size: 15px; font-weight: 600; margin-bottom: 6px">3 · Everything reads left to right</div><div style="font-size: 14px; line-height: 1.55; color: #363b42">Input on the left, outcome on the right, always. Time flows the same way. No surface mixes reading directions.</div></div>
+      <div style="background: #ffffff; padding: 24px"><div style="font-size: 15px; font-weight: 600; margin-bottom: 6px">4 · One accent per view</div><div style="font-size: 14px; line-height: 1.55; color: #363b42">Blue marks the one thing that matters right now — the moving data, the next action, the found result. Two accents means neither is the point.</div></div>
+      <div style="background: #ffffff; padding: 24px"><div style="font-size: 15px; font-weight: 600; margin-bottom: 6px">5 · Words are optional</div><div style="font-size: 14px; line-height: 1.55; color: #363b42">Every caption must survive deletion. If removing the text breaks the meaning, the figure is wrong — redraw the figure, don't add words.</div></div>
+      <div style="background: #ffffff; padding: 24px"><div style="font-size: 15px; font-weight: 600; margin-bottom: 6px">+ · Motion shows the job</div><div style="font-size: 14px; line-height: 1.55; color: #363b42">Figures assemble and breathe; the accent element does its work — travels, drops, pulses. Motion is meaning, never garnish, and reduced-motion freezes to a complete final frame.</div></div>
+    </div>
+  </section>
+
+  <section style="display: grid; grid-template-columns: 220px 1fr; gap: 40px">
+    <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6a7078">02 · The sentence</div>
+    <div style="display: flex; flex-direction: column; gap: 16px">
+      <div style="font-size: 14px; color: #363b42; max-width: 720px">Every explanation is the same wordless sentence: <strong>someone → does something → result</strong>. Subject from the people library, action from the work library below, outcome from the state language. Captions optional.</div>
+      <div style="border: 1px solid #e6e5e0; background: #ffffff; padding: 28px; display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr); gap: 16px; align-items: center">
+        <div style="display: flex; flex-direction: column; gap: 8px; align-items: center">
+          <svg viewBox="0 0 140 110" style="width: 100%; max-width: 110px; height: auto"><ellipse cx="70" cy="98" rx="22" ry="5" fill="#101317" opacity="0.06"></ellipse><g style="animation: pd-float 5s ease-in-out infinite"><circle cx="70" cy="26" r="9" fill="#d99e73"></circle><path d="M61 24 Q61 15 70 15 Q79 15 79 24 Q78 18 70 18 Q63 18 61 24 Z" fill="#22262b"></path><circle cx="80" cy="17" r="4" fill="#22262b"></circle><path d="M58 42 Q58 38 62 38 L78 38 Q82 38 82 42 L84 72 L56 72 Z" fill="#3d7a72"></path><path d="M62 72 L68 72 L68 90 L62 90 Z M72 72 L78 72 L78 90 L72 90 Z" fill="#454d54"></path><path d="M60 90 L69 90 L69 94 L60 94 Z M71 90 L80 90 L80 94 L71 94 Z" fill="#16191c"></path></g></svg>
+          <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #9aa0a7">Vem</span>
+        </div>
+        <svg viewBox="0 0 12 12" shape-rendering="crispEdges" style="width: 20px; height: 20px"><rect x="1" y="5" width="2" height="2" fill="#1f4b8f" style="opacity: 0.12; animation: pd-flow 1.6s linear infinite"></rect><rect x="5" y="5" width="2" height="2" fill="#1f4b8f" style="opacity: 0.12; animation: pd-flow 1.6s linear infinite 0.25s"></rect><rect x="9" y="5" width="2" height="2" fill="#1f4b8f" style="opacity: 0.12; animation: pd-flow 1.6s linear infinite 0.5s"></rect></svg>
+        <div style="display: flex; flex-direction: column; gap: 8px; align-items: center">
+          <svg viewBox="0 0 140 110" style="width: 100%; max-width: 110px; height: auto"><ellipse cx="66" cy="99" rx="30" ry="5" fill="#101317" opacity="0.06"></ellipse><g style="animation: pd-float 5s ease-in-out infinite 0.4s"><path d="M80 60 L106 16 L110 19 L84 63 Z" fill="url(#rg-wood)"></path><path d="M78 54 Q90 58 86 66 Q78 64 74 58 Z" fill="#c9c7c0"></path><path d="M80 58 Q92 64 90 74 M78 58 Q88 68 84 76" stroke="#b3b1a9" stroke-width="2.5" fill="none" stroke-linecap="round"></path><path d="M46 56 L52 88 A14 6 0 0 0 80 88 L86 56 Z" fill="url(#rg-yellow)"></path><ellipse cx="66" cy="56" rx="20" ry="8" fill="#f0d060"></ellipse><ellipse cx="66" cy="56" rx="16" ry="6" fill="#8a6b0e"></ellipse></g></svg>
+          <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #9aa0a7">Gör vad</span>
+        </div>
+        <svg viewBox="0 0 12 12" shape-rendering="crispEdges" style="width: 20px; height: 20px"><rect x="1" y="5" width="2" height="2" fill="#1f4b8f" style="opacity: 0.12; animation: pd-flow 1.6s linear infinite"></rect><rect x="5" y="5" width="2" height="2" fill="#1f4b8f" style="opacity: 0.12; animation: pd-flow 1.6s linear infinite 0.25s"></rect><rect x="9" y="5" width="2" height="2" fill="#1f4b8f" style="opacity: 0.12; animation: pd-flow 1.6s linear infinite 0.5s"></rect></svg>
+        <div style="display: flex; flex-direction: column; gap: 8px; align-items: center">
+          <svg viewBox="0 0 140 110" style="width: 100%; max-width: 110px; height: auto"><ellipse cx="70" cy="92" rx="24" ry="5" fill="#101317" opacity="0.06"></ellipse><g style="animation: pd-float 5s ease-in-out infinite 0.8s"><circle cx="70" cy="56" r="26" fill="#2f6b46"></circle><ellipse cx="61" cy="45" rx="9" ry="5" fill="#ffffff" opacity="0.12"></ellipse><circle cx="62" cy="51" r="2.8" fill="#fbfbf9"></circle><circle cx="78" cy="51" r="2.8" fill="#fbfbf9"></circle><path d="M59 63 Q70 72 81 63" stroke="#fbfbf9" stroke-width="3.2" fill="none" stroke-linecap="round"></path></g></svg>
+          <span style="font-family: 'Geist Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #9aa0a7">Resultat</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="display: grid; grid-template-columns: 220px 1fr; gap: 40px">
+    <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6a7078">03 · Work, illustrated</div>
+    <div style="display: flex; flex-direction: column; gap: 16px">
+      <div style="font-size: 14px; color: #363b42; max-width: 720px">Every kind of human work the systems touch, as a person-and-object scene. These are the verbs of the language — composed from the people and object libraries, never invented ad hoc. A scene shows the task mid-motion; the state badge tells how it went.</div>
+      <svg width="0" height="0" style="position: absolute" aria-hidden="true"><defs>
+        <radialGradient id="rg-sh"><stop offset="0" stop-color="#101317" stop-opacity="0.18"></stop><stop offset="1" stop-color="#101317" stop-opacity="0"></stop></radialGradient>
+        <linearGradient id="rg-wood" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d3a468"></stop><stop offset="1" stop-color="#8a6437"></stop></linearGradient>
+        <linearGradient id="rg-yellow" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9c7a12"></stop><stop offset="0.45" stop-color="#e3bd35"></stop><stop offset="1" stop-color="#8a6b0e"></stop></linearGradient>
+        <linearGradient id="rg-card" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c89a62"></stop><stop offset="1" stop-color="#9c7440"></stop></linearGradient>
+        <linearGradient id="rg-steel" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5d666e"></stop><stop offset="0.45" stop-color="#c8cfd6"></stop><stop offset="1" stop-color="#454d54"></stop></linearGradient>
+        <linearGradient id="rg-blue" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#16304d"></stop><stop offset="0.45" stop-color="#2c5d94"></stop><stop offset="1" stop-color="#122840"></stop></linearGradient>
+        <linearGradient id="rg-inkv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#454b52"></stop><stop offset="1" stop-color="#1a1d21"></stop></linearGradient>
+      </defs></svg>
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: #e6e5e0; border: 1px solid #e6e5e0">
+        
+        <div style="background:#ffffff;padding:24px 16px;display:flex;flex-direction:column;gap:12px;align-items:center;min-width:0">
+          <svg viewBox="0 0 140 110" style="width:100%;max-width:130px;height:auto">
+            <ellipse cx="70" cy="100" rx="42" ry="6" fill="url(#rg-sh)"></ellipse>
+            <g style="animation:pd-rise .7s cubic-bezier(.2,.7,.3,1) 0s both"><g style="animation:pd-float 5s ease-in-out infinite 0.0s">
+            <circle cx="56" cy="30" r="8" fill="#e8b48f"></circle><path d="M47 28 Q47 19 56 19 Q65 19 65 28 Q60 23 52 23 Q48 24 47 28 Z" fill="#3a2e26"></path><path d="M45 46 Q45 42 49 42 L63 42 Q67 42 67 46 L69 72 L43 72 Z" fill="#2c5d94"></path><path d="M48 72 L54 72 L54 90 L48 90 Z M58 72 L64 72 L64 90 L58 90 Z" fill="#454d54"></path><path d="M46 90 L55 90 L55 94 L46 94 Z M57 90 L66 90 L66 94 L57 94 Z" fill="#16191c"></path><path d="M74 44 L98 44 L98 62 L74 62 Z" fill="url(#rg-card)"></path><path d="M84 44 L88 44 L88 62 L84 62 Z" fill="#b3b1a9" opacity="0.8"></path><path d="M48 46 Q61 53 74 50" stroke="#2c5d94" stroke-width="5" fill="none" stroke-linecap="round"></path><circle cx="74" cy="50" r="2.6" fill="#e8b48f"></circle><path d="M64 46 Q70 57 76 58" stroke="#2c5d94" stroke-width="5" fill="none" stroke-linecap="round"></path><circle cx="76" cy="58" r="2.6" fill="#e8b48f"></circle>
+            </g></g>
+          </svg>
+          <span style="font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6a7078">Bära</span>
+        </div>
+
+        <div style="background:#ffffff;padding:24px 16px;display:flex;flex-direction:column;gap:12px;align-items:center;min-width:0">
+          <svg viewBox="0 0 140 110" style="width:100%;max-width:130px;height:auto">
+            <ellipse cx="70" cy="100" rx="42" ry="6" fill="url(#rg-sh)"></ellipse>
+            <g style="animation:pd-rise .7s cubic-bezier(.2,.7,.3,1) 0.05s both"><g style="animation:pd-float 5s ease-in-out infinite 0.2s">
+            <circle cx="52" cy="30" r="8" fill="#e8b48f"></circle><path d="M43 28 Q43 19 52 19 Q61 19 61 28 Q60 22 52 22 Q44 22 43 28 Z" fill="#22262b"></path><circle cx="62" cy="21" r="4" fill="#22262b"></circle><path d="M41 46 Q41 42 45 42 L59 42 Q63 42 63 46 L65 72 L39 72 Z" fill="#3d7a72"></path><path d="M44 72 L50 72 L50 90 L44 90 Z M54 72 L60 72 L60 90 L54 90 Z" fill="#454d54"></path><path d="M42 90 L51 90 L51 94 L42 94 Z M53 90 L62 90 L62 94 L53 94 Z" fill="#16191c"></path><path d="M70 44 L98 82 L94 85 L66 47 Z" fill="url(#rg-wood)"></path><path d="M24 97 L116 97 L116 100 L24 100 Z" fill="#cfcec8"></path><path d="M104 92 Q108 88 114 90 M107 95 L112 95" stroke="#8a6437" stroke-width="2" fill="none" stroke-linecap="round"></path><circle cx="118" cy="93" r="1.6" fill="#8a6437"></circle><circle cx="112" cy="86" r="1.4" fill="#8a6437"></circle><path d="M34 94 Q48 90 62 94 M40 89 Q52 86 64 90" stroke="#87aed6" stroke-width="2.4" fill="none" stroke-linecap="round" style="animation: pd-pulse 3s ease-in-out infinite"></path><path d="M88 84 L104 84 L106 90 L86 90 Z" fill="#c9c7c0"></path><path d="M90 90 L90 96 M96 90 L96 97 M101 90 L101 96" stroke="#b3b1a9" stroke-width="2.2" fill="none"></path><path d="M44 46 Q55 52 66 48" stroke="#3d7a72" stroke-width="5" fill="none" stroke-linecap="round"></path><circle cx="66" cy="48" r="2.6" fill="#e8b48f"></circle><path d="M60 46 Q67 56 74 56" stroke="#3d7a72" stroke-width="5" fill="none" stroke-linecap="round"></path><circle cx="74" cy="56" r="2.6" fill="#e8b48f"></circle>
+            </g></g>
+          </svg>
+          <span style="font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6a7078">Städa</span>
+        </div>
+
+        <div style="background:#ffffff;padding:24px 16px;display:flex;flex-direction:column;gap:12px;align-items:center;min-width:0">
+          <svg viewBox="0 0 140 110" style="width:100%;max-width:130px;height:auto">
+            <ellipse cx="70" cy="100" rx="42" ry="6" fill="url(#rg-sh)"></ellipse>
+            <g style="animation:pd-rise .7s cubic-bezier(.2,.7,.3,1) 0.1s both"><g style="animation:pd-float 5s ease-in-out infinite 0.4s">
+            <path d="M28 84 L27 74 Q27 68 33 66 L56 62 L66 48 Q68 44 74 44 L96 44 Q102 44 105 49 L112 64 L114 74 Q114 82 110 84 L106 84 A10 10 0 0 1 86 84 L52 84 A10 10 0 0 1 32 84 Z" fill="#101317"></path><path d="M60 61 L68 49 L75 49 L69 61 Z" fill="#1c2127"></path><path d="M73 61 L75 49 L92 49 L92 61 Z" fill="#1c2127"></path><circle cx="80" cy="57" r="4.5" fill="#e8b48f"></circle><path d="M75 56 Q75 50 80 50 Q85 50 85 56 Q82 53 78 53 Q76 54 75 56 Z" fill="#3a2e26"></path><circle cx="42" cy="84" r="9" fill="#1c2127"></circle><circle cx="42" cy="84" r="3.6" fill="#9aa0a7"></circle><circle cx="96" cy="84" r="9" fill="#1c2127"></circle><circle cx="96" cy="84" r="3.6" fill="#9aa0a7"></circle>
+            </g></g>
+          </svg>
+          <span style="font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6a7078">Köra</span>
+        </div>
+
+        <div style="background:#ffffff;padding:24px 16px;display:flex;flex-direction:column;gap:12px;align-items:center;min-width:0">
+          <svg viewBox="0 0 140 110" style="width:100%;max-width:130px;height:auto">
+            <ellipse cx="70" cy="100" rx="42" ry="6" fill="url(#rg-sh)"></ellipse>
+            <g style="animation:pd-rise .7s cubic-bezier(.2,.7,.3,1) 0.15s both"><g style="animation:pd-float 5s ease-in-out infinite 0.6s">
+            <circle cx="48" cy="30" r="8" fill="#e8b48f"></circle><path d="M39 28 Q39 19 48 19 Q57 19 57 28 Q52 23 44 23 Q40 24 39 28 Z" fill="#5f4429"></path><path d="M37 46 Q37 42 41 42 L55 42 Q59 42 59 46 L61 72 L35 72 Z" fill="#d97a2a"></path><path d="M40 72 L46 72 L46 90 L40 90 Z M50 72 L56 72 L56 90 L50 90 Z" fill="#454d54"></path><path d="M38 90 L47 90 L47 94 L38 94 Z M49 90 L58 90 L58 94 L49 94 Z" fill="#16191c"></path><path d="M66 42 L70 42 L82 88 L78 88 Z" fill="url(#rg-inkv)"></path><path d="M74 58 L98 58 L98 76 L79 76 Z" fill="url(#rg-card)"></path><path d="M84 58 L88 58 L88 76 L84 76 Z" fill="#b3b1a9" opacity="0.8"></path><path d="M78 88 L100 92 L100 95 L80 93 Z" fill="url(#rg-steel)"></path><circle cx="80" cy="93" r="7" fill="#181a1c"></circle><circle cx="80" cy="93" r="2.6" fill="#6a7078"></circle><path d="M40 46 Q52 51 64 46" stroke="#d97a2a" stroke-width="5" fill="none" stroke-linecap="round"></path><circle cx="64" cy="46" r="2.6" fill="#e8b48f"></circle><path d="M56 46 Q62 53 68 50" stroke="#d97a2a" stroke-width="5" fill="none" stroke-linecap="round"></path><circle cx="68" cy="50" r="2.6" fill="#e8b48f"></circle>
+            </g></g>
+          </svg>
+          <span style="font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6a7078">Leverera</span>
+        </div>
+
+        <div style="background:#ffffff;padding:24px 16px;display:flex;flex-direction:column;gap:12px;align-items:center;min-width:0">
+          <svg viewBox="0 0 140 110" style="width:100%;max-width:130px;height:auto">
+            <ellipse cx="70" cy="100" rx="42" ry="6" fill="url(#rg-sh)"></ellipse>
+            <g style="animation:pd-rise .7s cubic-bezier(.2,.7,.3,1) 0.2s both"><g style="animation:pd-float 5s ease-in-out infinite 0.8s">
+            <circle cx="52" cy="30" r="8" fill="#e8b48f"></circle><path d="M42 26 Q42 16 52 16 Q62 16 62 26 L64 26 L64 29 L40 29 L40 26 Z" fill="url(#rg-yellow)"></path><path d="M41 46 Q41 42 45 42 L59 42 Q63 42 63 46 L65 72 L39 72 Z" fill="#2c5d94"></path><path d="M39 56 L65 56 L65 60 L39 60 Z" fill="#e8c33c"></path><path d="M44 72 L50 72 L50 90 L44 90 Z M54 72 L60 72 L60 90 L54 90 Z" fill="#2c5d94"></path><path d="M42 90 L51 90 L51 94 L42 94 Z M53 90 L62 90 L62 94 L53 94 Z" fill="#16191c"></path><path d="M82 52 L116 52 L116 90 L82 90 Z" fill="url(#rg-steel)"></path><circle cx="90" cy="60" r="2" fill="#454d54"></circle><circle cx="108" cy="60" r="2" fill="#454d54"></circle><circle cx="90" cy="82" r="2" fill="#454d54"></circle><circle cx="108" cy="82" r="2" fill="#454d54"></circle><circle cx="99" cy="71" r="7" fill="#454d54"></circle><circle cx="99" cy="71" r="3" fill="#6e7880"></circle><path d="M84 38 L92 30 L95 33 L87 41 Z" fill="url(#rg-steel)"></path><path d="M92 30 L91 25 L97 26 L95 33 Z" fill="#8d959c"></path><path d="M60 46 Q72 48 84 40" stroke="#2c5d94" stroke-width="5" fill="none" stroke-linecap="round"></path><circle cx="84" cy="40" r="2.6" fill="#e8b48f"></circle><path d="M44 46 Q43 59 42 62" stroke="#2c5d94" stroke-width="5" fill="none" stroke-linecap="round"></path><circle cx="42" cy="62" r="2.6" fill="#e8b48f"></circle>
+            </g></g>
+          </svg>
+          <span style="font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6a7078">Reparera</span>
+        </div>
+
+        <div style="background:#ffffff;padding:24px 16px;display:flex;flex-direction:column;gap:12px;align-items:center;min-width:0">
+          <svg viewBox="0 0 140 110" style="width:100%;max-width:130px;height:auto">
+            <ellipse cx="70" cy="100" rx="42" ry="6" fill="url(#rg-sh)"></ellipse>
+            <g style="animation:pd-rise .7s cubic-bezier(.2,.7,.3,1) 0.25s both"><g style="animation:pd-float 5s ease-in-out infinite 1.0s">
+            <circle cx="52" cy="30" r="8" fill="#e8b48f"></circle><path d="M43 28 Q43 19 52 19 Q61 19 61 28 Q56 23 48 23 Q44 24 43 28 Z" fill="#3a2e26"></path><path d="M41 46 Q41 42 45 42 L59 42 Q63 42 63 46 L65 72 L39 72 Z" fill="url(#rg-inkv)"></path><path d="M44 72 L50 72 L50 90 L44 90 Z M54 72 L60 72 L60 90 L54 90 Z" fill="#454d54"></path><path d="M42 90 L51 90 L51 94 L42 94 Z M53 90 L62 90 L62 94 L53 94 Z" fill="#16191c"></path><path d="M76 40 Q74 40 74 44 L74 72 Q74 76 78 76 L98 76 Q102 76 102 72 L102 44 Q102 40 98 40 Z" fill="#ffffff"></path><path d="M76 40 Q74 40 74 44 L74 72 Q74 76 78 76 L98 76 Q102 76 102 72 L102 44 Q102 40 98 40 Z" fill="none" stroke="#dad8d0" stroke-width="1.4"></path><path d="M83 38 L93 38 L93 43 L83 43 Z" fill="#9aa2aa"></path><path d="M80 52 L84 56 L90 48" stroke="#2f6b46" stroke-width="2.2" fill="none"></path><path d="M80 64 L84 68 L90 60" stroke="#2f6b46" stroke-width="2.2" fill="none"></path><path d="M93 53 L98 53 M93 65 L98 65" stroke="#9aa0a7" stroke-width="1.8" fill="none"></path><path d="M60 46 Q67 55 74 54" stroke="#2a2e33" stroke-width="5" fill="none" stroke-linecap="round"></path><circle cx="74" cy="54" r="2.6" fill="#e8b48f"></circle>
+            </g></g>
+          </svg>
+          <span style="font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6a7078">Inspektera</span>
+        </div>
+
+        <div style="background:#ffffff;padding:24px 16px;display:flex;flex-direction:column;gap:12px;align-items:center;min-width:0">
+          <svg viewBox="0 0 140 110" style="width:100%;max-width:130px;height:auto">
+            <ellipse cx="70" cy="100" rx="42" ry="6" fill="url(#rg-sh)"></ellipse>
+            <g style="animation:pd-rise .7s cubic-bezier(.2,.7,.3,1) 0.3s both"><g style="animation:pd-float 5s ease-in-out infinite 1.2s">
+            <circle cx="50" cy="30" r="8" fill="#e8b48f"></circle><path d="M41 28 Q41 19 50 19 Q59 19 59 28 Q58 22 50 22 Q42 22 41 28 Z" fill="#5f4429"></path><circle cx="60" cy="21" r="4" fill="#5f4429"></circle><path d="M39 46 Q39 42 43 42 L57 42 Q61 42 61 46 L63 72 L37 72 Z" fill="#4c6a55"></path><path d="M42 72 L48 72 L48 90 L42 90 Z M52 72 L58 72 L58 90 L52 90 Z" fill="#454d54"></path><path d="M40 90 L49 90 L49 94 L40 94 Z M51 90 L60 90 L60 94 L51 94 Z" fill="#16191c"></path><path d="M82 68 L86 92 A8 4 0 0 0 102 92 L106 68 A14 6 0 0 1 82 68 Z" fill="#c06a40"></path><ellipse cx="94" cy="68" rx="14" ry="6" fill="#d98a5c"></ellipse><ellipse cx="94" cy="68" rx="10" ry="4.2" fill="#2e2118"></ellipse><path d="M94 66 L94 48" stroke="#3f6b3a" stroke-width="2.2" fill="none"></path><path d="M94 52 Q86 48 84 38 Q93 40 95 50 Z" fill="#4d7a45"></path><path d="M94 54 Q102 48 108 48 Q105 58 95 57 Z" fill="#3f6b3a"></path><path d="M58 46 Q73 59 88 62" stroke="#4c6a55" stroke-width="5" fill="none" stroke-linecap="round"></path><circle cx="88" cy="62" r="2.6" fill="#e8b48f"></circle>
+            </g></g>
+          </svg>
+          <span style="font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6a7078">Plantera</span>
+        </div>
+
+        <div style="background:#ffffff;padding:24px 16px;display:flex;flex-direction:column;gap:12px;align-items:center;min-width:0">
+          <svg viewBox="0 0 140 110" style="width:100%;max-width:130px;height:auto">
+            <ellipse cx="70" cy="100" rx="42" ry="6" fill="url(#rg-sh)"></ellipse>
+            <g style="animation:pd-rise .7s cubic-bezier(.2,.7,.3,1) 0.35s both"><g style="animation:pd-float 5s ease-in-out infinite 1.4s">
+            <circle cx="62" cy="30" r="8" fill="#e8b48f"></circle><path d="M53 29 Q52 18 62 18 Q72 18 71 29 Q71 33 69 35 Q70 25 62 24 Q54 25 55 35 Q53 33 53 29 Z" fill="#c9a35c"></path><path d="M51 46 Q51 42 55 42 L69 42 Q73 42 73 46 L75 72 L49 72 Z" fill="#7a5a3a"></path><path d="M54 72 L60 72 L60 90 L54 90 Z M64 72 L70 72 L70 90 L64 90 Z" fill="#454d54"></path><path d="M52 90 L61 90 L61 94 L52 94 Z M63 90 L72 90 L72 94 L63 94 Z" fill="#16191c"></path><path d="M72 24 L80 30 L77 34 L69 28 Z" fill="#22262b"></path><path d="M70 46 Q72 44 74 32" stroke="#7a5a3a" stroke-width="5" fill="none" stroke-linecap="round"></path><circle cx="74" cy="32" r="2.6" fill="#e8b48f"></circle><rect x="86" y="18" width="4" height="4" fill="#1f4b8f" style="opacity:0.12;animation:pd-flow 1.6s linear infinite"></rect><rect x="93" y="14" width="4" height="4" fill="#1f4b8f" style="opacity:0.12;animation:pd-flow 1.6s linear infinite 0.25s"></rect><rect x="100" y="10" width="4" height="4" fill="#1f4b8f" style="opacity:0.12;animation:pd-flow 1.6s linear infinite 0.5s"></rect>
+            </g></g>
+          </svg>
+          <span style="font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6a7078">Ringa</span>
+        </div>
+
+        <div style="background:#ffffff;padding:24px 16px;display:flex;flex-direction:column;gap:12px;align-items:center;min-width:0">
+          <svg viewBox="0 0 140 110" style="width:100%;max-width:130px;height:auto">
+            <ellipse cx="70" cy="100" rx="42" ry="6" fill="url(#rg-sh)"></ellipse>
+            <g style="animation:pd-rise .7s cubic-bezier(.2,.7,.3,1) 0.4s both"><g style="animation:pd-float 5s ease-in-out infinite 1.6s">
+            <circle cx="50" cy="30" r="8" fill="#e8b48f"></circle><path d="M41 28 Q41 19 50 19 Q59 19 59 28 Q54 23 46 23 Q42 24 41 28 Z" fill="#22262b"></path><path d="M39 46 Q39 42 43 42 L57 42 Q61 42 61 46 L63 72 L37 72 Z" fill="url(#rg-inkv)"></path><path d="M42 72 L48 72 L48 90 L42 90 Z M52 72 L58 72 L58 90 L52 90 Z" fill="#454d54"></path><path d="M40 90 L49 90 L49 94 L40 94 Z M51 90 L60 90 L60 94 L51 94 Z" fill="#16191c"></path><path d="M80 46 Q80 42 84 42 L104 42 Q108 42 108 46 L108 62 L80 62 Z" fill="url(#rg-inkv)"></path><path d="M83 45 L105 45 L105 59 L83 59 Z" fill="#0e1520"></path><path d="M86 50 Q92 46 96 50 Q100 54 104 48" stroke="#5a9e6f" stroke-width="1.6" fill="none"></path><path d="M76 62 L112 62 L114 66 L74 66 Z" fill="url(#rg-steel)"></path><path d="M72 66 L118 66 L118 70 L72 70 Z" fill="#8a6437"></path><path d="M76 70 L76 94 M114 70 L114 94" stroke="#6b4c2e" stroke-width="3.5" fill="none"></path><path d="M58 46 Q69 59 80 62" stroke="#2a2e33" stroke-width="5" fill="none" stroke-linecap="round"></path><circle cx="80" cy="62" r="2.6" fill="#e8b48f"></circle>
+            </g></g>
+          </svg>
+          <span style="font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6a7078">Registrera</span>
+        </div>
+
+        <div style="background:#ffffff;padding:24px 16px;display:flex;flex-direction:column;gap:12px;align-items:center;min-width:0">
+          <svg viewBox="0 0 140 110" style="width:100%;max-width:130px;height:auto">
+            <ellipse cx="70" cy="100" rx="42" ry="6" fill="url(#rg-sh)"></ellipse>
+            <g style="animation:pd-rise .7s cubic-bezier(.2,.7,.3,1) 0.45s both"><g style="animation:pd-float 5s ease-in-out infinite 1.8s">
+            <circle cx="50" cy="30" r="8" fill="#e8b48f"></circle><path d="M41 28 Q41 19 50 19 Q59 19 59 28 Q54 23 46 23 Q42 24 41 28 Z" fill="#3a2e26"></path><path d="M39 46 Q39 42 43 42 L57 42 Q61 42 61 46 L63 72 L37 72 Z" fill="#56687a"></path><path d="M42 72 L48 72 L48 90 L42 90 Z M52 72 L58 72 L58 90 L52 90 Z" fill="#454d54"></path><path d="M40 90 L49 90 L49 94 L40 94 Z M51 90 L60 90 L60 94 L51 94 Z" fill="#16191c"></path><path d="M80 52 L94 52 L94 61 L80 61 Z" fill="url(#rg-blue)"></path><path d="M82 54 L86 54 L86 57 L82 57 Z" fill="#d4b256"></path><path d="M98 44 Q98 40 102 40 L114 40 Q118 40 118 44 L118 64 Q118 68 114 68 L102 68 Q98 68 98 64 Z" fill="url(#rg-inkv)"></path><path d="M102 45 L114 45 L114 52 L102 52 Z" fill="#c5d5c0"></path><circle cx="105" cy="58" r="1.8" fill="#454d54"></circle><circle cx="110" cy="58" r="1.8" fill="#454d54"></circle><circle cx="105" cy="63" r="1.8" fill="#454d54"></circle><circle cx="110" cy="63" r="1.8" fill="#454d54"></circle><path d="M106 68 L110 68 L110 94 L106 94 Z" fill="#454d54"></path><path d="M58 46 Q69 56 80 56" stroke="#56687a" stroke-width="5" fill="none" stroke-linecap="round"></path><circle cx="80" cy="56" r="2.6" fill="#e8b48f"></circle>
+            </g></g>
+          </svg>
+          <span style="font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6a7078">Betala</span>
+        </div>
+
+        <div style="background:#ffffff;padding:24px 16px;display:flex;flex-direction:column;gap:12px;align-items:center;min-width:0">
+          <svg viewBox="0 0 140 110" style="width:100%;max-width:130px;height:auto">
+            <ellipse cx="70" cy="100" rx="42" ry="6" fill="url(#rg-sh)"></ellipse>
+            <g style="animation:pd-rise .7s cubic-bezier(.2,.7,.3,1) 0.5s both"><g style="animation:pd-float 5s ease-in-out infinite 2.0s">
+            <circle cx="50" cy="30" r="8" fill="#e8b48f"></circle><path d="M41 28 Q41 19 50 19 Q59 19 59 28 Q54 23 46 23 Q42 24 41 28 Z" fill="#b3b1a9"></path><path d="M39 46 Q39 42 43 42 L57 42 Q61 42 61 46 L63 72 L37 72 Z" fill="#2a2e33"></path><path d="M42 72 L48 72 L48 90 L42 90 Z M52 72 L58 72 L58 90 L52 90 Z" fill="#454d54"></path><path d="M40 90 L49 90 L49 94 L40 94 Z M51 90 L60 90 L60 94 L51 94 Z" fill="#16191c"></path><path d="M78 54 L106 54 L106 72 L78 72 Z" fill="#ffffff"></path><path d="M78 54 L106 54 L106 72 L78 72 Z" fill="none" stroke="#dad8d0" stroke-width="1.2"></path><path d="M82 60 L98 60 M82 64 L94 64" stroke="#9aa0a7" stroke-width="1.4" fill="none"></path><path d="M96 66 Q100 62 103 66" stroke="#1f4b8f" stroke-width="1.8" fill="none"></path><path d="M74 72 L110 72 L112 76 L72 76 Z" fill="url(#rg-steel)"></path><path d="M76 76 L76 94 M108 76 L108 94" stroke="#454d54" stroke-width="3.5" fill="none"></path><path d="M84 48 L90 42 L92 44 L86 50 Z" fill="url(#rg-yellow)"></path><path d="M58 46 Q71 54 84 52" stroke="#2a2e33" stroke-width="5" fill="none" stroke-linecap="round"></path><circle cx="84" cy="52" r="2.6" fill="#e8b48f"></circle>
+            </g></g>
+          </svg>
+          <span style="font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6a7078">Signera</span>
+        </div>
+
+        <div style="background:#ffffff;padding:24px 16px;display:flex;flex-direction:column;gap:12px;align-items:center;min-width:0">
+          <svg viewBox="0 0 140 110" style="width:100%;max-width:130px;height:auto">
+            <ellipse cx="70" cy="100" rx="42" ry="6" fill="url(#rg-sh)"></ellipse>
+            <g style="animation:pd-rise .7s cubic-bezier(.2,.7,.3,1) 0.55s both"><g style="animation:pd-float 5s ease-in-out infinite 2.2s">
+            <circle cx="44" cy="30" r="8" fill="#e8b48f"></circle><path d="M35 28 Q35 19 44 19 Q53 19 53 28 Q48 23 40 23 Q36 24 35 28 Z" fill="#3a2e26"></path><path d="M33 46 Q33 42 37 42 L51 42 Q55 42 55 46 L57 72 L31 72 Z" fill="url(#rg-inkv)"></path><path d="M36 72 L42 72 L42 90 L36 90 Z M46 72 L52 72 L52 90 L46 90 Z" fill="#454d54"></path><path d="M34 90 L43 90 L43 94 L34 94 Z M45 90 L54 90 L54 94 L45 94 Z" fill="#16191c"></path><circle cx="96" cy="30" r="8" fill="#d99e73"></circle><path d="M87 28 Q87 19 96 19 Q105 19 105 28 Q104 22 96 22 Q88 22 87 28 Z" fill="#5f4429"></path><circle cx="106" cy="21" r="4" fill="#5f4429"></circle><path d="M85 46 Q85 42 89 42 L103 42 Q107 42 107 46 L109 72 L83 72 Z" fill="#1f4b8f"></path><path d="M88 72 L94 72 L94 90 L88 90 Z M98 72 L104 72 L104 90 L98 90 Z" fill="#16304d"></path><path d="M86 90 L95 90 L95 94 L86 94 Z M97 90 L106 90 L106 94 L97 94 Z" fill="#16191c"></path><path d="M52 12 Q52 8 56 8 L72 8 Q76 8 76 12 L76 20 Q76 24 72 24 L60 24 L56 28 L57 24 Q52 24 52 20 Z" fill="#363b42"></path><path d="M80 16 Q80 12 84 12 L96 12 Q100 12 100 16 L100 22 Q100 26 96 26 Q95 26 94 26 L96 30 L91 26 L84 26 Q80 26 80 22 Z" fill="#1f4b8f" style="animation:pd-flow 3s linear infinite"></path><path d="M52 46 Q59 55 66 54" stroke="#2a2e33" stroke-width="5" fill="none" stroke-linecap="round"></path><circle cx="66" cy="54" r="2.6" fill="#e8b48f"></circle><path d="M88 46 Q81 55 74 54" stroke="#1f4b8f" stroke-width="5" fill="none" stroke-linecap="round"></path><circle cx="74" cy="54" r="2.6" fill="#d99e73"></circle>
+            </g></g>
+          </svg>
+          <span style="font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6a7078">Möta</span>
+        </div>
+
+        <div style="background:#ffffff;padding:24px 16px;display:flex;flex-direction:column;gap:12px;align-items:center;min-width:0">
+          <svg viewBox="0 0 140 110" style="width:100%;max-width:130px;height:auto">
+            <ellipse cx="70" cy="100" rx="42" ry="6" fill="url(#rg-sh)"></ellipse>
+            <g style="animation:pd-rise .7s cubic-bezier(.2,.7,.3,1) 0.6s both"><g style="animation:pd-float 5s ease-in-out infinite 2.4s">
+            <circle cx="42" cy="30" r="8" fill="#e8b48f"></circle><path d="M33 28 Q33 19 42 19 Q51 19 51 28 Q46 23 38 23 Q34 24 33 28 Z" fill="#22262b"></path><path d="M31 46 Q31 42 35 42 L49 42 Q53 42 53 46 L55 72 L29 72 Z" fill="#3d7a72"></path><path d="M34 72 L40 72 L40 90 L34 90 Z M44 72 L50 72 L50 90 L44 90 Z" fill="#454d54"></path><path d="M32 90 L41 90 L41 94 L32 94 Z M43 90 L52 90 L52 94 L43 94 Z" fill="#16191c"></path><path d="M68 28 L118 28 L118 62 L68 62 Z" fill="#ffffff"></path><path d="M68 28 L118 28 L118 62 L68 62 Z" fill="none" stroke="#dad8d0" stroke-width="1.4"></path><path d="M74 54 Q84 40 94 46 Q104 52 112 36" stroke="#1f4b8f" stroke-width="2.2" fill="none"></path><path d="M91 62 L95 62 L95 78 L91 78 Z" fill="#454d54"></path><circle cx="86" cy="84" r="6" fill="#e8b48f"></circle><path d="M78 96 Q78 88 86 88 Q94 88 94 96 Z" fill="#56687a"></path><circle cx="106" cy="84" r="6" fill="#d99e73"></circle><path d="M98 96 Q98 88 106 88 Q114 88 114 96 Z" fill="#7a5a3a"></path><path d="M50 46 Q60 47 70 38" stroke="#3d7a72" stroke-width="5" fill="none" stroke-linecap="round"></path><circle cx="70" cy="38" r="2.6" fill="#e8b48f"></circle>
+            </g></g>
+          </svg>
+          <span style="font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6a7078">Undervisa</span>
+        </div>
+
+        <div style="background:#ffffff;padding:24px 16px;display:flex;flex-direction:column;gap:12px;align-items:center;min-width:0">
+          <svg viewBox="0 0 140 110" style="width:100%;max-width:130px;height:auto">
+            <ellipse cx="70" cy="100" rx="42" ry="6" fill="url(#rg-sh)"></ellipse>
+            <g style="animation:pd-rise .7s cubic-bezier(.2,.7,.3,1) 0.65s both"><g style="animation:pd-float 5s ease-in-out infinite 2.6s">
+            <circle cx="48" cy="30" r="8" fill="#d99e73"></circle><path d="M39 28 Q39 19 48 19 Q57 19 57 28 Q56 22 48 22 Q40 22 39 28 Z" fill="#3a2e26"></path><circle cx="58" cy="21" r="4" fill="#3a2e26"></circle><path d="M37 46 Q37 42 41 42 L55 42 Q59 42 59 46 L61 72 L35 72 Z" fill="#56687a"></path><path d="M40 72 L46 72 L46 90 L40 90 Z M50 72 L56 72 L56 90 L50 90 Z" fill="#454d54"></path><path d="M38 90 L47 90 L47 94 L38 94 Z M49 90 L58 90 L58 94 L49 94 Z" fill="#16191c"></path><path d="M74 30 L118 30 L118 66 L74 66 Z" fill="#ffffff"></path><path d="M74 30 L118 30 L118 66 L74 66 Z" fill="none" stroke="#dad8d0" stroke-width="1.4"></path><path d="M80 54 L86 54 L86 62 L80 62 Z" fill="#9aa2aa"></path><path d="M90 46 L96 46 L96 62 L90 62 Z" fill="#cfcec8"></path><path d="M100 38 L106 38 L106 62 L100 62 Z" fill="#1f4b8f" style="animation:pd-flow 3s linear infinite"></path><path d="M78 48 Q92 40 112 34" stroke="#2f6b46" stroke-width="1.8" fill="none"></path><path d="M94 66 L98 66 L98 80 L94 80 Z" fill="#454d54"></path><path d="M56 46 Q67 53 78 50" stroke="#56687a" stroke-width="5" fill="none" stroke-linecap="round"></path><circle cx="78" cy="50" r="2.6" fill="#d99e73"></circle>
+            </g></g>
+          </svg>
+          <span style="font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6a7078">Analysera</span>
+        </div>
+
+        <div style="background:#ffffff;padding:24px 16px;display:flex;flex-direction:column;gap:12px;align-items:center;min-width:0">
+          <svg viewBox="0 0 140 110" style="width:100%;max-width:130px;height:auto">
+            <ellipse cx="70" cy="100" rx="42" ry="6" fill="url(#rg-sh)"></ellipse>
+            <g style="animation:pd-rise .7s cubic-bezier(.2,.7,.3,1) 0.7s both"><g style="animation:pd-float 5s ease-in-out infinite 2.8s">
+            <circle cx="60" cy="30" r="8" fill="#e0a87e"></circle><path d="M51 28 Q51 19 60 19 Q69 19 69 28 Q64 23 56 23 Q52 24 51 28 Z" fill="#b3b1a9"></path><path d="M49 46 Q49 42 53 42 L67 42 Q71 42 71 46 L73 72 L47 72 Z" fill="#6b7a6b"></path><path d="M52 72 L58 72 L58 90 L52 90 Z M62 72 L68 72 L68 90 L62 90 Z" fill="#59544a"></path><path d="M50 90 L59 90 L59 94 L50 94 Z M61 90 L70 90 L70 94 L61 94 Z" fill="#16191c"></path><circle cx="98" cy="34" r="13" fill="#ffffff"></circle><circle cx="98" cy="34" r="13" fill="none" stroke="#9aa2aa" stroke-width="2.4"></circle><path d="M98 34 L98 27 M98 34 L104 37" stroke="#101317" stroke-width="2" fill="none" stroke-linecap="round"></path><rect x="86" y="54" width="4" height="4" fill="#9aa0a7" style="opacity:0.2;animation:pd-flow 2.2s linear infinite"></rect><rect x="94" y="54" width="4" height="4" fill="#9aa0a7" style="opacity:0.2;animation:pd-flow 2.2s linear infinite 0.35s"></rect><rect x="102" y="54" width="4" height="4" fill="#9aa0a7" style="opacity:0.2;animation:pd-flow 2.2s linear infinite 0.7s"></rect><path d="M52 46 Q51 60 50 64" stroke="#6b7a6b" stroke-width="5" fill="none" stroke-linecap="round"></path><circle cx="50" cy="64" r="2.6" fill="#e0a87e"></circle><path d="M68 46 Q69 60 70 64" stroke="#6b7a6b" stroke-width="5" fill="none" stroke-linecap="round"></path><circle cx="70" cy="64" r="2.6" fill="#e0a87e"></circle>
+            </g></g>
+          </svg>
+          <span style="font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6a7078">Vänta</span>
+        </div>
+
+        <div style="background:#ffffff;padding:24px 16px;display:flex;flex-direction:column;gap:12px;align-items:center;min-width:0">
+          <svg viewBox="0 0 140 110" style="width:100%;max-width:130px;height:auto">
+            <ellipse cx="70" cy="100" rx="42" ry="6" fill="url(#rg-sh)"></ellipse>
+            <g style="animation:pd-rise .7s cubic-bezier(.2,.7,.3,1) 0.75s both"><g style="animation:pd-float 5s ease-in-out infinite 3.0s">
+            <circle cx="50" cy="30" r="8" fill="#e8b48f"></circle><path d="M41 28 Q41 19 50 19 Q59 19 59 28 Q54 23 46 23 Q42 24 41 28 Z" fill="#3a2e26"></path><path d="M39 46 Q39 42 43 42 L57 42 Q61 42 61 46 L63 72 L37 72 Z" fill="#2c5d94"></path><path d="M42 72 L48 72 L48 90 L42 90 Z M52 72 L58 72 L58 90 L52 90 Z" fill="#454d54"></path><path d="M40 90 L49 90 L49 94 L40 94 Z M51 90 L60 90 L60 94 L51 94 Z" fill="#16191c"></path><path d="M78 58 L92 72 L118 38" stroke="#2f6b46" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"></path><path d="M80 58 L92 69 L115 39" stroke="#3f8a5c" stroke-width="3" fill="none" stroke-linecap="round"></path><path d="M58 46 Q67 50 76 44" stroke="#2c5d94" stroke-width="5" fill="none" stroke-linecap="round"></path><circle cx="76" cy="44" r="2.6" fill="#e8b48f"></circle>
+            </g></g>
+          </svg>
+          <span style="font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#6a7078">Godkänna</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section style="display: grid; grid-template-columns: 220px 1fr; gap: 40px">
+    <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6a7078">04 · Attaching state</div>
+    <div style="display: flex; flex-direction: column; gap: 16px">
+      <div style="font-size: 14px; color: #363b42; max-width: 720px">Any scene, object or row takes a state badge in its top-right corner — the same four everywhere. Faces are for feedback from people; geometric marks are for the state of work. Never mix the two on one element.</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: #e6e5e0; border: 1px solid #e6e5e0; font-size: 13px">
+        <div style="background: #ffffff; padding: 16px 20px"><span style="font-weight: 600">Work states</span><br><span style="color: #6a7078; line-height: 1.5">Green check = done · amber filled dots = in progress · gray dots = waiting · red bar-square = blocked. Dot in tables, mark in cards, badge on scenes.</span></div>
+        <div style="background: #ffffff; padding: 16px 20px"><span style="font-weight: 600">Human feedback</span><br><span style="color: #6a7078; line-height: 1.5">The expression faces (nöjd / neutral / missnöjd) speak only for people — customer ratings, session feedback. A machine never smiles.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="display: grid; grid-template-columns: 220px 1fr; gap: 40px">
+    <div style="font-family: 'Geist Mono', monospace; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #6a7078">05 · Never</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px 32px; font-size: 14px; color: #363b42; max-width: 800px">
+      <div>— Meaning carried by text or color alone</div>
+      <div>— A figure that changes meaning between rooms</div>
+      <div>— Two accents in one view</div>
+      <div>— Right-to-left or bottom-up flows</div>
+      <div>— Faces on machines or objects</div>
+      <div>— Scenes invented outside the libraries</div>
+      <div>— Decorative motion</div>
+      <div>— Unicode emoji in any surface</div>
+    </div>
+  </section>
+
+</div>
+</x-dc>
+</body>
+</html>

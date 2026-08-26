@@ -3,6 +3,7 @@ import Link from "next/link";
 import { readSession } from "@/lib/auth/session";
 import { localeTag, t } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
+import { LauncherMark } from "@/components/app/LauncherMark";
 import { launcherTiles } from "@/lib/platform/launcher";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -50,8 +51,8 @@ export default async function HomePage() {
           {tiles.map((tile) => (
             <li key={tile.id}>
               <Link href={tile.href} className="pd-launch-tile" title={tile.description}>
-                <span className="pd-launch-icon" aria-hidden>
-                  {tile.mark}
+                <span className="pd-launch-icon">
+                  <LauncherMark id={tile.id} />
                 </span>
                 <span className="pd-launch-name">{tile.name}</span>
                 <span className="pd-launch-cat">{tile.category}</span>

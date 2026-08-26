@@ -34,4 +34,10 @@ Topbar utilities: Support · Settings · Sign out.
 - SAGA: newsroom + campaign workspace + publishing incl. yearly Activity Planning. Not a Canva clone, not a mere scheduler.
 - NOVA: professional development. Not an entertainment quiz.
 - RITA / LENA: advisory only — suggestions to check, never verdicts/diagnoses.
-- Removed by owner decision: Kansli, Ekonomi, TORA (covered by MOVA), Platform.
+
+## Running catalog (this repo)
+
+The 14-name list above is the design wish. Products that run come only from
+`@pixdrift/systems`. Kansli, Ekonomi, TORA and CREDITAE stay. TORA is not
+replaced by MOVA — MOVA does not exist here. LANGUAGE is the chrome picker,
+not an app.

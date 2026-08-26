@@ -16,6 +16,17 @@ import {
 } from "@/lib/ekonomi/series";
 
 type SeriesKey = "sales" | "received";
+type ChartMode = "vol" | "platt";
+
+const CHART = {
+  top: "var(--color-chart-ink-top)",
+  front: "var(--color-chart-ink-front)",
+  side: "var(--color-chart-ink-side)",
+  focusTop: "var(--color-chart-accent-top)",
+  focusFront: "var(--color-chart-accent-front)",
+  focusSide: "var(--color-chart-accent-side)",
+  line: "var(--color-chart-accent-front)",
+};
 
 function seriesValue(point: DayPoint, series: SeriesKey, mode: "day" | "cum"): number {
   if (series === "sales") return mode === "day" ? point.salesOre : point.salesCumOre;
@@ -28,6 +39,7 @@ export function SalesBoard({ points }: { points: DayPoint[] }) {
   const [endPct, setEndPct] = useState(100);
   const [hover, setHover] = useState<number | null>(null);
   const [series, setSeries] = useState<SeriesKey>("sales");
+  const [mode, setMode] = useState<ChartMode>("vol");
 
   const windowed = useMemo(() => periodWindow(points, period), [points, period]);
   const visible = useMemo(
@@ -92,33 +104,49 @@ export function SalesBoard({ points }: { points: DayPoint[] }) {
             )}
           </p>
         </div>
-        <div className="flex rounded-full border border-line p-1 text-sm">
-          <button
-            type="button"
-            className={
-              series === "sales"
-                ? "rounded-full bg-ink px-3 py-1 text-paper"
-                : "px-3 py-1 text-ink-soft"
-            }
-            onClick={() => setSeries("sales")}
-          >
-            Sålt
-          </button>
-          <button
-            type="button"
-            className={
-              series === "received"
-                ? "rounded-full bg-ink px-3 py-1 text-paper"
-                : "px-3 py-1 text-ink-soft"
-            }
-            onClick={() => setSeries("received")}
-          >
-            Inbetalt
-          </button>
+        <div className="flex flex-col items-end gap-2">
+          <div className="flex border border-line text-sm">
+            <button
+              type="button"
+              className={
+                series === "sales" ? "bg-ink px-3 py-1 text-paper" : "px-3 py-1 text-ink-soft"
+              }
+              onClick={() => setSeries("sales")}
+            >
+              Sålt
+            </button>
+            <button
+              type="button"
+              className={
+                series === "received" ? "bg-ink px-3 py-1 text-paper" : "px-3 py-1 text-ink-soft"
+              }
+              onClick={() => setSeries("received")}
+            >
+              Inbetalt
+            </button>
+          </div>
+          <div className="flex border border-line text-xs">
+            <button
+              type="button"
+              className={mode === "vol" ? "bg-ink px-2 py-1 text-paper" : "px-2 py-1 text-ink-soft"}
+              onClick={() => setMode("vol")}
+            >
+              Volym
+            </button>
+            <button
+              type="button"
+              className={
+                mode === "platt" ? "bg-ink px-2 py-1 text-paper" : "px-2 py-1 text-ink-soft"
+              }
+              onClick={() => setMode("platt")}
+            >
+              Platt
+            </button>
+          </div>
         </div>
       </div>
 
-      <SalesChart points={visible} series={series} hover={hover} onHover={setHover} />
+      <SalesChart points={visible} series={series} mode={mode} hover={hover} onHover={setHover} />
 
       <div className="mt-3 flex flex-wrap gap-1" role="group" aria-label="Period">
         {PERIODS.map((item) => (
@@ -127,8 +155,8 @@ export function SalesBoard({ points }: { points: DayPoint[] }) {
             type="button"
             className={
               period === item.id
-                ? "rounded-full bg-accent-soft px-3 py-1 text-sm font-medium text-accent"
-                : "rounded-full px-3 py-1 text-sm text-ink-soft hover:bg-paper"
+                ? "bg-ink px-3 py-1 text-sm font-medium text-paper"
+                : "px-3 py-1 text-sm text-ink-soft hover:bg-paper"
             }
             onClick={() => {
               setPeriod(item.id);
@@ -163,26 +191,51 @@ export function SalesBoard({ points }: { points: DayPoint[] }) {
   );
 }
 
+function poly(points: string, fill: string) {
+  return <polygon points={points} fill={fill} />;
+}
+
+function extrudedBar(
+  x: number,
+  yb: number,
+  w: number,
+  h: number,
+  tones: { top: string; front: string; side: string },
+) {
+  const dx = Math.max(4, w * 0.35);
+  const dy = Math.max(2, dx * 0.5);
+  const top = `${x},${yb - h} ${x + w},${yb - h} ${x + w + dx},${yb - h - dy} ${x + dx},${yb - h - dy}`;
+  const front = `${x},${yb - h} ${x + w},${yb - h} ${x + w},${yb} ${x},${yb}`;
+  const side = `${x + w},${yb - h} ${x + w + dx},${yb - h - dy} ${x + w + dx},${yb - dy} ${x + w},${yb}`;
+  return (
+    <g>
+      {poly(top, tones.top)}
+      {poly(front, tones.front)}
+      {poly(side, tones.side)}
+    </g>
+  );
+}
+
 function SalesChart({
   points,
   series,
+  mode,
   hover,
   onHover,
 }: {
   points: DayPoint[];
   series: SeriesKey;
+  mode: ChartMode;
   hover: number | null;
   onHover: (index: number | null) => void;
 }) {
   const width = 720;
   const height = 248;
-  const pad = { top: 18, right: 16, bottom: 44, left: 56 };
+  const pad = { top: 18, right: 28, bottom: 44, left: 56 };
   const innerW = width - pad.left - pad.right;
   const innerH = height - pad.top - pad.bottom;
   const values = points.map((point) => seriesValue(point, series, "cum"));
-  const daily = points.map((point) => seriesValue(point, series, "day"));
   const max = Math.max(...values, 1);
-  const dailyMax = Math.max(...daily, 1);
   const x = (index: number) =>
     pad.left + (points.length <= 1 ? innerW / 2 : (index / (points.length - 1)) * innerW);
   const y = (value: number) => pad.top + innerH - (value / max) * innerH;
@@ -193,13 +246,15 @@ function SalesChart({
     .join(" ");
   const area = `${line} L ${x(values.length - 1).toFixed(1)} ${pad.top + innerH} L ${x(0).toFixed(1)} ${pad.top + innerH} Z`;
   const ticks = [0, 0.33, 0.66, 1].map((part) => Math.round(max * part));
-  const barW = Math.max(1.5, innerW / Math.max(points.length, 1) - 1.2);
+  const step = points.length <= 1 ? innerW : innerW / (points.length - 1);
+  const barW = Math.max(6, Math.min(28, step * 0.55));
   const hoverPoint = hover != null ? points[hover] : null;
   const hoverLeft =
     hover != null ? Math.min(86, Math.max(8, ((x(hover) - pad.left) / innerW) * 100)) : 0;
   const axisYear = Boolean(
     points[0] && points.at(-1) && points[0].date.slice(0, 4) !== points.at(-1)!.date.slice(0, 4),
   );
+  const base = pad.top + innerH;
 
   return (
     <div className="relative mt-4">
@@ -207,7 +262,7 @@ function SalesChart({
         viewBox={`0 0 ${width} ${height}`}
         className="h-64 w-full"
         role="img"
-        aria-label="Försäljningskurva"
+        aria-label="Sales chart"
         onMouseLeave={() => onHover(null)}
         onMouseMove={(event) => {
           const box = event.currentTarget.getBoundingClientRect();
@@ -220,12 +275,7 @@ function SalesChart({
           onHover(index);
         }}
       >
-        <defs>
-          <linearGradient id="ek-fill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--color-accent)" stopOpacity="0.28" />
-            <stop offset="100%" stopColor="var(--color-accent)" stopOpacity="0.02" />
-          </linearGradient>
-        </defs>
+        <line x1={pad.left} x2={width - pad.right} y1={base} y2={base} stroke="var(--color-line)" />
         {ticks.map((tick) => (
           <g key={tick}>
             <line
@@ -247,44 +297,26 @@ function SalesChart({
             </text>
           </g>
         ))}
-        {points.map((point, index) => {
-          const value = daily[index] ?? 0;
-          if (value <= 0) return null;
-          const barH = Math.max(3, (value / dailyMax) * 18);
-          return (
-            <rect
-              key={`${point.date}-bar`}
-              x={x(index) - barW / 2}
-              y={pad.top + innerH + 8}
-              width={barW}
-              height={barH}
-              fill="var(--color-accent)"
-              opacity="0.35"
-            />
-          );
-        })}
-        <path d={area} fill="url(#ek-fill)" />
-        <path d={line} fill="none" stroke="var(--color-accent)" strokeWidth="2.2" />
-        {hover != null && values[hover] != null ? (
-          <g>
-            <line
-              x1={x(hover)}
-              x2={x(hover)}
-              y1={pad.top}
-              y2={pad.top + innerH}
-              stroke="var(--color-ink)"
-              strokeDasharray="2 3"
-            />
-            <circle
-              cx={x(hover)}
-              cy={y(values[hover]!)}
-              r="4.5"
-              fill="var(--color-surface)"
-              stroke="var(--color-accent)"
-              strokeWidth="2"
-            />
-          </g>
-        ) : null}
+        {mode === "vol" ? (
+          points.map((point, index) => {
+            const value = values[index] ?? 0;
+            const h = Math.max(value > 0 ? 4 : 0, (value / max) * innerH);
+            if (h <= 0) return null;
+            const tones =
+              index === (hover ?? points.length - 1)
+                ? { top: CHART.focusTop, front: CHART.focusFront, side: CHART.focusSide }
+                : { top: CHART.top, front: CHART.front, side: CHART.side };
+            return <g key={point.date}>{extrudedBar(x(index) - barW / 2, base, barW, h, tones)}</g>;
+          })
+        ) : (
+          <>
+            <path d={area} fill="var(--color-chart-accent-top)" opacity="0.18" />
+            <path d={line} fill="none" stroke={CHART.line} strokeWidth="2" />
+            {hover != null && values[hover] != null ? (
+              <circle cx={x(hover)} cy={y(values[hover]!)} r="4" fill={CHART.focusSide} />
+            ) : null}
+          </>
+        )}
         {points.length > 1 ? (
           <>
             <text x={pad.left} y={height - 6} className="fill-muted" fontSize="11">
@@ -352,29 +384,29 @@ function RangeBrush({
   return (
     <div className="ek-brush mt-4">
       <svg viewBox={`0 0 ${width} ${height}`} className="ek-brush-spark" aria-hidden>
-        <path d={area} fill="var(--color-accent-soft)" />
-        <path d={line} fill="none" stroke="var(--color-accent)" strokeWidth="1.4" />
+        <path d={area} fill="var(--color-chart-accent-top)" opacity="0.22" />
+        <path d={line} fill="none" stroke="var(--color-chart-accent-front)" strokeWidth="1.4" />
         <rect
           x={(startPct / 100) * width}
           y="0"
           width={Math.max(8, ((endPct - startPct) / 100) * width)}
           height={height}
-          fill="var(--color-accent)"
-          opacity="0.08"
+          fill="var(--color-chart-ink-front)"
+          opacity="0.1"
         />
         <rect
           x={(startPct / 100) * width}
           y="0"
           width="2"
           height={height}
-          fill="var(--color-accent)"
+          fill="var(--color-chart-ink-front)"
         />
         <rect
           x={(endPct / 100) * width - 2}
           y="0"
           width="2"
           height={height}
-          fill="var(--color-accent)"
+          fill="var(--color-chart-ink-front)"
         />
       </svg>
       <div className="ek-range">

@@ -10,16 +10,18 @@ som körs.
 | Paket | `docs/design/00-README.md` … `08-3D-MODELS.md` |
 | Källa | Design workspace för wolfoftyreso-debug/kansli, införd här |
 | Produkter som kör | Bara id:n i `@pixdrift/systems`. NORA, MOVA, SAGA, NOVA, CARINA, MAJA, MONA, LENA, ACADEMY och BEA finns inte i det här repot |
-| Språk | Paketet är engelska. Ytan som körs är svenska tills LANGUAGE finns |
+| Språk | Engelska är systemspråk. Översättningar i `src/lib/i18n`. Inte en LANGUAGE-produkt |
 | Nästa paket | Inget `@pixdrift/design` förrän två ytor annars divergerar |
 
 **Paketets 14-namnslista är inte en licens att hitta på produkter.** Kansli,
 Ekonomi, TORA och CREDITAE stannar för att de finns i katalogen. TORA täcks
 inte av MOVA här — MOVA finns inte.
 
-**Inte infört än:** 2.5D-grafer, 357 figurer, fordonsbibliotek, 3D-modeller
-(saknar `referens/`-HTML i det här införande). Inställningsytor BEA / COMPANY
-/ LANGUAGE med mera byggs inte som appar.
+**Referens-HTML** ligger i `docs/design/referens/` (Hem, Grafer, Illustrations,
+Karta, Regelverk, tiguan-3d). 357 figurer, fordonsbibliotek och hela 3D-flottan
+väntar på nästa dump. Inställningsytor BEA / COMPANY / LANGUAGE byggs inte som
+appar. Ekonomi använder det mutade 2.5D-diagramspråket. Launcher-rutorna bär
+illustrerade modeller för de nio katalogrummen.
 
 **ALVA-schema** ligger i `docs/design/alva/`. Det är rummets grammatik, inte
 ett andra utseende och inte diagnosmotorn. PIXDRIFT-chromet vinner i
@@ -151,8 +153,9 @@ Paketet valde ett läge. Infört där det inte kräver påhittade rum.
    Wordmark-text, ingen blå P-ruta.
 2. **Kansli TaskBoard-knapp** — ink-rektangel, samma som `Submit`.
 3. **`rounded-full`** — noll på dokumentytor. Launcher-plattor (22 px) är
-   undantaget på `/`. Segmenterad kurvväxling i Ekonomi får behålla piller
-   tills 2.5D-graferna är införda.
+   undantaget på `/`. Ekonomi-kurvan är 2.5D (volym/platt); period- och
+   serieknappar är fyrkanter, inte piller. Brand-accent `#1F4B8F` används
+   inte i diagramkroppar.
 4. **Rött** — en token `--color-status-blocked` / `--color-danger` `#8A2A33`.
    Destruktiv = kant, fylls vid hover. Blockerad = 2 px vänsterkant.
 5. **TYRA status** — form + färg mot status-tokens, inte emerald/amber/zinc.
