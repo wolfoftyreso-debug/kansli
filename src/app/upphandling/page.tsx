@@ -1,5 +1,5 @@
 import { AppShell } from "@/components/app/AppShell";
-import { CheckField, Field, Submit } from "@/components/app/SignInGate";
+import { CheckField, Field, Notice, Submit } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { DEMO_MODULE_LABELS, DEMO_MODULES } from "@/lib/kansli/intakes";
 import { submitUpphandling } from "./actions";
@@ -17,8 +17,13 @@ export const metadata = {
  * Login pattern (email + password, error under field, no fake Google SSO):
  * https://mobbin.com/flows/4e3afa58-8eac-4166-bfbf-e606b061e637
  */
-export default async function UpphandlingPage() {
+export default async function UpphandlingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ fel?: string }>;
+}) {
   const session = await readSession();
+  const orgNumberWrong = (await searchParams).fel === "orgnr";
   return (
     <AppShell current="upphandling" session={session}>
       <div className="grid gap-8 lg:grid-cols-[1fr_1.15fr] lg:items-start">
@@ -46,6 +51,9 @@ export default async function UpphandlingPage() {
           action={submitUpphandling}
           className="flex flex-col gap-4 border border-line bg-surface p-4"
         >
+          {orgNumberWrong ? (
+            <Notice>Organisationsnumret stämmer inte. Kontrollera siffrorna.</Notice>
+          ) : null}
           <Field name="contactEmail" label="Arbets-e-post" type="email" required />
           <div className="grid gap-4 sm:grid-cols-2">
             <Field name="contactName" label="Kontaktperson" required placeholder="Anna Andersson" />
