@@ -100,7 +100,7 @@ export function evaluateFirstCustomerGates(input: {
       state: input.irmaAgreements > 0 ? "ready" : "open",
       detail:
         input.irmaAgreements > 0
-          ? `${input.irmaAgreements} underlag. Fortfarande inte BankID.`
+          ? `${input.irmaAgreements} underlag. Enkel bekräftelse, inte e-signatur.`
           : "Inget underlag skapat. Enkel bekräftelse, inte e-signatur.",
     },
     {
@@ -156,7 +156,7 @@ export function evaluateFirstCustomerGates(input: {
       title: "Kunden skriver under vad produkten inte är",
       state: "open",
       detail:
-        "Ingen BankID, inga live-däckpriser, ingen Visma eller Fortnox, ingen ALVA-diagnos. SMS vid sälj bara när telefonen är kopplad och ni sagt ja. TYRA-påminnelser skickas inte. Stripe och Revolut bara när de är inkopplade.",
+        "Ingen kvalificerad e-signatur, inga live-däckpriser, ingen Visma eller Fortnox, ingen ALVA-diagnos. SMS vid sälj bara när telefonen är kopplad och ni sagt ja. TYRA-påminnelser skickas inte. Stripe och Revolut bara när de är inkopplade.",
     },
   ];
 

@@ -57,7 +57,7 @@ export function GuestReceipt({
         </p>
       </div>
       <p className="max-w-sm text-sm leading-relaxed text-muted">
-        Det här är en enkel digital bekräftelse — inte BankID och inte en juridisk e-signatur.
+        Det här är en enkel digital bekräftelse — inte en juridisk e-signatur.
       </p>
     </section>
   );

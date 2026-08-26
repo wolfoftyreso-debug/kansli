@@ -287,7 +287,7 @@ export const FAMILY_BLOCKED = [
   },
   {
     id: "irma-sign",
-    need: "IRMA stannar hos oss: enkel digital bekräftelse och en egen länk. Ingen BankID och ingen juridisk e-signatur än.",
+    need: "IRMA stannar hos oss: enkel digital bekräftelse och en egen länk. Ingen juridisk e-signatur än.",
   },
   {
     id: "britt-intel",

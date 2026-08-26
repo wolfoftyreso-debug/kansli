@@ -9,7 +9,7 @@ Ett system. Ett rum per jobb. Samma inloggning.
 - TORA — vilka upphandlingar ni kan ta
 - RITA — skatteförslag, inte skatteråd
 - BRITT — det som hänt och ska följas upp
-- IRMA — avtalslänk, inte BankID
+- IRMA — avtalslänk, enkel bekräftelse
 - TYRA — kund, bil, hjul. Däck bokas i Ekonomi.
 - ALVA — intag. Ingen diagnos.
 

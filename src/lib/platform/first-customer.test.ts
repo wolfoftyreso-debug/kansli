@@ -80,6 +80,8 @@ describe("evaluateFirstCustomerGates", () => {
     expect(booked.gates.find((g) => g.id === "ekonomi")?.state).toBe("ready");
     expect(booked.gates.find((g) => g.id === "ekonomi")?.detail).toMatch(/5 utfärdade/);
     expect(booked.gates.find((g) => g.id === "honesty")?.detail).toMatch(/Visma/);
+    expect(booked.gates.find((g) => g.id === "honesty")?.detail).not.toMatch(/BankID/i);
+    expect(booked.gates.find((g) => g.id === "irma")?.detail).not.toMatch(/BankID/i);
   });
 
   it("does not call SMS ready unless the vendor is on and the owner said yes", () => {
