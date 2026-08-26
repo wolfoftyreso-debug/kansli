@@ -414,6 +414,56 @@ export const systems: PixSystem[] = [
       },
     ],
   },
+  {
+    index: "09",
+    slug: "creditae",
+    name: "CREDITAE",
+    purpose: "Kreditbedömning av motpart. Er slutsats, inget påhittat betyg.",
+    stewardship: "MANAGED_PRODUCT",
+    category: "Kredit",
+    status: "Pilot",
+    regions: ["Europe"],
+    summary:
+      "Tar emot organisationsnummer och er bedömning. Sätter inget kreditbetyg och anropar ingen byrå.",
+    sections: [
+      {
+        no: "01",
+        title: "Purpose",
+        body: [
+          "Kreditbedömning av motpart: vem ni ska bedöma och vad ni själva kom fram till. Systemet sätter inget kreditbetyg.",
+        ],
+      },
+      {
+        no: "02",
+        title: "Problem",
+        body: [
+          "Beslutet att ge kredit sitter i huvudet och i mejl. Det som sagts om motparten går inte att följa senare.",
+        ],
+      },
+      {
+        no: "03",
+        title: "System",
+        body: [
+          "En förfrågan per motpart: organisationsnummer, valfritt namn och er slutsats. Kör, bevaka eller stanna. Ingen byrå.",
+        ],
+      },
+      forthcoming("04", "How it works"),
+      forthcoming("05", "Architecture"),
+      forthcoming("06", "Applications"),
+      { no: "07", title: "Integrations", body: [sharedIdentityIntegration] },
+      forthcoming("08", "Security"),
+      {
+        no: "09",
+        title: "Documentation",
+        body: ["Kör CREDITAE i navet för att se hur det fungerar."],
+      },
+      {
+        no: "10",
+        title: "Availability",
+        body: ["På väg. Europa. Ingen kreditupplysningsbyrå är inkopplad."],
+      },
+    ],
+  },
 ];
 
 export function getSystem(slug: string): PixSystem | undefined {

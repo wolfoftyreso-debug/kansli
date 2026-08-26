@@ -110,7 +110,7 @@ en person kör restore i Neon-konsolen och antecknar resultatet här.
 
 En Postgres (Neon). Inget Redis, ingen andra databas. Produkter äger egna
 scheman: `platform`, `kansli`, `ekonomi`, `tora`, `rita`, `britt`, `irma`,
-`tyra`, `alva`. Identity ligger i `public` och är plattformsglobal (inloggning
+`tyra`, `alva`, `creditae`. Identity ligger i `public` och är plattformsglobal (inloggning
 måste läsa över orgar).
 
 Kundrader har `org_ref` (`pixdrift:org:<id>`). Undantag: `ekonomi.accounts`

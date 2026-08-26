@@ -44,7 +44,7 @@ Aldrig samma affärsregel i två kodvägar.
 
 Produkter som **finns i det här repot** är bara de i `@pixdrift/systems`:
 
-Identity · Kansli · Ekonomi · TORA · RITA · BRITT · IRMA · TYRA · ALVA
+Identity · Kansli · Ekonomi · TORA · RITA · BRITT · IRMA · TYRA · ALVA · CREDITAE
 
 NORA, MOVA och SAGA finns inte här.
 De får inte beskrivas som färdiga ytor.

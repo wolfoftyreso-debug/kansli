@@ -2,7 +2,16 @@ import { randomUUID } from "node:crypto";
 import type pg from "pg";
 import { normalizeOrgNumber, orgNumberError } from "../platform/org-number.ts";
 
-export const DEMO_MODULES = ["tyra", "irma", "ekonomi", "tora", "britt", "rita", "alva"] as const;
+export const DEMO_MODULES = [
+  "tyra",
+  "irma",
+  "ekonomi",
+  "tora",
+  "britt",
+  "rita",
+  "alva",
+  "creditae",
+] as const;
 export type DemoModule = (typeof DEMO_MODULES)[number];
 
 export const DEMO_MODULE_LABELS: Record<DemoModule, string> = {
@@ -13,6 +22,7 @@ export const DEMO_MODULE_LABELS: Record<DemoModule, string> = {
   britt: "BRITT — inkorg",
   rita: "RITA — skatteanalys (om den är inkopplad)",
   alva: "ALVA — registrera ärenden (utan diagnos)",
+  creditae: "CREDITAE — bedöm motpart (utan kreditbetyg)",
 };
 
 export const MEETING_DELAY_DAYS = 10;

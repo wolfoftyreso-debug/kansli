@@ -43,7 +43,7 @@ Människa
            /idp            Pixdrift Identity (OIDC, Fastify via inject)
            /api/auth/*     BFF: login, callback, logout
            /kansli         nav + uppgifter
-           /tora /rita /britt /irma /tyra /alva
+           /tora /rita /britt /irma /tyra /alva /creditae
            /platform       karta + hälsa
            /api/{system}/* JSON, samma session
            /api/tyra/cron/reminders   07:00 UTC
@@ -57,6 +57,7 @@ Människa
            irma        agreements
            tyra        customers, vehicles, tire_cases, outbox, …
            alva        cases
+           creditae    inquiries
 ```
 
 ### Inloggning (samma nyckel)

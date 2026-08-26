@@ -48,5 +48,7 @@ describe("capability graph seed", () => {
     expect(byId.create_office_task.interfaces.event).toBe("kansli.task.created");
     expect(byId.list_office_tasks.interfaces.event).toBeNull();
     expect(byId.register_diagnostic_case.product).toBe("alva");
+    expect(byId.register_credit_inquiry.product).toBe("creditae");
+    expect(byId.register_credit_inquiry.interfaces.event).toBe("creditae.inquiry.created");
   });
 });

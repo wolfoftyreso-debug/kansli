@@ -126,6 +126,13 @@ export function evaluateFirstCustomerGates(input: {
       detail: "Diagnosen byggs separat. Här registrerar ni bara ärenden.",
     },
     {
+      id: "creditae",
+      title: "CREDITAE är bedömning, inte byrå",
+      state: "open",
+      detail:
+        "Ni kan registrera motpart och er slutsats. Ingen kreditupplysningsbyrå är inkopplad. Sälj inte ett kreditbetyg.",
+    },
+    {
       id: "ekonomi",
       title: "Ekonomi är en bok, inte Visma",
       state: input.ekonomiIssued > 0 ? "ready" : "open",
@@ -156,7 +163,7 @@ export function evaluateFirstCustomerGates(input: {
       title: "Kunden skriver under vad produkten inte är",
       state: "open",
       detail:
-        "Ingen kvalificerad e-signatur, inga live-däckpriser, ingen Visma eller Fortnox, ingen ALVA-diagnos. SMS vid sälj bara när telefonen är kopplad och ni sagt ja. TYRA-påminnelser skickas inte. Stripe och Revolut bara när de är inkopplade.",
+        "Ingen kvalificerad e-signatur, inga live-däckpriser, ingen Visma eller Fortnox, ingen ALVA-diagnos, inget kreditbetyg från CREDITAE. SMS vid sälj bara när telefonen är kopplad och ni sagt ja. TYRA-påminnelser skickas inte. Stripe och Revolut bara när de är inkopplade.",
     },
   ];
 

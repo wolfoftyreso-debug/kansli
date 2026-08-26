@@ -29,6 +29,7 @@ Källa: `packages/systems/src/catalog.ts`.
 | irma | IRMA | pilot | `irma` | `/irma` | `/api/irma` |
 | tyra | TYRA | pilot | `tyra` | `/tyra` | `/api/tyra` |
 | alva | ALVA | deferred | `alva` | `/alva` | `/api/alva` |
+| creditae | CREDITAE | pilot | `creditae` | `/creditae` | `/api/creditae` |
 
 Publik katalog (`src/lib/pixdrift/systems.ts`) saknar `kansli` medvetet.
 Den har inte NORA, MOVA eller SAGA.
@@ -48,6 +49,7 @@ Den har inte NORA, MOVA eller SAGA.
 | irma | PASS | PARTIAL | PARTIAL | MISSING | MISSING | PARTIAL | MISSING | PARTIAL | PARTIAL | PARTIAL | PARTIAL |
 | tyra | PASS | PARTIAL | PARTIAL | MISSING | MISSING | PARTIAL | MISSING | PARTIAL | PARTIAL | PARTIAL | PARTIAL |
 | alva | PASS | PARTIAL | PARTIAL | MISSING | MISSING | PARTIAL | MISSING | PARTIAL | PARTIAL | PARTIAL | PARTIAL |
+| creditae | PASS | PARTIAL | PARTIAL | MISSING | MISSING | PARTIAL | MISSING | PARTIAL | PARTIAL | PARTIAL | PARTIAL |
 | nora | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
 | mova | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
 | saga | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
@@ -163,6 +165,7 @@ REST som **finns** men **inte** sitter i grafen än:
 | POST `/api/tyra/suppliers/search` | tyra | Returnerar `NOT_CONFIGURED` |
 | GET `/api/tyra/cron/reminders` | tyra | Cron, inte agentyta |
 | GET `/api/alva/cases` | alva | Lista utan MCP |
+| GET/POST `/api/creditae/inquiries` | creditae | Lista/skapa. MCP `register_credit_inquiry` |
 | GET `/api/platform/health` | platform | Publik health |
 | GET `/api/platform/ai` | platform | Gateway-ping, inferens |
 | `/api/auth/*` | identity | Browser-BFF, inte agent |
@@ -194,6 +197,7 @@ Ingen hreflang. Canonical är implicit via `metadataBase`.
 | irma | avtal, länk, signatur | “har de läst?” | jurist, vd | tvärgående | skicka, läs, bekräfta | — | en | `/systems/irma` | e-sign vs IRMA, DPA | PARTIAL | svag | många `forthcoming` |
 | tyra | kund, bil, hjul | däckhotell-kaos | verkstad | däck / verkstad | ärende, hubb | leverantörssök `NOT_CONFIGURED` | en | `/systems/tyra` | däckhotell-kunskap, kalkylator | PARTIAL | svag | ärlig om vad som saknas |
 | alva | ärende, fel, mätvärde | “vad sa kunden?” | verkstad | fordon | registrera fall | diagnosmotor **inte här** | en | `/systems/alva` | guided diagnostics **nej** förrän motorn finns | PARTIAL | svag | får inte sälja diagnos |
+| creditae | förfrågan, bedömning | “vågar vi ge kredit?” | ekonomi, vd | tvärgående | registrera motpart, spara slutsats | byrå **inte här** | en | `/systems/creditae` | byråkoppling **nej** | PARTIAL | svag | får inte sälja kreditbetyg |
 | nora | — | — | — | — | — | — | — | — | — | N/A | — | inte i repot |
 | mova | — | — | — | — | — | — | — | — | — | N/A | — | inte i repot |
 | saga | — | — | — | — | — | — | — | — | — | N/A | — | inte i repot |

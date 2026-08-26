@@ -299,6 +299,7 @@ Från `src/lib/platform/facade.ts` + `packages/systems/src/catalog.ts`:
 | irma | IRMA | `/irma` |
 | tyra | TYRA | `/tyra` |
 | alva | ALVA | `/alva` |
+| creditae | CREDITAE | `/creditae` |
 
 **Tjänster**
 
@@ -621,7 +622,22 @@ fordonsref mono faint, tid faint.
 
 **`/alva/[id]`** — ett fall.
 
-### 8.10 Tjänsterum (inte produkter)
+### 8.10 CREDITAE — `/creditae`
+
+| | |
+| --- | --- |
+| Status | pilot |
+| Jobb | Kreditbedömning av motpart. Er slutsats, inget påhittat betyg |
+| H1 | CREDITAE |
+
+Notice: ingen byrå. Systemet hittar aldrig på ett betyg.
+
+Formulär Ny förfrågan. Lista: slutsats eller status accent versaler, namn
+eller orgnr som länk, orgnr mono faint, tid faint.
+
+**`/creditae/[id]`** — en förfrågan.
+
+### 8.11 Tjänsterum (inte produkter)
 
 | Route | H1 / jobb |
 | --- | --- |
@@ -633,7 +649,7 @@ fordonsref mono faint, tid faint.
 | `/upphandling` | Underlag för demo och uppföljningsmöte. Två kolumner. Formulär POST |
 | `/upphandling/bekraftelse` | Mötet är lagt. Möteskort. Lösenord bara efter submit-kaka |
 
-### 8.11 Marknadsidor (engelska, i fasaden)
+### 8.12 Marknadsidor (engelska, i fasaden)
 
 | Route | Eyebrow / titel |
 | --- | --- |
@@ -648,11 +664,11 @@ fordonsref mono faint, tid faint.
 | `/company` | Company / PIXDRIFT is developed by Landvex. SpecTable + character-par |
 
 Publik katalog-sluggar (marknad, **saknar kansli**): identity, alva, rita,
-tora, irma, britt, tyra, ekonomi.
+tora, irma, britt, tyra, ekonomi, creditae.
 
 ---
 
-## 9. Skärminventering (48 `page.tsx`)
+## 9. Skärminventering (50 `page.tsx`)
 
 Rita minst startsidan för varje rad. Gästsidor utan rail.
 
@@ -669,6 +685,7 @@ Rita minst startsidan för varje rad. Gästsidor utan rail.
 - `/tyra` `/tyra/cases/[id]` `/tyra/kunder` `/tyra/integrations`
   `/tyra/hub/[token]` *(gäst)*
 - `/alva` `/alva/[id]`
+- `/creditae` `/creditae/[id]`
 - `/upphandling` `/upphandling/bekraftelse`
 - `/platform` `/platform/events` `/platform/mcp`
 

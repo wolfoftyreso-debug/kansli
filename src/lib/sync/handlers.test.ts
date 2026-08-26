@@ -39,6 +39,12 @@ live("registerSyncHandlers (live Postgres)", () => {
       payload: { note: "Registrerat." },
     });
     await events.publish({
+      system: "creditae",
+      kind: "creditae.inquiry.created",
+      orgRef,
+      payload: { note: "Förfrågan är registrerad. CREDITAE sätter inget kreditbetyg." },
+    });
+    await events.publish({
       system: "kansli",
       kind: "kansli.task.created",
       orgRef,
@@ -71,15 +77,17 @@ live("registerSyncHandlers (live Postgres)", () => {
       "rita",
       "irma",
       "alva",
+      "creditae",
       "kansli",
       "irma",
       "britt",
     ]);
     expect(rows[0]?.title).toMatch(/RITA/);
     expect(rows[1]?.title).toMatch(/IRMA/);
-    expect(rows[3]?.title).toMatch(/Kansli/);
-    expect(rows[4]?.title).toMatch(/bekräftat/);
-    expect(rows[5]?.severity).toBe("high");
+    expect(rows[3]?.title).toMatch(/CREDITAE/);
+    expect(rows[4]?.title).toMatch(/Kansli/);
+    expect(rows[5]?.title).toMatch(/bekräftat/);
+    expect(rows[6]?.severity).toBe("high");
     expect(rows.some((row) => row.title === "Medelfynd")).toBe(false);
     const ritaBody = await pool.query<{ body: string }>(
       `select body from britt.observations where org_ref = $1 and source_system = 'rita'`,

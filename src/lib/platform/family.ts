@@ -174,6 +174,16 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     owns: ["alva.cases", "alva.case_observations", "alva.case_measurements"],
     status: "deferred",
   },
+  {
+    id: "creditae",
+    name: "CREDITAE",
+    mission: "Kreditbedömning av motpart. Er slutsats, inget påhittat betyg.",
+    question: "Vem ska vi bedöma — och vad kom ni fram till?",
+    does: "Tar emot organisationsnummer och er bedömning. Kör, bevaka eller stanna.",
+    doesNot: "CREDITAE sätter inget kreditbetyg och anropar ingen upplysningsbyrå.",
+    owns: ["creditae.inquiries"],
+    status: "pilot",
+  },
 ];
 
 export const FAMILY_LINKS: readonly FamilyLink[] = [
@@ -219,6 +229,12 @@ export const FAMILY_LINKS: readonly FamilyLink[] = [
     to: "britt",
     via: "alva.case.created",
     meaning: "Ett ärende är registrerat. Ingen diagnos följer förrän den är inkopplad.",
+  },
+  {
+    from: "creditae",
+    to: "britt",
+    via: "creditae.inquiry.created | creditae.assessment.recorded",
+    meaning: "En motpart är registrerad, eller ni har skrivit er slutsats. Inget kreditbetyg följer.",
   },
   {
     from: "ekonomi",
@@ -296,5 +312,9 @@ export const FAMILY_BLOCKED = [
   {
     id: "ekonomi-rails",
     need: "Stripe, Revolut och Swish när ni vill ta betalt den vägen. Faktura på 10 dagar fungerar utan dem.",
+  },
+  {
+    id: "creditae-bureau",
+    need: "CREDITAE tar emot motparten och er slutsats. Ingen kreditupplysningsbyrå är inkopplad.",
   },
 ] as const;

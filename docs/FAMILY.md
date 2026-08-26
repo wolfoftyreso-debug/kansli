@@ -17,7 +17,7 @@ Browser
   → Next.js (en process)
        /idp                 Identity (OIDC)
        /kansli              Nav + uppgifter
-       /tora /rita /britt /irma /tyra /alva
+       /tora /rita /britt /irma /tyra /alva /creditae
        /platform            Den här kartan
        /api/platform/*      health, me, systems, events
        /api/{system}/*
@@ -31,6 +31,7 @@ Browser
        irma       agreements
        tyra       customers, vehicles, tire_cases, customer_hub_links
        alva       cases
+       creditae   inquiries
 ```
 
 ## Systemen
@@ -105,6 +106,8 @@ mot plan, likviditet, kundkoncentration). BRITT är den enda som skriver
 | `tyra.reminder.enqueued` | En påminnelse ligger i outbox |
 | `tyra.reminder.blocked` | Outbox kunde inte skickas |
 | `alva.case.created` | Ett fall är registrerat |
+| `creditae.inquiry.created` | En motpart väntar på bedömning |
+| `creditae.assessment.recorded` | Ni har skrivit er slutsats |
 | `kansli.task.created` | Intern uppgift |
 | `britt.finding.recorded` (high) | Ett högt fynd från analysen |
 
@@ -144,11 +147,21 @@ led.
 Diagnosmotorn väntar på ALVA-repot. Inga påhittade fynd, inga påhittade
 protokoll.
 
+### CREDITAE — kreditbedömning av motpart
+
+**Uppdraget:** veta vem ni ska bedöma och vad ni själva kom fram till.
+Inte ett kreditbetyg från en byrå.
+
+**I navet:** förfrågan mot `creditae.inquiries` med organisationsnummer
+(Luhn). Status `open` tills ni sparar Kör / Bevaka / Stanna. Ingen
+upplysningsbyrå. Inget påhittat betyg.
+
 ## Vad som inte går att göra i det här repot
 
 - Köra RITA:s Rust-motor på Vercel utan HTTP-host. Lokalt: `RITA_ENGINE_BINARY`
   plus demonstrationsbokslutet.
 - Diagnostisera i ALVA (saknar repo)
+- Hämta kreditbetyg i CREDITAE (ingen byrå)
 - Kvalificerat e-signera (finns inte i navet; byggs inte mot extern
   e-signleverantör)
 - Lagra filer i IRMA (ingen object store än; läggs i detta system om det behövs)

@@ -53,6 +53,7 @@ const DOMAIN_EVENTS: Record<string, string> = {
   create_agreement: "irma.agreement.created",
   create_vehicle_case: "tyra.case.created",
   register_diagnostic_case: "alva.case.created",
+  register_credit_inquiry: "creditae.inquiry.created",
 };
 
 /** Conservative intents from existing public product copy. Not a keyword farm. */
@@ -65,6 +66,7 @@ const PRODUCT_INTENTS: Partial<Record<CapabilityProduct, string[]>> = {
   irma: ["avtalshantering", "agreement acknowledgement"],
   tyra: ["däckhotell", "tyre hotel"],
   alva: ["diagnosärende", "vehicle diagnostic case registration"],
+  creditae: ["kreditbedömning", "counterpart credit assessment"],
 };
 
 const MARKETED = new Set(marketing.map((item) => item.slug));

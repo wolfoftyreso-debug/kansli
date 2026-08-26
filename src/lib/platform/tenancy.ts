@@ -13,6 +13,7 @@ export const TENANT_SCHEMAS = [
   "irma",
   "tyra",
   "alva",
+  "creditae",
 ] as const;
 
 /**

@@ -15,6 +15,7 @@ describe("system catalog", () => {
       "irma",
       "tyra",
       "alva",
+      "creditae",
     ]);
     for (const entry of SYSTEM_MODULES) {
       if (entry.id === "identity") expect(entry.schema).toBeNull();
@@ -37,6 +38,7 @@ describe("system catalog", () => {
     expect(getModule("irma")?.basePath).toBe("/irma");
     expect(getModule("tyra")?.basePath).toBe("/tyra");
     expect(getModule("alva")?.basePath).toBe("/alva");
+    expect(getModule("creditae")?.basePath).toBe("/creditae");
     expect(getModule("ekonomi")?.basePath).toBe("/ekonomi");
     for (const entry of SYSTEM_MODULES) {
       if (entry.id === "identity") continue;

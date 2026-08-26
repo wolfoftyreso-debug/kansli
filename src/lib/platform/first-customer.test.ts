@@ -26,6 +26,8 @@ describe("evaluateFirstCustomerGates", () => {
     expect(board.allSystemsReady).toBe(false);
     expect(board.gates.find((g) => g.id === "alva")?.state).toBe("blocked");
     expect(board.gates.find((g) => g.id === "rita")?.state).toBe("blocked");
+    expect(board.gates.find((g) => g.id === "creditae")?.state).toBe("open");
+    expect(board.gates.find((g) => g.id === "creditae")?.detail).toMatch(/kreditupplysning/);
     expect(board.gates.find((g) => g.id === "upphandling")?.state).toBe("ready");
   });
 

@@ -81,6 +81,7 @@ Browser → Next.js (kansli)
 | `/tyra/hub/:token` | Guest hub (hashed token, no account) |
 | `/tyra/integrations` | Supplier accounts + reminder outbox |
 | `/alva` | Case registration (engine deferred) |
+| `/creditae` | Counterpart credit inquiry (no bureau score) |
 | `/platform` | Module catalog |
 | `/platform/events` | Org-scoped event log |
 
