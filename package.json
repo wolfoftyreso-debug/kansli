@@ -10,7 +10,6 @@
     "test": "node --experimental-strip-types --test lib/**/*.test.ts"
   },
   "dependencies": {
-    "@react-email/render": "^2.1.0",
     "next": "16.3.3",
     "react": "19.2.8",
     "react-dom": "19.2.8",

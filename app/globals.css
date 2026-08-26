@@ -29,13 +29,15 @@ body {
   text-wrap: pretty;
 }
 
-a {
-  color: #007580;
-  text-decoration: none;
-}
+@layer base {
+  a {
+    color: #007580;
+    text-decoration: none;
+  }
 
-a:hover {
-  color: #000028;
+  a:hover {
+    color: #000028;
+  }
 }
 
 :focus-visible {

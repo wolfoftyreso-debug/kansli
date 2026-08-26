@@ -33,19 +33,19 @@ export default function OpenGraphImage() {
         >
           Landvex · Stockholm · Houston
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
           <div
             style={{
-              fontSize: 68,
+              fontSize: 52,
               fontWeight: 600,
-              lineHeight: 1.05,
+              lineHeight: 1.12,
               letterSpacing: "-0.03em",
-              maxWidth: "14ch",
+              maxWidth: 920,
             }}
           >
             We automate the work that used to need people.
           </div>
-          <div style={{ fontSize: 28, color: "#c3ccd3", maxWidth: "36ch" }}>
+          <div style={{ fontSize: 26, color: "#c3ccd3", maxWidth: 720 }}>
             Founder-led automation engineering on AWS.
           </div>
         </div>

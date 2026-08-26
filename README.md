@@ -24,7 +24,7 @@ The enquiry form posts to a server action that sends mail with Resend.
 | `CONTACT_TO` | Inbox, defaults to `contact@landvex.com` |
 | `NEXT_PUBLIC_SITE_URL` | Canonical origin for metadata |
 
-Until `landvex.com` is verified in Resend, `CONTACT_FROM` can stay `Landvex <onboarding@resend.dev>`.
+Until `landvex.com` is verified in Resend, keep `CONTACT_FROM=Landvex <onboarding@resend.dev>` and send test mail only to the Resend account owner. Production should use `Landvex <contact@landvex.com>` after the domain is verified.
 
 ## Scripts
 
