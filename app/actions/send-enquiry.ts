@@ -8,6 +8,10 @@ import { mailEnv } from "@/lib/env";
 
 export type { EnquiryState };
 
+// Assumes a single trusted proxy in front (ALB, App Runner, CloudFront), which
+// appends the real client IP. Exposed directly, the leftmost value is caller
+// controlled and the throttle becomes advisory. It is one layer of several,
+// never the only one.
 function clientKey(headerStore: Headers) {
   const forwarded = headerStore.get("x-forwarded-for")?.split(",")[0]?.trim();
   if (forwarded) return forwarded;
