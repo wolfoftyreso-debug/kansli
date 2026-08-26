@@ -7,7 +7,7 @@ export const site = {
   copyrightYear: 2026,
   title: "Landvex — Engineering between the systems you already run",
   description:
-    "Landvex is a founder-led engineering company with offices in Stockholm and Houston. We design, build and operate the systems that sit between the platforms you already have.",
+    "Landvex is a founder-led engineering company with offices in Stockholm and Houston. We design and build the systems that sit between the platforms you already have. Development only — two to five project assignments a year, plus our own products, most of them sold white-label.",
 } as const;
 
 export const landvexAb = {
@@ -36,7 +36,7 @@ export const landvexInc = {
 export const nav = [
   { href: "/#capabilities", label: "Capabilities" },
   { href: "/#approach", label: "Approach" },
-  { href: "/#platform", label: "Platform" },
+  { href: "/#products", label: "Products" },
   { href: "/#company", label: "Company" },
 ] as const;
 

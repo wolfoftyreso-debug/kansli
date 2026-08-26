@@ -4,7 +4,7 @@ import { DocHeading, DocList, DocPage, DocText } from "@/components/doc-page";
 export const metadata: Metadata = {
   title: "Methodology",
   description:
-    "How Landvex finds the gap between the systems you already run, proves a slice in production, scales what holds, then operates it.",
+    "How Landvex finds the gap between the systems you already run, proves a slice in production, scales what holds, then hands it over.",
   alternates: { canonical: "/methodology" },
 };
 
@@ -56,25 +56,25 @@ export default function MethodologyPage() {
         accounts, with EU and US data residency handled at the account boundary.
       </DocText>
 
-      <DocHeading>Step 04 — Operate and extend</DocHeading>
+      <DocHeading>Step 04 — Hand over</DocHeading>
       <DocText>
-        Monitoring, cost control and a standing review of the next gap between
-        systems worth closing. Handover is optional, never abrupt.
+        The system ships as yours. White-label where that is the deal. Runbooks and
+        observability go with the code. We do not stay on as an operations team.
       </DocText>
 
-      <DocHeading>How we use RIOS</DocHeading>
+      <DocHeading>Own products and white label</DocHeading>
       <DocText>
-        Landvex operates RIOS, a vendor-agnostic system that turns continuous video
-        observations of the physical world into structured intelligence. It sits
-        between capture and the platforms that need the result. The same team builds
-        that layer for clients and runs this platform.
+        Most of our time goes into products for our own companies. Most of those
+        systems we sell white-label to the organisations that need them most.
+        Alongside that we take two to five project assignments a year. We are
+        development only — we do not offer operations.
       </DocText>
       <DocList
         items={[
-          "Capture — mobile, body, vehicle and drone capture. Original media immutable.",
-          "Orchestration — specialist models per observation: classification, detection, segmentation, depth, OCR.",
-          "Active learning — humans are asked only when the expected learning value clears a threshold.",
-          "Knowledge graph — assets, relationships, condition and history, continuously indexed. Every output traceable to source, observation and model.",
+          "Own products — built for our companies, to production standard.",
+          "White label — sold to the organisations that need them. Your brand, your accounts, your operations.",
+          "Selective assignments — two to five engagements a year, founder-led from first call to handover.",
+          "Development, not ops — no on-call, stay-on, or managed operations contract.",
         ]}
       />
     </DocPage>

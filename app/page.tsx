@@ -3,7 +3,7 @@ import {
   capabilities,
   glance,
   hero,
-  layers,
+  products,
   offices,
   principles,
   steps,
@@ -96,11 +96,10 @@ export default function HomePage() {
         <div className="wrap section">
           <div className="mb-12 max-w-[60ch] site:mb-16">
             <span className="eyebrow text-teal">Approach</span>
-            <h2 className="headline mt-5 mb-5">Founder-led, from first call to production.</h2>
+            <h2 className="headline mt-5 mb-5">Founder-led, from first call to handover.</h2>
             <p className="intro">
               The people who scope your work are the people who build it. There is no
-              account layer between you and the engineers, and no handover to a team you
-              have not met.
+              account layer between you and the engineers.
             </p>
           </div>
           <ol className="step-grid">
@@ -117,25 +116,23 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="platform" className="scroll-mt-24 bg-navy text-white">
+      <section id="products" className="scroll-mt-24 bg-navy text-white">
         <div className="wrap section grid items-center gap-12 site:grid-cols-2 site:gap-20">
           <div>
             <span className="eyebrow text-accent">Built in-house</span>
-            <h2 className="headline mt-5 mb-6">We run our own systems in the same gaps.</h2>
+            <h2 className="headline mt-5 mb-6">Own products. White-label. A few assignments.</h2>
             <p className="mt-0 mb-5 text-lg leading-[1.6] text-mist">
-              Landvex operates RIOS, a vendor-agnostic system that turns continuous video
-              observations of the physical world into structured intelligence. Field
-              capture, model orchestration, active learning and a knowledge graph —
-              sitting between the camera and the systems that need the result. Built by
-              the same team you would be hiring.
+              We develop products for our own companies. Most of those systems we sell
+              white-label to the organisations that need them most. Alongside that we
+              take two to five project assignments a year — the ones that sit in the
+              same gaps.
             </p>
             <p className="mt-0 mb-9 text-lg leading-[1.6] text-mist">
-              It is the clearest statement of what we do: a layer between capture and the
-              platforms that already exist, delivered as a continuously running service.
+              We are development only. We do not offer operations.
             </p>
             <div className="flex flex-wrap gap-3.5">
               <a className="btn btn-accent" href="#contact">
-                Request a walkthrough
+                Book a technical review
               </a>
               <a className="btn btn-ghost-on-dark" href="/methodology">
                 Read the methodology
@@ -143,7 +140,7 @@ export default function HomePage() {
             </div>
           </div>
           <ol className="layer-stack">
-            {layers.map((item) => (
+            {products.map((item) => (
               <li key={item.n} className="layer">
                 <div className="index mb-2.5 text-accent">{item.n}</div>
                 <p className="m-0 text-[15px] leading-[1.6] text-mist">{item.body}</p>

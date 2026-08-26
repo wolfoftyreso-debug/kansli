@@ -5,7 +5,7 @@ import { site } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Security",
   description:
-    "How Landvex handles accounts, IAM, infrastructure as code, and EU/US data residency for the systems we design, build and operate.",
+    "How Landvex handles accounts, IAM, infrastructure as code, and EU/US data residency for the systems we design and build.",
   alternates: { canonical: "/security" },
 };
 
@@ -14,7 +14,7 @@ export default function SecurityPage() {
     <DocPage
       eyebrow="Security"
       title="Residency, accounts and audit trails — not policy PDFs."
-      lead="We design, build and operate systems that sit between the platforms you already run. Security is part of the engineering, not a document we attach afterwards."
+      lead="We design and build systems that sit between the platforms you already run. Security is part of the engineering, not a document we attach afterwards."
     >
       <DocHeading>Cloud foundation</DocHeading>
       <DocText>
@@ -38,12 +38,12 @@ export default function SecurityPage() {
         and the code that built them — not a black box you cannot operate.
       </DocText>
 
-      <DocHeading>How we run it</DocHeading>
+      <DocHeading>What ships with the system</DocHeading>
       <DocText>
-        We stay on after launch when that is the engagement. Observability, on-call,
-        cost review and retries are part of the service, not extras. Where a system
-        processes documents, media or decisions, we keep an audit trail: what ran,
-        on which input, with which result.
+        Observability, retries and an audit trail are built into what we deliver —
+        not a managed service we sell afterwards. Where a system processes
+        documents, media or decisions, the trail records what ran, on which input,
+        with which result. Day-to-day operations stay with you.
       </DocText>
 
       <DocHeading>Contact</DocHeading>
