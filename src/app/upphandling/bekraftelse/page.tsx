@@ -4,7 +4,7 @@ import { Notice } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { formatSwedishDateTime } from "@/lib/format/datetime";
 import { getIntake, isHouseSession } from "@/lib/kansli/intakes";
-import { clearIntakeReveal, readIntakeReveal } from "@/lib/kansli/intake-reveal";
+import { readIntakeReveal } from "@/lib/kansli/intake-reveal";
 import { tryRuntime } from "@/lib/platform/page";
 
 export const dynamic = "force-dynamic";
@@ -23,7 +23,6 @@ export default async function UpphandlingBekraftelsePage({
   const session = await readSession();
   const reveal = await readIntakeReveal();
   const fromSubmit = Boolean(reveal && reveal.intakeId === id);
-  if (fromSubmit) await clearIntakeReveal();
   const intake = id && runtime ? await getIntake(runtime.pool, id) : null;
   const house = isHouseSession(session?.org?.ref);
   const ownLogin = Boolean(

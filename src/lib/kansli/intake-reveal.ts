@@ -23,6 +23,7 @@ export async function readIntakeReveal(): Promise<IntakeReveal | null> {
   return openIntakeReveal(raw);
 }
 
+/** Only call from a Server Action or Route Handler. Pages may not write cookies. */
 export async function clearIntakeReveal(): Promise<void> {
   const jar = await cookies();
   jar.delete(INTAKE_REVEAL_COOKIE);
