@@ -59,3 +59,18 @@ AI är aldrig source of truth; automation har uttrycklig nivå (L0–L4).
   or `runtimeForOrg`. `DATABASE_URL` is `pixdrift_app`, never the table owner.
   Kansli intakes are house-level (`house_org_ref`), not per workshop. Do not
   invent a second database, Redis as source of record, or sandbox tenants.
+- House inbox `/kansli/upphandling` is house-session only. Workshops get 404
+  on a house intake id. The demo meeting stays on the house board.
+- The workshop one-time password is shown only after form submit, via the
+  `pd_intake_reveal` cookie. Anyone with the confirmation UUID must not see
+  the password, email, or invoice.
+- BankID is not on the product surface the customer sees. Engineer docs that
+  say “do not build BankID” stay as rules.
+- Organisation numbers use Luhn (`src/lib/platform/org-number.ts`). RITA and
+  `/upphandling` fail closed on a bad number. Live RITA demo uses
+  `556016-0680` (`DEMO_ORG_NUMBER`).
+- BRITT example metrics and “Demonstrationsanalys” run only on the house
+  (`canRunDemoIntel` / `isHouseSession`).
+- Twenty-workshop proof: `LIVE_FLEET=1 pnpm exec vitest run
+  src/lib/platform/live-fleet.test.ts`. Default skip so CI does not create
+  twenty orgs. Do not send another real SMS or copy 46elks to production.
