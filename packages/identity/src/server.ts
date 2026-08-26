@@ -5,6 +5,15 @@ import { createLocalJWKSet, jwtVerify } from "jose";
 import { createHash, timingSafeEqual } from "node:crypto";
 import { parseRef } from "@pixdrift/contracts";
 import { verifyPassword, isCurrentScheme, hashPassword, newOpaqueId } from "@pixdrift/auth-core";
+import {
+  DEFAULT_LOCALE,
+  LOCALE_COOKIE,
+  localeFromAcceptLanguage,
+  localeTag,
+  parseLocale,
+  t,
+  type Locale,
+} from "../../../src/lib/i18n/index.ts";
 import { DEFAULTS, type IdentityConfig, type OidcClient } from "./config.ts";
 import { jwks } from "./keys.ts";
 import { defaultOrgId, membershipsFor, orgContext, userSubject } from "./authz.ts";
@@ -61,7 +70,21 @@ const OIDC_FIELDS: (keyof AuthorizeParams)[] = [
   "org",
 ];
 
+function requestLocale(request: {
+  cookies?: Record<string, string | undefined>;
+  headers: { "accept-language"?: string | string[] };
+}): Locale {
+  const accept = request.headers["accept-language"];
+  const header = Array.isArray(accept) ? accept[0] : accept;
+  return (
+    parseLocale(request.cookies?.[LOCALE_COOKIE]) ??
+    localeFromAcceptLanguage(header) ??
+    DEFAULT_LOCALE
+  );
+}
+
 function loginPage(
+  locale: Locale,
   params: AuthorizeParams,
   action: string,
   error?: string,
@@ -72,11 +95,13 @@ function loginPage(
   ).join("\n      ");
   const emailValue = demo ? ` value="${esc(demo.email)}"` : "";
   const passwordValue = demo ? ` value="${esc(demo.password)}"` : "";
-  const hint = demo ? `<p class="hint">Demo: ${esc(demo.email)} / ${esc(demo.password)}</p>` : "";
+  const hint = demo
+    ? `<p class="hint">${esc(t(locale, "idp.demo", { email: demo.email, password: demo.password }))}</p>`
+    : "";
   return `<!doctype html>
-<html lang="sv"><head><meta charset="utf-8">
+<html lang="${esc(localeTag(locale))}"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Logga in · Pixdrift</title>
+<title>${esc(t(locale, "idp.title"))}</title>
 <style>
   body{font-family:Geist,ui-sans-serif,system-ui,sans-serif;margin:0;min-height:100vh;display:grid;place-items:center;background:#fbfbf9;color:#101317}
   .card{background:#ffffff;padding:2rem;border-radius:0;border:1px solid #e6e5e0;width:min(92vw,360px)}
@@ -94,23 +119,23 @@ function loginPage(
 </style></head>
 <body>
   <form class="card" method="post" action="${esc(action)}">
-    <div class="brand"><span class="wordmark">PIXDRIFT</span><h1>Inloggning</h1></div>
+    <div class="brand"><span class="wordmark">PIXDRIFT</span><h1>${esc(t(locale, "idp.heading"))}</h1></div>
     ${hidden}
-    <label for="email">E-post</label>
+    <label for="email">${esc(t(locale, "idp.email"))}</label>
     <input id="email" name="email" type="email" autocomplete="username" required autofocus${emailValue}>
-    <label for="password">Lösenord</label>
+    <label for="password">${esc(t(locale, "idp.password"))}</label>
     <input id="password" name="password" type="password" autocomplete="current-password" required${passwordValue}>
     ${error ? `<p class="err">${esc(error)}</p>` : ""}
-    <button type="submit">Logga in</button>
+    <button type="submit">${esc(t(locale, "idp.submit"))}</button>
     ${hint}
-    <p class="hint">Inget konto? <a href="/upphandling">Begär åtkomst via koncernupphandling</a>.</p>
+    <p class="hint">${esc(t(locale, "idp.noAccount"))} <a href="/upphandling">${esc(t(locale, "idp.requestAccess"))}</a>.</p>
   </form>
 </body></html>`;
 }
 
-function errorPage(message: string): string {
-  return `<!doctype html><html lang="sv"><head><meta charset="utf-8"><title>Fel</title></head>
-<body style="font-family:system-ui;margin:3rem"><h1>Begäran kan inte behandlas</h1><p>${esc(message)}</p></body></html>`;
+function errorPage(locale: Locale, message: string): string {
+  return `<!doctype html><html lang="${esc(localeTag(locale))}"><head><meta charset="utf-8"><title>${esc(t(locale, "idp.errorTitle"))}</title></head>
+<body style="font-family:system-ui;margin:3rem"><h1>${esc(t(locale, "idp.errorHeading"))}</h1><p>${esc(message)}</p></body></html>`;
 }
 
 export async function createIdentityServer(config: IdentityConfig): Promise<FastifyInstance> {
@@ -226,7 +251,10 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
     const params = request.query;
     const validation = validateClientRedirect(params);
     if ("error" in validation) {
-      return reply.code(400).type("text/html").send(errorPage(validation.error));
+      return reply
+        .code(400)
+        .type("text/html")
+        .send(errorPage(requestLocale(request), validation.error));
     }
     const { client, redirectUri } = validation;
 
@@ -239,7 +267,7 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
     if (!params.code_challenge || params.code_challenge_method !== "S256") {
       const url = new URL(redirectUri);
       url.searchParams.set("error", "invalid_request");
-      url.searchParams.set("error_description", "PKCE (S256) krävs");
+      url.searchParams.set("error_description", t(requestLocale(request), "idp.pkceRequired"));
       if (params.state) url.searchParams.set("state", params.state);
       return reply.redirect(url.toString());
     }
@@ -254,7 +282,9 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
     }
     return reply
       .type("text/html")
-      .send(loginPage(params, authorizeAction, undefined, config.demoLogin));
+      .send(
+        loginPage(requestLocale(request), params, authorizeAction, undefined, config.demoLogin),
+      );
   });
 
   app.post<{ Body: AuthorizeParams & { email?: string; password?: string } }>(
@@ -263,9 +293,13 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
       const params = request.body;
       const validation = validateClientRedirect(params);
       if ("error" in validation) {
-        return reply.code(400).type("text/html").send(errorPage(validation.error));
+        return reply
+          .code(400)
+          .type("text/html")
+          .send(errorPage(requestLocale(request), validation.error));
       }
       const { client, redirectUri } = validation;
+      const locale = requestLocale(request);
 
       const email = (request.body.email ?? "").trim();
       const password = request.body.password ?? "";
@@ -279,9 +313,10 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
           .type("text/html")
           .send(
             loginPage(
+              locale,
               params,
               authorizeAction,
-              "För många försök. Försök igen om en stund.",
+              t(locale, "idp.tooManyAttempts"),
               config.demoLogin,
             ),
           );
@@ -298,7 +333,15 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
         return reply
           .code(200)
           .type("text/html")
-          .send(loginPage(params, authorizeAction, "Fel e-post eller lösenord.", config.demoLogin));
+          .send(
+            loginPage(
+              locale,
+              params,
+              authorizeAction,
+              t(locale, "idp.wrongCredentials"),
+              config.demoLogin,
+            ),
+          );
       }
       loginFailures.delete(throttleKey);
 

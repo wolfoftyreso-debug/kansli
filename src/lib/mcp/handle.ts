@@ -52,7 +52,7 @@ export async function handlePixdriftMcp(request: Request): Promise<Response> {
     runtime: attachRuntime({
       requestId,
       actor: resolved.actor,
-      locale: request.headers.get("accept-language") ?? "sv",
+      locale: request.headers.get("accept-language") ?? "en",
       clientId: resolved.clientId,
       source: resolved.source,
     }),

@@ -181,7 +181,7 @@ Publika sidor i dag: `/`, `/systems`, `/systems/{slug}`,
 `/why`, `/company`.
 Sitemap: `src/app/sitemap.ts` (saknade tidigare MCP-URL:er).
 Robots: tillåt `/`, blockera `/kansli`, `/api/`, `/idp/`.
-Locale: `html lang="sv"`. Inga `/en/` `/sv/` `/de/`.
+Locale: `html lang` från `pd_locale` (kanonisk `en`). Inga `/en/` `/sv/` `/de/`.
 Ingen hreflang. Canonical är implicit via `metadataBase`.
 
 | Produkt | Kärnentiteter | Problemkluster | Roller | Bransch | Flöden | Integrationer | Språk | Befintliga sidor | Saknade sidor (målbild) | Teknisk SEO | Länkar | Kvalitetslucka |
@@ -265,7 +265,7 @@ MCP-health och `server/discover` är inte samma sak som
 | HTTP-status | PARTIAL | inte syntetiskt bevakat |
 | Prestanda | MISSING | ingen Lighthouse-gate |
 | Mobil | PARTIAL | layout finns, ingen bevakad svit |
-| Locale | PARTIAL | `html lang="sv"`. Inga locale-URL:er |
+| Locale | PARTIAL | `html lang` från `pd_locale`. Inga locale-URL:er |
 
 ---
 

@@ -23,6 +23,18 @@ export const terminology: Term[] = [
     term: "System",
     definition: "A product developed and operated under PIXDRIFT.",
     context: "Used in the Systems catalog and product pages. Not 'app' or 'solution'.",
+    translations: {
+      sv: "System",
+      pl: "System",
+      de: "System",
+      es: "Sistema",
+      fr: "Système",
+      nl: "Systeem",
+      it: "Sistema",
+      no: "System",
+      da: "System",
+      fi: "Järjestelmä",
+    },
     prohibited: ["app", "solution"],
   },
   {

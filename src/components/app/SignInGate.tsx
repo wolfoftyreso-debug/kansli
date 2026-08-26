@@ -4,10 +4,12 @@ import type { AppNextPath } from "@/lib/auth/next";
 export function SignInGate({
   next,
   title,
+  actionLabel,
   children,
 }: {
   next: AppNextPath;
   title: string;
+  actionLabel?: string;
   children: ReactNode;
 }) {
   return (
@@ -18,7 +20,7 @@ export function SignInGate({
         href={`/api/auth/login?next=${encodeURIComponent(next)}`}
         className="mt-4 inline-flex bg-ink px-4 py-2 text-sm font-medium text-paper hover:bg-ink-soft"
       >
-        Logga in
+        {actionLabel ?? "Sign in"}
       </a>
     </section>
   );

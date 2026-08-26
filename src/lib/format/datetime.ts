@@ -1,3 +1,5 @@
+import { DEFAULT_LOCALE, localeTag, type Locale } from "../i18n/locales.ts";
+
 const STOCKHOLM = "Europe/Stockholm";
 
 function asDate(value: string | Date): Date | null {
@@ -5,11 +7,11 @@ function asDate(value: string | Date): Date | null {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
-/** 3 sep 2026 10:00 — workshop clocks, not ISO dumps. */
-export function formatSwedishDateTime(value: string | Date): string {
+/** Workshop clocks, not ISO dumps. Locale follows the chrome. */
+export function formatDateTime(value: string | Date, locale: Locale = DEFAULT_LOCALE): string {
   const date = asDate(value);
   if (!date) return "";
-  return new Intl.DateTimeFormat("sv-SE", {
+  return new Intl.DateTimeFormat(localeTag(locale), {
     timeZone: STOCKHOLM,
     day: "numeric",
     month: "short",
@@ -17,6 +19,11 @@ export function formatSwedishDateTime(value: string | Date): string {
     hour: "2-digit",
     minute: "2-digit",
   }).format(date);
+}
+
+/** 3 sep 2026 10:00 — Swedish wall time. */
+export function formatSwedishDateTime(value: string | Date): string {
+  return formatDateTime(value, "sv");
 }
 
 /** 3 september 2026 */

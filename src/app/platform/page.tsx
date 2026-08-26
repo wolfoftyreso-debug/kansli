@@ -4,23 +4,25 @@ import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { Notice } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
+import { familyMission, familyStatusLabel, t } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 import { gatewaySnapshot } from "@/lib/platform/ai";
 import {
   FAMILY_BLOCKED,
-  FAMILY_INCOMING,
   FAMILY_LINKS,
-  FAMILY_PRINCIPLE,
   FAMILY_STACK,
-  FAMILY_STATUS_LABEL,
   FAMILY_SYSTEMS,
   familyPartyName,
 } from "@/lib/platform/family";
 import { hubStatus, ritaStatusLine } from "@/lib/platform/hub-status";
 
-export const metadata = {
-  title: "Plattform — Pixdrift",
-  description: "Vad varje system gör, och hur de hänger ihop.",
-};
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "platform.metaTitle"),
+    description: t(locale, "platform.metaDescription"),
+  };
+}
 
 const PATH: Record<string, string> = {
   identity: "/idp",
@@ -37,22 +39,21 @@ const PATH: Record<string, string> = {
 
 export default async function PlatformPage() {
   const session = await readSession();
+  const locale = await readLocale();
   const gateway = gatewaySnapshot();
   const status = hubStatus();
 
   return (
     <AppShell current="platform" session={session}>
       <header className="flex flex-col gap-3">
-        <ProductCrumb crumbs={[{ href: "/platform", label: "Plattform" }]} />
-        <h1 className="text-3xl font-semibold tracking-tight">Vad varje system gör</h1>
-        <p className="text-ink-soft">{FAMILY_PRINCIPLE}</p>
-        <Notice>
-          Varje system gör ett jobb. TORA tar upphandlingar. RITA tar skatt. De blandas inte.
-        </Notice>
+        <ProductCrumb crumbs={[{ href: "/platform", label: t(locale, "service.platform") }]} />
+        <h1 className="text-3xl font-semibold tracking-tight">{t(locale, "platform.heading")}</h1>
+        <p className="text-ink-soft">{t(locale, "family.principle")}</p>
+        <Notice>{t(locale, "platform.notice")}</Notice>
       </header>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Systemen</h2>
+        <h2 className="text-lg font-semibold">{t(locale, "platform.systems")}</h2>
         {FAMILY_SYSTEMS.map((system) => (
           <article key={system.id} className="rounded-xl border border-line bg-surface px-4 py-4">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -61,9 +62,9 @@ export default async function PlatformPage() {
                   {system.name}
                 </Link>
               </h3>
-              <p className="text-xs text-faint">{FAMILY_STATUS_LABEL[system.status]}</p>
+              <p className="text-xs text-faint">{familyStatusLabel(locale, system.status)}</p>
             </div>
-            <p className="mt-2 text-sm font-medium text-ink">{system.mission}</p>
+            <p className="mt-2 text-sm font-medium text-ink">{familyMission(locale, system.id)}</p>
             <p className="mt-1 text-sm text-ink-soft">{system.does}</p>
             <p className="mt-2 text-sm text-muted">{system.doesNot}</p>
           </article>
@@ -71,7 +72,7 @@ export default async function PlatformPage() {
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Hur de hänger ihop</h2>
+        <h2 className="text-lg font-semibold">{t(locale, "platform.howTheyConnect")}</h2>
         <ul className="flex flex-col gap-2">
           {FAMILY_LINKS.map((link) => (
             <li
@@ -88,12 +89,12 @@ export default async function PlatformPage() {
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Fler system</h2>
-        <p className="text-sm text-ink-soft">{FAMILY_INCOMING}</p>
+        <h2 className="text-lg font-semibold">{t(locale, "platform.moreSystems")}</h2>
+        <p className="text-sm text-ink-soft">{t(locale, "family.incoming")}</p>
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Väntar på att kopplas in</h2>
+        <h2 className="text-lg font-semibold">{t(locale, "platform.waiting")}</h2>
         <ul className="flex flex-col gap-2">
           {FAMILY_BLOCKED.map((item) => (
             <li
@@ -107,11 +108,11 @@ export default async function PlatformPage() {
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Teknik — för den som sköter driften</h2>
+        <h2 className="text-lg font-semibold">{t(locale, "platform.tech")}</h2>
         <p className="font-mono text-xs text-faint">
           Postgres {status.database}
           {" · "}
-          Gateway {status.gateway.configured ? status.gateway.auth : "saknas"}
+          Gateway {status.gateway.configured ? status.gateway.auth : t(locale, "common.missing")}
           {" · "}
           {ritaStatusLine(status.rita)}
         </p>
@@ -126,14 +127,13 @@ export default async function PlatformPage() {
       </section>
 
       <section className="rounded-xl border border-line bg-surface px-4 py-4">
-        <h2 className="text-lg font-semibold">Modellgateway</h2>
-        <p className="mt-2 text-sm text-ink-soft">
-          En nyckel ger tillgång till över 100 modeller. Kom ihåg: systemets svar är gissningar,
-          inte fakta.
-        </p>
+        <h2 className="text-lg font-semibold">{t(locale, "platform.gateway")}</h2>
+        <p className="mt-2 text-sm text-ink-soft">{t(locale, "platform.gatewayLead")}</p>
         <p className="mt-3 font-mono text-xs text-faint">
-          {gateway.configured ? `konfigurerad · ${gateway.auth}` : "saknar nyckel"} ·{" "}
-          {gateway.model}
+          {gateway.configured
+            ? t(locale, "common.configured", { auth: gateway.auth })
+            : t(locale, "common.missingKey")}{" "}
+          · {gateway.model}
         </p>
         {session?.org && gateway.configured ? (
           <div className="mt-3">
@@ -158,11 +158,11 @@ export default async function PlatformPage() {
         </Link>
         {" · "}
         <Link href="/platform/drift" className="underline decoration-line underline-offset-4">
-          Drift
+          {t(locale, "service.ops")}
         </Link>
         {" · "}
         <Link href="/platform/events" className="underline decoration-line underline-offset-4">
-          Händelser
+          {t(locale, "service.events")}
         </Link>
         {" · "}
         <Link href="/platform/mcp" className="underline decoration-line underline-offset-4">

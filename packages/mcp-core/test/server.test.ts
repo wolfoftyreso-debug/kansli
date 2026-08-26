@@ -94,7 +94,7 @@ async function call(input: {
       actor: input.actor === undefined ? actor : input.actor,
       pool: null,
       events: null,
-      locale: "sv",
+      locale: "en",
       clientId: "test",
       source: input.actor === null ? "none" : "session",
     },

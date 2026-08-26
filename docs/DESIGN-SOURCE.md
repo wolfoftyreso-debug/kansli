@@ -46,7 +46,8 @@ Samma tokens. Tre olika ramar. Claude Design ska slå ihop dem.
 Kod: `src/components/app/Facade.tsx`, `src/app/globals.css`,
 `src/components/app/SignInGate.tsx`.
 
-- Svenska. `html lang="sv"`.
+- Engelska är systemspråk. `html lang` följer `pd_locale`.
+  Översättningar i `src/lib/i18n`. Inte en LANGUAGE-produkt.
 - Ljust läge bara (`color-scheme: light`). Ingen mörk tema.
 - Stel: `.pd-facade` tvingar `border-radius: 0` och tar bort skugga på
   `rounded-*` / `shadow-*` **utom** `rounded-full` (den nollas inte).
@@ -206,13 +207,13 @@ Paketet valde ett läge. Infört där det inte kräver påhittade rum.
 
 ### Röst (produkt)
 
-Svenska. Korta meningar. Äkta om vad som saknas. IKEA-svenska: vardagsord,
-ingen jargong mot kunden.
+Engelska är källan. Översättningar bevarar meningen, inte orden.
+Korta meningar. Äkta om vad som saknas. Ingen jargong mot kunden.
 
 - Pengar i UI: **kronor**. Boken: **öre**.
 - Knapp **Boka sälj**, inte “skapa transaktion”.
-- Status: Igång / På väg / Inte klart än (`FAMILY_STATUS_LABEL`).
-- Runtime i listen: `produktion` / `förhandsvisning` / `lokal`.
+- Status: Running / On the way / Not ready yet (`family.status.*`).
+- Runtime i listen: `production` / `preview` / `local` (översätts i chrome).
 - Inget varumärke för e-legitimation. IRMA: “enkel digital bekräftelse —
   inte en juridisk e-signatur.”
 - Inte Visma, Fortnox, Stripe Checkout, Swish Handel som om de finns.
@@ -230,7 +231,9 @@ ingen jargong mot kunden.
   “Less software. More flow.”
 - Bolag: Landvex. Kontor: Stockholm (Landvex AB), Houston (Landvex Inc.)
 - Domän: pixdrift.com. Mejl: contact@pixdrift.com
-- Canonical locale i brand-filen: `en`. Produkt-UI är ändå `sv`.
+- Canonical locale i brand-filen: `en`. Produkt-UI följer `pd_locale`
+  (chrome-väljare). Engelska är systemspråk; översättningar i
+  `src/lib/i18n`. LANGUAGE är inte en produkt.
 
 Termer (`src/lib/pixdrift/terminology.ts`): System, inte app/solution.
 Operator, inte user persona. Verification ≠ modellgissning.

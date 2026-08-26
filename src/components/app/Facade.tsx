@@ -4,13 +4,16 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { AppSession } from "@/lib/auth/session";
+import { DEFAULT_LOCALE, t, type Locale, type MessageKey } from "@/lib/i18n";
 import {
   FACADE_PRODUCTS,
   FACADE_SERVICE,
   activeFacadeHref,
   loginNextFromPath,
   orgIdFromRef,
+  type FacadeRuntime,
 } from "@/lib/platform/facade";
+import { LocalePicker } from "./LocalePicker";
 
 function RailLink({ href, label, active }: { href: string; label: string; active: boolean }) {
   return (
@@ -28,21 +31,32 @@ function RailLink({ href, label, active }: { href: string; label: string; active
   );
 }
 
+const RUNTIME_KEY: Record<FacadeRuntime, MessageKey> = {
+  production: "runtime.production",
+  preview: "runtime.preview",
+  local: "runtime.local",
+};
+
 export function Facade({
   session,
   runtime,
+  locale = DEFAULT_LOCALE,
   children,
 }: {
   session: AppSession | null;
-  runtime: "produktion" | "förhandsvisning" | "lokal";
+  runtime: FacadeRuntime;
+  locale?: Locale;
   children: ReactNode;
 }) {
   const pathname = usePathname() || "/";
   const hrefs = [...FACADE_PRODUCTS, ...FACADE_SERVICE].map((item) => item.href);
   const active = activeFacadeHref(pathname, hrefs);
-  const room =
-    [...FACADE_PRODUCTS, ...FACADE_SERVICE].find((item) => item.href === active)?.label ??
-    "PIXDRIFT";
+  const roomItem = [...FACADE_PRODUCTS, ...FACADE_SERVICE].find((item) => item.href === active);
+  const room = roomItem
+    ? roomItem.id === roomItem.label
+      ? roomItem.label
+      : t(locale, roomItem.label as MessageKey)
+    : "PIXDRIFT";
   const loginHref = `/api/auth/login?next=${encodeURIComponent(loginNextFromPath(pathname))}`;
 
   return (
@@ -54,7 +68,7 @@ export function Facade({
         >
           PIXDRIFT
         </Link>
-        <nav aria-label="Rum" className="flex flex-col py-2">
+        <nav aria-label={t(locale, "chrome.rooms")} className="flex flex-col py-2">
           {FACADE_PRODUCTS.map((item) => (
             <RailLink
               key={item.id}
@@ -64,12 +78,15 @@ export function Facade({
             />
           ))}
         </nav>
-        <nav aria-label="Tjänster" className="mt-auto flex flex-col border-t border-line py-2">
+        <nav
+          aria-label={t(locale, "chrome.services")}
+          className="mt-auto flex flex-col border-t border-line py-2"
+        >
           {FACADE_SERVICE.map((item) => (
             <RailLink
               key={item.id}
               href={item.href}
-              label={item.label}
+              label={t(locale, item.label as MessageKey)}
               active={active === item.href}
             />
           ))}
@@ -89,17 +106,17 @@ export function Facade({
           </div>
           <div className="flex shrink-0 items-center gap-3">
             <p className="pd-label hidden sm:block">
-              {session?.org?.name ?? (session ? session.email : "inte inloggad")}
+              {session?.org?.name ?? (session ? session.email : t(locale, "chrome.signedOut"))}
               {" · "}
-              {runtime}
+              {t(locale, RUNTIME_KEY[runtime])}
             </p>
             {session && session.memberships.length > 1 ? (
               <details className="relative">
                 <summary className="cursor-pointer list-none pd-label hover:text-ink [&::-webkit-details-marker]:hidden">
-                  Byt bolag
+                  {t(locale, "chrome.switchOrg")}
                 </summary>
                 <nav
-                  aria-label="Bolag"
+                  aria-label={t(locale, "chrome.orgs")}
                   className="absolute right-0 top-full z-20 mt-1 w-56 border border-line bg-surface"
                 >
                   {session.memberships.map((membership) => {
@@ -125,26 +142,27 @@ export function Facade({
                 </nav>
               </details>
             ) : null}
+            <LocalePicker locale={locale} next={pathname} label={t(locale, "chrome.language")} />
             {session ? (
               <form action="/api/auth/logout" method="post">
                 <button
                   type="submit"
                   className="pd-label underline underline-offset-4 hover:text-ink"
                 >
-                  Logga ut
+                  {t(locale, "chrome.signOut")}
                 </button>
               </form>
             ) : (
               <a href={loginHref} className="pd-label underline underline-offset-4 hover:text-ink">
-                Logga in
+                {t(locale, "chrome.signIn")}
               </a>
             )}
             <details className="relative md:hidden">
               <summary className="cursor-pointer list-none pd-label [&::-webkit-details-marker]:hidden">
-                Meny
+                {t(locale, "chrome.menu")}
               </summary>
               <nav
-                aria-label="Rum, mobil"
+                aria-label={t(locale, "chrome.roomsMobile")}
                 className="absolute right-0 top-full z-20 mt-1 w-52 border border-line bg-surface"
               >
                 {[...FACADE_PRODUCTS, ...FACADE_SERVICE].map((item) => (
@@ -153,7 +171,7 @@ export function Facade({
                     href={item.href}
                     className="block px-3 py-2 text-sm text-ink-soft hover:bg-paper hover:text-ink"
                   >
-                    {item.label}
+                    {item.id === item.label ? item.label : t(locale, item.label as MessageKey)}
                   </Link>
                 ))}
               </nav>

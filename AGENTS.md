@@ -82,8 +82,11 @@ AI är aldrig source of truth; automation har uttrycklig nivå (L0–L4).
   twenty orgs. Do not send another real SMS or copy 46elks to production.
 - Design source is locked in `docs/design/` (see `docs/DESIGN-SOURCE.md`).
   Do not start `@pixdrift/design` or a second look. Do not invent NORA,
-  MOVA, SAGA, or settings-apps (BEA, LANGUAGE). Swedish is the shipped
-  locale. Never the term "AI" in UI. One accent. Status is shape plus color.
+  MOVA, SAGA, or settings-apps (BEA, LANGUAGE). English is the system
+  language. Translations sit in `src/lib/i18n` (sv, pl, de, es, fr, nl,
+  it, no, da, fi). Locale is the chrome picker and `pd_locale` cookie,
+  not a product. Never the term "AI" in UI. One accent. Status is shape
+  plus color.
 - ALVA schema is `docs/design/alva/`. Grammar in `/alva` only. PIXDRIFT
   chrome wins. Do not import the diagnosis engine, AWS, or a second
   typeface. Status is mark plus word (`□` / `○` / `✓`).

@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type pg from "pg";
 import type { EventLog } from "@pixdrift/events";
+import { DEFAULT_LOCALE, t, type Locale } from "../i18n/index.ts";
 import { creditConfigured, requestCompanyCredit, type CreditReport } from "../platform/credit.ts";
 import { normalizeOrgNumber, orgNumberError } from "../platform/org-number.ts";
 
@@ -14,21 +15,33 @@ export const VENDOR_STATUSES = ["blocked", "failed", "fetched"] as const;
 export type VendorStatus = (typeof VENDOR_STATUSES)[number];
 
 export const INQUIRY_STATUS_LABELS: Record<InquiryStatus, string> = {
-  open: "Öppen",
-  assessed: "Bedömd",
+  open: "Open",
+  assessed: "Assessed",
 };
 
 export const ASSESSMENT_LABELS: Record<Assessment, string> = {
-  go: "Kör",
-  watch: "Bevaka",
-  stop: "Stanna",
+  go: "Go",
+  watch: "Watch",
+  stop: "Stop",
 };
 
 export const VENDOR_STATUS_LABELS: Record<VendorStatus, string> = {
-  blocked: "Kredit av",
-  failed: "Ingen rapport",
-  fetched: "Rapport inne",
+  blocked: "Credit off",
+  failed: "No report",
+  fetched: "Report in",
 };
+
+export function inquiryStatusLabel(status: InquiryStatus, locale: Locale = DEFAULT_LOCALE): string {
+  return t(locale, `creditae.status.${status}`);
+}
+
+export function assessmentLabel(value: Assessment, locale: Locale = DEFAULT_LOCALE): string {
+  return t(locale, `creditae.assess.${value}`);
+}
+
+export function vendorStatusLabel(status: VendorStatus, locale: Locale = DEFAULT_LOCALE): string {
+  return t(locale, `creditae.vendor.${status}`);
+}
 
 const INQUIRY_COLUMNS = `id, subject_org_number, subject_name, reason, status, assessment, notes,
             vendor_status, provider_ref, vendor_name, vendor_score, vendor_limit, vendor_reason,

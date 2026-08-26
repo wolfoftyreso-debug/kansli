@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { DEFAULT_LOCALE, t, type Locale } from "@/lib/i18n";
 
 type Task = {
   id: string;
@@ -13,9 +14,11 @@ type Task = {
 export default function TaskBoard({
   highlightId,
   initialTasks = [],
+  locale = DEFAULT_LOCALE,
 }: {
   highlightId?: string | null;
   initialTasks?: Task[];
+  locale?: Locale;
 }) {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [title, setTitle] = useState("");
@@ -38,7 +41,7 @@ export default function TaskBoard({
         const data = await res.json();
         if (active) setTasks(data.tasks ?? []);
       } catch {
-        if (active) setError("Kunde inte hämta uppgifter.");
+        if (active) setError(t(locale, "tasks.fetchError"));
       } finally {
         if (active) setLoading(false);
       }
@@ -47,13 +50,13 @@ export default function TaskBoard({
     return () => {
       active = false;
     };
-  }, []);
+  }, [locale]);
 
   async function addTask(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     if (!title.trim()) {
-      setError("Titeln får inte vara tom.");
+      setError(t(locale, "tasks.emptyTitle"));
       return;
     }
     setSubmitting(true);
@@ -65,13 +68,13 @@ export default function TaskBoard({
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error ?? "Kunde inte spara uppgiften.");
+        throw new Error(data.error ?? t(locale, "tasks.saveError"));
       }
       setTitle("");
       setOwner("");
       await refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Något gick fel.");
+      setError(err instanceof Error ? err.message : t(locale, "tasks.genericError"));
     } finally {
       setSubmitting(false);
     }
@@ -82,7 +85,7 @@ export default function TaskBoard({
     const res = await fetch(`/api/kansli/tasks/${id}`, { method: "PATCH" });
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      setError(typeof data.error === "string" ? data.error : "Kunde inte uppdatera uppgiften.");
+      setError(typeof data.error === "string" ? data.error : t(locale, "tasks.updateError"));
       return;
     }
     await refresh();
@@ -93,7 +96,7 @@ export default function TaskBoard({
     const res = await fetch(`/api/kansli/tasks/${id}`, { method: "DELETE" });
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      setError(typeof data.error === "string" ? data.error : "Kunde inte ta bort uppgiften.");
+      setError(typeof data.error === "string" ? data.error : t(locale, "tasks.deleteError"));
       return;
     }
     await refresh();
@@ -101,17 +104,15 @@ export default function TaskBoard({
 
   const { open, done } = useMemo(
     () => ({
-      open: tasks.filter((t) => !t.done).length,
-      done: tasks.filter((t) => t.done).length,
+      open: tasks.filter((item) => !item.done).length,
+      done: tasks.filter((item) => item.done).length,
     }),
     [tasks],
   );
 
   return (
     <section className="flex flex-col gap-6">
-      <p className="text-sm text-ink-soft">
-        Uppgiftstavla — {open} öppna, {done} klara.
-      </p>
+      <p className="text-sm text-ink-soft">{t(locale, "tasks.summary", { open, done })}</p>
 
       <form
         onSubmit={addTask}
@@ -121,15 +122,15 @@ export default function TaskBoard({
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Ny uppgift…"
-            aria-label="Uppgiftens titel"
+            placeholder={t(locale, "tasks.titlePlaceholder")}
+            aria-label={t(locale, "tasks.titleAria")}
             className="flex-1 border border-line bg-paper px-3 py-2 text-ink outline-none focus:border-accent"
           />
           <input
             value={owner}
             onChange={(e) => setOwner(e.target.value)}
-            placeholder="Ansvarig"
-            aria-label="Ansvarig"
+            placeholder={t(locale, "tasks.ownerPlaceholder")}
+            aria-label={t(locale, "tasks.ownerAria")}
             className="border border-line bg-paper px-3 py-2 text-ink outline-none focus:border-accent sm:w-40"
           />
         </div>
@@ -138,7 +139,7 @@ export default function TaskBoard({
           disabled={submitting}
           className="self-start bg-ink px-4 py-2 font-medium text-paper hover:bg-ink-soft disabled:opacity-60"
         >
-          {submitting ? "Sparar…" : "Lägg till"}
+          {submitting ? t(locale, "common.saving") : t(locale, "tasks.add")}
         </button>
         {error && (
           <p role="alert" className="text-sm text-ink">
@@ -149,10 +150,10 @@ export default function TaskBoard({
 
       <div className="flex flex-col gap-2">
         {loading ? (
-          <p className="text-ink-soft">Laddar…</p>
+          <p className="text-ink-soft">{t(locale, "common.loading")}</p>
         ) : tasks.length === 0 ? (
           <p className="rounded-2xl border border-dashed border-line p-8 text-center text-ink-soft">
-            Inga uppgifter ännu. Lägg till den första ovan.
+            {t(locale, "tasks.empty")}
           </p>
         ) : (
           <ul className="flex flex-col gap-2">
@@ -170,7 +171,7 @@ export default function TaskBoard({
                   type="checkbox"
                   checked={task.done}
                   onChange={() => toggle(task.id)}
-                  aria-label={`Markera "${task.title}" som klar`}
+                  aria-label={t(locale, "tasks.markDone", { title: task.title })}
                   className="h-5 w-5 shrink-0 accent-[var(--color-accent)]"
                 />
                 <div className="flex min-w-0 flex-1 flex-col">
@@ -185,10 +186,10 @@ export default function TaskBoard({
                 </div>
                 <button
                   onClick={() => remove(task.id)}
-                  aria-label={`Ta bort "${task.title}"`}
+                  aria-label={t(locale, "tasks.removeNamed", { title: task.title })}
                   className="shrink-0 border border-transparent px-2 py-1 text-sm text-muted hover:border-[var(--color-status-blocked)] hover:bg-[var(--color-status-blocked)] hover:text-paper"
                 >
-                  Ta bort
+                  {t(locale, "tasks.remove")}
                 </button>
               </li>
             ))}

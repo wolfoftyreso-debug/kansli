@@ -4,17 +4,23 @@ import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { EmptyState, Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
 import { caseStatusLine, listCases, parseCaseStatus } from "@/lib/alva/cases";
 import { readSession } from "@/lib/auth/session";
-import { formatSwedishDateTime } from "@/lib/format/datetime";
+import { formatDateTime } from "@/lib/format/datetime";
+import { t } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 import { tryRuntime } from "@/lib/platform/page";
 import { registerAlvaCase } from "./actions";
 
-export const metadata = {
-  title: "ALVA — Pixdrift",
-  description: "Kundens fel, anteckningar och mätvärden. Diagnosen kommer senare.",
-};
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "alva.metaTitle"),
+    description: t(locale, "alva.metaDescription"),
+  };
+}
 
 export default async function AlvaPage() {
   const session = await readSession();
+  const locale = await readLocale();
   const runtime = tryRuntime(session?.org?.ref);
   const cases = session?.org?.ref && runtime ? await listCases(runtime.pool, session.org.ref) : [];
 
@@ -23,19 +29,17 @@ export default async function AlvaPage() {
       <header className="flex flex-col gap-3">
         <ProductCrumb crumbs={[{ href: "/alva", label: "ALVA" }]} />
         <h1 className="pd-h1">ALVA</h1>
-        <p className="text-ink-soft">
-          ALVA tar emot vad kunden sa, vad ni antecknade och vad som mättes. Diagnosen kopplas in
-          senare. Systemet ställer ingen diagnos själv.
-        </p>
-        <Notice>
-          Diagnosen är inte inkopplad än. Ni kan fylla i ett tomt protokoll med egna uppgifter.
-          Systemet hittar aldrig på något.
-        </Notice>
+        <p className="text-ink-soft">{t(locale, "alva.lead")}</p>
+        <Notice>{t(locale, "alva.notice")}</Notice>
       </header>
 
       {!session?.org ? (
-        <SignInGate next="/alva" title="Logga in för att registrera ärenden">
-          Ärendet sparas i ALVA. Logga in för att registrera.
+        <SignInGate
+          next="/alva"
+          title={t(locale, "alva.signInTitle")}
+          actionLabel={t(locale, "chrome.signIn")}
+        >
+          {t(locale, "alva.signInBody")}
         </SignInGate>
       ) : (
         <>
@@ -43,25 +47,25 @@ export default async function AlvaPage() {
             action={registerAlvaCase}
             className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
           >
-            <h2 className="text-lg font-semibold">Nytt fall</h2>
-            <Field name="complaint" label="Kundens beskrivning" required multiline />
-            <Field name="vehicleRef" label="Fordonsreferens (valfritt)" />
-            <Field name="area" label="Område (valfritt, t.ex. bromsar)" />
-            <Field name="mileageKm" label="Mätarställning km (valfritt)" />
-            <Field name="desiredOutcome" label="Önskat utfall (valfritt)" />
-            <Submit large>Registrera fall</Submit>
+            <h2 className="text-lg font-semibold">{t(locale, "alva.newCase")}</h2>
+            <Field name="complaint" label={t(locale, "alva.complaint")} required multiline />
+            <Field name="vehicleRef" label={t(locale, "alva.vehicleRef")} />
+            <Field name="area" label={t(locale, "alva.area")} />
+            <Field name="mileageKm" label={t(locale, "alva.mileage")} />
+            <Field name="desiredOutcome" label={t(locale, "alva.desiredOutcome")} />
+            <Submit large>{t(locale, "alva.register")}</Submit>
           </form>
 
           <section className="flex flex-col gap-3">
-            <h2 className="text-lg font-semibold">Fall</h2>
+            <h2 className="text-lg font-semibold">{t(locale, "alva.cases")}</h2>
             {cases.length === 0 ? (
-              <EmptyState>Inga fall ännu.</EmptyState>
+              <EmptyState>{t(locale, "alva.empty")}</EmptyState>
             ) : (
               <ul className="flex flex-col gap-3">
                 {cases.map((item) => (
                   <li key={item.id} className="rounded-xl border border-line bg-surface p-4">
                     <p className="pd-label">
-                      {caseStatusLine(parseCaseStatus(item.status) ?? "open")}
+                      {caseStatusLine(parseCaseStatus(item.status) ?? "open", locale)}
                     </p>
                     <p className="mt-2 font-medium">
                       <Link href={`/alva/${item.id}`} className="hover:underline">
@@ -72,7 +76,7 @@ export default async function AlvaPage() {
                       <p className="font-mono text-xs text-faint">{item.vehicleRef}</p>
                     ) : null}
                     <p className="mt-2 text-xs text-faint">
-                      {formatSwedishDateTime(item.createdAt)}
+                      {formatDateTime(item.createdAt, locale)}
                     </p>
                   </li>
                 ))}

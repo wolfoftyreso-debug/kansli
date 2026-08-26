@@ -9,9 +9,9 @@ import {
 
 describe("facade", () => {
   it("keeps preview out of production", () => {
-    expect(facadeRuntimeMark({ VERCEL_ENV: "preview", APP_ENV: "prod" })).toBe("förhandsvisning");
-    expect(facadeRuntimeMark({ VERCEL_ENV: "production" })).toBe("produktion");
-    expect(facadeRuntimeMark({ NODE_ENV: "production" })).toBe("lokal");
+    expect(facadeRuntimeMark({ VERCEL_ENV: "preview", APP_ENV: "prod" })).toBe("preview");
+    expect(facadeRuntimeMark({ VERCEL_ENV: "production" })).toBe("production");
+    expect(facadeRuntimeMark({ NODE_ENV: "production" })).toBe("local");
   });
 
   it("marks the longest matching room, not the parent", () => {

@@ -18,7 +18,9 @@ Numbered documents are the contract; referens/ holds living HTML proofs.
 
 ## Hard rules (apply to every surface, every future system)
 - Never the term "AI" in UI. Say "automation" or "system".
-- English is canonical UI language; Swedish ships as a locale via the terminology registry.
+- English is the canonical UI language. Every chrome string is translated
+  (Swedish, Polish, German, Spanish, and the rest of the brand set) via
+  `src/lib/i18n`. Locale is the chrome picker, not a LANGUAGE product.
 - One figure = one meaning. State = shape + color, never color alone.
 - Left to right, always. One accent per view. No unicode emoji. No faces on machines.
 - Product semantics come ONLY from 01-PRODUCT-REGISTRY.md.

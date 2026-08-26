@@ -39,7 +39,7 @@ export const brand = {
     "Practical software for the gaps between systems. Developed from real operational needs and maintained by Landvex.",
   /** English is canonical; localization is supported from the first commit (§14). */
   canonicalLocale: "en",
-  locales: ["en", "sv", "de", "fr", "nl", "es", "it", "no", "da", "fi"],
+  locales: ["en", "sv", "pl", "de", "fr", "nl", "es", "it", "no", "da", "fi"],
   company: {
     name: "Landvex",
     offices: [
