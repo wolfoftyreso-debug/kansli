@@ -11,9 +11,7 @@ export default function NotFound() {
     <main id="main" className="border-b border-line">
       <div className="doc py-24 site:py-32">
         <span className="eyebrow text-teal">404</span>
-        <h1 className="mt-5 mb-5 text-[40px] font-semibold tracking-[-0.03em]">
-          That page is not here.
-        </h1>
+        <h1 className="headline mt-5 mb-5">That page is not here.</h1>
         <p className="mb-8 text-lg leading-[1.6] text-muted">
           The address may have moved. The work has not.
         </p>

@@ -28,11 +28,7 @@ export function DocPage({
 }
 
 export function DocHeading({ children }: { children: ReactNode }) {
-  return (
-    <h2 className="mt-12 mb-4 text-[26px] font-semibold tracking-[-0.015em] first:mt-0">
-      {children}
-    </h2>
-  );
+  return <h2 className="title-lg mt-12 mb-4 first:mt-0">{children}</h2>;
 }
 
 export function DocText({ children }: { children: ReactNode }) {
