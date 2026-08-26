@@ -1,15 +1,23 @@
 import type pg from "pg";
 import { quoteIdent, WORKSPACE_SCHEMAS } from "@pixdrift/db";
-import { metricsSnapshot, type McpMetricSnapshot } from "@pixdrift/mcp-core";
-import { SYSTEM_MODULES, type SystemId } from "@pixdrift/systems";
+import { metricsSnapshot } from "@pixdrift/mcp-core";
+import { SYSTEM_MODULES } from "@pixdrift/systems";
 import { isHardenedRuntime } from "../auth/secrets.ts";
 import { revolutConfigState } from "../ekonomi/revolut/config.ts";
 import { isHouseSession } from "../kansli/intakes.ts";
 import { ritaEngineSnapshot } from "../rita/resolve-engine.ts";
 import { gatewaySnapshot } from "./ai.ts";
 import { facadeRuntimeMark, orgIdFromRef } from "./facade.ts";
-import { loadFirstCustomerBoard, type FirstCustomerBoard } from "./first-customer.ts";
+import { loadFirstCustomerBoard } from "./first-customer.ts";
 import { hubStatus } from "./hub-status.ts";
+import type {
+  OpsPoint,
+  OpsRecent,
+  OpsSchemaMeasure,
+  OpsScope,
+  OpsSnapshot,
+  OpsTableMeasure,
+} from "./ops-view.ts";
 import { smsConfigured } from "./sms.ts";
 import {
   DATABASE_CONTRACT,
@@ -19,59 +27,18 @@ import {
   PRODUCT_TABLES,
   structureKey,
   type StructureTable,
-  type TableTenancy,
 } from "./structure.ts";
 
-export type OpsScope = "house" | "org";
-
-export type OpsTableMeasure = {
-  schema: string;
-  table: string;
-  tenancy: TableTenancy | "unknown";
-  system: SystemId | "platform" | null;
-  rows: number | null;
-  expected: boolean;
-};
-
-export type OpsSchemaMeasure = {
-  schema: string;
-  present: boolean;
-  grant: "readwrite" | "append" | "identity";
-  migrations: { version: number; name: string }[];
-};
-
-export type OpsEventMeasure = {
-  system: string;
-  count: number;
-  lastAt: string | null;
-};
-
-export type OpsSnapshot = {
-  takenAt: string;
-  scope: OpsScope;
-  orgRef: string;
-  orgName: string | null;
-  runtime: "produktion" | "förhandsvisning" | "lokal";
-  hardened: boolean;
-  contract: typeof DATABASE_CONTRACT;
-  health: {
-    database: "up" | "down";
-    gateway: { configured: boolean; auth: string };
-    rita: { available: boolean; kind: string; modelReady: boolean };
-    sms: boolean;
-    revolut: { configured: boolean; environment: string };
-    mcp: McpMetricSnapshot;
-  };
-  identity: {
-    organizations: number | null;
-    users: number | null;
-    memberships: number | null;
-  };
-  schemas: OpsSchemaMeasure[];
-  tables: OpsTableMeasure[];
-  events: OpsEventMeasure[];
-  readiness: FirstCustomerBoard;
-};
+export type {
+  OpsEventMeasure,
+  OpsPoint,
+  OpsRecent,
+  OpsSchemaMeasure,
+  OpsScope,
+  OpsSnapshot,
+  OpsTableMeasure,
+} from "./ops-view.ts";
+export { seriesChangePct, seriesTotal } from "./ops-view.ts";
 
 export function opsScopeFor(orgRef: string | null | undefined): OpsScope {
   return isHouseSession(orgRef) ? "house" : "org";
@@ -215,6 +182,97 @@ async function loadEvents(
   });
 }
 
+function hourKey(value: Date): string {
+  return new Date(value).toISOString().slice(0, 13);
+}
+
+export function fillHourSeries(
+  rows: { hour: Date | string; n: string | number }[],
+  now = new Date(),
+): OpsPoint[] {
+  const byHour = new Map(rows.map((row) => [hourKey(new Date(row.hour)), Number(row.n)]));
+  const end = new Date(now);
+  end.setUTCMinutes(0, 0, 0);
+  const points: OpsPoint[] = [];
+  for (let i = 23; i >= 0; i -= 1) {
+    const at = new Date(end);
+    at.setUTCHours(end.getUTCHours() - i);
+    points.push({ at: at.toISOString(), count: byHour.get(hourKey(at)) ?? 0 });
+  }
+  return points;
+}
+
+async function loadSeries(
+  pool: pg.Pool,
+  scope: OpsScope,
+  orgRef: string,
+): Promise<{ series: OpsPoint[]; previousWindow: number }> {
+  const where = scope === "house" ? "" : " and org_ref = $1";
+  const params = scope === "house" ? [] : [orgRef];
+  const [hours, previous] = await Promise.all([
+    pool.query<{ hour: Date; n: string }>(
+      `select date_trunc('hour', occurred_at) as hour, count(*)::text as n
+         from platform.events
+        where occurred_at >= now() - interval '24 hours'${where}
+        group by 1
+        order by 1`,
+      params,
+    ),
+    pool.query<{ n: string }>(
+      `select count(*)::text as n
+         from platform.events
+        where occurred_at >= now() - interval '48 hours'
+          and occurred_at < now() - interval '24 hours'${where}`,
+      params,
+    ),
+  ]);
+  return {
+    series: fillHourSeries(hours.rows),
+    previousWindow: Number(previous.rows[0]?.n ?? 0),
+  };
+}
+
+async function loadRecent(pool: pg.Pool, scope: OpsScope, orgRef: string): Promise<OpsRecent[]> {
+  const sql =
+    scope === "house"
+      ? `select id::text, occurred_at, system, kind, subject_ref, payload
+           from platform.events
+          order by id desc
+          limit 8`
+      : `select id::text, occurred_at, system, kind, subject_ref, payload
+           from platform.events
+          where org_ref = $1
+          order by id desc
+          limit 8`;
+  const { rows } = await pool.query<{
+    id: string;
+    occurred_at: Date;
+    system: string;
+    kind: string;
+    subject_ref: string | null;
+    payload: Record<string, unknown>;
+  }>(sql, scope === "house" ? [] : [orgRef]);
+  return rows.map((row) => {
+    const payload = row.payload ?? {};
+    const headlineKeys = ["title", "headline", "companyName", "reason"] as const;
+    let headline: string | null = null;
+    for (const key of headlineKeys) {
+      const value = payload[key];
+      if (typeof value === "string" && value.trim()) {
+        headline = value.trim();
+        break;
+      }
+    }
+    return {
+      id: row.id,
+      at: new Date(row.occurred_at).toISOString(),
+      system: row.system,
+      kind: row.kind,
+      headline: headline ?? row.subject_ref,
+    };
+  });
+}
+
 async function loadIdentity(
   pool: pg.Pool,
   scope: OpsScope,
@@ -268,13 +326,15 @@ export async function loadOpsSnapshot(
   const gateway = gatewaySnapshot();
   const rita = ritaEngineSnapshot();
   const revolut = revolutConfigState();
-  const [schemas, tables, events, identity, readiness] = await Promise.all([
+  const [schemas, tables, events, identity, readiness, activity] = await Promise.all([
     loadSchemas(pool),
     loadTables(pool, scope),
     loadEvents(pool, scope, input.orgRef),
     loadIdentity(pool, scope, input.orgRef),
     loadFirstCustomerBoard(pool, input.orgRef),
+    Promise.all([loadSeries(pool, scope, input.orgRef), loadRecent(pool, scope, input.orgRef)]),
   ]);
+  const [{ series, previousWindow }, recent] = activity;
 
   return {
     takenAt: new Date().toISOString(),
@@ -296,6 +356,9 @@ export async function loadOpsSnapshot(
     schemas,
     tables,
     events,
+    series,
+    previousWindow,
+    recent,
     readiness,
   };
 }

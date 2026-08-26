@@ -38,20 +38,15 @@ export default async function DriftPage() {
             { href: "/platform/drift", label: "Drift" },
           ]}
         />
-        <h1 className="text-3xl font-semibold tracking-tight">Drift</h1>
+        <p className="pd-label">Översikt</p>
+        <h1 className="text-3xl font-semibold tracking-tight">{session?.org?.name ?? "Drift"}</h1>
         <p className="text-ink-soft">
-          En bild av hela infrastrukturen. Samma databas. Samma inloggning. Inget visningslager
-          ovanpå — det här är mätningen.
+          {session?.org
+            ? scope === "house"
+              ? "Senaste dygnet i hela flottan. Verkstäder ser bara sitt bolag."
+              : "Senaste dygnet i ert bolag. Inte andras rader."
+            : "Logga in för att se live mätning."}
         </p>
-        {session?.org ? (
-          <Notice>
-            {scope === "house"
-              ? "Du är huset. Siffrorna gäller alla bolag. Verkstäder ser bara sitt."
-              : "Du ser ert bolag. Inte andras rader, inte husets inkorg."}
-          </Notice>
-        ) : (
-          <Notice>Logga in för att se live mätning. Utan inloggning visas inga rader.</Notice>
-        )}
       </header>
 
       {!session?.org ? (

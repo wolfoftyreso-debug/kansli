@@ -3,7 +3,8 @@ import { createPool, migrateWorkspace } from "@pixdrift/db";
 import { EventLog } from "@pixdrift/events";
 import { createDraftInvoice } from "../ekonomi/invoices.ts";
 import { bindOrgPool } from "./tenancy.ts";
-import { loadOpsSnapshot, opsScopeFor, unexpectedTables } from "./ops.ts";
+import { fillHourSeries, loadOpsSnapshot, opsScopeFor, unexpectedTables } from "./ops.ts";
+import { seriesChangePct, seriesTotal } from "./ops-view.ts";
 import { PRODUCT_TABLES } from "./structure.ts";
 
 describe("ops scope", () => {
@@ -11,6 +12,26 @@ describe("ops scope", () => {
     expect(opsScopeFor("pixdrift:org:org-exempelbolaget")).toBe("house");
     expect(opsScopeFor("pixdrift:org:org-holm-dack-umea-ab")).toBe("org");
     expect(opsScopeFor(null)).toBe("org");
+  });
+
+  it("fills twenty-four hours so the overview chart has a stable axis", () => {
+    const now = new Date("2026-08-26T12:30:00.000Z");
+    const series = fillHourSeries([{ hour: "2026-08-26T11:00:00.000Z", n: 4 }], now);
+    expect(series).toHaveLength(24);
+    expect(series.at(-1)?.at).toBe("2026-08-26T12:00:00.000Z");
+    expect(series.find((point) => point.at === "2026-08-26T11:00:00.000Z")?.count).toBe(4);
+    expect(series.filter((point) => point.count === 0).length).toBe(23);
+  });
+
+  it("summarises the 24h window without loading Postgres", () => {
+    const series = [
+      { at: "2026-08-26T10:00:00.000Z", count: 2 },
+      { at: "2026-08-26T11:00:00.000Z", count: 4 },
+    ];
+    expect(seriesTotal(series)).toBe(6);
+    expect(seriesChangePct(6, 3)).toBe(100);
+    expect(seriesChangePct(0, 0)).toBeNull();
+    expect(seriesChangePct(4, 0)).toBe(100);
   });
 });
 
@@ -105,5 +126,8 @@ live("ops snapshot (live Postgres)", () => {
     expect(PRODUCT_TABLES.map((item) => `${item.schema}.${item.table}`)).toContain(
       "tyra.tire_cases",
     );
+    expect(house.series).toHaveLength(24);
+    expect(shop.recent.length).toBeGreaterThan(0);
+    expect(shop.recent[0]?.kind).toMatch(/^ekonomi\./);
   });
 });
