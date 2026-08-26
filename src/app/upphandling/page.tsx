@@ -1,5 +1,5 @@
 import { AppShell } from "@/components/app/AppShell";
-import { CheckField, Field, Notice, Submit } from "@/components/app/SignInGate";
+import { CheckField, Field, Notice, SelectField, Submit } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { DEMO_MODULE_LABELS, DEMO_MODULES } from "@/lib/kansli/intakes";
 
@@ -54,89 +54,112 @@ export default async function UpphandlingPage({
           {orgNumberWrong ? (
             <Notice>Organisationsnumret stämmer inte. Kontrollera siffrorna.</Notice>
           ) : null}
-          <Field name="contactEmail" label="Arbets-e-post" type="email" required />
+          <Field name="contactEmail" label="Arbets-e-post" type="email" required large />
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field name="contactName" label="Kontaktperson" required placeholder="Anna Andersson" />
-            <Field name="contactTitle" label="Roll" placeholder="IT-inköp" />
+            <Field
+              name="contactName"
+              label="Kontaktperson"
+              required
+              large
+              placeholder="Anna Andersson"
+            />
+            <Field name="contactTitle" label="Roll" large placeholder="IT-inköp" />
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field name="companyName" label="Bolag" required placeholder="Bilia Personbilar AB" />
-            <Field name="orgNumber" label="Organisationsnummer" placeholder="556xxx-xxxx" />
+            <Field
+              name="companyName"
+              label="Bolag"
+              required
+              large
+              placeholder="Bilia Personbilar AB"
+            />
+            <Field name="orgNumber" label="Organisationsnummer" large placeholder="556xxx-xxxx" />
           </div>
-          <Field name="sites" label="Anläggningar" placeholder="Göteborg, Stockholm…" />
-          <Field name="brands" label="Märken" placeholder="Volkswagen, Audi, Seat" />
+          <Field name="sites" label="Anläggningar" large placeholder="Göteborg, Stockholm…" />
+          <Field name="brands" label="Märken" large placeholder="Volkswagen, Audi, Seat" />
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field name="dms" label="DMS / verkstadssystem" />
-            <Field name="economySystem" label="Ekonomisystem" placeholder="Fortnox, Visma, annat" />
+            <Field name="dms" label="DMS / verkstadssystem" large />
+            <Field
+              name="economySystem"
+              label="Ekonomisystem"
+              large
+              placeholder="Fortnox, Visma, annat"
+            />
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field name="tireHotel" label="Däckhotell idag" />
-            <Field name="smsProvider" label="SMS-leverantör" />
+            <Field name="tireHotel" label="Däckhotell idag" large />
+            <Field name="smsProvider" label="SMS-leverantör" large />
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            <label className="flex flex-col gap-1">
-              <span className="text-sm text-ink-soft">Identitet idag</span>
-              <select
-                name="identitySystem"
-                className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
-                defaultValue=""
-              >
-                <option value="">Välj</option>
-                <option value="entra">Microsoft Entra</option>
-                <option value="okta">Okta</option>
-                <option value="local">Lokala konton</option>
-                <option value="other">Annat</option>
-              </select>
-            </label>
-            <label className="flex flex-col gap-1">
-              <span className="text-sm text-ink-soft">Miljö</span>
-              <select
-                name="environment"
-                className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
-                defaultValue=""
-              >
-                <option value="">Välj</option>
-                <option value="cloud">Moln</option>
-                <option value="onprem">On-prem</option>
-                <option value="hybrid">Hybrid</option>
-              </select>
-            </label>
+            <SelectField
+              name="identitySystem"
+              label="Identitet idag"
+              placeholder="Välj"
+              large
+              options={[
+                { value: "entra", label: "Microsoft Entra" },
+                { value: "okta", label: "Okta" },
+                { value: "local", label: "Lokala konton" },
+                { value: "other", label: "Annat" },
+              ]}
+            />
+            <SelectField
+              name="environment"
+              label="Miljö"
+              placeholder="Välj"
+              large
+              options={[
+                { value: "cloud", label: "Moln" },
+                { value: "onprem", label: "On-prem" },
+                { value: "hybrid", label: "Hybrid" },
+              ]}
+            />
           </div>
           <Field
             name="oidcNotes"
             label="OIDC / brandvägg / allowlist"
             multiline
+            large
             placeholder="Vilka originer ska in? Vilket IdP ska vi samexistera med?"
           />
-          <fieldset className="flex flex-col gap-2">
+          <fieldset className="flex flex-col gap-1">
             <legend className="text-sm text-ink-soft">Vad ska demot visa</legend>
             {DEMO_MODULES.map((id) => (
               <CheckField
                 key={id}
                 name="demoModules"
                 value={id}
+                large
                 label={DEMO_MODULE_LABELS[id]}
                 defaultChecked={id === "tyra" || id === "ekonomi" || id === "irma"}
               />
             ))}
           </fieldset>
-          <Field name="notes" label="Övrigt vi måste veta" multiline />
+          <Field name="notes" label="Övrigt vi måste veta" multiline large />
           <CheckField
             name="honestyAccepted"
             required
+            large
             label="Jag bekräftar att det här är underlag för demo och möte. Live-leverantörspriser, Visma, Fortnox och kvalificerad e-signatur ingår inte. SMS vid sälj går bara när telefonen är kopplad och ni sagt ja."
           />
           <CheckField
             name="provisionAccount"
             defaultChecked
+            large
             label="Skapa inloggning med arbets-e-post och tillfälligt lösenord."
           />
           <CheckField
             name="issueInvoice"
             defaultChecked
+            large
             label="Utfärda startfaktura med tio dagars betalning."
           />
-          <Field name="invoiceKronor" label="Fakturabelopp exkl. moms (kr)" defaultValue="2500" />
+          <Field
+            name="invoiceKronor"
+            label="Fakturabelopp exkl. moms (kr)"
+            large
+            defaultValue="2500"
+          />
           <Submit large>Boka möte om 10 dagar</Submit>
         </form>
       </div>
