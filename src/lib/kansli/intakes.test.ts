@@ -14,11 +14,22 @@ import { generateWorkshopPassword, slugifyCompany } from "./provision.ts";
 import { submitIntake } from "./submit-intake.ts";
 import { listTasks } from "./tasks.ts";
 import { ownerDatabaseUrl } from "../platform/env.ts";
+import { DEMO_ORG_NUMBER } from "../rita/request.ts";
 
 describe("koncernupphandling domain", () => {
   it("books the meeting ten days after now", () => {
     const now = new Date("2026-08-24T12:00:00.000Z");
     expect(meetingAtFrom(now).toISOString()).toBe("2026-09-03T08:00:00.000Z");
+  });
+
+  it("refuses a form with a broken organisation number", () => {
+    const form = new FormData();
+    form.set("companyName", "Bilia Personbilar AB");
+    form.set("contactName", "Anna Inköp");
+    form.set("contactEmail", "anna@bilia.se");
+    form.set("honestyAccepted", "on");
+    form.set("orgNumber", "556000-0000");
+    expect(() => parseIntakeForm(form, "pixdrift:org:org-exempelbolaget")).toThrow(/stämmer inte/);
   });
 
   it("refuses a form that skips the honesty box", () => {
@@ -51,7 +62,7 @@ const live = OWNER && APP ? describe : describe.skip;
 function filledForm(email: string): FormData {
   const form = new FormData();
   form.set("companyName", "Bilia Testverkstad AB");
-  form.set("orgNumber", "556010-1010");
+  form.set("orgNumber", DEMO_ORG_NUMBER);
   form.set("contactName", "Test Inköp");
   form.set("contactEmail", email);
   form.set("contactTitle", "IT-inköp");

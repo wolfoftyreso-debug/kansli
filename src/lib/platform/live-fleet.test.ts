@@ -14,6 +14,7 @@ import { createAgreement } from "../irma/agreements.ts";
 import { requestAnalysis } from "../rita/analyses.ts";
 import { DEMO_ORG_NUMBER } from "../rita/request.ts";
 import { persistSnapshot } from "../tora/persist.ts";
+import { makeOrgNumber } from "./org-number.ts";
 import { upsertCompanyProfile } from "../tora/profile.ts";
 import { createCase as createTyraCase } from "../tyra/cases.ts";
 import { issueHubLink } from "../tyra/hub.ts";
@@ -186,7 +187,7 @@ async function runFleet(): Promise<{ passed: number; companies: number; failures
     const companyName = WORKSHOPS[i]!;
     const n = String(i + 1).padStart(2, "0");
     const email = `liveprov${n}-${stamp}@pixdrift-test.se`;
-    const orgNumber = `5561${n}-${String(1000 + i).slice(-4)}`;
+    const orgNumber = makeOrgNumber(i + 1);
     const report: CompanyReport = {
       index: i + 1,
       companyName,
@@ -291,7 +292,7 @@ async function runFleet(): Promise<{ passed: number; companies: number; failures
         employees: 8 + i,
         annualRevenueSek: 4_000_000 + i * 100_000,
         servesAreas: ["01"],
-        capabilities: ["el.installation"],
+        capabilities: ["dack.hotell"],
         certifications: [],
         registrations: ["f_tax"],
       });

@@ -10,6 +10,7 @@ import {
 } from "./request.ts";
 import { findingsFromAnalysis } from "./findings.ts";
 import { resolveRitaEngine, ritaEngineUnavailableReason } from "./resolve-engine.ts";
+import { orgNumberError } from "../platform/org-number.ts";
 
 export interface Analysis {
   id: string;
@@ -48,6 +49,11 @@ export async function requestAnalysis(input: {
     requestId: input.requestId,
     payload: { companyName: input.companyName },
   });
+
+  const numberIssue = orgNumberError(input.orgNumber);
+  if (numberIssue) {
+    return fail(input, id, "invalid_org_number", numberIssue);
+  }
 
   const resolved = resolveRitaEngine();
   if (!resolved) {

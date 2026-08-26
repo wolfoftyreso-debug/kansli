@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import type pg from "pg";
+import { normalizeOrgNumber, orgNumberError } from "../platform/org-number.ts";
 
 export const DEMO_MODULES = ["tyra", "irma", "ekonomi", "tora", "britt", "rita", "alva"] as const;
 export type DemoModule = (typeof DEMO_MODULES)[number];
@@ -146,6 +147,11 @@ export function parseIntakeForm(form: FormData, houseOrgRef: string): IntakeDraf
   if (!honestyAccepted) {
     throw new Error("ärlighetsrutan måste kryssas. Anmälan är inte ett sålt avtal.");
   }
+  const rawOrgNumber = optional(form, "orgNumber");
+  if (rawOrgNumber && orgNumberError(rawOrgNumber)) {
+    throw new Error(orgNumberError(rawOrgNumber)!);
+  }
+  const orgNumber = rawOrgNumber ? (normalizeOrgNumber(rawOrgNumber) ?? rawOrgNumber) : undefined;
   const kronor = String(form.get("invoiceKronor") ?? "").trim();
   let invoiceNetOre: number | undefined;
   if (kronor) {
@@ -157,7 +163,7 @@ export function parseIntakeForm(form: FormData, houseOrgRef: string): IntakeDraf
   }
   return {
     companyName,
-    orgNumber: optional(form, "orgNumber"),
+    orgNumber,
     contactName,
     contactEmail,
     contactTitle: optional(form, "contactTitle"),
