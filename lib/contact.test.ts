@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { CONTACT_LIMITS, escapeHtml, parseContactFields } from "./contact.ts";
+import { CONTACT_LIMITS, escapeHtml, oneLine, parseContactFields } from "./contact.ts";
 
 const valid = {
   name: "Alex Founder",
@@ -76,6 +76,17 @@ describe("parseContactFields", () => {
     assert.equal(result.ok, false);
   });
 
+  it("says a field is too long rather than asking for it again", () => {
+    const result = parseContactFields({
+      ...valid,
+      name: "A".repeat(CONTACT_LIMITS.name.max + 1),
+    });
+    assert.equal(result.ok, false);
+    if (!result.ok) {
+      assert.match(result.errors?.name ?? "", /too long|under \d+ characters/i);
+    }
+  });
+
   it("keeps markup as text rather than executing it", () => {
     const payload = `<script>alert(1)</script> and weekly invoice matching.`;
     const result = parseContactFields({ ...valid, brief: payload });
@@ -91,6 +102,23 @@ describe("parseContactFields", () => {
       website: "https://spam.example",
     });
     assert.deepEqual(result, { ok: true, spam: true });
+  });
+});
+
+describe("oneLine", () => {
+  it("strips every control character, not just the first", () => {
+    const result = oneLine("Acme\u0001Corp\u0001AB\u0001Ltd", 80);
+    const remaining = [...result].filter((ch) => ch.charCodeAt(0) < 32);
+    assert.deepEqual(remaining, []);
+    assert.equal(result, "Acme Corp AB Ltd");
+  });
+
+  it("collapses newlines so a subject line stays one line", () => {
+    assert.equal(oneLine("Acme\r\nBcc: attacker@example.com", 80), "Acme Bcc: attacker@example.com");
+  });
+
+  it("truncates to the maximum length", () => {
+    assert.equal(oneLine("A".repeat(200), 10).length, 10);
   });
 });
 

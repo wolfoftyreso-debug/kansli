@@ -37,7 +37,7 @@ function glyph(ch: string) {
   return rows;
 }
 
-export function footerGrainPath() {
+function footerGrainPath() {
   const parts: string[] = [];
   let cursor = 0;
 

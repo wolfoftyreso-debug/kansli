@@ -7,6 +7,9 @@ export const CONTACT_LIMITS = {
 
 const EMAIL_PATTERN = /^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$/i;
 const CONTROL_CHARS = /[\u0000-\u001f\u007f\u2028\u2029]/;
+// Separate global copy: a /g regex carries lastIndex between .test() calls,
+// so the two uses must not share one object.
+const CONTROL_CHARS_GLOBAL = /[\u0000-\u001f\u007f\u2028\u2029]/g;
 
 export type ContactFields = {
   name: unknown;
@@ -34,10 +37,13 @@ function asString(value: unknown) {
   return typeof value === "string" ? value : "";
 }
 
-function readField(value: unknown, max: number) {
+type FieldRead = { ok: true; value: string } | { ok: false; reason: "invalid" | "long" };
+
+function readField(value: unknown, max: number): FieldRead {
   const trimmed = asString(value).trim();
-  if (CONTROL_CHARS.test(trimmed) || trimmed.length > max) return null;
-  return trimmed;
+  if (trimmed.length > max) return { ok: false, reason: "long" };
+  if (CONTROL_CHARS.test(trimmed)) return { ok: false, reason: "invalid" };
+  return { ok: true, value: trimmed };
 }
 
 function readEmail(value: unknown) {
@@ -47,6 +53,36 @@ function readEmail(value: unknown) {
   if (trimmed.includes("..") || trimmed.includes("@@")) return null;
   if (!EMAIL_PATTERN.test(trimmed)) return null;
   return trimmed;
+}
+
+const FIELD_COPY = {
+  name: {
+    missing: "Please add your name.",
+    long: `Please keep your name under ${CONTACT_LIMITS.name.max} characters.`,
+  },
+  organisation: {
+    missing: "Please add your organisation.",
+    long: `Please keep your organisation under ${CONTACT_LIMITS.organisation.max} characters.`,
+  },
+  email: { missing: "Please add a valid work email." },
+  brief: {
+    missing: "Please describe what you need, in a sentence or two.",
+    long: `Please keep this under ${CONTACT_LIMITS.brief.max} characters.`,
+  },
+} as const;
+
+type Checked = { value: string | null; error: string | null };
+
+function check(
+  read: FieldRead,
+  min: number,
+  copy: { missing: string; long: string },
+): Checked {
+  if (!read.ok) {
+    return { value: null, error: read.reason === "long" ? copy.long : copy.missing };
+  }
+  if (read.value.length < min) return { value: null, error: copy.missing };
+  return { value: read.value, error: null };
 }
 
 export function parseContactFields(input: ContactFields): ParsedContact {
@@ -61,24 +97,28 @@ export function parseContactFields(input: ContactFields): ParsedContact {
     return { ok: true, spam: true };
   }
 
-  const name = readField(input.name, CONTACT_LIMITS.name.max);
-  const organisation = readField(input.organisation, CONTACT_LIMITS.organisation.max);
-  const brief = readField(input.brief, CONTACT_LIMITS.brief.max);
+  const name = check(
+    readField(input.name, CONTACT_LIMITS.name.max),
+    CONTACT_LIMITS.name.min,
+    FIELD_COPY.name,
+  );
+  const organisation = check(
+    readField(input.organisation, CONTACT_LIMITS.organisation.max),
+    CONTACT_LIMITS.organisation.min,
+    FIELD_COPY.organisation,
+  );
+  const brief = check(
+    readField(input.brief, CONTACT_LIMITS.brief.max),
+    CONTACT_LIMITS.brief.min,
+    FIELD_COPY.brief,
+  );
   const email = readEmail(input.email);
 
   const errors: FieldErrors = {};
-  if (!name || name.length < CONTACT_LIMITS.name.min) {
-    errors.name = "Please add your name.";
-  }
-  if (!organisation || organisation.length < CONTACT_LIMITS.organisation.min) {
-    errors.organisation = "Please add your organisation.";
-  }
-  if (!email) {
-    errors.email = "Please add a valid work email.";
-  }
-  if (!brief || brief.length < CONTACT_LIMITS.brief.min) {
-    errors.brief = "Please describe what you need, in a sentence or two.";
-  }
+  if (name.error) errors.name = name.error;
+  if (organisation.error) errors.organisation = organisation.error;
+  if (!email) errors.email = FIELD_COPY.email.missing;
+  if (brief.error) errors.brief = brief.error;
 
   if (Object.keys(errors).length > 0) {
     return {
@@ -89,7 +129,7 @@ export function parseContactFields(input: ContactFields): ParsedContact {
     };
   }
 
-  if (!name || !organisation || !email || !brief) {
+  if (!name.value || !organisation.value || !email || !brief.value) {
     return {
       ok: false,
       error: "Please check the highlighted fields.",
@@ -100,7 +140,12 @@ export function parseContactFields(input: ContactFields): ParsedContact {
   return {
     ok: true,
     spam: false,
-    data: { name, organisation, email, brief },
+    data: {
+      name: name.value,
+      organisation: organisation.value,
+      email,
+      brief: brief.value,
+    },
   };
 }
 
@@ -114,5 +159,9 @@ export function escapeHtml(value: string) {
 }
 
 export function oneLine(value: string, max: number) {
-  return value.replace(CONTROL_CHARS, " ").replace(/\s+/g, " ").trim().slice(0, max);
+  return value
+    .replace(CONTROL_CHARS_GLOBAL, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, max);
 }
