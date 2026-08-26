@@ -117,7 +117,7 @@ export function ContactForm() {
           type="submit"
           disabled={pending}
           aria-busy={pending}
-          className="min-h-11 justify-self-start border-0 bg-navy px-[26px] py-4 font-sans text-[15px] font-semibold text-white hover:bg-teal disabled:cursor-wait disabled:opacity-70"
+          className="btn btn-primary justify-self-start border-0"
         >
           {pending ? "Sending…" : "Send enquiry"}
         </button>

@@ -16,10 +16,8 @@ export function DocPage({
       <section className="border-b border-line">
         <div className="mx-auto max-w-[760px] px-6 py-16 site:px-10 site:py-[104px]">
           <span className="eyebrow text-teal">{eyebrow}</span>
-          <h1 className="mt-5 mb-5 text-[40px] font-semibold leading-[1.12] tracking-[-0.03em] site:text-[52px]">
-            {title}
-          </h1>
-          <p className="m-0 text-lg leading-[1.6] text-muted">{lead}</p>
+          <h1 className="headline mt-5 mb-5 max-w-[20ch]">{title}</h1>
+          <p className="intro">{lead}</p>
         </div>
       </section>
       <section className="border-b border-line">

@@ -6,7 +6,7 @@ import { legalNav, nav, site } from "@/lib/site";
 export function SiteFooter() {
   return (
     <footer className="bg-white">
-      <div className="mx-auto flex max-w-[1240px] flex-wrap items-start justify-between gap-12 px-6 py-14 site:px-10 site:pt-14 site:pb-[72px]">
+      <div className="wrap flex flex-wrap items-start justify-between gap-12 py-14 site:pt-14 site:pb-[4.5rem]">
         <div className="max-w-[42ch] text-sm leading-[1.65] text-subtle">
           <div className="mb-2.5 text-xl font-bold tracking-[-0.02em] text-ink">Landvex</div>
           <p className="m-0 mb-5">
@@ -16,28 +16,28 @@ export function SiteFooter() {
           <CompanyAddress compact />
         </div>
         <div className="flex flex-wrap gap-11 text-sm">
-          <div className="grid gap-2.5">
+          <nav className="grid gap-2.5" aria-label="Work">
             {nav.map((item) => (
               <Link key={item.href} href={item.href}>
                 {item.label}
               </Link>
             ))}
-          </div>
-          <div className="grid gap-2.5">
+          </nav>
+          <nav className="grid gap-2.5" aria-label="Legal">
             {legalNav.map((item) => (
               <Link key={item.href} href={item.href}>
                 {item.label}
               </Link>
             ))}
-          </div>
-          <div className="grid gap-2.5">
+          </nav>
+          <nav className="grid gap-2.5" aria-label="Contact">
             <a href={`mailto:${site.email}`}>{site.email}</a>
             <Link href="/#contact">Contact</Link>
-          </div>
+          </nav>
         </div>
       </div>
       <div className="border-t border-line">
-        <div className="mx-auto max-w-[1240px] overflow-hidden px-6 py-6 site:px-10">
+        <div className="wrap overflow-hidden py-6">
           <div className="text-[13px] text-subtle">
             © {site.copyrightYear} {site.name}
           </div>

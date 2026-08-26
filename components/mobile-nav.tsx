@@ -9,12 +9,12 @@ function closeMenu(event: { currentTarget: HTMLElement }) {
 
 export function MobileNav() {
   return (
-    <details className="site:hidden">
-      <summary className="flex min-h-11 min-w-11 cursor-pointer list-none items-center justify-center border border-navy px-3 text-sm font-semibold text-navy">
+    <details className="relative site:hidden">
+      <summary className="btn btn-secondary min-h-11 min-w-11 cursor-pointer list-none px-3 text-sm">
         Menu
       </summary>
       <nav
-        className="absolute inset-x-0 top-[76px] grid gap-4 border-b border-t border-line bg-white px-6 py-5"
+        className="absolute top-[calc(100%+0.75rem)] right-0 z-50 grid min-w-[16rem] gap-4 border border-line bg-white px-5 py-5 shadow-[0_12px_40px_rgb(0_0_40/0.08)]"
         aria-label="Primary"
       >
         {nav.map((item) => (
@@ -29,7 +29,7 @@ export function MobileNav() {
         ))}
         <Link
           href="/#contact"
-          className="min-h-11 justify-self-start bg-teal px-[22px] py-[11px] text-sm font-semibold text-white hover:text-white"
+          className="btn btn-teal justify-self-start px-[1.375rem] text-sm"
           onClick={closeMenu}
         >
           Talk to a founder

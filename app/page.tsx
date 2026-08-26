@@ -76,76 +76,101 @@ const layers = [
   },
 ] as const;
 
+const offices = [
+  {
+    city: "Stockholm",
+    label: "EU HQ",
+    region: "CET / CEST · eu-north-1",
+    body: `${landvexAb.legalName} · ${landvexAb.street}, ${landvexAb.postalCode} ${landvexAb.city}, Sweden · Org.nr ${landvexAb.orgNr}. European engineering, EU regulatory work and data handled in region.`,
+  },
+  {
+    city: "Houston",
+    label: "US HQ",
+    region: "US Central",
+    body: "Landvex Inc. · Houston, Texas. The US headquarters, and our base for North American clients in energy, infrastructure and industry.",
+  },
+] as const;
+
+const principles = [
+  {
+    title: "Small by design",
+    body: "Senior engineers only. We take fewer engagements and stay in them longer.",
+  },
+  {
+    title: "Evidence over assertion",
+    body: "Accuracy, throughput and cost are measured against the manual baseline and reported as they are.",
+  },
+  {
+    title: "You own it",
+    body: "Code in your accounts, infrastructure as code, no proprietary lock-in on the automation we build for you.",
+  },
+] as const;
+
 export default function HomePage() {
   return (
     <main id="main">
       <section className="border-b border-line">
-        <div className="mx-auto grid min-h-[600px] max-w-[1240px] items-stretch site:grid-cols-[1.15fr_0.85fr]">
-          <div className="flex flex-col justify-center px-6 py-16 site:py-[104px] site:pr-[72px] site:pl-10">
-            <div className="mb-[34px] flex items-center gap-3.5">
-              <span className="inline-block h-[3px] w-[34px] bg-teal" />
+        <div className="hero">
+          <div className="hero-copy">
+            <div className="kicker mb-8">
+              <span className="kicker-rule" aria-hidden="true" />
               <span className="eyebrow text-teal">Founder-led · AWS engineering</span>
             </div>
-            <h1 className="m-0 max-w-[15ch] text-[40px] font-semibold leading-[1.04] tracking-[-0.03em] site:text-[64px]">
-              We automate the work that used to need people.
-            </h1>
-            <p className="mt-8 mb-0 max-w-[52ch] text-xl leading-[1.55] text-muted">
+            <h1 className="display">We automate the work that used to need people.</h1>
+            <p className="lede mt-8">
               Landvex is a founder-led engineering company with offices in Stockholm and
               Houston. We design, build and operate automation on AWS — replacing manual
               review, manual data entry and manual coordination with systems that run
               continuously, and can be audited.
             </p>
             <div className="mt-11 flex flex-wrap gap-3.5">
-              <a
-                href="#contact"
-                className="bg-navy px-[30px] py-4 text-[15px] font-semibold text-white hover:bg-teal hover:text-white"
-              >
+              <a className="btn btn-primary" href="#contact">
                 Book a technical review
               </a>
-              <a
-                href="#capabilities"
-                className="border border-navy px-[30px] py-4 text-[15px] font-semibold text-navy hover:bg-wash hover:text-navy"
-              >
+              <a className="btn btn-secondary" href="#capabilities">
                 See what we build
               </a>
             </div>
           </div>
-          <div className="flex flex-col justify-end gap-10 bg-navy px-8 py-14 site:mr-[-40px] site:px-12 site:py-14">
-            <div className="grid gap-7">
-              <div className="border-t border-white/18 pt-[18px]">
-                <div className="text-[38px] font-semibold tracking-[-0.02em] text-accent">
-                  2
-                </div>
-                <div className="mt-1.5 text-sm text-panel">
+          <aside className="hero-panel" aria-label="At a glance">
+            <dl className="hero-facts">
+              <div>
+                <dt>
+                  <span className="hero-stat">2</span>
+                  <span className="sr-only"> engineering offices</span>
+                </dt>
+                <dd className="hero-stat-label">
                   Engineering offices — Stockholm and Houston, overlapping working hours
                   across EU and US Central
-                </div>
+                </dd>
               </div>
-              <div className="border-t border-white/18 pt-[18px]">
-                <div className="text-[38px] font-semibold tracking-[-0.02em] text-accent">
-                  AWS
-                </div>
-                <div className="mt-1.5 text-sm text-panel">
+              <div>
+                <dt>
+                  <span className="hero-stat">AWS</span>
+                  <span className="sr-only"> native</span>
+                </dt>
+                <dd className="hero-stat-label">
                   Native to the platform — event-driven services, managed inference,
                   infrastructure as code
-                </div>
+                </dd>
               </div>
-              <div className="border-t border-white/18 pt-[18px]">
-                <div className="text-[38px] font-semibold tracking-[-0.02em] text-accent">
-                  24–72h
-                </div>
-                <div className="mt-1.5 text-sm text-panel">
+              <div>
+                <dt>
+                  <span className="hero-stat">24–72h</span>
+                  <span className="sr-only"> from task to delivered output</span>
+                </dt>
+                <dd className="hero-stat-label">
                   From a defined task to structured, delivered output in our own
                   production systems
-                </div>
+                </dd>
               </div>
-            </div>
-          </div>
+            </dl>
+          </aside>
         </div>
       </section>
 
       <section className="border-b border-line bg-wash">
-        <div className="mx-auto flex max-w-[1240px] flex-wrap items-center gap-6 px-6 py-9 site:gap-12 site:px-10">
+        <div className="wrap flex flex-wrap items-center gap-6 py-9 site:gap-12">
           <span className="eyebrow text-subtle">Two entities, one engineering team</span>
           <span className="text-[15px] text-muted">
             Landvex Inc. — Houston, Texas (US HQ)
@@ -158,68 +183,66 @@ export default function HomePage() {
       </section>
 
       <section id="capabilities" className="scroll-mt-24 border-b border-line">
-        <div className="mx-auto max-w-[1240px] px-6 py-16 site:px-10 site:py-[104px]">
-          <div className="mb-12 grid items-start gap-10 site:mb-[72px] site:grid-cols-[0.9fr_1.1fr] site:gap-20">
+        <div className="wrap section">
+          <div className="mb-12 grid items-start gap-10 site:mb-[4.5rem] site:grid-cols-[0.9fr_1.1fr] site:gap-20">
             <div>
               <span className="eyebrow text-teal">Capabilities</span>
-              <h2 className="mt-5 mb-0 text-[32px] font-semibold leading-[1.12] tracking-[-0.025em] site:text-[44px]">
-                Manual processes, rebuilt as production systems.
-              </h2>
+              <h2 className="headline mt-5">Manual processes, rebuilt as production systems.</h2>
             </div>
-            <p className="m-0 text-lg leading-[1.6] text-muted site:pt-11">
+            <p className="intro site:pt-11">
               Most of the work we take on starts as a spreadsheet, an inbox, or a person
-              checking things by hand. We map the process, define what &quot;correct&quot;
-              means, and move it onto AWS as a service with monitoring, retries and an
-              audit trail. Where judgement is genuinely required, the system asks a human
-              — and learns from the answer.
+              checking things by hand. We map the process, define what “correct” means,
+              and move it onto AWS as a service with monitoring, retries and an audit
+              trail. Where judgement is genuinely required, the system asks a human — and
+              learns from the answer.
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-px border-t border-l border-line bg-line site:grid-cols-3">
+          <ol className="tile-grid">
             {capabilities.map((item) => (
-              <article key={item.n} className="bg-white px-[34px] pt-10 pb-11">
-                <div className="mb-[22px] font-mono text-xs text-teal">{item.n}</div>
-                <h3 className="mt-0 mb-3 text-[21px] font-semibold tracking-[-0.01em]">
-                  {item.title}
-                </h3>
-                <p className="m-0 text-[15px] leading-[1.65] text-muted">{item.body}</p>
-              </article>
+              <li key={item.n} className="tile">
+                <article>
+                  <div className="index mb-[1.375rem]">{item.n}</div>
+                  <h3 className="mt-0 mb-3 text-[21px] font-semibold tracking-[-0.01em]">
+                    {item.title}
+                  </h3>
+                  <p className="body">{item.body}</p>
+                </article>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
       <section id="approach" className="scroll-mt-24 border-b border-line bg-wash">
-        <div className="mx-auto max-w-[1240px] px-6 py-16 site:px-10 site:py-[104px]">
+        <div className="wrap section">
           <div className="mb-12 max-w-[60ch] site:mb-16">
             <span className="eyebrow text-teal">Approach</span>
-            <h2 className="mt-5 mb-5 text-[32px] font-semibold leading-[1.12] tracking-[-0.025em] site:text-[44px]">
-              Founder-led, from first call to production.
-            </h2>
-            <p className="m-0 text-lg leading-[1.6] text-muted">
+            <h2 className="headline mt-5 mb-5">Founder-led, from first call to production.</h2>
+            <p className="intro">
               The people who scope your work are the people who build it. There is no
               account layer between you and the engineers, and no handover to a team you
               have not met.
             </p>
           </div>
-          <div className="grid gap-10 site:grid-cols-4">
+          <ol className="step-grid">
             {steps.map((item) => (
-              <article key={item.n} className="border-t-[3px] border-navy pt-6">
-                <div className="mb-3.5 font-mono text-xs text-subtle">{item.n}</div>
-                <h3 className="mt-0 mb-2.5 text-[19px] font-semibold">{item.title}</h3>
-                <p className="m-0 text-[15px] leading-[1.65] text-muted">{item.body}</p>
-              </article>
+              <li key={item.n} className="step">
+                <article>
+                  <div className="mb-3.5 font-mono text-xs text-subtle">{item.n}</div>
+                  <h3 className="mt-0 mb-2.5 text-[19px] font-semibold">{item.title}</h3>
+                  <p className="body">{item.body}</p>
+                </article>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
       <section id="platform" className="scroll-mt-24 bg-navy text-white">
-        <div className="mx-auto grid max-w-[1240px] items-center gap-12 px-6 py-16 site:grid-cols-2 site:gap-20 site:px-10 site:py-[104px]">
+        <div className="wrap section grid items-center gap-12 site:grid-cols-2 site:gap-20">
           <div>
             <span className="eyebrow text-accent">Built in-house</span>
-            <h2 className="mt-5 mb-6 text-[32px] font-semibold leading-[1.12] tracking-[-0.025em] site:text-[44px]">
-              We run our own automation at scale.
-            </h2>
+            <h2 className="headline mt-5 mb-6">We run our own automation at scale.</h2>
             <p className="mt-0 mb-5 text-lg leading-[1.6] text-mist">
               Landvex operates RIOS, a vendor-agnostic system that turns continuous video
               observations of the physical world into structured intelligence. Field
@@ -232,123 +255,78 @@ export default function HomePage() {
               running service.
             </p>
             <div className="flex flex-wrap gap-3.5">
-              <a
-                href="#contact"
-                className="bg-accent px-[30px] py-4 text-[15px] font-semibold text-navy hover:bg-white hover:text-navy"
-              >
+              <a className="btn btn-accent" href="#contact">
                 Request a walkthrough
               </a>
-              <a
-                href="/methodology"
-                className="border border-white/35 px-[30px] py-4 text-[15px] font-semibold text-white hover:bg-white/8 hover:text-white"
-              >
+              <a className="btn btn-ghost-on-dark" href="/methodology">
                 Read the methodology
               </a>
             </div>
           </div>
-          <div className="grid gap-px bg-white/14">
+          <ol className="layer-stack">
             {layers.map((item) => (
-              <div key={item.n} className="bg-navy px-8 py-7">
-                <div className="mb-2.5 font-mono text-xs text-accent">{item.n}</div>
+              <li key={item.n} className="layer">
+                <div className="index mb-2.5 text-accent">{item.n}</div>
                 <p className="m-0 text-[15px] leading-[1.6] text-mist">{item.body}</p>
-              </div>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
       <section id="company" className="scroll-mt-24 border-b border-line">
-        <div className="mx-auto max-w-[1240px] px-6 py-16 site:px-10 site:py-[104px]">
+        <div className="wrap section">
           <div className="mb-12 max-w-[60ch] site:mb-16">
             <span className="eyebrow text-teal">Company</span>
-            <h2 className="mt-5 mb-5 text-[32px] font-semibold leading-[1.12] tracking-[-0.025em] site:text-[44px]">
-              Two offices, one working day.
-            </h2>
-            <p className="m-0 text-lg leading-[1.6] text-muted">
+            <h2 className="headline mt-5 mb-5">Two offices, one working day.</h2>
+            <p className="intro">
               Stockholm covers the European day and EU data residency. Houston covers US
               Central and the industrial, energy and infrastructure sectors on that side
               of the Atlantic. The overlap is deliberate — most days both offices are
               online together.
             </p>
           </div>
-          <div className="grid gap-px border border-line bg-line site:grid-cols-2">
-            <article className="bg-white px-8 py-11 site:px-10">
-              <div className="mb-2 flex items-baseline gap-3">
-                <h3 className="m-0 text-[26px] font-semibold tracking-[-0.015em]">
-                  Stockholm
-                </h3>
-                <span className="font-mono text-[11px] tracking-[0.12em] text-teal uppercase">
-                  EU HQ
-                </span>
-              </div>
-              <p className="mt-0 mb-6 text-[15px] leading-[1.65] text-muted">
-                {landvexAb.legalName} · {landvexAb.street}, {landvexAb.postalCode}{" "}
-                {landvexAb.city}, Sweden · Org.nr {landvexAb.orgNr}. European
-                engineering, EU regulatory work and data handled in region.
-              </p>
-              <div className="border-t border-line pt-[18px] font-mono text-xs tracking-[0.06em] text-subtle">
-                CET / CEST · eu-north-1
-              </div>
-            </article>
-            <article className="bg-white px-8 py-11 site:px-10">
-              <div className="mb-2 flex items-baseline gap-3">
-                <h3 className="m-0 text-[26px] font-semibold tracking-[-0.015em]">
-                  Houston
-                </h3>
-                <span className="font-mono text-[11px] tracking-[0.12em] text-teal uppercase">
-                  US HQ
-                </span>
-              </div>
-              <p className="mt-0 mb-6 text-[15px] leading-[1.65] text-muted">
-                Landvex Inc. · Houston, Texas. The US headquarters, and our base for North
-                American clients in energy, infrastructure and industry.
-              </p>
-              <div className="border-t border-line pt-[18px] font-mono text-xs tracking-[0.06em] text-subtle">
-                US CENTRAL · us-east-1
-              </div>
-            </article>
+          <div className="office-grid">
+            {offices.map((office) => (
+              <article key={office.city} className="office">
+                <div className="mb-2 flex items-baseline gap-3">
+                  <h3 className="m-0 text-[26px] font-semibold tracking-[-0.015em]">
+                    {office.city}
+                  </h3>
+                  <span className="font-mono text-[11px] tracking-[0.12em] text-teal uppercase">
+                    {office.label}
+                  </span>
+                </div>
+                <p className="body mb-6">{office.body}</p>
+                <div className="border-t border-line pt-[18px] font-mono text-xs tracking-[0.06em] text-subtle">
+                  {office.region}
+                </div>
+              </article>
+            ))}
           </div>
-          <div className="mt-12 grid gap-10 site:mt-16 site:grid-cols-3">
-            <div>
-              <h3 className="mt-0 mb-2.5 text-[19px] font-semibold">Small by design</h3>
-              <p className="m-0 text-[15px] leading-[1.65] text-muted">
-                Senior engineers only. We take fewer engagements and stay in them longer.
-              </p>
-            </div>
-            <div>
-              <h3 className="mt-0 mb-2.5 text-[19px] font-semibold">
-                Evidence over assertion
-              </h3>
-              <p className="m-0 text-[15px] leading-[1.65] text-muted">
-                Accuracy, throughput and cost are measured against the manual baseline
-                and reported as they are.
-              </p>
-            </div>
-            <div>
-              <h3 className="mt-0 mb-2.5 text-[19px] font-semibold">You own it</h3>
-              <p className="m-0 text-[15px] leading-[1.65] text-muted">
-                Code in your accounts, infrastructure as code, no proprietary lock-in on
-                the automation we build for you.
-              </p>
-            </div>
-          </div>
+          <ul className="mt-12 grid list-none gap-10 p-0 site:mt-16 site:grid-cols-3">
+            {principles.map((item) => (
+              <li key={item.title}>
+                <h3 className="mt-0 mb-2.5 text-[19px] font-semibold">{item.title}</h3>
+                <p className="body">{item.body}</p>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
       <section id="contact" className="scroll-mt-24 border-b border-line bg-wash">
-        <div className="mx-auto grid max-w-[1240px] gap-12 px-6 py-16 site:grid-cols-2 site:gap-20 site:px-10 site:py-[104px]">
+        <div className="wrap section grid gap-12 site:grid-cols-2 site:gap-20">
           <div>
             <span className="eyebrow text-teal">Get in touch</span>
-            <h2 className="mt-5 mb-5 text-[32px] font-semibold leading-[1.12] tracking-[-0.025em] site:text-[44px]">
-              Which process should stop being manual?
-            </h2>
-            <p className="mt-0 mb-8 text-lg leading-[1.6] text-muted">
+            <h2 className="headline mt-5 mb-5">Which process should stop being manual?</h2>
+            <p className="intro mb-8">
               Describe the work as it runs today — who does it, how often, and what goes
               wrong. You will hear back from a founder, not a form.
             </p>
             <div className="grid gap-3.5 text-[15px] text-muted">
               <div>
-                <a href={`mailto:${site.email}`} className="font-semibold">
+                <a className="font-semibold" href={`mailto:${site.email}`}>
                   {site.email}
                 </a>
               </div>
