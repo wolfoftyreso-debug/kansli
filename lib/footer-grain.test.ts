@@ -9,5 +9,7 @@ describe("footerGrain", () => {
     assert.equal(footerGrain.d.includes("jobba"), false);
     assert.ok(footerGrain.width > 0);
     assert.ok(footerGrain.height > 0);
+    assert.equal(footerGrain.d.includes("hemifrån"), false);
+    assert.equal((footerGrain.d.match(/h3v3/g) ?? []).length, 521);
   });
 });

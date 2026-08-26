@@ -4,6 +4,7 @@ const CELL = 4;
 const DOT = 3;
 const TRACKING = 1;
 
+// 5×7 glyphs for a decorative footer rule. Painted as squares, never as text.
 const FONT: Record<string, readonly number[]> = {
   " ": [0, 0, 0, 0, 0, 0, 0],
   ".": [0, 0, 0, 0, 0, 0b01100, 0b01100],
@@ -23,7 +24,7 @@ const FONT: Record<string, readonly number[]> = {
   r: [0, 0, 0b10110, 0b11001, 0b10000, 0b10000, 0b10000],
   s: [0, 0b01111, 0b10000, 0b01110, 0b00001, 0b00001, 0b11110],
   t: [0b01000, 0b01000, 0b11110, 0b01000, 0b01000, 0b01001, 0b00110],
-  å: [0b00100, 0b00100, 0b01110, 0b00001, 0b01111, 0b10001, 0b01111],
+  å: [0b00100, 0b01010, 0b01110, 0b00001, 0b01111, 0b10001, 0b01111],
 };
 
 const LINE = "Snart finns det inget som heter jobba hemifrån.";
