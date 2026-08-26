@@ -6,7 +6,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { brand } from "@/lib/brand";
 import { organizationJsonLd } from "@/lib/schema";
-import { site } from "@/lib/site";
+import { openGraphIdentity, site } from "@/lib/site";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -34,21 +34,12 @@ export const metadata: Metadata = {
   creator: "Landvex",
   publisher: "Landvex",
   category: "technology",
-  alternates: {
-    canonical: "/",
-  },
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: site.url,
-    siteName: site.name,
-    title: site.title,
-    description: site.description,
-  },
+  // No title, description, canonical or url here: each page sets its own with
+  // pageMetadata. A static value in the root makes every share look like the
+  // home page.
+  openGraph: openGraphIdentity,
   twitter: {
     card: "summary_large_image",
-    title: site.title,
-    description: site.description,
   },
   robots: {
     index: true,

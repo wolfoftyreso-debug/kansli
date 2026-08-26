@@ -1,10 +1,10 @@
 import { ImageResponse } from "next/og";
 import { brand } from "@/lib/brand";
 import { hero } from "@/lib/home";
-import { site } from "@/lib/site";
+import { ogImage, site } from "@/lib/site";
 
 export const alt = site.title;
-export const size = { width: 1200, height: 630 };
+export const size = { width: ogImage.width, height: ogImage.height };
 export const contentType = "image/png";
 
 export default function OpenGraphImage() {

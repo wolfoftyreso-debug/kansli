@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { DocHeading, DocList, DocPage, DocText } from "@/components/doc-page";
+import { pageMetadata } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Methodology",
   description:
     "How Landvex finds the gap between the systems you already run, proves a slice in production, scales what holds, then hands it over.",
-  alternates: { canonical: "/methodology" },
+  ...pageMetadata("/methodology"),
 };
 
 export default function MethodologyPage() {

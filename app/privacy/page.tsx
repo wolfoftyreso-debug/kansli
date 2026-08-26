@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { CompanyAddress } from "@/components/company-address";
 import { DocHeading, DocList, DocPage, DocText } from "@/components/doc-page";
-import { landvexAb, site } from "@/lib/site";
+import { landvexAb, pageMetadata, site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Privacy",
   description:
     "How Landvex processes personal data from landvex.com and the enquiry form.",
-  alternates: { canonical: "/privacy" },
+  ...pageMetadata("/privacy"),
 };
 
 export default function PrivacyPage() {

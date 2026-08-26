@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { ContactForm } from "@/components/contact-form";
 import {
   capabilities,
@@ -8,7 +9,9 @@ import {
   principles,
   steps,
 } from "@/lib/home";
-import { landvexAb, site } from "@/lib/site";
+import { landvexAb, pageMetadata, site } from "@/lib/site";
+
+export const metadata: Metadata = pageMetadata("/");
 
 export default function HomePage() {
   return (

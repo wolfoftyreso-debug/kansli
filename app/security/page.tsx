@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { DocHeading, DocList, DocPage, DocText } from "@/components/doc-page";
-import { site } from "@/lib/site";
+import { pageMetadata, site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Security",
   description:
     "How Landvex handles accounts, IAM, infrastructure as code, and EU/US data residency for the systems we design and build.",
-  alternates: { canonical: "/security" },
+  ...pageMetadata("/security"),
 };
 
 export default function SecurityPage() {

@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { CompanyAddress } from "@/components/company-address";
 import { DocHeading, DocPage, DocText } from "@/components/doc-page";
-import { landvexAb, landvexInc, site } from "@/lib/site";
+import { landvexAb, landvexInc, pageMetadata, site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Company information",
   description:
     "Legal entity details for Landvex AB in Tyresö and Landvex Inc. in Houston.",
-  alternates: { canonical: "/company" },
+  ...pageMetadata("/company"),
 };
 
 export default function CompanyPage() {
