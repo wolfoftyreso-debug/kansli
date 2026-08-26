@@ -6,6 +6,7 @@ import { eventLine } from "@/lib/platform/event-copy";
 import { FAMILY_SYSTEMS } from "@/lib/platform/family";
 import { hubStatus, ritaStatusLine } from "@/lib/platform/hub-status";
 import { readSession } from "@/lib/auth/session";
+import { listTasks } from "@/lib/kansli/tasks";
 import { tryRuntime } from "@/lib/platform/page";
 import TaskBoard from "../TaskBoard";
 
@@ -39,6 +40,7 @@ export default async function KansliHub({
     session?.org?.ref && runtime
       ? await runtime.events.list({ orgRef: session.org.ref, limit: 8, order: "desc" })
       : [];
+  const tasks = session?.org?.ref && runtime ? await listTasks(runtime.pool, session.org.ref) : [];
 
   return (
     <AppShell current="kansli" session={session}>
@@ -137,7 +139,7 @@ export default async function KansliHub({
           <Notice>
             När en uppgift skapas får BRITT en sak att följa upp. Kansli äger fortfarande uppgiften.
           </Notice>
-          <TaskBoard highlightId={highlightId} />
+          <TaskBoard highlightId={highlightId} initialTasks={tasks} />
         </>
       )}
     </AppShell>

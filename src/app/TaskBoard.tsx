@@ -10,11 +10,17 @@ type Task = {
   createdAt: string;
 };
 
-export default function TaskBoard({ highlightId }: { highlightId?: string | null }) {
-  const [tasks, setTasks] = useState<Task[]>([]);
+export default function TaskBoard({
+  highlightId,
+  initialTasks = [],
+}: {
+  highlightId?: string | null;
+  initialTasks?: Task[];
+}) {
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [title, setTitle] = useState("");
   const [owner, setOwner] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
