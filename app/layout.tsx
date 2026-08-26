@@ -4,7 +4,7 @@ import { Archivo, IBM_Plex_Mono } from "next/font/google";
 import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { site } from "@/lib/site";
+import { landvexAb, landvexInc, site } from "@/lib/site";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -15,7 +15,7 @@ const archivo = Archivo({
 
 const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["400"],
   variable: "--font-ibm-plex-mono",
   display: "swap",
 });
@@ -27,7 +27,6 @@ export const metadata: Metadata = {
     template: "%s — Landvex",
   },
   description: site.description,
-  keywords: [...site.keywords],
   applicationName: site.name,
   authors: [{ name: "Landvex" }],
   creator: "Landvex",
@@ -80,49 +79,39 @@ const organizationJsonLd = {
       "@type": ["Organization", "ProfessionalService"],
       "@id": `${site.url}/#organization`,
       name: site.name,
+      legalName: landvexAb.legalName,
       url: site.url,
       email: site.email,
+      vatID: landvexAb.vat,
       description: site.description,
       slogan: site.tagline,
-      sameAs: [site.linkedin],
-      areaServed: ["EU", "US"],
-      knowsAbout: [
-        "Process automation",
-        "Document and media processing",
-        "Applied AI",
-        "Data platforms",
-        "AWS cloud foundation",
-      ],
-      parentOrganization: {
-        "@type": "Organization",
-        name: site.entities.us.name,
-        address: {
-          "@type": "PostalAddress",
-          addressLocality: site.entities.us.city,
-          addressRegion: site.entities.us.region,
-          addressCountry: site.entities.us.country,
-        },
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: landvexAb.street,
+        postalCode: landvexAb.postalCode,
+        addressLocality: landvexAb.city,
+        addressCountry: landvexAb.countryCode,
       },
-      department: [
+      location: [
         {
-          "@type": "Organization",
-          name: site.entities.us.name,
+          "@type": "Place",
+          name: landvexAb.label,
           address: {
             "@type": "PostalAddress",
-            addressLocality: site.entities.us.city,
-            addressRegion: site.entities.us.region,
-            addressCountry: site.entities.us.country,
+            streetAddress: landvexAb.street,
+            postalCode: landvexAb.postalCode,
+            addressLocality: landvexAb.city,
+            addressCountry: landvexAb.countryCode,
           },
         },
         {
-          "@type": "Organization",
-          name: site.entities.eu.name,
-          identifier: site.entities.eu.orgNr,
+          "@type": "Place",
+          name: landvexInc.label,
           address: {
             "@type": "PostalAddress",
-            addressLocality: site.entities.eu.city,
-            addressRegion: site.entities.eu.region,
-            addressCountry: site.entities.eu.country,
+            addressLocality: landvexInc.city,
+            addressRegion: landvexInc.region,
+            addressCountry: landvexInc.countryCode,
           },
         },
       ],

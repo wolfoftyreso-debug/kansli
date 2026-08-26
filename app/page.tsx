@@ -1,5 +1,5 @@
 import { ContactForm } from "@/components/contact-form";
-import { site } from "@/lib/site";
+import { landvexAb, site } from "@/lib/site";
 
 const capabilities = [
   {
@@ -152,7 +152,7 @@ export default function HomePage() {
           </span>
           <span className="hidden h-4 w-px bg-edge min-[720px]:inline-block" />
           <span className="text-[15px] text-muted">
-            Landvex AB — Tyresö, Stockholm (EU HQ) · Org.nr {site.entities.eu.orgNr}
+            Landvex AB — Tyresö, Sweden (EU HQ) · Org.nr {landvexAb.orgNr}
           </span>
         </div>
       </section>
@@ -282,7 +282,8 @@ export default function HomePage() {
                 </span>
               </div>
               <p className="mt-0 mb-6 text-[15px] leading-[1.65] text-muted">
-                Landvex AB · Tyresö, Sweden · Org.nr {site.entities.eu.orgNr}. European
+                {landvexAb.legalName} · {landvexAb.street}, {landvexAb.postalCode}{" "}
+                {landvexAb.city}, Sweden · Org.nr {landvexAb.orgNr}. European
                 engineering, EU regulatory work and data handled in region.
               </p>
               <div className="border-t border-line pt-[18px] font-mono text-xs tracking-[0.06em] text-subtle">
@@ -299,7 +300,7 @@ export default function HomePage() {
                 </span>
               </div>
               <p className="mt-0 mb-6 text-[15px] leading-[1.65] text-muted">
-                Landvex Inc. · Houston, Texas. The parent company, and our base for North
+                Landvex Inc. · Houston, Texas. The US headquarters, and our base for North
                 American clients in energy, infrastructure and industry.
               </p>
               <div className="border-t border-line pt-[18px] font-mono text-xs tracking-[0.06em] text-subtle">
@@ -353,7 +354,11 @@ export default function HomePage() {
               </div>
               <div>Landvex Inc. · Houston, Texas</div>
               <div>
-                Landvex AB · Tyresö, Sweden · Org.nr {site.entities.eu.orgNr}
+                {landvexAb.legalName} · {landvexAb.street}, {landvexAb.postalCode}{" "}
+                {landvexAb.city} · Org.nr {landvexAb.orgNr} · VAT {landvexAb.vat}
+              </div>
+              <div>
+                <a href="/company">Company information</a>
               </div>
             </div>
           </div>

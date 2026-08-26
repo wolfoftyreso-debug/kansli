@@ -1,36 +1,36 @@
 # Landvex
 
-Founder-led automation engineering on AWS. Company site for Landvex Inc. (Houston) and Landvex AB (Tyresö).
+Company website for Landvex Inc. (Houston) and Landvex AB (Tyresö). Next.js on Vercel. The enquiry form sends mail with Resend, server-side only.
 
-## Local development
+## Setup
 
 ```bash
 npm install
 cp .env.example .env.local
-# add RESEND_API_KEY from Resend or `vercel env pull .env.local --yes`
-npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
-
-## Contact form (Resend only)
-
-The enquiry form posts to a server action that sends mail with Resend.
-
-| Variable | Purpose |
-| --- | --- |
-| `RESEND_API_KEY` | Server-only API key |
-| `CONTACT_FROM` | Verified sender, e.g. `Landvex <contact@landvex.com>` |
-| `CONTACT_TO` | Inbox, defaults to `contact@landvex.com` |
-| `NEXT_PUBLIC_SITE_URL` | Canonical origin for metadata |
-
-Until `landvex.com` is verified in Resend, keep `CONTACT_FROM=Landvex <onboarding@resend.dev>` and send test mail only to the Resend account owner. Production should use `Landvex <contact@landvex.com>` after the domain is verified.
-
-## Scripts
+Set the names below in `.env.local`. Production `CONTACT_FROM` must be a `landvex.com` address after the domain is verified in Resend.
 
 ```bash
-npm run dev
-npm run build
-npm run lint
+npm run dev      # http://localhost:3000
 npm test
+npm run lint
+npm run typecheck
+npm run build
 ```
+
+## Environment
+
+Names only. Values belong in Vercel / `.env.local`, never in git.
+
+| Name | Server-only | Purpose |
+| --- | --- | --- |
+| `RESEND_API_KEY` | yes | Resend API key |
+| `CONTACT_FROM` | yes | Verified sender, typically `Landvex <contact@landvex.com>` |
+| `CONTACT_TO` | yes | Inbox; defaults to `contact@landvex.com` |
+
+Do not put secrets in `NEXT_PUBLIC_*`. Rate limiting is in-process and therefore best-effort across serverless instances.
+
+## Deploy
+
+Linked Vercel project. Preview and production use the same variable names. Production refuses a From address outside `landvex.com`.

@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import { CompanyAddress } from "@/components/company-address";
 import { DocHeading, DocList, DocPage, DocText } from "@/components/doc-page";
-import { site } from "@/lib/site";
+import { landvexAb, site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Privacy",
   description:
-    "How Landvex handles personal data from this website and the enquiry form. Landvex Inc. in Houston and Landvex AB in Tyresö.",
+    "How Landvex processes personal data from landvex.com and the enquiry form.",
   alternates: { canonical: "/privacy" },
 };
 
@@ -13,52 +14,64 @@ export default function PrivacyPage() {
   return (
     <DocPage
       eyebrow="Privacy"
-      title="Your enquiry stays a business conversation."
-      lead="This policy covers landvex.com and the contact form. It does not try to describe every future client system we may operate inside a customer’s AWS accounts."
+      title="What happens to an enquiry."
+      lead="This notice covers landvex.com and the contact form. It does not describe systems we later run in a customer’s AWS accounts under a separate agreement."
     >
-      <DocHeading>Who we are</DocHeading>
+      <DocHeading>Controller</DocHeading>
       <DocText>
-        Landvex Inc., Houston, Texas (US HQ), and Landvex AB, Tyresö, Sweden (EU HQ),
-        org.nr {site.entities.eu.orgNr}. For website visitors and people who send an
-        enquiry from the EU/EEA, Landvex AB is the controller. For visitors and
-        enquiries from North America, Landvex Inc. is the controller.
+        For people in the EU/EEA, UK and Switzerland, {landvexAb.legalName} is the
+        controller. For people in North America, Landvex Inc. is the controller.
       </DocText>
+      <div className="mb-8 text-[16px] leading-[1.7] text-muted">
+        <CompanyAddress />
+      </div>
 
-      <DocHeading>What we collect</DocHeading>
+      <DocHeading>What we collect and why</DocHeading>
       <DocText>
-        If you email us or use the form, we process the fields you submit: name,
-        organisation, work email, and the process you want automated. Server logs may
-        include IP address, user agent and the time of the request, used to keep the
-        form from being abused.
+        The form collects name, organisation, work email and a description of the
+        process you want automated. We use that to reply and, if you ask, to start a
+        technical review. The form is optional; without those details we cannot
+        reply. The legal basis is legitimate interests in answering a business
+        enquiry (GDPR art. 6(1)(f)), and taking steps prior to a contract if the
+        conversation becomes an engagement (art. 6(1)(b)).
       </DocText>
       <DocList
         items={[
-          "Purpose: reply to your enquiry and, if you ask, start a technical review.",
-          "Legal basis: legitimate interests in answering business enquiries, and steps prior to a contract if we take on the work.",
-          "We do not buy lists, and we do not use the form for marketing sequences.",
+          "We do not use the form for marketing lists or newsletters.",
+          "This website does not set analytics, advertising or other non-essential cookies.",
+          "A hidden field is used to ignore obvious bot submissions. Those submissions are discarded and not emailed.",
         ]}
       />
 
-      <DocHeading>Processors</DocHeading>
+      <DocHeading>Who receives the data</DocHeading>
       <DocText>
-        The form is delivered by Resend, which sends the message to{" "}
-        {site.email}. Hosting is on Vercel. We do not sell personal data.
+        The message is emailed to {site.email} through Resend, which we use as a
+        processor for delivery. The site is hosted on Vercel. Both may process data
+        in the United States. Where GDPR applies, that is an international transfer;
+        we rely on the provider’s Standard Contractual Clauses and their published
+        data-processing terms. We do not sell personal data.
+      </DocText>
+      <DocText>
+        Hosting and abuse controls may process IP address and user agent as part of
+        the request. We do not operate a separate database of form submissions on
+        this website; the record is the email.
       </DocText>
 
       <DocHeading>Retention</DocHeading>
       <DocText>
-        Enquiry mail is kept for as long as needed to answer you and, if we work
-        together, for the engagement file. If we do not take on the work, we delete
-        or archive the thread within 24 months unless a longer legal retention
+        Mail is kept as long as needed to answer you. If we do not take on the work,
+        we delete or archive the thread within 24 months, unless a longer legal duty
         applies.
       </DocText>
 
       <DocHeading>Your rights</DocHeading>
       <DocText>
-        Depending on where you are, you may have rights of access, rectification,
-        erasure, restriction, objection and portability. Write to{" "}
-        <a href={`mailto:${site.email}`}>{site.email}</a>. If you are in Sweden or
-        the EEA you may also contact IMY (imy.se).
+        You may ask for access, rectification, erasure, restriction, objection or
+        portability where those rights apply. Write to{" "}
+        <a href={`mailto:${site.email}`}>{site.email}</a>. In Sweden or the EEA you
+        may also complain to{" "}
+        <a href="https://www.imy.se/">IMY</a>, the Swedish Authority for Privacy
+        Protection.
       </DocText>
     </DocPage>
   );

@@ -1,5 +1,6 @@
 type Bucket = number[];
 
+const MAX_KEYS = 2_000;
 const buckets = new Map<string, Bucket>();
 
 export function allowRequest(
@@ -18,5 +19,11 @@ export function allowRequest(
 
   recent.push(now);
   buckets.set(key, recent);
+
+  if (buckets.size > MAX_KEYS) {
+    const first = buckets.keys().next().value;
+    if (first) buckets.delete(first);
+  }
+
   return true;
 }

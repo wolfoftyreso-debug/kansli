@@ -24,7 +24,7 @@ export function DocPage({
       </section>
       <section className="border-b border-line">
         <div className="mx-auto max-w-[760px] px-6 py-16 site:px-10 site:py-20">
-          <div className="doc-prose">{children}</div>
+          {children}
         </div>
       </section>
     </main>

@@ -3,39 +3,34 @@ export const site = {
   tagline: "Founder-led automation engineering on AWS",
   url: "https://landvex.com",
   email: "contact@landvex.com",
-  linkedin: "https://www.linkedin.com/company/landvex",
   locale: "en",
+  copyrightYear: 2026,
   title: "Landvex — Founder-led automation engineering on AWS",
   description:
     "Landvex is a founder-led engineering company with offices in Stockholm and Houston. We design, build and operate automation on AWS.",
-  keywords: [
-    "AWS automation",
-    "process automation",
-    "document processing",
-    "applied AI",
-    "data platforms",
-    "AWS consulting",
-    "Stockholm",
-    "Houston",
-    "founder-led engineering",
-  ],
-  entities: {
-    us: {
-      name: "Landvex Inc.",
-      city: "Houston",
-      region: "Texas",
-      country: "US",
-      label: "US HQ",
-    },
-    eu: {
-      name: "Landvex AB",
-      city: "Tyresö",
-      region: "Stockholm",
-      country: "SE",
-      orgNr: "559141-7042",
-      label: "EU HQ",
-    },
-  },
+} as const;
+
+export const landvexAb = {
+  legalName: "Landvex AB",
+  orgNr: "559141-7042",
+  vat: "SE559141704201",
+  seat: "Tyresö",
+  county: "Stockholms län",
+  street: "Antennvägen 2",
+  postalCode: "135 48",
+  city: "Tyresö",
+  country: "Sweden",
+  countryCode: "SE",
+  label: "EU HQ",
+} as const;
+
+export const landvexInc = {
+  legalName: "Landvex Inc.",
+  city: "Houston",
+  region: "Texas",
+  country: "United States",
+  countryCode: "US",
+  label: "US HQ",
 } as const;
 
 export const nav = [
@@ -46,12 +41,7 @@ export const nav = [
 ] as const;
 
 export const legalNav = [
-  { href: "/security", label: "Security" },
+  { href: "/company", label: "Company information" },
   { href: "/privacy", label: "Privacy" },
-  { href: "/terms", label: "Terms" },
+  { href: "/security", label: "Security" },
 ] as const;
-
-export function absoluteUrl(path = "/") {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? site.url;
-  return new URL(path, base).toString();
-}
