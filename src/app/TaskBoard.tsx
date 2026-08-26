@@ -123,20 +123,20 @@ export default function TaskBoard({
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Ny uppgift…"
             aria-label="Uppgiftens titel"
-            className="flex-1 rounded-lg border border-line bg-paper px-3 py-2 text-ink outline-none focus:border-accent"
+            className="flex-1 border border-line bg-paper px-3 py-2 text-ink outline-none focus:border-accent"
           />
           <input
             value={owner}
             onChange={(e) => setOwner(e.target.value)}
             placeholder="Ansvarig"
             aria-label="Ansvarig"
-            className="rounded-lg border border-line bg-paper px-3 py-2 text-ink outline-none focus:border-accent sm:w-40"
+            className="border border-line bg-paper px-3 py-2 text-ink outline-none focus:border-accent sm:w-40"
           />
         </div>
         <button
           type="submit"
           disabled={submitting}
-          className="self-start rounded-lg bg-accent px-4 py-2 font-medium text-white disabled:opacity-60"
+          className="self-start bg-ink px-4 py-2 font-medium text-paper hover:bg-ink-soft disabled:opacity-60"
         >
           {submitting ? "Sparar…" : "Lägg till"}
         </button>
@@ -186,7 +186,7 @@ export default function TaskBoard({
                 <button
                   onClick={() => remove(task.id)}
                   aria-label={`Ta bort "${task.title}"`}
-                  className="shrink-0 rounded-lg px-2 py-1 text-sm text-muted hover:text-danger"
+                  className="shrink-0 border border-transparent px-2 py-1 text-sm text-muted hover:border-[var(--color-status-blocked)] hover:bg-[var(--color-status-blocked)] hover:text-paper"
                 >
                   Ta bort
                 </button>

@@ -15,7 +15,7 @@ const byTone: Record<ButtonTone, string> = {
   tertiary:
     "bg-transparent text-[var(--tyra-fg)] hover:bg-[var(--tyra-surface)] focus-visible:ring-2 focus-visible:ring-[var(--tyra-focus)]",
   destructive:
-    "bg-red-600 text-white hover:bg-red-500 focus-visible:ring-2 focus-visible:ring-red-300",
+    "border border-[var(--color-status-blocked)] bg-transparent text-[var(--color-status-blocked)] hover:bg-[var(--color-status-blocked)] hover:text-paper focus-visible:ring-2 focus-visible:ring-[var(--color-status-blocked)]",
 };
 
 const bySize: Record<ButtonSize, string> = {

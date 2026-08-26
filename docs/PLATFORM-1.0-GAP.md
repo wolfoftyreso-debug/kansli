@@ -97,11 +97,9 @@ MCP kan anropas av en generisk klient. Det är inte en ChatGPT-app.
 Se §5. Ingen locale-URL, ingen intent-graf, ingen Search Console-loop.
 
 **DESIGN — PARTIAL.**
-Tokens i `src/app/globals.css`. Gemensam stel fasad (`Facade`)
-med sidospår och statuslist. Inget `@pixdrift/design`-paket.
-Extrakt av allt som finns: `docs/DESIGN-SOURCE.md`. Inte låst än.
-Nästa steg är en gemensam Claude Design-fil, sedan införa och låsa.
-Inte ett andra utseende och inte ett design-paket innan dess.
+Låst källa: `docs/design/` (3.1). Tokens, IdP, Kansli-knapp, status och
+launcher på `/` följer paketet. Inte 2.5D-grafer, inte figurkatalog, inte
+påhittade appar. Inget `@pixdrift/design`-paket. Se `docs/DESIGN-SOURCE.md`.
 
 **BACKUP — PARTIAL.**
 `scripts/backup-postgres.sh`, `pnpm db:restore-drill`, CI kör drill.

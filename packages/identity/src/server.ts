@@ -78,21 +78,23 @@ function loginPage(
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Logga in · Pixdrift</title>
 <style>
-  body{font-family:ui-sans-serif,system-ui,sans-serif;margin:0;min-height:100vh;display:grid;place-items:center;background:#f6f3ee;color:#1c1917}
-  .card{background:#fffdf8;padding:2rem;border-radius:16px;border:1px solid #e7e0d6;width:min(92vw,360px)}
+  body{font-family:Geist,ui-sans-serif,system-ui,sans-serif;margin:0;min-height:100vh;display:grid;place-items:center;background:#fbfbf9;color:#101317}
+  .card{background:#ffffff;padding:2rem;border-radius:0;border:1px solid #e6e5e0;width:min(92vw,360px)}
   .brand{display:flex;align-items:center;gap:.6rem;margin-bottom:1.25rem}
-  .mark{width:36px;height:36px;border-radius:10px;background:#1f4b8f;color:#fff;display:grid;place-items:center;font-weight:700}
+  .wordmark{font-size:.72rem;font-weight:600;letter-spacing:.18em}
   h1{font-size:1.15rem;margin:0}
-  label{display:block;font-size:.8rem;color:#57534e;margin:.75rem 0 .25rem}
-  input[type=email],input[type=password]{width:100%;box-sizing:border-box;padding:.6rem .7rem;border:1px solid #e7e0d6;border-radius:9px;font-size:1rem;background:#fffdf8}
-  button{margin-top:1.25rem;width:100%;padding:.65rem;border:0;border-radius:9px;background:#1f4b8f;color:#fff;font-weight:600;font-size:1rem;cursor:pointer}
-  .err{margin-top:.75rem;color:#9f1239;font-size:.85rem}
-  .hint{margin-top:1rem;font-size:.75rem;color:#78716c}
-  .hint a{color:#1c1917}
+  label{display:block;font-size:.8rem;color:#363b42;margin:.75rem 0 .25rem}
+  input[type=email],input[type=password]{width:100%;box-sizing:border-box;padding:.6rem .7rem;border:1px solid #e6e5e0;border-radius:0;font-size:1rem;background:#fbfbf9}
+  input:focus-visible{outline:1px solid #1f4b8f;outline-offset:1px;box-shadow:0 0 0 1px #1f4b8f}
+  button{margin-top:1.25rem;width:100%;padding:.65rem;border:0;border-radius:0;background:#101317;color:#fbfbf9;font-weight:600;font-size:1rem;cursor:pointer}
+  button:hover{background:#363b42}
+  .err{margin-top:.75rem;color:#8a2a33;font-size:.85rem;border-left:2px solid #8a2a33;padding-left:.5rem}
+  .hint{margin-top:1rem;font-size:.75rem;color:#6a7078}
+  .hint a{color:#101317}
 </style></head>
 <body>
   <form class="card" method="post" action="${esc(action)}">
-    <div class="brand"><span class="mark">P</span><h1>Pixdrift-inloggning</h1></div>
+    <div class="brand"><span class="wordmark">PIXDRIFT</span><h1>Inloggning</h1></div>
     ${hidden}
     <label for="email">E-post</label>
     <input id="email" name="email" type="email" autocomplete="username" required autofocus${emailValue}>

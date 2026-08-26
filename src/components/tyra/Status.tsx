@@ -3,29 +3,37 @@ import { cn } from "./cn.ts";
 
 export type StatusTone = "good" | "attention" | "blocked" | "neutral";
 
-function dotClass(tone: StatusTone) {
-  if (tone === "good") return "bg-emerald-600";
-  if (tone === "attention") return "bg-amber-500";
-  if (tone === "blocked") return "bg-red-600";
-  return "bg-zinc-400";
+function mark(tone: StatusTone) {
+  if (tone === "good") return { cls: "text-[var(--color-status-operational)]", glyph: "✓" };
+  if (tone === "attention") return { cls: "text-[var(--color-status-development)]", glyph: "◆" };
+  if (tone === "blocked") return { cls: "text-[var(--color-status-blocked)]", glyph: "×" };
+  return { cls: "text-[var(--color-status-waiting)]", glyph: "···" };
 }
 
 function bannerClass(tone: StatusTone) {
-  if (tone === "good") return "border-emerald-700/20 bg-emerald-500/10 text-emerald-950";
-  if (tone === "attention") return "border-amber-700/20 bg-amber-500/10 text-amber-950";
-  if (tone === "blocked") return "border-red-700/20 bg-red-500/10 text-red-950";
-  return "border-[var(--tyra-border)] bg-[var(--tyra-surface)] text-[var(--tyra-fg)]";
+  if (tone === "blocked") return "pd-banner-blocked px-4 py-3";
+  if (tone === "good") {
+    return "border border-line bg-surface text-[var(--color-status-operational)]";
+  }
+  if (tone === "attention") {
+    return "border border-line bg-surface text-[var(--color-status-development)]";
+  }
+  return "border border-line bg-[var(--tyra-surface)] text-[var(--tyra-fg)]";
 }
 
 export function StatusBadge(props: { tone: StatusTone; label: string; className?: string }) {
+  const shape = mark(props.tone);
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-2 rounded-full border border-[var(--tyra-border)] bg-[var(--tyra-surface)] px-3 py-1 text-xs font-medium text-[var(--tyra-fg)]",
+        "inline-flex items-center gap-2 border border-[var(--tyra-border)] bg-[var(--tyra-surface)] px-3 py-1 text-xs font-medium text-[var(--tyra-fg)]",
+        props.tone === "blocked" && "border-l-2 border-l-[var(--color-status-blocked)]",
         props.className,
       )}
     >
-      <span className={cn("h-2 w-2 rounded-full", dotClass(props.tone))} aria-hidden />
+      <span className={cn("font-mono text-[0.7rem]", shape.cls)} aria-hidden>
+        {shape.glyph}
+      </span>
       <span>{props.label}</span>
     </span>
   );
@@ -42,10 +50,7 @@ export function StatusBanner({
   title?: string;
 }) {
   return (
-    <div
-      className={cn("rounded-[var(--tyra-radius)] border px-4 py-3", bannerClass(tone), className)}
-      {...rest}
-    >
+    <div className={cn("px-4 py-3", bannerClass(tone), className)} {...rest}>
       {title ? <div className="text-sm font-semibold">{title}</div> : null}
       {children ? (
         <div className={cn(title ? "mt-1 text-sm opacity-90" : "text-sm")}>{children}</div>

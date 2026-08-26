@@ -1,35 +1,35 @@
-# PIXDRIFT — designkälla (extraherad, inte påhittad)
+# PIXDRIFT — designkälla (låst)
 
-Det här är **en fil** med exakt den design som finns i koden idag, och **alla
-system som finns i `@pixdrift/systems`**. Syftet är att du ska kunna bygga en
-gemensam fil i Claude Design, sedan implementera den fullt och låsa den som
-krav. Allt som tillkommer sen ska följa den låsta filen.
-
-**Den här filen hittar inte på ett nytt utseende.** Den skriver av det som
-redan körs. Där ytorna inte stämmer överens står det som en känd spricka.
+Det låsta paketet ligger i `docs/design/` (version 3.1). Tokens, regelbok,
+launcher och diagramspråk kommer därifrån. Den här filen är kartan mot koden
+som körs.
 
 | Fält | Värde |
 | --- | --- |
-| Extraherad | 2026-08-26 |
-| Källa | Kod i det här repot, inte en önskelista |
-| Lås | **Inte låst än.** Lås efter att Claude Design-filen är skapad och införd |
-| Nästa paket | Inget `@pixdrift/design` förrän två ytor annars divergerar (`docs/PLATFORM-1.0-GAP.md`) |
-| Produkter | Bara id:n i `@pixdrift/systems`. NORA, MOVA, SAGA finns inte |
+| Låst | 2026-08-26 |
+| Paket | `docs/design/00-README.md` … `08-3D-MODELS.md` |
+| Källa | Design workspace för wolfoftyreso-debug/kansli, införd här |
+| Produkter som kör | Bara id:n i `@pixdrift/systems`. NORA, MOVA, SAGA, NOVA, CARINA, MAJA, MONA, LENA, ACADEMY och BEA finns inte i det här repot |
+| Språk | Paketet är engelska. Ytan som körs är svenska tills LANGUAGE finns |
+| Nästa paket | Inget `@pixdrift/design` förrän två ytor annars divergerar |
+
+**Paketets 14-namnslista är inte en licens att hitta på produkter.** Kansli,
+Ekonomi, TORA och CREDITAE stannar för att de finns i katalogen. TORA täcks
+inte av MOVA här — MOVA finns inte.
+
+**Inte infört än:** 2.5D-grafer, 357 figurer, fordonsbibliotek, 3D-modeller
+(saknar `referens/`-HTML i det här införande). Inställningsytor BEA / COMPANY
+/ LANGUAGE med mera byggs inte som appar.
 
 ---
 
 ## 1. Vad du ska göra med den här filen
 
-1. Klistra in hela filen i Claude Design.
-2. Be Claude rita **en** gemensam design för alla rum nedan.
-3. Lös de kända sprickorna i §4 (IdP, Kansli-knapp, TYRA-piller, rött).
-   Välj ett läge. Blanda inte.
-4. När du är nöjd: den filen blir krav. Implementera den. Ändra den här
-   källan så den pekar på den låsta filen.
-5. Allt som byggs sen — nya rum, gästsidor, inloggning — ska följa den
-   låsta filen. Inte uppfinna en fjärde yta.
+Följ `docs/design/`. Nya rum, gästsidor och inloggning ska följa paketet.
+Hitta inte på en fjärde yta. Hitta inte på produkter som saknas i
+`@pixdrift/systems`.
 
-Tills dess är **den här filen** källan för hur det ser ut idag.
+Nedan är vad som redan kördes när paketet låstes, plus vad som rättats.
 
 ---
 
@@ -138,38 +138,27 @@ Används till rum, runtime, smulor, sajt-ögonbryn, tabellhuvud.
 
 ---
 
-## 4. Kända sprickor (måste lösas i Claude Design)
+## 4. Sprickor — läge efter låsningen
 
-Skriv av dem. Välj ett läge i den gemensamma filen.
+Paketet valde ett läge. Infört där det inte kräver påhittade rum.
 
-1. **IdP** — rundad, varm sten, accent-knapp. Se §2C.
-2. **Kansli TaskBoard-knapp** — `bg-accent text-white rounded-lg`. Alla andra
-   `Submit` är `bg-ink text-paper` utan radie. Lås mot ink-rektangel.
-3. **`rounded-full` överlever fasaden** — Ekonomi Sålt/Inbetalt och
-   periodchips är piller. TYRA `StatusBadge` är piller. Allt annat nollas
-   till 0. Välj: antingen nolla även `rounded-full`, eller tillåt piller
-   bara för togglers.
-4. **Rött** — enda produkt-rött är TYRA `destructive` (`bg-red-600`) och
-   TYRA status `blocked` (`bg-red-600` / röd banner). TaskBoard skriver
-   `hover:text-danger` men `--color-danger` **finns inte**. Lås: antingen
-   ink för destruktiv (text + kant) eller en enda röd token. Hitta inte på
-   fler.
-5. **TYRA statusfärger** — emerald / amber / zinc utöver token-paletten.
-   Lås mot `status-operational` / `status-development` / `status-pilot` /
-   muted, eller dokumentera tre extra tokens. Inte båda.
-6. **H1-storlek** — Kansli och anmälan `text-2xl`. De flesta rum `text-3xl`.
-   TYRA startsida `text-4xl`. Ekonomi-kurva `text-4xl tabular-nums`.
-   Lås en skala.
-7. **Röst** — produkt svenska, korta meningar. Marknadsidor engelska.
-   Claude Design: produkt = svenska. Marknad får engelska **om** den ligger
-   bakom samma chrome, men då ska chrome och innehåll inte blanda språk
-   på samma rad.
-8. **Header/Footer/PixelMark** — finns i `src/components/site/` men
-   Header/Footer är **inte monterade**. PixelMark 22 px + wordmark fanns på
-   den gamla sajten. Fasadens wordmark är text. Välj ett märke.
-9. **Sajt-kort** — `SystemCard` har hover `border-line-strong` och
-   `transition-colors`. Fasadkort har `hover:border-line-strong` utan
-   transition. Samma kant, olika rörelse.
+1. **IdP** — samma paper/surface/ink som fasaden. Ingen radie. Ink-knapp.
+   Wordmark-text, ingen blå P-ruta.
+2. **Kansli TaskBoard-knapp** — ink-rektangel, samma som `Submit`.
+3. **`rounded-full`** — noll på dokumentytor. Launcher-plattor (22 px) är
+   undantaget på `/`. Segmenterad kurvväxling i Ekonomi får behålla piller
+   tills 2.5D-graferna är införda.
+4. **Rött** — en token `--color-status-blocked` / `--color-danger` `#8A2A33`.
+   Destruktiv = kant, fylls vid hover. Blockerad = 2 px vänsterkant.
+5. **TYRA status** — form + färg mot status-tokens, inte emerald/amber/zinc.
+6. **H1-storlek** — `.pd-h1` är 28/600. Display 40/600 tabular. Rum som
+   fortfarande använder `text-3xl`/`text-4xl` ska flyttas dit när sidan
+   rörs.
+7. **Röst** — körs på svenska. Paketet är engelska. LANGUAGE är inte byggt.
+8. **Märke** — text-wordmark `PIXDRIFT`. Header/Footer/PixelMark förblir
+   omonterade.
+9. **Rörelse** — 120 ms ease-out på kant/bakgrund. `prefers-reduced-motion`
+   stänger av.
 
 ---
 
@@ -807,5 +796,5 @@ listen, inte en gästhub.
 | Publik katalog | `src/lib/pixdrift/systems.ts` (inte produktlistan) |
 | Lucka DESIGN | `docs/PLATFORM-1.0-GAP.md` — PARTIAL |
 
-När Claude Design-filen är införd: uppdatera den här filen med en länk till
-den låsta filen, och sätt DESIGN-cellen först när ytorna faktiskt följer den.
+Låst paket: `docs/design/`. DESIGN-cellen i gap-matrisen är PARTIAL tills
+grafer, figurer och resterande H1 följer paketet.
