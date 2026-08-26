@@ -4,7 +4,12 @@ import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { Notice, SignInGate } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { formatSwedishDateTime } from "@/lib/format/datetime";
-import { DEMO_MODULE_LABELS, getIntake } from "@/lib/kansli/intakes";
+import {
+  DEMO_MODULE_LABELS,
+  getHouseIntake,
+  houseOrgRefFromEnv,
+  isHouseSession,
+} from "@/lib/kansli/intakes";
 import { tryRuntime } from "@/lib/platform/page";
 
 export const dynamic = "force-dynamic";
@@ -13,7 +18,11 @@ export default async function KansliIntakePage({ params }: { params: Promise<{ i
   const { id } = await params;
   const session = await readSession();
   const runtime = tryRuntime();
-  const intake = session && runtime ? await getIntake(runtime.pool, id) : null;
+  const house = isHouseSession(session?.org?.ref);
+  const intake =
+    session && house && runtime
+      ? await getHouseIntake(runtime.pool, houseOrgRefFromEnv(), id)
+      : null;
   if (session && runtime && !intake) notFound();
 
   return (
