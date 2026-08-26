@@ -4,6 +4,7 @@ import {
   facadeRuntimeMark,
   isFacadeActive,
   loginNextFromPath,
+  orgIdFromRef,
 } from "./facade.ts";
 
 describe("facade", () => {
@@ -19,6 +20,11 @@ describe("facade", () => {
       "/platform/events",
     );
     expect(activeFacadeHref("/documentation/mcp", ["/documentation"])).toBe("/documentation");
+  });
+
+  it("strips the org ref down to the id the IdP understands", () => {
+    expect(orgIdFromRef("pixdrift:org:org-nordvik")).toBe("org-nordvik");
+    expect(orgIdFromRef("org-nordvik")).toBeNull();
   });
 
   it("sends login back to the room the user stood in", () => {

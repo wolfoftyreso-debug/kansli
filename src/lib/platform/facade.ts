@@ -23,6 +23,14 @@ export const FACADE_SERVICE: readonly FacadeLink[] = [
   { href: "/documentation", label: "Dokumentation", id: "docs" },
 ];
 
+/** `pixdrift:org:org-exempelbolaget` → `org-exempelbolaget` for the IdP `org` query. */
+export function orgIdFromRef(ref: string): string | null {
+  const prefix = "pixdrift:org:";
+  if (!ref.startsWith(prefix)) return null;
+  const id = ref.slice(prefix.length).trim();
+  return id || null;
+}
+
 export function facadeRuntimeMark(
   env: Record<string, string | undefined> = process.env,
 ): "produktion" | "förhandsvisning" | "lokal" {

@@ -9,6 +9,7 @@ import {
   FACADE_SERVICE,
   activeFacadeHref,
   loginNextFromPath,
+  orgIdFromRef,
 } from "@/lib/platform/facade";
 
 function RailLink({ href, label, active }: { href: string; label: string; active: boolean }) {
@@ -92,6 +93,38 @@ export function Facade({
               {" · "}
               {runtime}
             </p>
+            {session && session.memberships.length > 1 ? (
+              <details className="relative">
+                <summary className="cursor-pointer list-none pd-label hover:text-ink [&::-webkit-details-marker]:hidden">
+                  Byt bolag
+                </summary>
+                <nav
+                  aria-label="Bolag"
+                  className="absolute right-0 top-full z-20 mt-1 w-56 border border-line bg-surface"
+                >
+                  {session.memberships.map((membership) => {
+                    const orgId = orgIdFromRef(membership.ref);
+                    if (!orgId) return null;
+                    const href = `/api/auth/login?org=${encodeURIComponent(orgId)}&next=${encodeURIComponent(loginNextFromPath(pathname))}`;
+                    const current = session.org?.ref === membership.ref;
+                    return (
+                      <a
+                        key={membership.ref}
+                        href={href}
+                        className={
+                          current
+                            ? "block px-3 py-2 text-sm font-medium text-ink"
+                            : "block px-3 py-2 text-sm text-ink-soft hover:bg-paper hover:text-ink"
+                        }
+                        aria-current={current ? "true" : undefined}
+                      >
+                        {membership.name}
+                      </a>
+                    );
+                  })}
+                </nav>
+              </details>
+            ) : null}
             {session ? (
               <form action="/api/auth/logout" method="post">
                 <button type="submit" className="pd-label hover:text-ink">
