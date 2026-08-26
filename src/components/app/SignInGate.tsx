@@ -28,10 +28,20 @@ export function EmptyState({ children }: { children: ReactNode }) {
   return <p className="text-sm text-muted">{children}</p>;
 }
 
-export function Notice({ children }: { children: ReactNode }) {
-  return (
-    <p className="border border-line bg-accent-soft px-3 py-2 text-sm text-ink-soft">{children}</p>
-  );
+export function Notice({
+  children,
+  tone = "info",
+}: {
+  children: ReactNode;
+  tone?: "info" | "warn" | "alarm";
+}) {
+  const cls =
+    tone === "alarm"
+      ? "border border-line-strong bg-accent-soft px-3 py-3 text-sm text-ink"
+      : tone === "warn"
+        ? "border border-line bg-surface px-3 py-3 text-sm text-[var(--color-status-development)]"
+        : "border border-line bg-accent-soft px-3 py-2 text-sm text-ink-soft";
+  return <p className={cls}>{children}</p>;
 }
 
 export function Field({
@@ -92,22 +102,30 @@ export function CheckField({
   defaultChecked,
   value = "on",
   required,
+  large,
 }: {
   name: string;
   label: string;
   defaultChecked?: boolean;
   value?: string;
   required?: boolean;
+  large?: boolean;
 }) {
   return (
-    <label className="flex items-start gap-2 text-sm text-ink-soft">
+    <label
+      className={
+        large
+          ? "flex min-h-12 items-center gap-3 text-base text-ink-soft"
+          : "flex items-start gap-2 text-sm text-ink-soft"
+      }
+    >
       <input
         type="checkbox"
         name={name}
         value={value}
         defaultChecked={defaultChecked}
         required={required}
-        className="mt-1"
+        className={large ? "h-5 w-5 shrink-0" : "mt-1"}
       />
       <span>{label}</span>
     </label>

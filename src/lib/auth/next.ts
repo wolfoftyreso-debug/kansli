@@ -20,6 +20,8 @@ export const APP_NEXT_PATHS = [
   "/ekonomi/kontoutdrag",
   "/platform",
   "/platform/events",
+  "/platform/drift",
+  "/platform/mcp",
 ] as const;
 
 export type AppNextPath = (typeof APP_NEXT_PATHS)[number];

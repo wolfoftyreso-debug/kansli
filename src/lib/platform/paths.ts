@@ -7,6 +7,7 @@ const EXTRA: Record<string, string> = {
   pixdrift: APP_HOME,
   platform: "/platform",
   events: "/platform/events",
+  drift: "/platform/drift",
   revolut: "/ekonomi/anslutningar/revolut",
 };
 

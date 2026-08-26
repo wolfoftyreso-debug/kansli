@@ -17,6 +17,7 @@ export const FACADE_PRODUCTS: readonly FacadeLink[] = SYSTEM_MODULES.filter(
 
 export const FACADE_SERVICE: readonly FacadeLink[] = [
   { href: "/platform", label: "Plattform", id: "platform" },
+  { href: "/platform/drift", label: "Drift", id: "drift" },
   { href: "/platform/events", label: "Händelser", id: "events" },
   { href: "/kansli/upphandling", label: "Upphandling", id: "upphandling" },
   { href: "/upphandling", label: "Ny kund", id: "intake" },
@@ -58,7 +59,14 @@ export function activeFacadeHref(pathname: string, hrefs: readonly string[]): st
 
 export function loginNextFromPath(pathname: string): string {
   const hrefs = FACADE_PRODUCTS.map((item) => item.href);
-  const extra = ["/platform/events", "/platform", "/kansli/upphandling", "/upphandling"];
+  const extra = [
+    "/platform/drift",
+    "/platform/events",
+    "/platform/mcp",
+    "/platform",
+    "/kansli/upphandling",
+    "/upphandling",
+  ];
   const match = activeFacadeHref(pathname, [...hrefs, ...extra]);
   return match ?? "/kansli";
 }

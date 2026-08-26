@@ -29,6 +29,7 @@ describe("facade", () => {
 
   it("sends login back to the room the user stood in", () => {
     expect(loginNextFromPath("/ekonomi/fakturor")).toBe("/ekonomi");
+    expect(loginNextFromPath("/platform/drift")).toBe("/platform/drift");
     expect(loginNextFromPath("/")).toBe("/kansli");
   });
 });

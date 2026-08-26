@@ -12,6 +12,7 @@ describe("appPath", () => {
     expect(appPath("tyra")).toBe("/tyra");
     expect(appPath("irma")).toBe("/irma");
     expect(appPath("tora")).toBe("/tora");
+    expect(appPath("drift")).toBe("/platform/drift");
   });
 
   it("does not invent pages", () => {

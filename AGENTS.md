@@ -79,3 +79,13 @@ AI är aldrig source of truth; automation har uttrycklig nivå (L0–L4).
 - Design source is `docs/DESIGN-SOURCE.md`. Extracted from current UI, not
   invented. Do not start `@pixdrift/design` or a second look until that file
   is locked after the shared Claude Design file is implemented.
+- Operations live at `/platform/drift`. One Postgres. House sees the fleet.
+  Workshops see their own org. The desk composes reskontra (Ekonomi), open
+  cases (TYRA/Kansli/BRITT), notices, and SMS routes. Sales SMS stays in
+  Ekonomi — platform does not write `ekonomi.*`. Snapshot polling must not
+  send SMS. SENT only if the platform SMS channel accepted. Do not invent a
+  second database, Grafana, OpenTelemetry export, a support product, or a
+  second DevPortal. Measurements are live SQL plus in-process MCP counters.
+  Structure lives in `src/lib/platform/structure.ts`. Debug lookup is
+  on-demand at `/api/platform/ops/debug` and `pnpm ops:lookup`. Snapshots
+  include queues, last errors, and runtime marks. Do not dump secrets.
