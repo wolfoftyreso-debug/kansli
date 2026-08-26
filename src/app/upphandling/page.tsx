@@ -2,7 +2,6 @@ import { AppShell } from "@/components/app/AppShell";
 import { CheckField, Field, Notice, Submit } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
 import { DEMO_MODULE_LABELS, DEMO_MODULES } from "@/lib/kansli/intakes";
-import { submitUpphandling } from "./actions";
 
 export const metadata = {
   title: "Koncernupphandling — Pixdrift",
@@ -48,7 +47,8 @@ export default async function UpphandlingPage({
         </aside>
 
         <form
-          action={submitUpphandling}
+          action="/api/kansli/intake"
+          method="post"
           className="flex flex-col gap-4 border border-line bg-surface p-4"
         >
           {orgNumberWrong ? (

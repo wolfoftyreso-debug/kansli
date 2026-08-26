@@ -5,14 +5,35 @@ import { openIntakeReveal, sealIntakeReveal, type IntakeReveal } from "./intake-
 export const INTAKE_REVEAL_COOKIE = "pd_intake_reveal";
 export type { IntakeReveal };
 
-export async function writeIntakeReveal(reveal: IntakeReveal): Promise<void> {
-  const jar = await cookies();
-  jar.set(INTAKE_REVEAL_COOKIE, await sealIntakeReveal(reveal), {
+export async function intakeRevealCookie(reveal: IntakeReveal): Promise<{
+  name: string;
+  value: string;
+  httpOnly: true;
+  sameSite: "lax";
+  secure: boolean;
+  path: string;
+  maxAge: number;
+}> {
+  return {
+    name: INTAKE_REVEAL_COOKIE,
+    value: await sealIntakeReveal(reveal),
     httpOnly: true,
     sameSite: "lax",
     secure: authConfig.cookieSecure,
     path: "/",
     maxAge: 600,
+  };
+}
+
+export async function writeIntakeReveal(reveal: IntakeReveal): Promise<void> {
+  const jar = await cookies();
+  const cookie = await intakeRevealCookie(reveal);
+  jar.set(cookie.name, cookie.value, {
+    httpOnly: cookie.httpOnly,
+    sameSite: cookie.sameSite,
+    secure: cookie.secure,
+    path: cookie.path,
+    maxAge: cookie.maxAge,
   });
 }
 
