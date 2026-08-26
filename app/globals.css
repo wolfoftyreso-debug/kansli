@@ -10,6 +10,9 @@
   --color-danger: #8a1f1f;
   --color-line: #e3e6e8;
   --color-edge: #c9ced2;
+  /* Form borders carry meaning, so they clear the 3:1 in WCAG 1.4.11.
+     --color-edge is decorative and stays lighter. */
+  --color-field: #848c93;
   --color-wash: #f7f8f9;
   --color-panel: #aab4bd;
   --color-mist: #c3ccd3;
@@ -556,7 +559,7 @@ body {
   .input {
     width: 100%;
     padding: 13px 14px;
-    border: 1px solid var(--color-edge);
+    border: 1px solid var(--color-field);
     background: #ffffff;
     color: var(--color-ink);
     font-family: var(--font-archivo), sans-serif;
