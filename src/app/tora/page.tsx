@@ -12,14 +12,20 @@ import { listSnapshots } from "@/lib/tora/persist";
 import { getCompanyProfile, resolveCompany } from "@/lib/tora/profile";
 import { sek } from "@/lib/tora/view";
 import { publishToraMarket, saveToraProfile } from "./actions";
+import { t } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 
-export const metadata = {
-  title: "TORA — Pixdrift",
-  description: "Vilka upphandlingar just ert bolag kan ta.",
-};
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "tora.metaTitle"),
+    description: t(locale, "tora.metaDescription"),
+  };
+}
 
 export default async function ToraPage() {
   const session = await readSession();
+  const locale = await readLocale();
   const runtime = tryRuntime(session?.org?.ref);
   const company = await resolveCompany(runtime?.pool ?? null, session?.org?.ref ?? null);
   const profile =
@@ -40,45 +46,43 @@ export default async function ToraPage() {
       <header className="flex flex-col gap-3">
         <ProductCrumb crumbs={[{ href: "/tora", label: "TORA" }]} />
         <h1 className="text-3xl font-semibold tracking-tight">TORA</h1>
-        <p className="text-ink-soft">
-          TORA visar vilka upphandlingar {company.name} kan lämna anbud på — och varför just ni. Här
-          är hela bedömningen: krav, luckor och nästa steg.
-        </p>
+        <p className="text-ink-soft">{t(locale, "tora.lead", { name: company.name })}</p>
         <Notice>
-          Upphandlingarna är exempel, inte riktiga annonser. Visningen är ett betalkonto, så ni ser
-          namn, belopp och krav.{" "}
           {usingDemoCompany
-            ? "Bolagsfakta är exempelbolaget tills ni sparar er egen profil."
-            : `Bolagsfakta är er sparade profil (${company.name}).`}
+            ? t(locale, "tora.noticeDemo")
+            : t(locale, "tora.noticeSaved", { name: company.name })}
         </Notice>
         <p className="text-sm">
           <Link
             href="/tora/calendar"
             className="underline decoration-line underline-offset-4 hover:text-ink"
           >
-            Kalender
+            {t(locale, "tora.calendar")}
           </Link>
         </p>
       </header>
 
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Stat label="Aktuellt" value={String(summary.openNowCount)} />
-        <Stat label="Kommande" value={String(summary.upcomingCount)} />
-        <Stat label="Bevakning" value={String(summary.watchCount)} />
-        <Stat label="Publicerat värde" value={sek(summary.knownValueSek)} />
+        <Stat label={t(locale, "tora.current")} value={String(summary.openNowCount)} />
+        <Stat label={t(locale, "tora.upcoming")} value={String(summary.upcomingCount)} />
+        <Stat label={t(locale, "tora.watch")} value={String(summary.watchCount)} />
+        <Stat label={t(locale, "tora.publishedValue")} value={sek(summary.knownValueSek)} />
       </section>
 
-      <CompanyBriefingCard briefing={briefing} />
+      <CompanyBriefingCard
+        briefing={briefing}
+        title={t(locale, "tora.yourCompany")}
+        frameworksLabel={t(locale, "tora.frameworks")}
+        referencesLabel={t(locale, "tora.references")}
+      />
 
       {session?.org ? (
         <form
           action={saveToraProfile}
           className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
         >
-          <h2 className="text-lg font-semibold">Ert bolag</h2>
-          <p className="text-sm text-ink-soft">
-            Utan sparad profil räknar vi på exempelbolaget i stället för på er.
-          </p>
+          <h2 className="text-lg font-semibold">{t(locale, "tora.yourCompany")}</h2>
+          <p className="text-sm text-ink-soft">{t(locale, "tora.profileLead")}</p>
           <Field
             name="name"
             label="Bolagsnamn"

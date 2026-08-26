@@ -11,6 +11,8 @@ import {
   observationValueLabel,
 } from "@/lib/alva/protocol";
 import { readSession } from "@/lib/auth/session";
+import { t } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 import { tryRuntime } from "@/lib/platform/page";
 import {
   recordAlvaMeasurement,
@@ -19,13 +21,15 @@ import {
   saveAlvaCaseStatus,
 } from "../actions";
 
-export const metadata = {
-  title: "Fall — ALVA — Pixdrift",
-};
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return { title: t(locale, "alva.detailMetaTitle") };
+}
 
 export default async function AlvaCasePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await readSession();
+  const locale = await readLocale();
   const runtime = tryRuntime(session?.org?.ref);
   const item =
     session?.org?.ref && runtime ? await getCase(runtime.pool, session.org.ref, id) : null;
@@ -49,41 +53,45 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
     <AppShell current="alva" session={session}>
       <ProductCrumb crumbs={[{ href: "/alva", label: "ALVA" }]} />
       {!session?.org ? (
-        <SignInGate next="/alva" title="Logga in för att se ärendet">
-          Ärendet tillhör organisationen.
+        <SignInGate
+          next="/alva"
+          title={t(locale, "alva.detailSignInTitle")}
+          actionLabel={t(locale, "chrome.signIn")}
+        >
+          {t(locale, "alva.detailSignInBody")}
         </SignInGate>
       ) : item ? (
         <>
           <h1 className="pd-h1">{item.complaint}</h1>
-          <p className="pd-label">{caseStatusLine(status)}</p>
-          <Notice>Här fyller ni i fakta själva. Systemet drar inga egna slutsatser.</Notice>
+          <p className="pd-label">{caseStatusLine(status, locale)}</p>
+          <Notice>{t(locale, "alva.detailNotice")}</Notice>
 
           <dl className="flex flex-col gap-3">
             <div>
-              <dt className="text-sm text-ink-soft">Kundens beskrivning</dt>
+              <dt className="text-sm text-ink-soft">{t(locale, "alva.complaint")}</dt>
               <dd className="mt-1">{item.complaint}</dd>
             </div>
             {item.vehicleRef ? (
               <div>
-                <dt className="text-sm text-ink-soft">Fordonsreferens</dt>
+                <dt className="text-sm text-ink-soft">{t(locale, "alva.vehicleRefShort")}</dt>
                 <dd className="mt-1 font-mono text-sm">{item.vehicleRef}</dd>
               </div>
             ) : null}
             {item.area ? (
               <div>
-                <dt className="text-sm text-ink-soft">Område</dt>
+                <dt className="text-sm text-ink-soft">{t(locale, "alva.areaShort")}</dt>
                 <dd className="mt-1">{item.area}</dd>
               </div>
             ) : null}
             {item.mileageKm != null ? (
               <div>
-                <dt className="text-sm text-ink-soft">Mätarställning</dt>
+                <dt className="text-sm text-ink-soft">{t(locale, "alva.mileageShort")}</dt>
                 <dd className="mt-1">{item.mileageKm} km</dd>
               </div>
             ) : null}
             {item.desiredOutcome ? (
               <div>
-                <dt className="text-sm text-ink-soft">Önskat utfall</dt>
+                <dt className="text-sm text-ink-soft">{t(locale, "alva.desiredOutcome")}</dt>
                 <dd className="mt-1">{item.desiredOutcome}</dd>
               </div>
             ) : null}
@@ -103,9 +111,9 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
                 defaultValue={status}
                 className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
               >
-                <option value="open">Öppet</option>
-                <option value="in_progress">Pågår</option>
-                <option value="closed">Stängt</option>
+                <option value="open">{t(locale, "alva.status.open")}</option>
+                <option value="in_progress">{t(locale, "alva.status.in_progress")}</option>
+                <option value="closed">{t(locale, "alva.status.closed")}</option>
               </select>
             </label>
             <Submit large>Spara status</Submit>

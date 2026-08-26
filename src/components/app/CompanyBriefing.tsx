@@ -1,10 +1,20 @@
 import type { CompanyBriefing } from "@/lib/tora/briefing";
 
-export function CompanyBriefingCard({ briefing }: { briefing: CompanyBriefing }) {
+export function CompanyBriefingCard({
+  briefing,
+  title,
+  frameworksLabel,
+  referencesLabel,
+}: {
+  briefing: CompanyBriefing;
+  title: string;
+  frameworksLabel: string;
+  referencesLabel: string;
+}) {
   return (
     <section className="flex flex-col gap-4 rounded-xl border border-line bg-surface p-4">
       <div>
-        <p className="pd-label text-faint">Ert bolag</p>
+        <p className="pd-label text-faint">{title}</p>
         <h2 className="mt-1 text-lg font-semibold">{briefing.name}</h2>
         <p className="mt-1 text-sm text-ink-soft">{briefing.headline}</p>
       </div>
@@ -20,7 +30,7 @@ export function CompanyBriefingCard({ briefing }: { briefing: CompanyBriefing })
       ) : null}
       {briefing.frameworks.length > 0 ? (
         <div>
-          <p className="pd-label text-faint">Avtal ni redan är med på</p>
+          <p className="pd-label text-faint">{frameworksLabel}</p>
           <ul className="mt-2 flex flex-col gap-2">
             {briefing.frameworks.map((item) => (
               <li key={item.title} className="text-sm">
@@ -35,7 +45,7 @@ export function CompanyBriefingCard({ briefing }: { briefing: CompanyBriefing })
       ) : null}
       {briefing.references.length > 0 ? (
         <div>
-          <p className="pd-label text-faint">Referenser TORA räknar med</p>
+          <p className="pd-label text-faint">{referencesLabel}</p>
           <ul className="mt-2 flex flex-col gap-2">
             {briefing.references.map((item) => (
               <li key={item.customer} className="text-sm">

@@ -21,13 +21,15 @@ const APP = process.env.PIXDRIFT_TEST_DATABASE_URL ?? process.env.DATABASE_URL;
 const live = OWNER && APP ? describe : describe.skip;
 
 describe("alva status marks", () => {
-  it("pairs the schema marks with Swedish words, never color alone", () => {
+  it("pairs the schema marks with words, never color alone", () => {
     expect(CASE_STATUS_MARK.open).toBe("□");
     expect(CASE_STATUS_MARK.in_progress).toBe("○");
     expect(CASE_STATUS_MARK.closed).toBe("✓");
-    expect(caseStatusLine("open")).toBe("□ Öppet");
-    expect(caseStatusLine("in_progress")).toBe("○ Pågår");
-    expect(caseStatusLine("closed")).toBe("✓ Stängt");
+    expect(caseStatusLine("open")).toBe("□ Open");
+    expect(caseStatusLine("in_progress")).toBe("○ In progress");
+    expect(caseStatusLine("closed")).toBe("✓ Closed");
+    expect(caseStatusLine("open", "sv")).toBe("□ Öppet");
+    expect(caseStatusLine("in_progress", "pl")).toBe("○ W toku");
   });
 });
 

@@ -1,14 +1,15 @@
 import { randomUUID } from "node:crypto";
 import type pg from "pg";
 import type { EventLog } from "@pixdrift/events";
+import { DEFAULT_LOCALE, t, type Locale } from "../i18n/index.ts";
 
 export const CASE_STATUSES = ["open", "in_progress", "closed"] as const;
 export type CaseStatus = (typeof CASE_STATUSES)[number];
 
 export const CASE_STATUS_LABELS: Record<CaseStatus, string> = {
-  open: "Öppet",
-  in_progress: "Pågår",
-  closed: "Stängt",
+  open: "Open",
+  in_progress: "In progress",
+  closed: "Closed",
 };
 
 /** Schema 2.0 §4.2 — mark + word. Never color alone. */
@@ -18,8 +19,8 @@ export const CASE_STATUS_MARK: Record<CaseStatus, "□" | "○" | "✓"> = {
   closed: "✓",
 };
 
-export function caseStatusLine(status: CaseStatus): string {
-  return `${CASE_STATUS_MARK[status]} ${CASE_STATUS_LABELS[status]}`;
+export function caseStatusLine(status: CaseStatus, locale: Locale = DEFAULT_LOCALE): string {
+  return `${CASE_STATUS_MARK[status]} ${t(locale, `alva.status.${status}`)}`;
 }
 
 export function parseCaseStatus(value: unknown): CaseStatus | null {

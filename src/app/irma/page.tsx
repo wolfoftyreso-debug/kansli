@@ -9,11 +9,16 @@ import { daysUntilExpiry, effectiveStatus, statusLabel } from "@/lib/irma/status
 import { tryRuntime } from "@/lib/platform/page";
 import { CopyIssuedLink } from "./CopyIssuedLink";
 import { createIrmaAgreement } from "./actions";
+import { t } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 
-export const metadata = {
-  title: "IRMA — Pixdrift",
-  description: "Skicka ett avtal, se om det är läst och bekräftat.",
-};
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "irma.metaTitle"),
+    description: t(locale, "irma.metaDescription"),
+  };
+}
 
 function expiryCopy(item: Agreement): string {
   if (item.status === "expired") return "Länken har gått ut. Skicka en ny länk från avtalet.";
@@ -66,6 +71,7 @@ export default async function IrmaPage({
   searchParams: Promise<{ issued?: string; q?: string; status?: string }>;
 }) {
   const session = await readSession();
+  const locale = await readLocale();
   const runtime = tryRuntime(session?.org?.ref);
   const params = await searchParams;
   const query = params.q?.trim() ?? "";
@@ -85,12 +91,10 @@ export default async function IrmaPage({
     <AppShell current="irma" session={session}>
       <header className="flex flex-col gap-4 pt-4 sm:pt-8">
         <ProductCrumb crumbs={[{ href: "/irma", label: "IRMA" }]} />
-        <h1 className="max-w-xl text-4xl font-semibold tracking-tight">Vilket avtal ska ut?</h1>
-        <p className="max-w-xl text-ink-soft">
-          Med IRMA skickar ni avtal digitalt: skapa, skicka en länk, se när motparten öppnat och
-          bekräftat. Motparten behöver inget konto. Det är en enkel digital bekräftelse, inte en
-          juridisk e-signatur. Dokumentarkiv finns inte än.
-        </p>
+        <h1 className="max-w-xl text-4xl font-semibold tracking-tight">
+          {t(locale, "irma.heading")}
+        </h1>
+        <p className="max-w-xl text-ink-soft">{t(locale, "irma.lead")}</p>
       </header>
 
       {issued ? (
@@ -107,8 +111,12 @@ export default async function IrmaPage({
       ) : null}
 
       {!session?.org ? (
-        <SignInGate next="/irma" title="Logga in för att skapa avtal">
-          Länken visas bara en gång — kopiera den direkt. Vi sparar den inte i läsbar form.
+        <SignInGate
+          next="/irma"
+          title={t(locale, "irma.signInTitle")}
+          actionLabel={t(locale, "chrome.signIn")}
+        >
+          {t(locale, "irma.signInBody")}
         </SignInGate>
       ) : (
         <>

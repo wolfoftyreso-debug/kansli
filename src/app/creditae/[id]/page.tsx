@@ -3,24 +3,28 @@ import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { Notice, SignInGate, Submit } from "@/components/app/SignInGate";
 import {
-  ASSESSMENT_LABELS,
   ASSESSMENTS,
-  INQUIRY_STATUS_LABELS,
-  VENDOR_STATUS_LABELS,
+  assessmentLabel,
   getInquiry,
+  inquiryStatusLabel,
+  vendorStatusLabel,
 } from "@/lib/creditae/inquiries";
 import { readSession } from "@/lib/auth/session";
+import { t } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 import { creditConfigured } from "@/lib/platform/credit";
 import { tryRuntime } from "@/lib/platform/page";
 import { saveCreditaeAssessment } from "../actions";
 
-export const metadata = {
-  title: "Förfrågan — CREDITAE — Pixdrift",
-};
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return { title: t(locale, "creditae.detailMetaTitle") };
+}
 
 export default async function CreditaeInquiryPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await readSession();
+  const locale = await readLocale();
   const runtime = tryRuntime(session?.org?.ref);
   const item =
     session?.org?.ref && runtime ? await getInquiry(runtime.pool, session.org.ref, id) : null;
@@ -30,8 +34,12 @@ export default async function CreditaeInquiryPage({ params }: { params: Promise<
     <AppShell current="creditae" session={session}>
       <ProductCrumb crumbs={[{ href: "/creditae", label: "CREDITAE" }]} />
       {!session?.org ? (
-        <SignInGate next="/creditae" title="Logga in för att se förfrågan">
-          Förfrågan tillhör organisationen.
+        <SignInGate
+          next="/creditae"
+          title={t(locale, "creditae.detailSignInTitle")}
+          actionLabel={t(locale, "chrome.signIn")}
+        >
+          {t(locale, "creditae.detailSignInBody")}
         </SignInGate>
       ) : item ? (
         <>
@@ -40,70 +48,70 @@ export default async function CreditaeInquiryPage({ params }: { params: Promise<
           </h1>
           <p className="text-xs font-medium uppercase tracking-wide text-accent">
             {item.assessment
-              ? ASSESSMENT_LABELS[item.assessment]
-              : INQUIRY_STATUS_LABELS[item.status]}
+              ? assessmentLabel(item.assessment, locale)
+              : inquiryStatusLabel(item.status, locale)}
           </p>
           <Notice>
             {creditConfigured()
-              ? "Här fyller ni i slutsatsen själva. Byråns fält är inte er bedömning."
-              : "Här fyller ni i slutsatsen själva. Systemet sätter inget kreditbetyg."}
+              ? t(locale, "creditae.detailNoticeOn")
+              : t(locale, "creditae.detailNoticeOff")}
           </Notice>
 
           <dl className="flex flex-col gap-3">
             <div>
-              <dt className="text-sm text-ink-soft">Organisationsnummer</dt>
+              <dt className="text-sm text-ink-soft">{t(locale, "creditae.orgNumber")}</dt>
               <dd className="mt-1 font-mono text-sm">{item.subjectOrgNumber}</dd>
             </div>
             {item.subjectName ? (
               <div>
-                <dt className="text-sm text-ink-soft">Bolagsnamn</dt>
+                <dt className="text-sm text-ink-soft">{t(locale, "creditae.companyName")}</dt>
                 <dd className="mt-1">{item.subjectName}</dd>
               </div>
             ) : null}
             {item.reason ? (
               <div>
-                <dt className="text-sm text-ink-soft">Varför</dt>
+                <dt className="text-sm text-ink-soft">{t(locale, "creditae.why")}</dt>
                 <dd className="mt-1">{item.reason}</dd>
               </div>
             ) : null}
             {item.vendorStatus ? (
               <div>
-                <dt className="text-sm text-ink-soft">Kreditbyrån</dt>
-                <dd className="mt-1">{VENDOR_STATUS_LABELS[item.vendorStatus]}</dd>
+                <dt className="text-sm text-ink-soft">{t(locale, "creditae.bureau")}</dt>
+                <dd className="mt-1">{vendorStatusLabel(item.vendorStatus, locale)}</dd>
               </div>
             ) : null}
             {item.vendorStatus === "fetched" ? (
               <>
                 {item.vendorName ? (
                   <div>
-                    <dt className="text-sm text-ink-soft">Namn hos byrån</dt>
+                    <dt className="text-sm text-ink-soft">{t(locale, "creditae.vendorName")}</dt>
                     <dd className="mt-1">{item.vendorName}</dd>
                   </div>
                 ) : null}
                 {item.vendorScore ? (
                   <div>
-                    <dt className="text-sm text-ink-soft">Byråns värde</dt>
+                    <dt className="text-sm text-ink-soft">{t(locale, "creditae.vendorScore")}</dt>
                     <dd className="mt-1 font-mono text-sm">{item.vendorScore}</dd>
                   </div>
                 ) : null}
                 {item.vendorLimit ? (
                   <div>
-                    <dt className="text-sm text-ink-soft">Byråns gräns</dt>
+                    <dt className="text-sm text-ink-soft">{t(locale, "creditae.vendorLimit")}</dt>
                     <dd className="mt-1 font-mono text-sm">{item.vendorLimit}</dd>
                   </div>
                 ) : null}
-                <p className="text-xs text-faint">Det är byråns fält, inte er slutsats.</p>
+                <p className="text-xs text-faint">{t(locale, "creditae.vendorNotConclusion")}</p>
               </>
             ) : null}
             {item.vendorStatus === "failed" && item.vendorReason ? (
               <div>
-                <dt className="text-sm text-ink-soft">Varför rapporten saknas</dt>
+                <dt className="text-sm text-ink-soft">{t(locale, "creditae.vendorWhyMissing")}</dt>
                 <dd className="mt-1">{item.vendorReason}</dd>
               </div>
             ) : null}
             {item.notes ? (
               <div>
-                <dt className="text-sm text-ink-soft">Anteckning</dt>
+                <dt className="text-sm text-ink-soft">{t(locale, "creditae.notes")}</dt>
                 <dd className="mt-1">{item.notes}</dd>
               </div>
             ) : null}
@@ -113,10 +121,10 @@ export default async function CreditaeInquiryPage({ params }: { params: Promise<
             action={saveCreditaeAssessment}
             className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
           >
-            <h2 className="text-lg font-semibold">Er bedömning</h2>
+            <h2 className="text-lg font-semibold">{t(locale, "creditae.yourAssessment")}</h2>
             <input type="hidden" name="id" value={item.id} />
             <label className="flex flex-col gap-1">
-              <span className="text-sm text-ink-soft">Slutsats</span>
+              <span className="text-sm text-ink-soft">{t(locale, "creditae.conclusion")}</span>
               <select
                 name="assessment"
                 required
@@ -128,7 +136,7 @@ export default async function CreditaeInquiryPage({ params }: { params: Promise<
                 </option>
                 {ASSESSMENTS.map((value) => (
                   <option key={value} value={value}>
-                    {ASSESSMENT_LABELS[value]}
+                    {assessmentLabel(value, locale)}
                   </option>
                 ))}
               </select>

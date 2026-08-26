@@ -21,7 +21,8 @@ Name → category → description → icon semantics → route → room must all
 
 ## Application settings (own surface — iPhone-Settings model, never among the apps)
 BEA (Access — add users, assign roles, control what each person can do),
-COMPANY (Organisation), LANGUAGE (Locale: EN canonical / SV locale),
+COMPANY (Organisation), LANGUAGE (Locale: EN canonical; SV, PL, DE, ES
+and the brand set as translations — chrome picker, not an app),
 INTEGRATIONS (Connections), DATA (Export — everything is yours, no lock-in),
 GENERAL (Defaults), APPEARANCE (Display), VERSION (About).
 Topbar utilities: Support · Settings · Sign out.

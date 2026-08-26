@@ -6,16 +6,21 @@ import { eventLine } from "@/lib/platform/event-copy";
 import { FAMILY_SYSTEMS } from "@/lib/platform/family";
 import { hubStatus, ritaStatusLine } from "@/lib/platform/hub-status";
 import { readSession } from "@/lib/auth/session";
+import { familyMission, t } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 import { listTasks } from "@/lib/kansli/tasks";
 import { tryRuntime } from "@/lib/platform/page";
 import TaskBoard from "../TaskBoard";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: "Kansli — Pixdrift",
-  description: "Startsidan. Uppgifter och vägen in.",
-};
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "kansli.metaTitle"),
+    description: t(locale, "kansli.metaDescription"),
+  };
+}
 
 const HREF: Record<string, string> = {
   ekonomi: "/ekonomi",
@@ -34,6 +39,7 @@ export default async function KansliHub({
   searchParams: Promise<{ task?: string }>;
 }) {
   const session = await readSession();
+  const locale = await readLocale();
   const runtime = tryRuntime(session?.org?.ref);
   const status = hubStatus();
   const highlightId = (await searchParams).task?.trim() || null;
@@ -48,15 +54,16 @@ export default async function KansliHub({
       <header className="flex flex-col gap-3">
         <ProductCrumb crumbs={[{ href: "/kansli", label: "Kansli" }]} />
         <h1 className="text-2xl font-semibold tracking-tight">Kansli</h1>
-        <p className="text-ink-soft">
-          Här börjar allt. Samma inloggning i alla system, och en egen uppgiftstavla för det
-          interna.
-        </p>
+        <p className="text-ink-soft">{t(locale, "kansli.lead")}</p>
       </header>
 
       {!session ? (
-        <SignInGate next="/kansli" title="Logga in med Pixdrift">
-          Samma inloggning gäller TORA, RITA, BRITT, IRMA och ALVA.
+        <SignInGate
+          next="/kansli"
+          title={t(locale, "kansli.signInTitle")}
+          actionLabel={t(locale, "chrome.signIn")}
+        >
+          {t(locale, "kansli.signInBody")}
         </SignInGate>
       ) : (
         <>
@@ -71,7 +78,8 @@ export default async function KansliHub({
             <p className="mt-3 font-mono text-xs text-faint">
               Postgres {status.database}
               {" · "}
-              Gateway {status.gateway.configured ? status.gateway.auth : "saknas"}
+              Gateway{" "}
+              {status.gateway.configured ? status.gateway.auth : t(locale, "common.missing")}
               {" · "}
               {ritaStatusLine(status.rita)}
             </p>
@@ -80,20 +88,20 @@ export default async function KansliHub({
                 href="/kansli/beredskap"
                 className="underline decoration-line underline-offset-4 hover:text-ink"
               >
-                Första kunden — checklista, inte datum
+                {t(locale, "kansli.firstCustomer")}
               </Link>
               {" · "}
               <Link
                 href="/kansli/upphandling"
                 className="underline decoration-line underline-offset-4 hover:text-ink"
               >
-                Koncernupphandling
+                {t(locale, "kansli.groupProcurement")}
               </Link>
             </p>
           </section>
 
           <section className="flex flex-col gap-3">
-            <h2 className="text-lg font-semibold">Familjen</h2>
+            <h2 className="text-lg font-semibold">{t(locale, "kansli.family")}</h2>
             <div className="grid gap-2 sm:grid-cols-2">
               {FAMILY_SYSTEMS.filter(
                 (system) => system.id !== "identity" && system.id !== "kansli",
@@ -104,17 +112,15 @@ export default async function KansliHub({
                   className="rounded-xl border border-line bg-surface px-4 py-3 hover:border-line-strong"
                 >
                   <p className="font-medium">{system.name}</p>
-                  <p className="mt-1 text-sm text-ink-soft">{system.mission}</p>
+                  <p className="mt-1 text-sm text-ink-soft">{familyMission(locale, system.id)}</p>
                 </Link>
               ))}
               <Link
                 href="/platform"
                 className="rounded-xl border border-line bg-surface px-4 py-3 hover:border-line-strong"
               >
-                <p className="font-medium">Kartan</p>
-                <p className="mt-1 text-sm text-ink-soft">
-                  Vad varje system gör, och hur de hänger ihop.
-                </p>
+                <p className="font-medium">{t(locale, "kansli.map")}</p>
+                <p className="mt-1 text-sm text-ink-soft">{t(locale, "kansli.mapLead")}</p>
               </Link>
             </div>
           </section>
@@ -122,9 +128,9 @@ export default async function KansliHub({
           {events.length > 0 ? (
             <section className="flex flex-col gap-3">
               <div className="flex items-baseline justify-between gap-3">
-                <h2 className="text-lg font-semibold">Senaste händelser</h2>
+                <h2 className="text-lg font-semibold">{t(locale, "kansli.recentEvents")}</h2>
                 <Link href="/platform/events" className="text-sm text-ink-soft hover:underline">
-                  Alla
+                  {t(locale, "common.all")}
                 </Link>
               </div>
               <ol className="flex flex-col gap-2">
@@ -137,10 +143,8 @@ export default async function KansliHub({
             </section>
           ) : null}
 
-          <Notice>
-            När en uppgift skapas får BRITT en sak att följa upp. Kansli äger fortfarande uppgiften.
-          </Notice>
-          <TaskBoard highlightId={highlightId} initialTasks={tasks} />
+          <Notice>{t(locale, "kansli.notice")}</Notice>
+          <TaskBoard highlightId={highlightId} initialTasks={tasks} locale={locale} />
         </>
       )}
     </AppShell>

@@ -16,12 +16,12 @@ export const FACADE_PRODUCTS: readonly FacadeLink[] = SYSTEM_MODULES.filter(
 }));
 
 export const FACADE_SERVICE: readonly FacadeLink[] = [
-  { href: "/platform", label: "Plattform", id: "platform" },
-  { href: "/platform/drift", label: "Drift", id: "drift" },
-  { href: "/platform/events", label: "Händelser", id: "events" },
-  { href: "/kansli/upphandling", label: "Upphandling", id: "upphandling" },
-  { href: "/upphandling", label: "Ny kund", id: "intake" },
-  { href: "/documentation", label: "Dokumentation", id: "docs" },
+  { href: "/platform", label: "service.platform", id: "platform" },
+  { href: "/platform/drift", label: "service.ops", id: "drift" },
+  { href: "/platform/events", label: "service.events", id: "events" },
+  { href: "/kansli/upphandling", label: "service.procurement", id: "upphandling" },
+  { href: "/upphandling", label: "service.intake", id: "intake" },
+  { href: "/documentation", label: "service.docs", id: "docs" },
 ];
 
 /** `pixdrift:org:org-exempelbolaget` → `org-exempelbolaget` for the IdP `org` query. */
@@ -32,15 +32,17 @@ export function orgIdFromRef(ref: string): string | null {
   return id || null;
 }
 
+export type FacadeRuntime = "production" | "preview" | "local";
+
 export function facadeRuntimeMark(
   env: Record<string, string | undefined> = process.env,
-): "produktion" | "förhandsvisning" | "lokal" {
-  if (env.VERCEL_ENV === "preview") return "förhandsvisning";
-  if (env.VERCEL_ENV === "development") return "lokal";
+): FacadeRuntime {
+  if (env.VERCEL_ENV === "preview") return "preview";
+  if (env.VERCEL_ENV === "development") return "local";
   if (env.VERCEL_ENV === "production" || env.APP_ENV === "prod" || env.APP_ENV === "production") {
-    return "produktion";
+    return "production";
   }
-  return "lokal";
+  return "local";
 }
 
 /** Longest matching href wins, so /platform/events is not Plattform. */

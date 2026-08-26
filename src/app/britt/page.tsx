@@ -7,6 +7,8 @@ import { canRunDemoIntel, listFindings, listRuns, listSnapshots } from "@/lib/br
 import { listObservations, type Observation } from "@/lib/britt/observations";
 import { readSession } from "@/lib/auth/session";
 import { formatSwedishDateTime } from "@/lib/format/datetime";
+import { t } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 import { tryRuntime } from "@/lib/platform/page";
 import {
   assignObservationToMe,
@@ -16,10 +18,13 @@ import {
   runBrittIntel,
 } from "./actions";
 
-export const metadata = {
-  title: "BRITT — Pixdrift",
-  description: "Det som hänt och behöver följas upp.",
-};
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "britt.metaTitle"),
+    description: t(locale, "britt.metaDescription"),
+  };
+}
 
 const kr = (value: number) =>
   new Intl.NumberFormat("sv-SE", { maximumFractionDigits: 0 }).format(value) + " kr";
@@ -30,6 +35,7 @@ export default async function BrittPage({
   searchParams: Promise<{ status?: string; mine?: string }>;
 }) {
   const session = await readSession();
+  const locale = await readLocale();
   const runtime = tryRuntime(session?.org?.ref);
   const orgRef = session?.org?.ref;
   const params = await searchParams;
@@ -56,20 +62,17 @@ export default async function BrittPage({
       <header className="flex flex-col gap-3">
         <ProductCrumb crumbs={[{ href: "/britt", label: "BRITT" }]} />
         <h1 className="text-3xl font-semibold tracking-tight">BRITT</h1>
-        <p className="text-ink-soft">
-          BRITT samlar sådant som behöver följas upp. Siffrorna här är exempel — inga kopplingar
-          till Fortnox eller Revolut än.
-        </p>
-        <Notice>
-          {demoIntel
-            ? "Siffrorna här är exempel för huset, inte Fortnox och inte en livekassa."
-            : "Här följer ni era egna observationer. Exempelsiffror körs bara på huset."}
-        </Notice>
+        <p className="text-ink-soft">{t(locale, "britt.lead")}</p>
+        <Notice>{demoIntel ? t(locale, "britt.noticeDemo") : t(locale, "britt.noticeOwn")}</Notice>
       </header>
 
       {!session?.org ? (
-        <SignInGate next="/britt" title="Logga in för att se observationer">
-          Observationer tillhör ert företag. Det som händer i TORA, RITA och IRMA dyker upp här.
+        <SignInGate
+          next="/britt"
+          title={t(locale, "britt.signInTitle")}
+          actionLabel={t(locale, "chrome.signIn")}
+        >
+          {t(locale, "britt.signInBody")}
         </SignInGate>
       ) : (
         <>

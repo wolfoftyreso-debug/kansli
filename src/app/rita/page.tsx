@@ -16,11 +16,16 @@ import { ANALYSIS_STATUS_LABELS, listAnalyses } from "@/lib/rita/analyses";
 import { findingsFromAnalysis } from "@/lib/rita/findings";
 import { ritaEngineSnapshot } from "@/lib/rita/resolve-engine";
 import { requestRitaAnalysis } from "./actions";
+import { t } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 
-export const metadata = {
-  title: "RITA — Pixdrift",
-  description: "RITA letar skattebesparingar i era böcker.",
-};
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "rita.metaTitle"),
+    description: t(locale, "rita.metaDescription"),
+  };
+}
 
 export default async function RitaPage({
   searchParams,
@@ -28,6 +33,7 @@ export default async function RitaPage({
   searchParams: Promise<{ status?: string; fel?: string }>;
 }) {
   const session = await readSession();
+  const locale = await readLocale();
   const runtime = tryRuntime(session?.org?.ref);
   const params = await searchParams;
   const orgNumberWrong = params.fel === "orgnr";
@@ -46,24 +52,24 @@ export default async function RitaPage({
       <header className="flex flex-col gap-3">
         <ProductCrumb crumbs={[{ href: "/rita", label: "RITA" }]} />
         <h1 className="text-3xl font-semibold tracking-tight">RITA</h1>
-        <p className="text-ink-soft">
-          RITA letar skattebesparingar i era böcker: avdrag, moms, K10, pension och FoU. Det RITA
-          hittar är förslag att kolla vidare — inte skatteråd.
-        </p>
+        <p className="text-ink-soft">{t(locale, "rita.lead")}</p>
         <Notice>
           {engine.available
             ? engine.modelReady
-              ? "Analysen är igång. Delar av svaret kommer från en AI-modell och kan behöva dubbelkollas."
-              : "Analysen är igång, men utan AI-stöd just nu. Bara de fasta reglerna används."
-            : "Analysen är inte inkopplad än, så nya analyser stannar som blockerade. Vi visar aldrig påhittade resultat."}{" "}
-          Exempelbokslutet är ett inbyggt exempel — inte något en kund laddat upp.
+              ? t(locale, "rita.noticeReady")
+              : t(locale, "rita.noticeRules")
+            : t(locale, "rita.noticeBlocked")}{" "}
+          {t(locale, "rita.noticeExample")}
         </Notice>
       </header>
 
       {!session?.org ? (
-        <SignInGate next="/rita" title="Logga in för att begära analys">
-          Analysen sparas i RITA. BRITT får något att följa upp när en analys blir klar eller
-          stoppas.
+        <SignInGate
+          next="/rita"
+          title={t(locale, "rita.signInTitle")}
+          actionLabel={t(locale, "chrome.signIn")}
+        >
+          {t(locale, "rita.signInBody")}
         </SignInGate>
       ) : (
         <>

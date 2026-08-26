@@ -12,7 +12,7 @@ export interface Actor {
 }
 
 export function requireActor(actor: Actor | null): Actor {
-  if (!actor) throw new ApiError("unauthenticated", "Logga in med Pixdrift-identitet.");
+  if (!actor) throw new ApiError("unauthenticated", "Sign in with Pixdrift identity.");
   return actor;
 }
 
