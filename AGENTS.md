@@ -108,6 +108,12 @@ AI är aldrig source of truth; automation har uttrycklig nivå (L0–L4).
   Products must not call Creditsafe. CREDITAE stores pass-through fields only
   when the vendor accepted. Tests mock the vendor. Do not live-call Creditsafe
   from tests or page-load list.
+- Web visibility goes through `src/lib/platform/webintel.ts` (Semrush).
+  Products must not call Semrush themselves. Fail closed without
+  `SEMRUSH_API_KEY`. CREDITAE fetches a counterpart's web presence only on an
+  explicit button press — never on page load — and stores vendor numbers
+  verbatim (`fetched` only when the vendor accepted). Tests mock the vendor.
+  The system never invents traffic, ranks or scores.
 - CREDITAE lives at `/creditae`. One table `creditae.inquiries`. Credit reports
   go through `src/lib/platform/credit.ts` (Creditsafe). Products must not call
   Creditsafe. Tests mock the vendor. Do not live-call Creditsafe from tests or

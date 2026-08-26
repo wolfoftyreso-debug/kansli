@@ -58,6 +58,8 @@ export const EVENT_KINDS = [
   "creditae.assessment.recorded",
   "creditae.report.fetched",
   "creditae.report.failed",
+  "creditae.web.fetched",
+  "creditae.web.failed",
 ] as const;
 export type EventKind = (typeof EVENT_KINDS)[number];
 
@@ -258,8 +260,10 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
       "creditae.assessment.recorded",
       "creditae.report.fetched",
       "creditae.report.failed",
+      "creditae.web.fetched",
+      "creditae.web.failed",
     ],
-    capabilities: ["inquiries", "assess", "credit-report"],
+    capabilities: ["inquiries", "assess", "credit-report", "web-presence"],
   },
 ];
 
