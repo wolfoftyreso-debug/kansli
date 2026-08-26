@@ -127,12 +127,15 @@ export function Facade({
             ) : null}
             {session ? (
               <form action="/api/auth/logout" method="post">
-                <button type="submit" className="pd-label hover:text-ink">
+                <button
+                  type="submit"
+                  className="pd-label underline underline-offset-4 hover:text-ink"
+                >
                   Logga ut
                 </button>
               </form>
             ) : (
-              <a href={loginHref} className="pd-label hover:text-ink">
+              <a href={loginHref} className="pd-label underline underline-offset-4 hover:text-ink">
                 Logga in
               </a>
             )}

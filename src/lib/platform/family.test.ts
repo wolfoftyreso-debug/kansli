@@ -32,7 +32,7 @@ describe("family map", () => {
       "Identitet",
       "Data",
       "Analys",
-      "AI",
+      "Automation",
       "Drift och test",
     ]);
     const blob = FAMILY_STACK.map((row) => row.runs).join(" ");

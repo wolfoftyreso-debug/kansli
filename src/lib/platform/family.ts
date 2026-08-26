@@ -56,8 +56,8 @@ export const FAMILY_STACK: readonly { layer: string; runs: string }[] = [
     runs: "TORA räknar i samma process. RITA anropar en egen analys. Inga påhittade resultat i drift.",
   },
   {
-    layer: "AI",
-    runs: "AI går via Vercel AI Gateway. Svaret är en gissning, inte fakta.",
+    layer: "Automation",
+    runs: "Modeller går via Vercel-gateway. Svaret är en gissning, inte fakta.",
   },
   {
     layer: "Drift och test",

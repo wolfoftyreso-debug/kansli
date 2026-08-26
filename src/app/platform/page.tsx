@@ -126,10 +126,10 @@ export default async function PlatformPage() {
       </section>
 
       <section className="rounded-xl border border-line bg-surface px-4 py-4">
-        <h2 className="text-lg font-semibold">Vercel AI Gateway</h2>
+        <h2 className="text-lg font-semibold">Modellgateway</h2>
         <p className="mt-2 text-sm text-ink-soft">
-          En nyckel ger tillgång till över 100 AI-modeller. Kom ihåg: AI-svar är gissningar, inte
-          fakta.
+          En nyckel ger tillgång till över 100 modeller. Kom ihåg: systemets svar är gissningar,
+          inte fakta.
         </p>
         <p className="mt-3 font-mono text-xs text-faint">
           {gateway.configured ? `konfigurerad · ${gateway.auth}` : "saknar nyckel"} ·{" "}

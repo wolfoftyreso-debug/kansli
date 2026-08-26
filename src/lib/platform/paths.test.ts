@@ -18,5 +18,8 @@ describe("appPath", () => {
   it("does not invent pages", () => {
     expect(appPath("swish")).toBeNull();
     expect(appPath("stripe")).toBeNull();
+    expect(appPath("nora")).toBeNull();
+    expect(appPath("mova")).toBeNull();
+    expect(appPath("saga")).toBeNull();
   });
 });

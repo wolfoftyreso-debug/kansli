@@ -37,7 +37,7 @@ export function Notice({
 }) {
   const cls =
     tone === "alarm"
-      ? "border border-line-strong bg-accent-soft px-3 py-3 text-sm text-ink"
+      ? "pd-banner-blocked px-3 py-3 text-sm"
       : tone === "warn"
         ? "border border-line bg-surface px-3 py-3 text-sm text-[var(--color-status-development)]"
         : "border border-line bg-accent-soft px-3 py-2 text-sm text-ink-soft";
