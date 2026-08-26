@@ -179,8 +179,8 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     name: "CREDITAE",
     mission: "Kreditbedömning av motpart. Er slutsats, inget påhittat betyg.",
     question: "Vem ska vi bedöma — och vad kom ni fram till?",
-    does: "Tar emot organisationsnummer och er bedömning. Kör, bevaka eller stanna.",
-    doesNot: "CREDITAE sätter inget kreditbetyg och anropar ingen upplysningsbyrå.",
+    does: "Tar emot organisationsnummer och er bedömning. Hämtar byråns rapport via plattformens kreditkanal när den är kopplad. Kör, bevaka eller stanna.",
+    doesNot: "CREDITAE sätter inget kreditbetyg. Produkten anropar inte Creditsafe.",
     owns: ["creditae.inquiries"],
     status: "pilot",
   },
@@ -233,9 +233,9 @@ export const FAMILY_LINKS: readonly FamilyLink[] = [
   {
     from: "creditae",
     to: "britt",
-    via: "creditae.inquiry.created | creditae.assessment.recorded",
+    via: "creditae.inquiry.created | creditae.assessment.recorded | creditae.report.fetched | creditae.report.failed",
     meaning:
-      "En motpart är registrerad, eller ni har skrivit er slutsats. Inget kreditbetyg följer.",
+      "En motpart är registrerad, ni har skrivit er slutsats, eller byråns rapport kom in eller stannade. Inget påhittat betyg följer.",
   },
   {
     from: "ekonomi",
@@ -316,6 +316,6 @@ export const FAMILY_BLOCKED = [
   },
   {
     id: "creditae-bureau",
-    need: "CREDITAE tar emot motparten och er slutsats. Ingen kreditupplysningsbyrå är inkopplad.",
+    need: "CREDITAE går via plattformens kreditkanal. Produkter anropar inte Creditsafe. Utan nyckel hämtas ingen rapport. Bedömningen är fortfarande er.",
   },
 ] as const;

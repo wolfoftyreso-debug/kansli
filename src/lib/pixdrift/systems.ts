@@ -424,7 +424,7 @@ export const systems: PixSystem[] = [
     status: "Pilot",
     regions: ["Europe"],
     summary:
-      "Tar emot organisationsnummer och er bedömning. Sätter inget kreditbetyg och anropar ingen byrå.",
+      "Tar emot organisationsnummer och er bedömning. Byråns rapport går via plattformens kreditkanal. Sätter inget kreditbetyg.",
     sections: [
       {
         no: "01",
@@ -444,7 +444,7 @@ export const systems: PixSystem[] = [
         no: "03",
         title: "System",
         body: [
-          "En förfrågan per motpart: organisationsnummer, valfritt namn och er slutsats. Kör, bevaka eller stanna. Ingen byrå.",
+          "En förfrågan per motpart: organisationsnummer, valfritt namn och er slutsats. Kör, bevaka eller stanna. Rapport via kreditkanalen när den är kopplad.",
         ],
       },
       forthcoming("04", "How it works"),
@@ -460,7 +460,7 @@ export const systems: PixSystem[] = [
       {
         no: "10",
         title: "Availability",
-        body: ["På väg. Europa. Ingen kreditupplysningsbyrå är inkopplad."],
+        body: ["På väg. Europa. Kreditrapport via Creditsafe när kanalen är kopplad."],
       },
     ],
   },

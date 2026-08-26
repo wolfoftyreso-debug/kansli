@@ -197,7 +197,7 @@ Ingen hreflang. Canonical är implicit via `metadataBase`.
 | irma | avtal, länk, signatur | “har de läst?” | jurist, vd | tvärgående | skicka, läs, bekräfta | — | en | `/systems/irma` | e-sign vs IRMA, DPA | PARTIAL | svag | många `forthcoming` |
 | tyra | kund, bil, hjul | däckhotell-kaos | verkstad | däck / verkstad | ärende, hubb | leverantörssök `NOT_CONFIGURED` | en | `/systems/tyra` | däckhotell-kunskap, kalkylator | PARTIAL | svag | ärlig om vad som saknas |
 | alva | ärende, fel, mätvärde | “vad sa kunden?” | verkstad | fordon | registrera fall | diagnosmotor **inte här** | en | `/systems/alva` | guided diagnostics **nej** förrän motorn finns | PARTIAL | svag | får inte sälja diagnos |
-| creditae | förfrågan, bedömning | “vågar vi ge kredit?” | ekonomi, vd | tvärgående | registrera motpart, spara slutsats | byrå **inte här** | en | `/systems/creditae` | byråkoppling **nej** | PARTIAL | svag | får inte sälja kreditbetyg |
+| creditae | förfrågan, bedömning | “vågar vi ge kredit?” | ekonomi, vd | tvärgående | registrera motpart, spara slutsats | Creditsafe via `credit.ts` | en | `/systems/creditae` | byråkoppling kanal, inte betyg | PARTIAL | svag | får inte sälja kreditbetyg |
 | nora | — | — | — | — | — | — | — | — | — | N/A | — | inte i repot |
 | mova | — | — | — | — | — | — | — | — | — | N/A | — | inte i repot |
 | saga | — | — | — | — | — | — | — | — | — | N/A | — | inte i repot |
@@ -282,6 +282,8 @@ MCP-health och `server/discover` är inte samma sak som
 | Fortnox | planned | nämns som problem, ingen connector |
 | Visma | planned | samma |
 | 46elks | PARTIAL | Tunn kanal `src/lib/platform/sms.ts`. Ekonomi-sälj-SMS går där. Inte en Notifications Core. |
+| ElevenLabs | PARTIAL | Tunn kanal `src/lib/platform/tts.ts`. IRMA-uppläsning går där. |
+| Creditsafe | PARTIAL | Tunn kanal `src/lib/platform/credit.ts`. CREDITAE hämtar rapport där. Inte ett betyg. |
 | Resend / Mapbox | secrets namngivna | `docs/INTEGRATIONS.md` — kärna inte byggd |
 | Apollo.io | planned | BRITT-connector namngiven, inte driftad |
 | ChatGPT Apps | missing | — |

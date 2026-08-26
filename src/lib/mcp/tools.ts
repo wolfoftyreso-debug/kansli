@@ -703,7 +703,7 @@ export function buildPixdriftRegistry(): ToolRegistry {
       name: "register_credit_inquiry",
       title: "Register credit inquiry",
       description:
-        "Registers a CREDITAE counterpart by organisation number. Does not invent a credit score. Same createInquiry service as REST.",
+        "Registers a CREDITAE counterpart by organisation number. May attach a Creditsafe report through the platform credit channel. Does not invent a score or set the user's assessment. Same createInquiry service as REST.",
       system: "creditae",
       domain: "credit",
       inputSchema: {
@@ -726,7 +726,8 @@ export function buildPixdriftRegistry(): ToolRegistry {
       idempotent: true,
       rateClass: "write",
       whenToUse: "A counterpart should be assessed before credit or an agreement.",
-      whenNotToUse: "You want a bureau score — CREDITAE does not invent one.",
+      whenNotToUse:
+        "You want CREDITAE to decide Kör/Bevaka/Stanna — that is the user's assessment, not the bureau field.",
       rest: { method: "POST", path: "/api/creditae/inquiries" },
       flags: { ...readFlags(false), pii: true },
       handler: async (ctx, input) => {

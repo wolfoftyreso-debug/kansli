@@ -56,6 +56,8 @@ export const EVENT_KINDS = [
   "alva.case.created",
   "creditae.inquiry.created",
   "creditae.assessment.recorded",
+  "creditae.report.fetched",
+  "creditae.report.failed",
 ] as const;
 export type EventKind = (typeof EVENT_KINDS)[number];
 
@@ -251,8 +253,13 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
     basePath: "/creditae",
     apiBase: "/api/creditae",
     domainDir: "src/lib/creditae",
-    eventKinds: ["creditae.inquiry.created", "creditae.assessment.recorded"],
-    capabilities: ["inquiries", "assess"],
+    eventKinds: [
+      "creditae.inquiry.created",
+      "creditae.assessment.recorded",
+      "creditae.report.fetched",
+      "creditae.report.failed",
+    ],
+    capabilities: ["inquiries", "assess", "credit-report"],
   },
 ];
 

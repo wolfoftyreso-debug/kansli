@@ -108,6 +108,8 @@ mot plan, likviditet, kundkoncentration). BRITT är den enda som skriver
 | `alva.case.created` | Ett fall är registrerat |
 | `creditae.inquiry.created` | En motpart väntar på bedömning |
 | `creditae.assessment.recorded` | Ni har skrivit er slutsats |
+| `creditae.report.fetched` | Byråns rapport kom in |
+| `creditae.report.failed` | Byrån svarade inte. Förfrågan finns kvar |
 | `kansli.task.created` | Intern uppgift |
 | `britt.finding.recorded` (high) | Ett högt fynd från analysen |
 
@@ -153,15 +155,17 @@ protokoll.
 Inte ett kreditbetyg från en byrå.
 
 **I navet:** förfrågan mot `creditae.inquiries` med organisationsnummer
-(Luhn). Status `open` tills ni sparar Kör / Bevaka / Stanna. Ingen
-upplysningsbyrå. Inget påhittat betyg.
+(Luhn). Status `open` tills ni sparar Kör / Bevaka / Stanna. Rapport via
+plattformens kreditkanal (`src/lib/platform/credit.ts`, Creditsafe) när
+nyckeln är satt. Produkten anropar inte byrån. Inget påhittat betyg. Er
+slutsats mappas inte från byråns siffra.
 
 ## Vad som inte går att göra i det här repot
 
 - Köra RITA:s Rust-motor på Vercel utan HTTP-host. Lokalt: `RITA_ENGINE_BINARY`
   plus demonstrationsbokslutet.
 - Diagnostisera i ALVA (saknar repo)
-- Hämta kreditbetyg i CREDITAE (ingen byrå)
+- Sälja byråns siffra som CREDITAE:s slutsats (bedömningen är er)
 - Kvalificerat e-signera (finns inte i navet; byggs inte mot extern
   e-signleverantör)
 - Lagra filer i IRMA (ingen object store än; läggs i detta system om det behövs)

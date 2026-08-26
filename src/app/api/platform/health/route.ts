@@ -3,6 +3,7 @@ import { isHardenedRuntime } from "@/lib/auth/secrets";
 import { gatewaySnapshot } from "@/lib/platform/ai";
 import { handleApi, json } from "@/lib/platform/http";
 import { ritaEngineSnapshot } from "@/lib/rita/resolve-engine";
+import { creditConfigured } from "@/lib/platform/credit";
 import { ttsConfigured } from "@/lib/platform/tts";
 
 export async function GET() {
@@ -29,6 +30,7 @@ export async function GET() {
         modelId: rita.modelId,
       },
       tts: ttsConfigured(),
+      credit: creditConfigured(),
       systems: SYSTEM_MODULES.map((module) => ({
         id: module.id,
         status: module.status,

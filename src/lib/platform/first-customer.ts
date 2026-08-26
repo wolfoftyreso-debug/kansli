@@ -4,6 +4,7 @@ import { listAgreements } from "../irma/agreements.ts";
 import { ritaEngineSnapshot } from "../rita/resolve-engine.ts";
 import { getCompanyProfile } from "../tora/profile.ts";
 import { listCases } from "../tyra/cases.ts";
+import { creditConfigured } from "./credit.ts";
 import { smsConfigured } from "./sms.ts";
 import { hubStatus } from "./hub-status.ts";
 
@@ -40,6 +41,7 @@ export function evaluateFirstCustomerGates(input: {
   ekonomiPaid: number;
   smsVendor: boolean;
   smsEnabled: boolean;
+  creditVendor?: boolean;
   hardened?: boolean;
 }): FirstCustomerBoard {
   const hardened = input.hardened ?? (input.appEnv === "prod" || input.appEnv === "production");
@@ -129,8 +131,9 @@ export function evaluateFirstCustomerGates(input: {
       id: "creditae",
       title: "CREDITAE är bedömning, inte byrå",
       state: "open",
-      detail:
-        "Ni kan registrera motpart och er slutsats. Ingen kreditupplysningsbyrå är inkopplad. Sälj inte ett kreditbetyg.",
+      detail: input.creditVendor
+        ? "Kreditupplysningen är inkopplad. Bedömningen är fortfarande er. Sälj inte byråns siffra som er slutsats."
+        : "Ni kan registrera motpart och er slutsats. Ingen kreditupplysningsbyrå är inkopplad. Sälj inte ett kreditbetyg.",
     },
     {
       id: "ekonomi",
@@ -251,5 +254,6 @@ export async function loadFirstCustomerBoard(
     ekonomiPaid,
     smsVendor: smsConfigured(),
     smsEnabled,
+    creditVendor: creditConfigured(),
   });
 }

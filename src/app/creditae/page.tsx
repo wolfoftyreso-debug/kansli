@@ -2,9 +2,15 @@ import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { EmptyState, Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
-import { ASSESSMENT_LABELS, INQUIRY_STATUS_LABELS, listInquiries } from "@/lib/creditae/inquiries";
+import {
+  ASSESSMENT_LABELS,
+  INQUIRY_STATUS_LABELS,
+  VENDOR_STATUS_LABELS,
+  listInquiries,
+} from "@/lib/creditae/inquiries";
 import { readSession } from "@/lib/auth/session";
 import { formatSwedishDateTime } from "@/lib/format/datetime";
+import { creditConfigured } from "@/lib/platform/credit";
 import { tryRuntime } from "@/lib/platform/page";
 import { registerCreditaeInquiry } from "./actions";
 
@@ -29,8 +35,9 @@ export default async function CreditaePage() {
           kreditbetyg.
         </p>
         <Notice>
-          Ingen kreditupplysningsbyrå är inkopplad. Bedömningen är er. Systemet hittar aldrig på ett
-          betyg.
+          {creditConfigured()
+            ? "Kredit på. Byråns rapport hämtas när förfrågan registreras. Er slutsats är fortfarande er."
+            : "Kredit av. Ingen kreditupplysningsbyrå är inkopplad. Bedömningen är er. Systemet hittar aldrig på ett betyg."}
         </Notice>
       </header>
 
@@ -68,6 +75,7 @@ export default async function CreditaePage() {
                       {item.assessment
                         ? ASSESSMENT_LABELS[item.assessment]
                         : INQUIRY_STATUS_LABELS[item.status]}
+                      {item.vendorStatus ? ` · ${VENDOR_STATUS_LABELS[item.vendorStatus]}` : ""}
                     </p>
                     <p className="mt-2 font-medium">
                       <Link href={`/creditae/${item.id}`} className="hover:underline">

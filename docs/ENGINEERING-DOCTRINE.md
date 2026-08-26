@@ -181,7 +181,7 @@ Surface what matters.**
 Capabilities live in this repository. Runtime calls go only to **our API
 vendors** (Vercel AI Gateway and the keys named in `docs/AI-PROVIDERS.md` and
 `docs/INTEGRATIONS.md`: Anthropic, OpenAI, Gemini, Moonshot, and — when a
-connector exists — 46elks, Resend, Mapbox, ElevenLabs).
+connector exists — 46elks, Resend, Mapbox, ElevenLabs, Creditsafe).
 
 Do not add e-ID login, e-sign SaaS, design APIs (Mobbin and the like), document
 vendors, or a new third party to fill a product gap. If IRMA needs a stronger

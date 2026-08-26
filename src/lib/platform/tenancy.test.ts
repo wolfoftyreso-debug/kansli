@@ -192,6 +192,10 @@ live("multi-tenant storage (live Postgres)", () => {
       actorRef: "user-a",
       subjectOrgNumber: makeOrgNumber(21),
       requestId: `creditae-a-${stamp}`,
+      env: {},
+      fetchImpl: async () => {
+        throw new Error("tests must not call Creditsafe");
+      },
     });
     const creditB = await createCreditaeInquiry({
       pool: poolB,
@@ -200,6 +204,10 @@ live("multi-tenant storage (live Postgres)", () => {
       actorRef: "user-b",
       subjectOrgNumber: makeOrgNumber(22),
       requestId: `creditae-b-${stamp}`,
+      env: {},
+      fetchImpl: async () => {
+        throw new Error("tests must not call Creditsafe");
+      },
     });
     expect(await getInquiry(poolA, orgA, creditB.id)).toBeNull();
     expect(await getInquiry(poolB, orgB, creditA.id)).toBeNull();

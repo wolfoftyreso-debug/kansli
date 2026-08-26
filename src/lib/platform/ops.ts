@@ -20,6 +20,7 @@ import type {
   OpsSnapshot,
   OpsTableMeasure,
 } from "./ops-view.ts";
+import { creditConfigured } from "./credit.ts";
 import { smsConfigured } from "./sms.ts";
 import { ttsConfigured } from "./tts.ts";
 import {
@@ -364,6 +365,7 @@ export async function loadOpsSnapshot(
       rita: { available: rita.available, kind: rita.kind, modelReady: rita.modelReady },
       sms: smsConfigured(),
       tts: ttsConfigured(),
+      credit: creditConfigured(),
       revolut: { configured: revolut.missing.length === 0, environment: revolut.environment },
       mcp: metricsSnapshot(),
     },

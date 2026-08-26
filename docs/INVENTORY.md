@@ -60,7 +60,7 @@ faller om en yta saknas.
 | IRMA | `irma` | `/irma` | `/api/irma` | pilot (handshake; audit in `docs/irma/`) |
 | TYRA | `tyra` | `/tyra` | `/api/tyra` | pilot (sync kit; `docs/tyra/`) |
 | ALVA | `alva` | `/alva` | `/api/alva` | deferred |
-| CREDITAE | `creditae` | `/creditae` | `/api/creditae` | pilot (handshake; no bureau) |
+| CREDITAE | `creditae` | `/creditae` | `/api/creditae` | pilot (handshake; Creditsafe via `credit.ts`) |
 
 Produkterna synkar via `platform.events`. De skriver inte i varandras tabeller.
 RITA och TORA är skilda produkter. ALVA registrerar fall; diagnosmotorn väntar
