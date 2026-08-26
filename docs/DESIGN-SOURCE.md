@@ -561,6 +561,7 @@ cancelled. Kort: status accent versaler, titel `text-lg font-medium`,
 motpart ink-soft, tid muted. **`/irma/[id]`** — ett avtal + kopiera länk.
 
 **Gäst `/irma/l/[token]`** — ingen fasad. GuestFrame.
+Uppläsning är native `<audio controls>` mot egen API-väg, bara när tal är kopplat.
 
 - pd-label “IRMA”
 - Steg: Läs / Bekräfta / Klart. Streck `h-1.5 rounded-full` ink / line-strong

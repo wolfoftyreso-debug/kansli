@@ -21,6 +21,7 @@ import type {
   OpsTableMeasure,
 } from "./ops-view.ts";
 import { smsConfigured } from "./sms.ts";
+import { ttsConfigured } from "./tts.ts";
 import {
   DATABASE_CONTRACT,
   IDENTITY_TABLES,
@@ -362,6 +363,7 @@ export async function loadOpsSnapshot(
       gateway: { configured: gateway.configured, auth: gateway.auth },
       rita: { available: rita.available, kind: rita.kind, modelReady: rita.modelReady },
       sms: smsConfigured(),
+      tts: ttsConfigured(),
       revolut: { configured: revolut.missing.length === 0, environment: revolut.environment },
       mcp: metricsSnapshot(),
     },

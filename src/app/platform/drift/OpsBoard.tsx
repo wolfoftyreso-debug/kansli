@@ -483,6 +483,8 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
             {" · "}
             SMS {snapshot.health.sms ? "på" : "av"}
             {" · "}
+            Tal {snapshot.health.tts ? "på" : "av"}
+            {" · "}
             Revolut{" "}
             {snapshot.health.revolut.configured ? snapshot.health.revolut.environment : "av"}
           </p>
@@ -635,6 +637,7 @@ function RuntimeMarks({ snapshot }: { snapshot: OpsSnapshot }) {
     marks.seedDemo ? "demofrö" : null,
     marks.cronSet ? "cron satt" : "cron saknas",
     marks.smsSet ? "sms på" : "sms av",
+    marks.ttsSet ? "tal på" : "tal av",
     marks.sessionSecretSet ? "session satt" : "session saknas",
     marks.cookieSecure ? "cookie låst" : "cookie öppen",
   ].filter(Boolean);

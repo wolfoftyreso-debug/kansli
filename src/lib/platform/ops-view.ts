@@ -155,6 +155,7 @@ export type OpsSnapshot = {
     gateway: { configured: boolean; auth: string };
     rita: { available: boolean; kind: string; modelReady: boolean };
     sms: boolean;
+    tts: boolean;
     revolut: { configured: boolean; environment: string };
     mcp: {
       mcp_requests_total: number;

@@ -31,6 +31,7 @@ export type OpsRuntimeDebug = {
   seedDemo: boolean;
   cronSet: boolean;
   smsSet: boolean;
+  ttsSet: boolean;
   sessionSecretSet: boolean;
   cookieSecure: boolean;
 };

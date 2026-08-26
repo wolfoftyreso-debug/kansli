@@ -3,6 +3,7 @@ import { Field, Notice, Submit } from "@/components/app/SignInGate";
 import { ACKNOWLEDGEMENT_DECLARATION } from "@/lib/irma/clauses";
 import { peekAgreementByToken } from "@/lib/irma/agreements";
 import { daysUntilExpiry } from "@/lib/irma/status";
+import { ttsConfigured } from "@/lib/platform/tts";
 import {
   irmaThrottleKey,
   irmaTokenBlocked,
@@ -11,6 +12,7 @@ import {
 } from "@/lib/irma/throttle";
 import { tryRuntime } from "@/lib/platform/page";
 import { GuestFrame, GuestProgress, GuestReceipt } from "../../guest-chrome";
+import { ListenUnderlag } from "../../ListenUnderlag";
 import { acknowledgeIrmaAgreement, markIrmaViewed } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -62,6 +64,8 @@ export default async function IrmaLinkPage({ params }: { params: Promise<{ token
       {agreement.body ? (
         <p className="text-base leading-relaxed text-ink-soft">{agreement.body}</p>
       ) : null}
+
+      <ListenUnderlag src={`/api/irma/l/${token}/speech`} available={ttsConfigured()} />
 
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold">Det här ska du läsa</h2>

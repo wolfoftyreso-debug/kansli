@@ -55,6 +55,7 @@ Token lagras bara som SHA-256. Klartext visas en gång via httpOnly-cookie `irma
 | Bakgrundsjobb | Inga. Allt synkront i requesten. |
 | Filstorage | Ingen. Inga originalfiler. |
 | AI | Ingen IRMA-task. Plattformens gateway används inte här. |
+| Tal | Uppläsning via `src/lib/platform/tts.ts` när nyckeln är satt. Inte e-sign. |
 | Auth | Samma BFF-cookie som resten av navet. Gästflödet är token. |
 | RBAC | Org-medlemskap. Inga IRMA-roller (Legal/Finance/Auditor). |
 | Sök | `ILIKE` på titel och motpart. Ingen fulltext, ingen semantik. |

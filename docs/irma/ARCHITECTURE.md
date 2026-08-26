@@ -8,7 +8,9 @@ Signering *idag* är hashed acknowledgement. Det är medvetet. Inga externa
 e-signleverantörer, ingen e-legitimation som inloggning. Mobbin används bara som designreferens för
 agenten — produkten anropar den inte. Runtime-anrop ut ur processen är bara
 våra API-vendorer (`docs/AI-PROVIDERS.md` / `docs/INTEGRATIONS.md`). IRMA
-anropar ingen av dem ännu.
+anropar ingen av dem direkt. Uppläsning går via `src/lib/platform/tts.ts`
+när `ELEVENLABS_API_KEY` är satt. Det är uppläsning av samma underlag, inte
+en ny handling och inte e-signatur.
 
 Originalfil och extraherad modell finns inte. Det finns därför ingen pipeline att separera. Om filer kommer ska de ligga i detta system. Originalet skrivs inte över.
 
