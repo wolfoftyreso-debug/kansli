@@ -1,16 +1,16 @@
 import { landvexAb } from "./site.ts";
 
 export const hero = {
-  eyebrow: "Founder-led · AWS engineering",
-  title: "We automate the work that used to need people.",
-  lede: "Landvex is a founder-led engineering company with offices in Stockholm and Houston. We design, build and operate automation on AWS — replacing manual review, manual data entry and manual coordination with systems that run continuously, and can be audited.",
+  eyebrow: "Founder-led engineering",
+  title: "We fill the gaps between the big systems.",
+  lede: "Landvex is a founder-led engineering company with offices in Stockholm and Houston. The platforms you already run each do their job. We design, build and operate what sits in between — the handoffs, the exceptions, the data that never quite lines up.",
 } as const;
 
 export const capabilities = [
   {
     n: "01",
-    title: "Process automation",
-    body: "Event-driven pipelines on Lambda, Step Functions, SQS and EventBridge. Work that ran once a week when someone had time now runs on every event, in seconds.",
+    title: "Between systems",
+    body: "Pipelines that sit between the platforms you already run. Handoffs that waited for someone to notice now move on every event, with retries and an audit trail.",
   },
   {
     n: "02",
@@ -20,7 +20,7 @@ export const capabilities = [
   {
     n: "03",
     title: "Applied AI in production",
-    body: "Model orchestration on Bedrock and SageMaker, with evaluation harnesses, guardrails and cost ceilings. We treat inference as a line item, not a demo.",
+    body: "Model orchestration with evaluation harnesses, guardrails and cost ceilings. We treat inference as a line item, not a demo.",
   },
   {
     n: "04",
@@ -30,25 +30,25 @@ export const capabilities = [
   {
     n: "05",
     title: "Cloud foundation",
-    body: "Multi-account AWS setups, IAM, networking and infrastructure as code. EU and US data residency handled at the account boundary, not by policy documents.",
+    body: "Accounts, IAM, networking and infrastructure as code. EU and US data residency handled at the account boundary, not by policy documents.",
   },
   {
     n: "06",
     title: "Run & operate",
-    body: "We stay on after launch. Observability, on-call, cost review and a roadmap for the next process to automate. Handover is optional, never abrupt.",
+    body: "We stay on after launch. Observability, on-call, cost review and a look at the next gap worth closing. Handover is optional, never abrupt.",
   },
 ] as const;
 
 export const steps = [
   {
     n: "Step 01",
-    title: "Find the manual work",
-    body: "Two or three days with the people doing the task. We measure volume, handling time and error rate before proposing anything.",
+    title: "Find the gap",
+    body: "Two or three days with the people in the middle. We map what the large systems do not cover — volume, handling time, error rate — before proposing anything.",
   },
   {
     n: "Step 02",
     title: "Prove it on real data",
-    body: "A narrow slice in production within weeks, running alongside the manual process so the two can be compared directly.",
+    body: "A narrow slice in production within weeks, running alongside how the work is done today so the two can be compared directly.",
   },
   {
     n: "Step 03",
@@ -58,7 +58,7 @@ export const steps = [
   {
     n: "Step 04",
     title: "Operate and extend",
-    body: "Monitoring, cost control and a standing review of the next process worth removing from someone's day.",
+    body: "Monitoring, cost control and a standing review of the next gap between systems worth closing.",
   },
 ] as const;
 
@@ -85,7 +85,7 @@ export const offices = [
   {
     city: "Stockholm",
     label: "EU HQ",
-    region: "CET / CEST · eu-north-1",
+    region: "CET / CEST",
     body: `${landvexAb.legalName} · ${landvexAb.street}, ${landvexAb.postalCode} ${landvexAb.city}, Sweden · Org.nr ${landvexAb.orgNr}. European engineering, EU regulatory work and data handled in region.`,
   },
   {
@@ -103,11 +103,11 @@ export const principles = [
   },
   {
     title: "Evidence over assertion",
-    body: "Accuracy, throughput and cost are measured against the manual baseline and reported as they are.",
+    body: "Accuracy, throughput and cost are measured against how the work runs today and reported as they are.",
   },
   {
     title: "You own it",
-    body: "Code in your accounts, infrastructure as code, no proprietary lock-in on the automation we build for you.",
+    body: "Code in your accounts, infrastructure as code, no proprietary lock-in on the systems we build for you.",
   },
 ] as const;
 
@@ -119,10 +119,10 @@ export const glance = [
       "Engineering offices — Stockholm and Houston, overlapping working hours across EU and US Central",
   },
   {
-    value: "AWS",
-    sr: " native",
+    value: "Between",
+    sr: " existing systems",
     label:
-      "Native to the platform — event-driven services, managed inference, infrastructure as code",
+      "The layer between the platforms you already run — handoffs, exceptions, and the work that never quite made it in",
   },
   {
     value: "24–72h",

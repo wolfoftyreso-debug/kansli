@@ -65,14 +65,15 @@ export default function HomePage() {
           <div className="mb-12 grid items-start gap-10 site:mb-[4.5rem] site:grid-cols-[0.9fr_1.1fr] site:gap-20">
             <div>
               <span className="eyebrow text-teal">Capabilities</span>
-              <h2 className="headline mt-5">Manual processes, rebuilt as production systems.</h2>
+              <h2 className="headline mt-5">The layer between the systems you already run.</h2>
             </div>
             <p className="intro site:pt-11">
-              Most of the work we take on starts as a spreadsheet, an inbox, or a person
-              checking things by hand. We map the process, define what “correct” means,
-              and move it onto AWS as a service with monitoring, retries and an audit
-              trail. Where judgement is genuinely required, the system asks a human — and
-              learns from the answer.
+              Most of the work we take on lives between systems that were never meant to
+              talk: a spreadsheet next to an ERP, an inbox next to a GIS, a person
+              reconciling two sources of truth. We map that gap, define what “correct”
+              looks like, and put a production service in the middle — with monitoring,
+              retries and an audit trail. Where judgement is genuinely required, the
+              system asks a human — and learns from the answer.
             </p>
           </div>
           <ol className="tile-grid">
@@ -120,17 +121,17 @@ export default function HomePage() {
         <div className="wrap section grid items-center gap-12 site:grid-cols-2 site:gap-20">
           <div>
             <span className="eyebrow text-accent">Built in-house</span>
-            <h2 className="headline mt-5 mb-6">We run our own automation at scale.</h2>
+            <h2 className="headline mt-5 mb-6">We run our own systems in the same gaps.</h2>
             <p className="mt-0 mb-5 text-lg leading-[1.6] text-mist">
               Landvex operates RIOS, a vendor-agnostic system that turns continuous video
               observations of the physical world into structured intelligence. Field
-              capture, model orchestration, active learning and a knowledge graph — all
-              of it running on AWS, built by the same team you would be hiring.
+              capture, model orchestration, active learning and a knowledge graph —
+              sitting between the camera and the systems that need the result. Built by
+              the same team you would be hiring.
             </p>
             <p className="mt-0 mb-9 text-lg leading-[1.6] text-mist">
-              It is the clearest statement of what we do: a workflow that used to require
-              inspectors, spreadsheets and site visits, now delivered as a continuously
-              running service.
+              It is the clearest statement of what we do: a layer between capture and the
+              platforms that already exist, delivered as a continuously running service.
             </p>
             <div className="flex flex-wrap gap-3.5">
               <a className="btn btn-accent" href="#contact">
@@ -197,7 +198,7 @@ export default function HomePage() {
         <div className="wrap section grid gap-12 site:grid-cols-2 site:gap-20">
           <div>
             <span className="eyebrow text-teal">Get in touch</span>
-            <h2 className="headline mt-5 mb-5">Which process should stop being manual?</h2>
+            <h2 className="headline mt-5 mb-5">Where does the work fall between systems?</h2>
             <p className="intro mb-8">
               Describe the work as it runs today — who does it, how often, and what goes
               wrong. You will hear back from a founder, not a form.

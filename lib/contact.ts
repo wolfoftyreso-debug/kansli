@@ -77,7 +77,7 @@ export function parseContactFields(input: ContactFields): ParsedContact {
     errors.email = "Please add a valid work email.";
   }
   if (!process || process.length < CONTACT_LIMITS.process.min) {
-    errors.process = "Please describe the process you want automated.";
+    errors.process = "Please describe where the work sits between your systems.";
   }
 
   if (Object.keys(errors).length > 0) {

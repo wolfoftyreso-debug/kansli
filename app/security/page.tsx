@@ -5,7 +5,7 @@ import { site } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Security",
   description:
-    "How Landvex handles AWS accounts, IAM, infrastructure as code, and EU/US data residency for the automation we design, build and operate.",
+    "How Landvex handles accounts, IAM, infrastructure as code, and EU/US data residency for the systems we design, build and operate.",
   alternates: { canonical: "/security" },
 };
 
@@ -14,11 +14,11 @@ export default function SecurityPage() {
     <DocPage
       eyebrow="Security"
       title="Residency, accounts and audit trails — not policy PDFs."
-      lead="We design, build and operate automation on AWS. Security is part of the engineering, not a document we attach afterwards."
+      lead="We design, build and operate systems that sit between the platforms you already run. Security is part of the engineering, not a document we attach afterwards."
     >
       <DocHeading>Cloud foundation</DocHeading>
       <DocText>
-        Multi-account AWS setups, IAM, networking and infrastructure as code. EU and
+        Multi-account setups, IAM, networking and infrastructure as code. EU and
         US data residency is handled at the account boundary, not by a policy that
         asks people to remember where a file lives.
       </DocText>
@@ -34,7 +34,7 @@ export default function SecurityPage() {
       <DocHeading>What you own</DocHeading>
       <DocText>
         Code in your accounts, infrastructure as code, no proprietary lock-in on the
-        automation we build for you. If you want a handover, you get working systems
+        systems we build for you. If you want a handover, you get working systems
         and the code that built them — not a black box you cannot operate.
       </DocText>
 

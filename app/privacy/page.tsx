@@ -29,7 +29,7 @@ export default function PrivacyPage() {
       <DocHeading>What we collect and why</DocHeading>
       <DocText>
         The form collects name, organisation, work email and a description of the
-        process you want automated. We use that to reply and, if you ask, to start a
+        work between your systems. We use that to reply and, if you ask, to start a
         technical review. The form is optional; without those details we cannot
         reply. The legal basis is legitimate interests in answering a business
         enquiry (GDPR art. 6(1)(f)), and taking steps prior to a contract if the

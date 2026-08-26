@@ -1,13 +1,13 @@
 export const site = {
   name: "Landvex",
-  tagline: "Founder-led automation engineering on AWS",
+  tagline: "Engineering between the systems you already run",
   url: "https://landvex.com",
   email: "contact@landvex.com",
   locale: "en",
   copyrightYear: 2026,
-  title: "Landvex — Founder-led automation engineering on AWS",
+  title: "Landvex — Engineering between the systems you already run",
   description:
-    "Landvex is a founder-led engineering company with offices in Stockholm and Houston. We design, build and operate automation on AWS.",
+    "Landvex is a founder-led engineering company with offices in Stockholm and Houston. We design, build and operate the systems that sit between the platforms you already have.",
 } as const;
 
 export const landvexAb = {

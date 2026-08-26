@@ -101,7 +101,7 @@ export function ContactForm() {
           />
         </Field>
         <Field
-          label="The process you want automated"
+          label="Where the work sits between systems"
           errorId="process-error"
           error={state.errors?.process}
         >
