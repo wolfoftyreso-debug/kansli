@@ -43,11 +43,15 @@ export default async function DriftPage() {
           En bild av hela infrastrukturen. Samma databas. Samma inloggning. Inget visningslager
           ovanpå — det här är mätningen.
         </p>
-        <Notice>
-          {scope === "house"
-            ? "Du är huset. Siffrorna gäller alla bolag. Verkstäder ser bara sitt."
-            : "Du ser ert bolag. Inte andras rader, inte husets inkorg."}
-        </Notice>
+        {session?.org ? (
+          <Notice>
+            {scope === "house"
+              ? "Du är huset. Siffrorna gäller alla bolag. Verkstäder ser bara sitt."
+              : "Du ser ert bolag. Inte andras rader, inte husets inkorg."}
+          </Notice>
+        ) : (
+          <Notice>Logga in för att se live mätning. Utan inloggning visas inga rader.</Notice>
+        )}
       </header>
 
       {!session?.org ? (
