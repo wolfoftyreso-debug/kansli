@@ -12,6 +12,7 @@ import { addTask } from "../kansli/tasks.ts";
 import { submitIntake } from "../kansli/submit-intake.ts";
 import { createAgreement } from "../irma/agreements.ts";
 import { requestAnalysis } from "../rita/analyses.ts";
+import { DEMO_ORG_NUMBER } from "../rita/request.ts";
 import { persistSnapshot } from "../tora/persist.ts";
 import { upsertCompanyProfile } from "../tora/profile.ts";
 import { createCase as createTyraCase } from "../tyra/cases.ts";
@@ -316,7 +317,7 @@ async function runFleet(): Promise<{ passed: number; companies: number; failures
         orgRef,
         actorRef: intake.provision.userId,
         companyName,
-        orgNumber,
+        orgNumber: i < 2 ? DEMO_ORG_NUMBER : orgNumber,
         requestId: `fleet-rita-${n}-${stamp}`,
         useDemoDocument: i < 2,
       });
