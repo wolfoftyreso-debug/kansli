@@ -21,6 +21,10 @@ inte av MOVA här — MOVA finns inte.
 (saknar `referens/`-HTML i det här införande). Inställningsytor BEA / COMPANY
 / LANGUAGE med mera byggs inte som appar.
 
+**ALVA-schema** ligger i `docs/design/alva/`. Det är rummets grammatik, inte
+ett andra utseende och inte diagnosmotorn. PIXDRIFT-chromet vinner i
+fasaden. Se `docs/design/alva/README.md`.
+
 ---
 
 ## 1. Vad du ska göra med den här filen
@@ -605,6 +609,7 @@ Inget konto. `robots: noindex`.
 | H1 | ALVA |
 
 Notice: diagnosen är inte inkopplad. Systemet hittar aldrig på något.
+Status: schema-tecken plus ord (`□` öppet, `○` pågår, `✓` stängt).
 
 Formulär Nytt fall. Lista: status accent versaler, klagomål som länk,
 fordonsref mono faint, tid faint.

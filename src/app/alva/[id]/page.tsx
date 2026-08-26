@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { Notice, SignInGate, Submit } from "@/components/app/SignInGate";
-import { CASE_STATUS_LABELS, getCase, parseCaseStatus } from "@/lib/alva/cases";
+import { caseStatusLine, getCase, parseCaseStatus } from "@/lib/alva/cases";
 import {
   PROTOCOL_CHECKS,
   buildProtocolFacts,
@@ -54,10 +54,8 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
         </SignInGate>
       ) : item ? (
         <>
-          <h1 className="text-3xl font-semibold tracking-tight">{item.complaint}</h1>
-          <p className="text-xs font-medium uppercase tracking-wide text-accent">
-            {CASE_STATUS_LABELS[status]}
-          </p>
+          <h1 className="pd-h1">{item.complaint}</h1>
+          <p className="pd-label">{caseStatusLine(status)}</p>
           <Notice>Här fyller ni i fakta själva. Systemet drar inga egna slutsatser.</Notice>
 
           <dl className="flex flex-col gap-3">
@@ -110,7 +108,7 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
                 <option value="closed">Stängt</option>
               </select>
             </label>
-            <Submit>Spara status</Submit>
+            <Submit large>Spara status</Submit>
           </form>
 
           <form
@@ -125,7 +123,7 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
               defaultValue={item.technicianNotes}
               className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
             />
-            <Submit>Spara anteckning</Submit>
+            <Submit large>Spara anteckning</Submit>
           </form>
 
           <section className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4">
@@ -164,7 +162,7 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
                 </select>
               </label>
               <div className="sm:col-span-3">
-                <Submit>Spara kontroll</Submit>
+                <Submit large>Spara kontroll</Submit>
               </div>
             </form>
             {observations.length > 0 ? (
@@ -211,7 +209,7 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
                 />
               </label>
               <div className="sm:col-span-3">
-                <Submit>Spara mätning</Submit>
+                <Submit large>Spara mätning</Submit>
               </div>
             </form>
             {measurements.length > 0 ? (

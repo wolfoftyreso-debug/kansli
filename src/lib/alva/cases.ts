@@ -11,6 +11,17 @@ export const CASE_STATUS_LABELS: Record<CaseStatus, string> = {
   closed: "Stängt",
 };
 
+/** Schema 2.0 §4.2 — mark + word. Never color alone. */
+export const CASE_STATUS_MARK: Record<CaseStatus, "□" | "○" | "✓"> = {
+  open: "□",
+  in_progress: "○",
+  closed: "✓",
+};
+
+export function caseStatusLine(status: CaseStatus): string {
+  return `${CASE_STATUS_MARK[status]} ${CASE_STATUS_LABELS[status]}`;
+}
+
 export function parseCaseStatus(value: unknown): CaseStatus | null {
   if (typeof value === "string" && (CASE_STATUSES as readonly string[]).includes(value)) {
     return value as CaseStatus;

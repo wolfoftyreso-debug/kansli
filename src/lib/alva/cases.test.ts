@@ -1,7 +1,15 @@
 import { afterAll, describe, expect, it } from "vitest";
 import { createPool, migrateWorkspace } from "@pixdrift/db";
 import { EventLog } from "@pixdrift/events";
-import { createCase, getCase, listCases, setCaseNotes, setCaseStatus } from "./cases.ts";
+import {
+  CASE_STATUS_MARK,
+  caseStatusLine,
+  createCase,
+  getCase,
+  listCases,
+  setCaseNotes,
+  setCaseStatus,
+} from "./cases.ts";
 import {
   buildProtocolFacts,
   recordProtocolMeasurement,
@@ -11,6 +19,17 @@ import {
 const OWNER = process.env.PIXDRIFT_TEST_OWNER_URL ?? process.env.PIXDRIFT_DB_OWNER_URL;
 const APP = process.env.PIXDRIFT_TEST_DATABASE_URL ?? process.env.DATABASE_URL;
 const live = OWNER && APP ? describe : describe.skip;
+
+describe("alva status marks", () => {
+  it("pairs the schema marks with Swedish words, never color alone", () => {
+    expect(CASE_STATUS_MARK.open).toBe("□");
+    expect(CASE_STATUS_MARK.in_progress).toBe("○");
+    expect(CASE_STATUS_MARK.closed).toBe("✓");
+    expect(caseStatusLine("open")).toBe("□ Öppet");
+    expect(caseStatusLine("in_progress")).toBe("○ Pågår");
+    expect(caseStatusLine("closed")).toBe("✓ Stängt");
+  });
+});
 
 live("alva.cases (live Postgres)", () => {
   const pool = createPool(APP!, { applicationName: "alva-cases-test", max: 2 });
