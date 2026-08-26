@@ -342,6 +342,8 @@ export const EN = {
   "tora.publishedValue": "Published value",
   "tora.yourCompany": "Your company",
   "tora.profileLead": "Without a saved profile we calculate on the example company instead of you.",
+  "tora.frameworks": "Agreements you are already on",
+  "tora.references": "References TORA counts with",
 
   "rita.metaTitle": "RITA — Pixdrift",
   "rita.metaDescription": "RITA looks for tax savings in your books.",

@@ -351,6 +351,8 @@ export const DE: Record<MessageKey, string> = {
   "tora.yourCompany": "Ihre Firma",
   "tora.profileLead":
     "Ohne gespeichertes Profil rechnen wir mit der Beispielfirma statt mit Ihnen.",
+  "tora.frameworks": "Verträge auf denen Sie schon sind",
+  "tora.references": "Referenzen mit denen TORA rechnet",
   "rita.metaTitle": "RITA — Pixdrift",
   "rita.metaDescription": "RITA sucht Steuerersparnisse in Ihren Büchern.",
   "rita.lead":

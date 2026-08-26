@@ -337,6 +337,8 @@ export const SV: Record<MessageKey, string> = {
   "tora.publishedValue": "Publicerat värde",
   "tora.yourCompany": "Ert bolag",
   "tora.profileLead": "Utan sparad profil räknar vi på exempelbolaget i stället för på er.",
+  "tora.frameworks": "Avtal ni redan är med på",
+  "tora.references": "Referenser TORA räknar med",
   "rita.metaTitle": "RITA — Pixdrift",
   "rita.metaDescription": "RITA letar skattebesparingar i era böcker.",
   "rita.lead":

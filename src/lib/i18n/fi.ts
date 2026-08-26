@@ -334,6 +334,8 @@ export const FI: Record<MessageKey, string> = {
   "tora.publishedValue": "Julkaistu arvo",
   "tora.yourCompany": "Yrityksenne",
   "tora.profileLead": "Ilman tallennettua profiilia laskemme esimerkkiyrityksellä emmekä teillä.",
+  "tora.frameworks": "Sopimukset joissa olette jo mukana",
+  "tora.references": "Viitteet joihin TORA laskee",
   "rita.metaTitle": "RITA — Pixdrift",
   "rita.metaDescription": "RITA etsii verosäästöjä kirjoistanne.",
   "rita.lead":

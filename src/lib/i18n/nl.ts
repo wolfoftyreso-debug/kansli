@@ -343,6 +343,8 @@ export const NL: Record<MessageKey, string> = {
   "tora.yourCompany": "Uw bedrijf",
   "tora.profileLead":
     "Zonder opgeslagen profiel rekenen we op het voorbeeldbedrijf in plaats van op u.",
+  "tora.frameworks": "Overeenkomsten waar u al op zit",
+  "tora.references": "Referenties waar TORA mee rekent",
   "rita.metaTitle": "RITA — Pixdrift",
   "rita.metaDescription": "RITA zoekt belastingbesparingen in uw boeken.",
   "rita.lead":

@@ -69,7 +69,12 @@ export default async function ToraPage() {
         <Stat label={t(locale, "tora.publishedValue")} value={sek(summary.knownValueSek)} />
       </section>
 
-      <CompanyBriefingCard briefing={briefing} />
+      <CompanyBriefingCard
+        briefing={briefing}
+        title={t(locale, "tora.yourCompany")}
+        frameworksLabel={t(locale, "tora.frameworks")}
+        referencesLabel={t(locale, "tora.references")}
+      />
 
       {session?.org ? (
         <form

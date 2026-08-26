@@ -338,6 +338,8 @@ export const NO: Record<MessageKey, string> = {
   "tora.publishedValue": "Publisert verdi",
   "tora.yourCompany": "Deres selskap",
   "tora.profileLead": "Uten lagret profil regner vi på eksempelselskapet i stedet for på dere.",
+  "tora.frameworks": "Avtaler dere allerede er med på",
+  "tora.references": "Referanser TORA regner med",
   "rita.metaTitle": "RITA — Pixdrift",
   "rita.metaDescription": "RITA leter etter skattebesparelser i bøkene deres.",
   "rita.lead":
