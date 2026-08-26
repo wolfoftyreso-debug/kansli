@@ -1,5 +1,8 @@
 # Charts — the 2.5D language
 Reference: referens/PIXDRIFT Grafer.html (self-contained; interactivity inlined).
+Extracted runtime: referens/grafer.js — for the HTML proof only. Ekonomi
+SalesBoard implements the same muted 2.5D grammar in the room. Do not import
+grafer.js into Next.
 
 Built from the illustration system's extruded volumes: three tones per body
 (light top, mid front, dark side), light upper-left, muted palette ONLY (02 §Charts).
