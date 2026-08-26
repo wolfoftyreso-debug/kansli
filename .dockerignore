@@ -1,0 +1,17 @@
+.git
+.github
+.next
+.vercel
+coverage
+node_modules
+out
+build
+.env
+.env.*
+!.env.example
+*.pem
+*.tsbuildinfo
+AGENTS.md
+CLAUDE.md
+npm-debug.log*
+.DS_Store

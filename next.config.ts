@@ -33,6 +33,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   poweredByHeader: false,
   async redirects() {
     return [{ source: "/terms", destination: "/company", permanent: true }];

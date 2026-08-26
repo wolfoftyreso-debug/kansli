@@ -33,4 +33,21 @@ Do not put secrets in `NEXT_PUBLIC_*`. Rate limiting is in-process and therefore
 
 ## Deploy
 
-Production runs on AWS. Same variable names as local. Production refuses a From address outside `landvex.com`.
+Production is a standalone Node server (`output: "standalone"`), bound to `0.0.0.0:3000`. Same variable names as local. Production refuses a From address outside `landvex.com`.
+
+```bash
+npm run build
+docker build -t landvex .
+docker run --rm -p 3000:3000 \
+  -e RESEND_API_KEY \
+  -e CONTACT_FROM \
+  -e CONTACT_TO \
+  landvex
+```
+
+Run that image on AWS App Runner, ECS Fargate, or Elastic Beanstalk. Without Docker:
+
+```bash
+npm run build
+./scripts/serve-production.sh
+```
