@@ -79,3 +79,8 @@ AI är aldrig source of truth; automation har uttrycklig nivå (L0–L4).
 - Design source is `docs/DESIGN-SOURCE.md`. Extracted from current UI, not
   invented. Do not start `@pixdrift/design` or a second look until that file
   is locked after the shared Claude Design file is implemented.
+- Operations live at `/platform/drift`. One Postgres. House sees the fleet.
+  Workshops see their own org. Do not invent a second database, Grafana,
+  OpenTelemetry export, or a second DevPortal. Measurements are live SQL
+  plus in-process MCP counters. Structure lives in
+  `src/lib/platform/structure.ts`.

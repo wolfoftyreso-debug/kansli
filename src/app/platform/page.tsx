@@ -156,6 +156,10 @@ export default async function PlatformPage() {
           /api/platform/ai
         </Link>
         {" · "}
+        <Link href="/platform/drift" className="underline decoration-line underline-offset-4">
+          Drift
+        </Link>
+        {" · "}
         <Link href="/platform/events" className="underline decoration-line underline-offset-4">
           Händelser
         </Link>

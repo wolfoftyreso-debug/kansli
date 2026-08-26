@@ -305,6 +305,7 @@ Från `src/lib/platform/facade.ts` + `packages/systems/src/catalog.ts`:
 | id | Label | href |
 | --- | --- | --- |
 | platform | Plattform | `/platform` |
+| drift | Drift | `/platform/drift` |
 | events | Händelser | `/platform/events` |
 | upphandling | Upphandling | `/kansli/upphandling` |
 | intake | Ny kund | `/upphandling` |
@@ -625,6 +626,7 @@ fordonsref mono faint, tid faint.
 | --- | --- |
 | `/` | Systemet — tabell över rum. “Inget visningslager ovanpå — det här är ytan.” |
 | `/platform` | Vad varje system gör. Princip + Notice + stack + länkar + blockerat |
+| `/platform/drift` | Live mätning. Tabell, schema, händelser, identitet. Hus = flotta |
 | `/platform/events` | Händelselista |
 | `/platform/mcp` | MCP-yta i fasaden |
 | `/upphandling` | Underlag för demo och uppföljningsmöte. Två kolumner. Formulär POST |

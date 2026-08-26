@@ -109,6 +109,9 @@ produktions-restore. Ingen per-tjänst RPO/RTO-kontrakt.
 **MONITORING — PARTIAL.**
 `GET /api/platform/health`, `x-request-id`, event-logg,
 MCP-metrics i processen, `/api/mcp/health`.
+Live driftvy `/platform/drift` och `GET /api/platform/ops`:
+scheman, tabellcount, händelser per system, identitet, beredskap.
+Huset ser flottan. Verkstad ser sitt bolag.
 Ingen OpenTelemetry-export, ingen Grafana, ingen PagerDuty,
 ingen syntetisk bevakning av login/MCP/docs.
 

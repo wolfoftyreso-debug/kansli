@@ -16,7 +16,9 @@ Ett system. Ett rum per jobb. Samma inloggning.
 ## Maskiner
 - POST /mcp — agentgränssnitt, samma tjänster som REST
 - GET /api/platform/health
+- GET /api/platform/ops
 - GET /api/platform/capabilities
+- /platform/drift
 - /documentation
 - /documentation/mcp
 - /documentation/capabilities
