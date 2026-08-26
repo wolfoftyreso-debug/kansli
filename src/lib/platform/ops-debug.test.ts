@@ -37,6 +37,8 @@ describe("ops debug sanitize", () => {
     expect(marks.hardened).toBe(false);
     expect(marks.seedDemo).toBe(true);
     expect(marks.cronSet).toBe(true);
+    expect(marks.smsSet).toBe(false);
+    expect(marks.ttsSet).toBe(false);
     expect(marks.sessionSecretSet).toBe(true);
     expect(marks.cookieSecure).toBe(false);
     expect(JSON.stringify(marks)).not.toContain("super-secret");

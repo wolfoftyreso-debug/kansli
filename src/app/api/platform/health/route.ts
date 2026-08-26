@@ -3,6 +3,7 @@ import { isHardenedRuntime } from "@/lib/auth/secrets";
 import { gatewaySnapshot } from "@/lib/platform/ai";
 import { handleApi, json } from "@/lib/platform/http";
 import { ritaEngineSnapshot } from "@/lib/rita/resolve-engine";
+import { ttsConfigured } from "@/lib/platform/tts";
 
 export async function GET() {
   return handleApi(async ({ pool }) => {
@@ -27,6 +28,7 @@ export async function GET() {
         modelReady: rita.modelReady,
         modelId: rita.modelId,
       },
+      tts: ttsConfigured(),
       systems: SYSTEM_MODULES.map((module) => ({
         id: module.id,
         status: module.status,

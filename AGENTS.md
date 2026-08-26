@@ -89,3 +89,7 @@ AI är aldrig source of truth; automation har uttrycklig nivå (L0–L4).
   Structure lives in `src/lib/platform/structure.ts`. Debug lookup is
   on-demand at `/api/platform/ops/debug` and `pnpm ops:lookup`. Snapshots
   include queues, last errors, and runtime marks. Do not dump secrets.
+- Speech goes through `src/lib/platform/tts.ts` (ElevenLabs). Products must
+  not call ElevenLabs themselves. IRMA listen is optional: guest
+  `/api/irma/l/:token/speech` and org `/api/irma/agreements/:id/speech`.
+  Tests mock the vendor. Do not send live speech from tests or page load.

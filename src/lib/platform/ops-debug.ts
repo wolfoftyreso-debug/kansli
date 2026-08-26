@@ -223,6 +223,7 @@ export function loadRuntimeDebug(
     seedDemo: env.PIXDRIFT_SEED_DEMO === "true",
     cronSet: Boolean(env.CRON_SECRET),
     smsSet: Boolean((env.ELKS_API_USERNAME || env.ELKS_API_USER) && env.ELKS_API_PASSWORD),
+    ttsSet: Boolean(env.ELEVENLABS_API_KEY || env.ELEVEN_API_KEY),
     sessionSecretSet: Boolean(env.APP_SESSION_SECRET || env.PIXDRIFT_SESSION_SECRET),
     cookieSecure: env.COOKIE_SECURE !== "false",
   };

@@ -7,6 +7,8 @@ import { exportAgreementRecord, getAgreement } from "@/lib/irma/agreements";
 import { verifyAgreementIntegrity } from "@/lib/irma/integrity";
 import { daysUntilExpiry, statusLabel, verificationLabel } from "@/lib/irma/status";
 import { tryRuntime } from "@/lib/platform/page";
+import { ttsConfigured } from "@/lib/platform/tts";
+import { ListenUnderlag } from "../ListenUnderlag";
 import { reissueIrmaAgreement, revokeIrmaAgreement } from "../actions";
 
 export const metadata = {
@@ -51,6 +53,12 @@ export default async function IrmaAgreementPage({ params }: { params: Promise<{ 
           <p className="text-sm text-ink-soft">{verificationLabel(agreement.verificationLevel)}</p>
 
           {agreement.body ? <p className="text-sm text-ink-soft">{agreement.body}</p> : null}
+
+          {ttsConfigured() ? (
+            <ListenUnderlag src={`/api/irma/agreements/${agreement.id}/speech`} available />
+          ) : (
+            <p className="text-sm text-muted">Uppläsning är inte kopplad.</p>
+          )}
 
           <section className="flex flex-col gap-3">
             <h2 className="text-lg font-semibold">Klausuler</h2>

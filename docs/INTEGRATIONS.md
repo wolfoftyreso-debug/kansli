@@ -10,6 +10,7 @@ IdP:n. Nycklarna hanteras precis som andra hemligheter.
 | Tjänst | Env-variabler | Auth | Lager / användning |
 | --- | --- | --- | --- |
 | **46elks** (SMS/röst) | `ELKS_API_USERNAME`, `ELKS_API_PASSWORD` | HTTP Basic (två delar) | Notifications — SMS-kanal |
+| **ElevenLabs** (uppläsning) | `ELEVENLABS_API_KEY`, valfri `ELEVENLABS_VOICE_ID` | Header `xi-api-key` | Notifications — talkanal `src/lib/platform/tts.ts` |
 | **Resend** (mejl) | `RESEND_API_KEY` | Bearer (`re_…`) | Notifications — e-postkanal |
 | **Mapbox** (kartor/geokodning) | `MAPBOX_ACCESS_TOKEN` | Access token (`pk.*` klient / `sk.*` server) | Geo — kartor, geokodning, adresser |
 | **Apollo.io** (B2B-/kontaktdata) | `APOLLO_API_KEY` | Header `X-Api-Key` | Integration — datakälla (CRM/audience); BRITT `apollo`-connector. *Framtida bruk.* |
@@ -25,9 +26,9 @@ IdP:n. Nycklarna hanteras precis som andra hemligheter.
 ## Guardrails (konstitutionen)
 
 - **Art. 8 — integrationer bakom connectors:** produkterna anropar inte 46elks/
-  Resend/Mapbox direkt. De går via en connector/kanal-abstraktion (Notifications
-  respektive geo) så att leverantören kan bytas utan produktändring, och så att
-  tokens aldrig läcker till produktkoden.
+  Resend/Mapbox/ElevenLabs direkt. De går via en connector/kanal-abstraktion
+  (Notifications respektive geo) så att leverantören kan bytas utan
+  produktändring, och så att tokens aldrig läcker till produktkoden.
 - **Art. 10 — automation har uttrycklig nivå:** att faktiskt *skicka* ett SMS/
   mejl är en L3/L4-handling (kräver godkännande/policy). RITA/IRMA-regeln
   "systemet skickar aldrig något själv" gäller: en `Notification` skapas som
