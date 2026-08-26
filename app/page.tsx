@@ -135,7 +135,7 @@ export default function HomePage() {
           <div>
             <span className="eyebrow text-accent">Built in-house</span>
             <h2 id="products-title" className="headline mt-5 mb-6">
-              Own products. White label. A few assignments.
+              Own products. White&nbsp;label. A few assignments.
             </h2>
             <p className="mt-0 mb-5 text-lg leading-[1.6] text-mist">
               We build products for our own companies, and sell most of them on to the
