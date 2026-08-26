@@ -84,6 +84,9 @@ AI är aldrig source of truth; automation har uttrycklig nivå (L0–L4).
   Do not start `@pixdrift/design` or a second look. Do not invent NORA,
   MOVA, SAGA, or settings-apps (BEA, LANGUAGE). Swedish is the shipped
   locale. Never the term "AI" in UI. One accent. Status is shape plus color.
+- ALVA schema is `docs/design/alva/`. Grammar in `/alva` only. PIXDRIFT
+  chrome wins. Do not import the diagnosis engine, AWS, or a second
+  typeface. Status is mark plus word (`□` / `○` / `✓`).
 - Operations live at `/platform/drift`. One Postgres. House sees the fleet.
   Workshops see their own org. The desk composes reskontra (Ekonomi), open
   cases (TYRA/Kansli/BRITT), notices, and SMS routes. Sales SMS stays in
