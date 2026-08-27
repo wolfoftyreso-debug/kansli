@@ -42,6 +42,7 @@ export const ES: Record<MessageKey, string> = {
   "category.tyra": "Hotel de neumáticos",
   "category.alva": "Diagnóstico",
   "category.creditae": "Crédito",
+  "category.maj": "Búsqueda",
 
   "idp.title": "Iniciar sesión · Pixdrift",
   "idp.heading": "Inicio de sesión",
@@ -257,6 +258,13 @@ export const ES: Record<MessageKey, string> = {
   "family.creditae.does":
     "Toma un número de organización y su evaluación. Trae el informe de la oficina por el canal de crédito de la plataforma cuando está cableado. Seguir, vigilar o parar.",
   "family.creditae.doesNot": "CREDITAE no pone nota de crédito. El producto no llama a Creditsafe.",
+  "family.maj.mission":
+    "Medir, analizar, ajustar. Visibilidad en buscadores como decisiones, no paneles.",
+  "family.maj.question": "¿Qué cambió en la búsqueda — y qué deberíamos hacer al respecto?",
+  "family.maj.does":
+    "Toma un dominio, un mercado y un objetivo. Vigila los datos de búsqueda a través de los canales de la plataforma, sopesa la evidencia y propone una cola corta de decisiones con trazabilidad completa. Cada cambio realizado se publica como una versión numerada.",
+  "family.maj.doesNot":
+    "MAJ nunca compra enlaces, falsifica reseñas ni toca los activos de un competidor. Muestra decisiones, no métricas de proveedores — el cliente nunca necesita entender las fuentes de datos.",
   "family.stack.language": "Idioma",
   "family.stack.language.runs":
     "TypeScript 5 en todo el sistema. SQL en la base. El análisis de RITA corre como programa propio. ekonomi-ledger comprueba comprobantes, no asienta en producción.",

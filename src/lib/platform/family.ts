@@ -199,6 +199,23 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     owns: ["creditae.inquiries"],
     status: "pilot",
   },
+  {
+    id: "maj",
+    name: "MAJ",
+    mission: "Measure, analyse, adjust. Search visibility as decisions, not dashboards.",
+    question: "What changed in search — and what should we do about it?",
+    does: "Takes a domain, a market and a goal. Watches search data through platform channels, weighs the evidence, and proposes a short queue of decisions with a full provenance trail. Every completed change is published as a versioned release.",
+    doesNot: "MAJ never buys links, fakes reviews or touches a competitor's assets. It shows decisions, not vendor metrics — the customer never needs to understand the data sources.",
+    owns: [
+      "maj.projects",
+      "maj.signals",
+      "maj.actions",
+      "maj.releases",
+      "maj.usage_ledger",
+      "maj.strategy_proposals",
+    ],
+    status: "pilot",
+  },
 ];
 
 export const FAMILY_LINKS: readonly FamilyLink[] = [
@@ -350,5 +367,9 @@ export const FAMILY_BLOCKED = [
   {
     id: "creditae",
     need: "CREDITAE goes through the platform credit channel. Products do not call Creditsafe. Without a key no report is fetched. The assessment is still yours.",
+  },
+  {
+    id: "maj",
+    need: "MAJ reads search data through platform channels. Sources without credentials fail closed and become connect-source decisions — the system never invents numbers.",
   },
 ] as const;

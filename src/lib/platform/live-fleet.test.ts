@@ -172,10 +172,10 @@ async function runFleet(): Promise<{ passed: number; companies: number; failures
 
   const schemas = await pool.query<{ nspname: string }>(
     `select nspname from pg_namespace
-      where nspname in ('platform','kansli','ekonomi','tora','rita','britt','irma','tyra','alva','creditae')
+      where nspname in ('platform','kansli','ekonomi','tora','rita','britt','irma','tyra','alva','creditae','maj')
       order by 1`,
   );
-  if (schemas.rowCount !== 10) {
+  if (schemas.rowCount !== 11) {
     throw new Error(`saknade scheman: ${schemas.rows.map((r) => r.nspname).join(",")}`);
   }
 

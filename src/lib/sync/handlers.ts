@@ -253,6 +253,16 @@ export function registerSyncHandlers(events: EventLog, pool: pg.Pool): void {
     );
   });
 
+  events.subscribe("maj.release.published", async (event) => {
+    await record(
+      event.orgRef,
+      "maj",
+      "Search Update publicerad",
+      String(event.payload["title"] ?? "En sökförbättring är utförd och versionerad."),
+      event.subjectRef,
+    );
+  });
+
   events.subscribe("kansli.task.created", async (event) => {
     await record(
       event.orgRef,

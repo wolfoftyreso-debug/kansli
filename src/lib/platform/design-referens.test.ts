@@ -42,6 +42,7 @@ describe("design referens lock", () => {
       "tyra",
       "alva",
       "creditae",
+      "maj",
     ]);
     const hem = readFileSync(join(ROOT, "PIXDRIFT Hem.html"), "utf8").toLowerCase();
     expect(hem).toMatch(/saga|nora|mova/);

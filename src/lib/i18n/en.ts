@@ -41,6 +41,7 @@ export const EN = {
   "category.tyra": "Tyre hotel",
   "category.alva": "Diagnostics",
   "category.creditae": "Credit",
+  "category.maj": "Search",
 
   "idp.title": "Sign in · Pixdrift",
   "idp.heading": "Sign in",
@@ -127,8 +128,7 @@ export const EN = {
   "creditae.web": "Web presence",
   "creditae.webNoticeOn":
     "Web data on. Visibility is fetched from the source when you press the button. The numbers are the vendor's, verbatim.",
-  "creditae.webNoticeOff":
-    "Web data off. No web data source is connected. Nothing is fetched.",
+  "creditae.webNoticeOff": "Web data off. No web data source is connected. Nothing is fetched.",
   "creditae.web.blocked": "Web data off",
   "creditae.web.failed": "No web data",
   "creditae.web.fetched": "Web data in",
@@ -258,6 +258,12 @@ export const EN = {
   "family.creditae.does":
     "Takes an organisation number and your assessment. Fetches the bureau report through the platform credit channel when it is wired. Go, watch or stop.",
   "family.creditae.doesNot": "CREDITAE sets no credit score. The product does not call Creditsafe.",
+  "family.maj.mission": "Measure, analyse, adjust. Search visibility as decisions, not dashboards.",
+  "family.maj.question": "What changed in search — and what should we do about it?",
+  "family.maj.does":
+    "Takes a domain, a market and a goal. Watches search data through platform channels, weighs the evidence, and proposes a short queue of decisions with a full provenance trail. Every completed change is published as a versioned release.",
+  "family.maj.doesNot":
+    "MAJ never buys links, fakes reviews or touches a competitor's assets. It shows decisions, not vendor metrics — the customer never needs to understand the data sources.",
 
   "family.stack.language": "Language",
   "family.stack.language.runs":

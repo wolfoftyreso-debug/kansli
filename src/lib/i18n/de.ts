@@ -42,6 +42,7 @@ export const DE: Record<MessageKey, string> = {
   "category.tyra": "Reifenhotel",
   "category.alva": "Diagnose",
   "category.creditae": "Kredit",
+  "category.maj": "Suche",
 
   "idp.title": "Anmelden · Pixdrift",
   "idp.heading": "Anmeldung",
@@ -128,8 +129,7 @@ export const DE: Record<MessageKey, string> = {
   "creditae.web": "Webpräsenz",
   "creditae.webNoticeOn":
     "Webdaten an. Die Sichtbarkeit wird von der Quelle geholt, wenn Sie den Knopf drücken. Die Zahlen sind die des Anbieters, wortgetreu.",
-  "creditae.webNoticeOff":
-    "Webdaten aus. Keine Webdatenquelle ist verbunden. Nichts wird geholt.",
+  "creditae.webNoticeOff": "Webdaten aus. Keine Webdatenquelle ist verbunden. Nichts wird geholt.",
   "creditae.web.blocked": "Webdaten aus",
   "creditae.web.failed": "Keine Webdaten",
   "creditae.web.fetched": "Webdaten da",
@@ -264,6 +264,13 @@ export const DE: Record<MessageKey, string> = {
     "Nimmt eine Organisationsnummer und Ihre Beurteilung. Holt den Bürobericht über den Kreditkanal der Plattform wenn er verdrahtet ist. Los, beobachten oder stoppen.",
   "family.creditae.doesNot":
     "CREDITAE setzt keine Kreditnote. Das Produkt ruft Creditsafe nicht an.",
+  "family.maj.mission":
+    "Messen, analysieren, justieren. Sichtbarkeit in der Suche als Entscheidungen, nicht als Dashboards.",
+  "family.maj.question": "Was hat sich in der Suche verändert — und was sollten wir tun?",
+  "family.maj.does":
+    "Nimmt eine Domain, einen Markt und ein Ziel. Beobachtet Suchdaten über Plattformkanäle, wägt die Evidenz ab und schlägt eine kurze Warteschlange von Entscheidungen mit vollständiger Herkunftsspur vor. Jede umgesetzte Änderung wird als versioniertes Release veröffentlicht.",
+  "family.maj.doesNot":
+    "MAJ kauft nie Links, fälscht keine Bewertungen und rührt keine Ressourcen von Wettbewerbern an. Es zeigt Entscheidungen, keine Anbietermetriken — der Kunde muss die Datenquellen nie verstehen.",
   "family.stack.language": "Sprache",
   "family.stack.language.runs":
     "TypeScript 5 im ganzen System. SQL in der Datenbank. RITAs Analyse läuft als eigenes Programm. ekonomi-ledger prüft Belege, bucht nicht in Produktion.",

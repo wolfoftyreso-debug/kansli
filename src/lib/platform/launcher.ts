@@ -14,6 +14,7 @@ const CATEGORY: Record<Exclude<SystemId, "identity">, MessageKey> = {
   tyra: "category.tyra",
   alva: "category.alva",
   creditae: "category.creditae",
+  maj: "category.maj",
 };
 
 const MISSION: Record<Exclude<SystemId, "identity">, MessageKey> = {
@@ -26,6 +27,7 @@ const MISSION: Record<Exclude<SystemId, "identity">, MessageKey> = {
   tyra: "family.tyra.mission",
   alva: "family.alva.mission",
   creditae: "family.creditae.mission",
+  maj: "family.maj.mission",
 };
 
 export type LauncherTile = {

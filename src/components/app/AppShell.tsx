@@ -20,6 +20,7 @@ const HOLD_GATED = new Set([
   "tyra",
   "alva",
   "creditae",
+  "maj",
 ]);
 
 export async function AppShell({

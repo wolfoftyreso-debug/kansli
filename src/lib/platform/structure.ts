@@ -79,6 +79,12 @@ export const PRODUCT_TABLES: readonly StructureTable[] = [
   { schema: "alva", table: "case_observations", tenancy: "org_ref", system: "alva" },
   { schema: "alva", table: "case_measurements", tenancy: "org_ref", system: "alva" },
   { schema: "creditae", table: "inquiries", tenancy: "org_ref", system: "creditae" },
+  { schema: "maj", table: "projects", tenancy: "org_ref", system: "maj" },
+  { schema: "maj", table: "signals", tenancy: "org_ref", system: "maj" },
+  { schema: "maj", table: "actions", tenancy: "org_ref", system: "maj" },
+  { schema: "maj", table: "releases", tenancy: "org_ref", system: "maj" },
+  { schema: "maj", table: "usage_ledger", tenancy: "org_ref", system: "maj" },
+  { schema: "maj", table: "strategy_proposals", tenancy: "org_ref", system: "maj" },
 ];
 
 export const IDENTITY_TABLES = [

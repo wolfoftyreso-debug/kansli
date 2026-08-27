@@ -35,6 +35,7 @@ describe("workspace contract", () => {
       "tyra",
       "alva",
       "creditae",
+      "maj",
     ]);
     expect(SYSTEM_MODULES.map((entry) => entry.id)).toEqual([...SYSTEM_IDS]);
   });

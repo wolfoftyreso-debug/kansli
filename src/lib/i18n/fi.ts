@@ -42,6 +42,7 @@ export const FI: Record<MessageKey, string> = {
   "category.tyra": "Rengashotelli",
   "category.alva": "Diagnostiikka",
   "category.creditae": "Luotto",
+  "category.maj": "Haku",
 
   "idp.title": "Kirjaudu · Pixdrift",
   "idp.heading": "Kirjautuminen",
@@ -126,8 +127,7 @@ export const FI: Record<MessageKey, string> = {
   "creditae.web": "Verkkonäkyvyys",
   "creditae.webNoticeOn":
     "Verkkodata päällä. Näkyvyys haetaan lähteestä, kun painat nappia. Luvut ovat toimittajan, sanatarkasti.",
-  "creditae.webNoticeOff":
-    "Verkkodata pois. Verkkodatalähdettä ei ole kytketty. Mitään ei haeta.",
+  "creditae.webNoticeOff": "Verkkodata pois. Verkkodatalähdettä ei ole kytketty. Mitään ei haeta.",
   "creditae.web.blocked": "Verkkodata pois",
   "creditae.web.failed": "Ei verkkodataa",
   "creditae.web.fetched": "Verkkodata sisällä",
@@ -253,6 +253,12 @@ export const FI: Record<MessageKey, string> = {
   "family.creditae.does":
     "Ottaa vastaan organisaationumeron ja arvionne. Hakee toimiston raportin alustan luottokanavan kautta kun se on kytketty. Aja, seuraa tai pysäytä.",
   "family.creditae.doesNot": "CREDITAE ei aseta luottoarvosanaa. Tuote ei kutsu Creditsafea.",
+  "family.maj.mission": "Mittaa, analysoi, säädä. Hakunäkyvyys päätöksinä, ei kojelautoina.",
+  "family.maj.question": "Mikä haussa muuttui — ja mitä meidän pitäisi tehdä?",
+  "family.maj.does":
+    "Ottaa verkkotunnuksen, markkinan ja tavoitteen. Seuraa hakudataa alustan kanavien kautta, punnitsee näytön ja ehdottaa lyhyen jonon päätöksiä täydellä alkuperäketjulla. Jokainen tehty muutos julkaistaan versioituna julkaisuna.",
+  "family.maj.doesNot":
+    "MAJ ei koskaan osta linkkejä, väärennä arvosteluja tai koske kilpailijan resursseihin. Se näyttää päätöksiä, ei toimittajametriikkaa — asiakkaan ei koskaan tarvitse ymmärtää tietolähteitä.",
   "family.stack.language": "Kieli",
   "family.stack.language.runs":
     "TypeScript 5 koko järjestelmässä. SQL tietokannassa. RITAN analyysi ajetaan omana ohjelmana. ekonomi-ledger tarkistaa tositteet, ei kirjaa tuotannossa.",

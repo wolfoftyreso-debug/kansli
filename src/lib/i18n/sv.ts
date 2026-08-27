@@ -42,6 +42,7 @@ export const SV: Record<MessageKey, string> = {
   "category.tyra": "Däckhotell",
   "category.alva": "Diagnos",
   "category.creditae": "Kredit",
+  "category.maj": "Sök",
 
   "idp.title": "Logga in · Pixdrift",
   "idp.heading": "Inloggning",
@@ -255,6 +256,12 @@ export const SV: Record<MessageKey, string> = {
     "Tar emot organisationsnummer och er bedömning. Hämtar byråns rapport via plattformens kreditkanal när den är kopplad. Kör, bevaka eller stanna.",
   "family.creditae.doesNot":
     "CREDITAE sätter inget kreditbetyg. Produkten anropar inte Creditsafe.",
+  "family.maj.mission": "Mät, analysera, justera. Söksynlighet som beslut, inte instrumentpaneler.",
+  "family.maj.question": "Vad har förändrats i sök — och vad bör vi göra åt det?",
+  "family.maj.does":
+    "Tar en domän, en marknad och ett mål. Bevakar sökdata genom plattformens kanaler, väger evidensen och föreslår en kort kö av beslut med fullt proveniensspår. Varje utförd ändring publiceras som en versionerad release.",
+  "family.maj.doesNot":
+    "MAJ köper aldrig länkar, fejkar aldrig omdömen och rör aldrig konkurrenters tillgångar. Den visar beslut, inte leverantörsmetrik — kunden behöver aldrig förstå datakällorna.",
   "family.stack.language": "Språk",
   "family.stack.language.runs":
     "TypeScript 5 i hela systemet. SQL i databasen. RITA:s analys körs som ett eget program. ekonomi-ledger kontrollerar verifikat, postar inte i drift.",

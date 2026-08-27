@@ -31,6 +31,7 @@ const HREF: Record<string, string> = {
   tyra: "/tyra",
   alva: "/alva",
   creditae: "/creditae",
+  maj: "/maj",
 };
 
 export default async function KansliHub({

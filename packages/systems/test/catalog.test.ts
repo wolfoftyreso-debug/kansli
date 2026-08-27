@@ -16,6 +16,7 @@ describe("system catalog", () => {
       "tyra",
       "alva",
       "creditae",
+      "maj",
     ]);
     for (const entry of SYSTEM_MODULES) {
       if (entry.id === "identity") expect(entry.schema).toBeNull();

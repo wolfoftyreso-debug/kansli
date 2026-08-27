@@ -22,6 +22,7 @@ export const WORKSPACE_SCHEMAS = [
   { schema: "tyra", grant: "readwrite" as const },
   { schema: "alva", grant: "readwrite" as const },
   { schema: "creditae", grant: "readwrite" as const },
+  { schema: "maj", grant: "readwrite" as const },
 ] as const;
 
 export interface WorkspaceMigrateOptions {

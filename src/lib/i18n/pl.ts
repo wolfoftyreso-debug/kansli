@@ -42,6 +42,7 @@ export const PL: Record<MessageKey, string> = {
   "category.tyra": "Hotel opon",
   "category.alva": "Diagnostyka",
   "category.creditae": "Kredyt",
+  "category.maj": "Wyszukiwanie",
 
   "idp.title": "Zaloguj się · Pixdrift",
   "idp.heading": "Logowanie",
@@ -253,6 +254,13 @@ export const PL: Record<MessageKey, string> = {
   "family.creditae.does":
     "Przyjmuje numer organizacji i waszą ocenę. Pobiera raport biura przez kanał kredytowy platformy gdy jest podłączony. Jedź, obserwuj albo stań.",
   "family.creditae.doesNot": "CREDITAE nie stawia oceny kredytowej. Produkt nie woła Creditsafe.",
+  "family.maj.mission":
+    "Mierz, analizuj, koryguj. Widoczność w wyszukiwarce jako decyzje, nie pulpity.",
+  "family.maj.question": "Co zmieniło się w wyszukiwarce — i co powinniśmy z tym zrobić?",
+  "family.maj.does":
+    "Przyjmuje domenę, rynek i cel. Obserwuje dane wyszukiwania przez kanały platformy, waży dowody i proponuje krótką kolejkę decyzji z pełnym śladem pochodzenia. Każda wykonana zmiana jest publikowana jako wersjonowane wydanie.",
+  "family.maj.doesNot":
+    "MAJ nigdy nie kupuje linków, nie fałszuje opinii i nie dotyka zasobów konkurencji. Pokazuje decyzje, nie metryki dostawców — klient nigdy nie musi rozumieć źródeł danych.",
   "family.stack.language": "Język",
   "family.stack.language.runs":
     "TypeScript 5 w całym systemie. SQL w bazie. Analiza RITA działa jako osobny program. ekonomi-ledger sprawdza dowody, nie księguje na produkcji.",

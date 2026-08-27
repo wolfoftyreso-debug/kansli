@@ -42,6 +42,7 @@ export const NL: Record<MessageKey, string> = {
   "category.tyra": "Bandenhotel",
   "category.alva": "Diagnose",
   "category.creditae": "Krediet",
+  "category.maj": "Zoeken",
 
   "idp.title": "Aanmelden · Pixdrift",
   "idp.heading": "Aanmelding",
@@ -127,8 +128,7 @@ export const NL: Record<MessageKey, string> = {
   "creditae.web": "Webaanwezigheid",
   "creditae.webNoticeOn":
     "Webdata aan. De zichtbaarheid wordt bij de bron opgehaald wanneer u op de knop drukt. De cijfers zijn van de leverancier, letterlijk.",
-  "creditae.webNoticeOff":
-    "Webdata uit. Geen webdatabron is gekoppeld. Er wordt niets opgehaald.",
+  "creditae.webNoticeOff": "Webdata uit. Geen webdatabron is gekoppeld. Er wordt niets opgehaald.",
   "creditae.web.blocked": "Webdata uit",
   "creditae.web.failed": "Geen webdata",
   "creditae.web.fetched": "Webdata binnen",
@@ -256,6 +256,13 @@ export const NL: Record<MessageKey, string> = {
   "family.creditae.does":
     "Neemt een organisatienummer en uw beoordeling. Haalt het bureaurapport via het kredietkanaal van het platform wanneer dat is aangesloten. Door, volgen of stop.",
   "family.creditae.doesNot": "CREDITAE zet geen kredietscore. Het product belt Creditsafe niet.",
+  "family.maj.mission":
+    "Meten, analyseren, bijsturen. Zichtbaarheid in zoekmachines als beslissingen, niet als dashboards.",
+  "family.maj.question": "Wat is er veranderd in de zoekresultaten — en wat moeten we doen?",
+  "family.maj.does":
+    "Neemt een domein, een markt en een doel. Volgt zoekdata via platformkanalen, weegt het bewijs en stelt een korte rij beslissingen voor met volledig herkomstspoor. Elke uitgevoerde wijziging wordt gepubliceerd als een genummerde release.",
+  "family.maj.doesNot":
+    "MAJ koopt nooit links, vervalst geen beoordelingen en raakt geen middelen van concurrenten aan. Het toont beslissingen, geen leveranciersstatistieken — de klant hoeft de databronnen nooit te begrijpen.",
   "family.stack.language": "Taal",
   "family.stack.language.runs":
     "TypeScript 5 in het hele systeem. SQL in de database. RITA’s analyse draait als eigen programma. ekonomi-ledger controleert boekstukken, post niet in productie.",

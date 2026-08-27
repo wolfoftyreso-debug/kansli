@@ -173,4 +173,17 @@ const MARK: Record<RoomId, ReactNode> = {
       <path d="M14 44 L66 44" stroke="#454d54" strokeWidth="2" fill="none" />
     </>
   ),
+  // MAJ — Mät, analysera, justera: a lens over measured bars, one arrow up.
+  maj: (
+    <>
+      <path d="M18 40 L24 40 L24 30 L18 30 Z" fill="#363b42" />
+      <path d="M28 40 L34 40 L34 24 L28 24 Z" fill="#1c2127" />
+      <path d="M38 40 L44 40 L44 18 L38 18 Z" fill="#101317" />
+      <circle cx="36" cy="24" r="11" fill="none" stroke="#1f4b8f" strokeWidth="2.4" />
+      <path d="M44 32 L52 40" stroke="#1f4b8f" strokeWidth="3" strokeLinecap="round" />
+      <path d="M56 36 Q62 28 60 16" stroke="#2f6b46" strokeWidth="2.2" fill="none" />
+      <path d="M56 14 L62 11 L63 19 Z" fill="#2f6b46" />
+      <path d="M14 44 L66 44" stroke="#454d54" strokeWidth="2" fill="none" />
+    </>
+  ),
 };

@@ -114,6 +114,17 @@ AI är aldrig source of truth; automation har uttrycklig nivå (L0–L4).
   explicit button press — never on page load — and stores vendor numbers
   verbatim (`fetched` only when the vendor accepted). Tests mock the vendor.
   The system never invents traffic, ranks or scores.
+- MAJ (`/maj`, schema `maj`) is the Search Intelligence & Execution System:
+  Mät, analysera, justera. It shows a short action queue with evidence behind
+  every decision — never raw vendor dashboards. Business logic is
+  capability-named (`keywordOpportunity`), never vendor-named. Sources without
+  credentials fail closed and become connect-source decisions. Usage is booked
+  to `maj.usage_ledger` BEFORE any external call. Every completed change is a
+  versioned release (`release.v1`, additive contract). Nothing executes or is
+  sent without explicit approval; outreach is drafted, never auto-sent. HEDGE
+  posture means maximal lawful competitive response — never fake reviews,
+  click fraud, negative links, impersonation or misleading pages. UI never
+  says "AI". Alpha: internal (house) tenants only.
 - CREDITAE lives at `/creditae`. One table `creditae.inquiries`. Credit reports
   go through `src/lib/platform/credit.ts` (Creditsafe). Products must not call
   Creditsafe. Tests mock the vendor. Do not live-call Creditsafe from tests or
