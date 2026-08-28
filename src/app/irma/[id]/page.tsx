@@ -21,13 +21,13 @@ export async function generateMetadata() {
   };
 }
 
-function contentState(locale: Locale, matches: boolean | undefined): string {
+function contentState(locale: Locale, matches: boolean | null | undefined): string {
   if (matches === true) return t(locale, "irma.doc.contentUnchanged");
   if (matches === false) return t(locale, "irma.doc.contentChanged");
   return t(locale, "irma.doc.contentUnknown");
 }
 
-function artifactState(locale: Locale, matches: boolean | undefined): string {
+function artifactState(locale: Locale, matches: boolean | null | undefined): string {
   if (matches === true) return t(locale, "irma.doc.artifactOk");
   if (matches === false) return t(locale, "irma.doc.artifactBad");
   return t(locale, "irma.doc.artifactUnknown");
