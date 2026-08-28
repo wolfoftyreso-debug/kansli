@@ -168,3 +168,8 @@ export function irmaVerification(locale: Locale, level: number): string {
   const key = `irma.verify.${level}` as MessageKey;
   return key in catalogs.en ? t(locale, key) : String(level);
 }
+
+export function toraCalKind(locale: Locale, kind: string): string {
+  const key = `tora.cal.kind.${kind}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : kind;
+}

@@ -4,25 +4,23 @@ import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { EmptyState, Notice } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
+import { t, toraCalKind, type Locale } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 import { tryRuntime } from "@/lib/platform/page";
 import { loadToraCalendar, resolveViewTier } from "@/lib/tora/market";
 import { resolveCompany } from "@/lib/tora/profile";
 import { opportunityHref } from "@/lib/tora/view";
 
-export const metadata = {
-  title: "Kalender — TORA — Pixdrift",
-};
-
-const KIND_LABEL: Record<CalendarEntryView["kind"], string> = {
-  deadline: "Sista anbudsdag",
-  admission_deadline: "Sista dag att anmäla sig",
-  expected_announcement: "Förväntad annons",
-  contract_end: "Avtalsslut",
-  action: "Att göra",
-};
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "tora.cal.metaTitle"),
+  };
+}
 
 export default async function ToraCalendarPage() {
   const session = await readSession();
+  const locale = await readLocale();
   const runtime = tryRuntime(session?.org?.ref);
   const company = await resolveCompany(runtime?.pool ?? null, session?.org?.ref ?? null);
   const tier = resolveViewTier({
@@ -36,41 +34,39 @@ export default async function ToraCalendarPage() {
       <ProductCrumb
         crumbs={[
           { href: "/tora", label: "TORA" },
-          { href: "/tora/calendar", label: "Kalender" },
+          { href: "/tora/calendar", label: t(locale, "tora.cal.heading") },
         ]}
       />
       <header className="flex flex-col gap-3">
-        <h1 className="text-3xl font-semibold tracking-tight">Kalender</h1>
-        <p className="text-ink-soft">
-          Datum framåt för upphandlingarna {company.name} ska hålla koll på — med namn och vad som
-          gäller.
-        </p>
+        <h1 className="text-3xl font-semibold tracking-tight">{t(locale, "tora.cal.heading")}</h1>
+        <p className="text-ink-soft">{t(locale, "tora.cal.lead", { name: company.name })}</p>
         <Notice>
-          {calendar.alertCount} påminnelser.{" "}
+          {t(locale, "tora.cal.alertCount", { count: calendar.alertCount })}{" "}
           {calendar.alerts.state === "locked"
             ? calendar.alerts.teaser
-            : "Vad de gäller, med köpare och titel."}
+            : t(locale, "tora.cal.alertUnlocked")}
         </Notice>
         {calendar.thisWeek.length +
           calendar.next30Days.length +
           calendar.next90Days.length +
           calendar.next12Months.length ===
         0 ? (
-          <Notice>
-            Inget på gång i den här perioden. Kom ihåg: det här är exempeldata, inte riktiga
-            annonser.
-          </Notice>
+          <Notice>{t(locale, "tora.cal.emptyPeriod")}</Notice>
         ) : null}
       </header>
 
-      <Bucket title="Den här veckan" entries={calendar.thisWeek} />
-      <Bucket title="30 dagar" entries={calendar.next30Days} />
-      <Bucket title="90 dagar" entries={calendar.next90Days} />
-      <Bucket title="12 månader" entries={calendar.next12Months} />
+      <Bucket title={t(locale, "tora.cal.thisWeek")} entries={calendar.thisWeek} locale={locale} />
+      <Bucket title={t(locale, "tora.cal.days30")} entries={calendar.next30Days} locale={locale} />
+      <Bucket title={t(locale, "tora.cal.days90")} entries={calendar.next90Days} locale={locale} />
+      <Bucket
+        title={t(locale, "tora.cal.months12")}
+        entries={calendar.next12Months}
+        locale={locale}
+      />
 
       {calendar.alerts.state === "unlocked" && calendar.alerts.value.length > 0 ? (
         <section className="flex flex-col gap-2">
-          <h2 className="text-lg font-semibold">Påminnelser</h2>
+          <h2 className="text-lg font-semibold">{t(locale, "tora.cal.reminders")}</h2>
           <ul className="flex flex-col gap-2">
             {calendar.alerts.value.map((alert) => (
               <li key={alert.id} className="rounded-xl border border-line bg-surface px-4 py-3">
@@ -85,12 +81,20 @@ export default async function ToraCalendarPage() {
   );
 }
 
-function Bucket({ title, entries }: { title: string; entries: CalendarEntryView[] }) {
+function Bucket({
+  title,
+  entries,
+  locale,
+}: {
+  title: string;
+  entries: CalendarEntryView[];
+  locale: Locale;
+}) {
   return (
     <section className="flex flex-col gap-2">
       <h2 className="text-lg font-semibold">{title}</h2>
       {entries.length === 0 ? (
-        <EmptyState>Inget i det här fönstret.</EmptyState>
+        <EmptyState>{t(locale, "tora.cal.emptyBucket")}</EmptyState>
       ) : (
         <ul className="flex flex-col gap-2">
           {entries.map((entry) => (
@@ -99,8 +103,8 @@ function Bucket({ title, entries }: { title: string; entries: CalendarEntryView[
               className="rounded-xl border border-line bg-surface px-4 py-3"
             >
               <p className="text-xs font-medium uppercase tracking-wide text-accent">
-                {KIND_LABEL[entry.kind]}
-                {entry.predicted ? " · prognos" : ""}
+                {toraCalKind(locale, entry.kind)}
+                {entry.predicted ? ` · ${t(locale, "tora.cal.forecast")}` : ""}
               </p>
               <p className="mt-1 font-medium">
                 {entry.identified && entry.opportunityId ? (
@@ -108,15 +112,15 @@ function Bucket({ title, entries }: { title: string; entries: CalendarEntryView[
                     href={opportunityHref({ id: entry.opportunityId })}
                     className="hover:underline"
                   >
-                    {entry.title || "Möjlighet"}
+                    {entry.title || t(locale, "tora.cal.opportunity")}
                   </Link>
                 ) : (
-                  entry.title || "Låst titel"
+                  entry.title || t(locale, "tora.cal.lockedTitle")
                 )}
               </p>
               <p className="mt-1 text-sm text-ink-soft">{entry.detail}</p>
               <p className="mt-1 font-mono text-xs text-faint">
-                {entry.date} · {entry.daysAway} dagar
+                {entry.date} · {t(locale, "tora.cal.daysAway", { days: entry.daysAway })}
                 {entry.organizationName ? ` · ${entry.organizationName}` : ""}
               </p>
             </li>

@@ -41,6 +41,7 @@ export {
   opsQueueStatus,
   opsSmsKindLabel,
   t,
+  toraCalKind,
   tyraCaseStatus,
   tyraIntentLabel,
   tyraStepStatus,

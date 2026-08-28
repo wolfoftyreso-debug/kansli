@@ -19,6 +19,7 @@ import {
   irmaVerification,
   messageKeys,
   t,
+  toraCalKind,
   tyraCaseStatus,
   tyraIntentLabel,
   tyraStepStatus,
@@ -115,6 +116,12 @@ describe("locale registry", () => {
     expect(irmaVerification("sv", 0)).toBe("Ingen bekräftelse (informationsunderlag)");
     expect(t("en", "irma.guest.opened")).toBe("I have opened the document");
     expect(t("sv", "irma.guest.readHeading")).toBe("Det här ska du läsa");
+    expect(t("en", "tora.saveProfile")).toBe("Save company profile");
+    expect(t("sv", "tora.share")).toBe("Dela läget");
+    expect(t("en", "tora.cal.heading")).toBe("Calendar");
+    expect(t("sv", "tora.cal.thisWeek")).toBe("Den här veckan");
+    expect(toraCalKind("en", "deadline")).toBe("Bid deadline");
+    expect(toraCalKind("sv", "deadline")).toBe("Sista anbudsdag");
     expect(t("sv", "chrome.signIn")).toBe("Logga in");
     expect(t("pl", "chrome.language")).toBe("Język");
     expect(t("de", "chrome.signIn")).toBe("Anmelden");

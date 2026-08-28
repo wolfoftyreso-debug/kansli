@@ -10,10 +10,11 @@ import { buildCompanyBriefing } from "@/lib/tora/briefing";
 import { loadToraMarket, resolveViewTier } from "@/lib/tora/market";
 import { listSnapshots } from "@/lib/tora/persist";
 import { getCompanyProfile, resolveCompany } from "@/lib/tora/profile";
+import { formatDateTime } from "@/lib/format/datetime";
+import { t, type Locale } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 import { sek } from "@/lib/tora/view";
 import { publishToraMarket, saveToraProfile } from "./actions";
-import { t } from "@/lib/i18n";
-import { readLocale } from "@/lib/i18n/request";
 
 export async function generateMetadata() {
   const locale = await readLocale();
@@ -85,13 +86,13 @@ export default async function ToraPage() {
           <p className="text-sm text-ink-soft">{t(locale, "tora.profileLead")}</p>
           <Field
             name="name"
-            label="Bolagsnamn"
+            label={t(locale, "tora.field.name")}
             required
             defaultValue={profile?.name ?? session.org.name}
           />
           <Field
             name="employees"
-            label="Anställda"
+            label={t(locale, "tora.field.employees")}
             defaultValue={
               profile?.employees != null
                 ? String(profile.employees)
@@ -102,48 +103,47 @@ export default async function ToraPage() {
           />
           <Field
             name="capabilities"
-            label="Vad ni kan göra (skriv med komma mellan)"
+            label={t(locale, "tora.field.capabilities")}
             defaultValue={(profile?.capabilities ?? company.capabilities).join(", ")}
             placeholder="el.installation, el.service"
           />
           <Field
             name="servesAreas"
-            label="Områden ni jobbar i (skriv med komma mellan)"
+            label={t(locale, "tora.field.areas")}
             defaultValue={(profile?.servesAreas ?? company.servesAreas).join(", ")}
             placeholder="0138, 0182"
           />
           <Field
             name="certifications"
-            label="Certifieringar (skriv med komma mellan)"
+            label={t(locale, "tora.field.certs")}
             defaultValue={(profile?.certifications ?? company.certifications).join(", ")}
           />
           <Field
             name="registrations"
-            label="Registreringar (skriv med komma mellan)"
+            label={t(locale, "tora.field.regs")}
             defaultValue={(profile?.registrations ?? company.registrations).join(", ")}
             placeholder="f_tax, vat"
           />
           {profile ? (
             <p className="text-sm text-ink-soft">
-              Sparat:{" "}
-              {profile.registrations.length > 0
-                ? profile.registrations.join(", ")
-                : "inga registreringar"}
+              {t(locale, "tora.savedRegs", {
+                regs:
+                  profile.registrations.length > 0
+                    ? profile.registrations.join(", ")
+                    : t(locale, "tora.noRegs"),
+              })}
             </p>
           ) : null}
-          <Submit>Spara bolagsprofil</Submit>
+          <Submit>{t(locale, "tora.saveProfile")}</Submit>
         </form>
       ) : null}
 
       {session?.org ? (
         <form action={publishToraMarket} className="rounded-xl border border-line bg-surface p-4">
-          <h2 className="text-lg font-semibold">Dela läget</h2>
-          <p className="mt-1 text-sm text-ink-soft">
-            Sparar dagens läge så att det syns i BRITT och i händelselistan. Att bara titta här
-            delar ingenting.
-          </p>
+          <h2 className="text-lg font-semibold">{t(locale, "tora.shareHeading")}</h2>
+          <p className="mt-1 text-sm text-ink-soft">{t(locale, "tora.shareLead")}</p>
           <div className="mt-3">
-            <Submit>Dela läget</Submit>
+            <Submit>{t(locale, "tora.share")}</Submit>
           </div>
         </form>
       ) : (
@@ -152,33 +152,52 @@ export default async function ToraPage() {
             href="/api/auth/login?next=/tora"
             className="underline decoration-line underline-offset-4 hover:text-ink"
           >
-            Logga in
-          </a>{" "}
-          för att kunna dela läget med resten av huset.
+            {t(locale, "tora.signInToShare")}
+          </a>
         </p>
       )}
 
       <MarketSection
-        title="Aktuellt"
-        empty="Inga öppna upphandlingar just nu."
+        title={t(locale, "tora.current")}
+        empty={t(locale, "tora.empty.open")}
         items={market.openNow}
+        locale={locale}
       />
-      <MarketSection title="Kommande" empty="Inga kommande möjligheter." items={market.upcoming} />
-      <MarketSection title="Bevakning" empty="Inget att bevaka." items={market.watch} />
-      <MarketSection title="Historik" empty="Ingen historik ännu." items={market.history} />
+      <MarketSection
+        title={t(locale, "tora.upcoming")}
+        empty={t(locale, "tora.empty.upcoming")}
+        items={market.upcoming}
+        locale={locale}
+      />
+      <MarketSection
+        title={t(locale, "tora.watch")}
+        empty={t(locale, "tora.empty.watch")}
+        items={market.watch}
+        locale={locale}
+      />
+      <MarketSection
+        title={t(locale, "tora.history")}
+        empty={t(locale, "tora.empty.history")}
+        items={market.history}
+        locale={locale}
+      />
 
       {session?.org ? (
         <section className="flex flex-col gap-3">
-          <h2 className="text-lg font-semibold">Tidigare delningar</h2>
+          <h2 className="text-lg font-semibold">{t(locale, "tora.shares")}</h2>
           {snapshots.length === 0 ? (
-            <EmptyState>Inget delat ännu.</EmptyState>
+            <EmptyState>{t(locale, "tora.noShares")}</EmptyState>
           ) : (
             <ul className="flex flex-col gap-2">
               {snapshots.map((item) => (
                 <li key={item.id} className="rounded-xl border border-line bg-surface px-4 py-3">
                   <p className="text-sm font-medium">{item.headline}</p>
                   <p className="mt-1 font-mono text-xs text-faint">
-                    {item.evaluatedAt} · {item.openNow} öppna · {item.tier}
+                    {t(locale, "tora.shareMeta", {
+                      when: formatDateTime(item.evaluatedAt, locale),
+                      count: item.openNow,
+                      tier: item.tier,
+                    })}
                   </p>
                 </li>
               ))}
@@ -194,10 +213,12 @@ function MarketSection({
   title,
   empty,
   items,
+  locale,
 }: {
   title: string;
   empty: string;
   items: Parameters<typeof OpportunityCard>[0]["item"][];
+  locale: Locale;
 }) {
   return (
     <section className="flex flex-col gap-4">
@@ -207,7 +228,7 @@ function MarketSection({
       ) : (
         <ul className="flex flex-col gap-3">
           {items.map((item) => (
-            <OpportunityCard key={item.id} item={item} />
+            <OpportunityCard key={item.id} item={item} locale={locale} />
           ))}
         </ul>
       )}
