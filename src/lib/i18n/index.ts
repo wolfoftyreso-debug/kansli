@@ -18,6 +18,9 @@ export {
 } from "./locales.ts";
 export {
   catalogs,
+  ekonomiInvoiceStatus,
+  ekonomiRailLabel,
+  ekonomiSmsStatus,
   familyBlockedNeed,
   familyField,
   familyLinkMeaning,

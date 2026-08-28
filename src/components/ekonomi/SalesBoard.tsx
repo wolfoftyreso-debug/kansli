@@ -15,6 +15,7 @@ import {
   type DayPoint,
   type PeriodId,
 } from "@/lib/ekonomi/series";
+import { t, type Locale, type MessageKey } from "@/lib/i18n";
 
 type SeriesKey = "sales" | "received";
 type ChartMode = "vol" | "platt";
@@ -34,7 +35,7 @@ function seriesValue(point: DayPoint, series: SeriesKey, mode: "day" | "cum"): n
   return mode === "day" ? point.receivedOre : point.receivedCumOre;
 }
 
-export function SalesBoard({ points }: { points: DayPoint[] }) {
+export function SalesBoard({ points, locale }: { points: DayPoint[]; locale: Locale }) {
   const [period, setPeriod] = useState<PeriodId>("1M");
   const [startPct, setStartPct] = useState(0);
   const [endPct, setEndPct] = useState(100);
@@ -62,11 +63,9 @@ export function SalesBoard({ points }: { points: DayPoint[] }) {
   if (points.length === 0) {
     return (
       <section className="rounded-2xl border border-line bg-surface px-5 py-6">
-        <p className="pd-label">Försäljning</p>
-        <p className="mt-3 text-3xl font-semibold tracking-tight">0,00 kr</p>
-        <p className="mt-2 text-sm text-muted">
-          Kurvan fylls när en faktura är utfärdad. Utkast syns inte här.
-        </p>
+        <p className="pd-label">{t(locale, "ekonomi.board.sales")}</p>
+        <p className="mt-3 text-3xl font-semibold tracking-tight">{formatSek(0)}</p>
+        <p className="mt-2 text-sm text-muted">{t(locale, "ekonomi.board.empty")}</p>
       </section>
     );
   }
@@ -75,7 +74,11 @@ export function SalesBoard({ points }: { points: DayPoint[] }) {
     <section className="rounded-2xl border border-line bg-surface px-4 py-5 sm:px-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="pd-label">{series === "sales" ? "Försäljning" : "Inbetalningar"}</p>
+          <p className="pd-label">
+            {series === "sales"
+              ? t(locale, "ekonomi.board.sales")
+              : t(locale, "ekonomi.board.received")}
+          </p>
           <p className="mt-2 text-4xl font-semibold tracking-tight tabular-nums">
             {formatSek(latest)}
           </p>
@@ -90,9 +93,11 @@ export function SalesBoard({ points }: { points: DayPoint[] }) {
           >
             {hover != null && focus ? (
               <>
-                {formatChartDay(focus.date)}
+                {formatChartDay(focus.date, false, locale)}
                 {" · "}
-                dagen {formatSek(seriesValue(focus, series, "day"))}
+                {t(locale, "ekonomi.board.day", {
+                  amount: formatSek(seriesValue(focus, series, "day")),
+                })}
               </>
             ) : (
               <>
@@ -100,7 +105,7 @@ export function SalesBoard({ points }: { points: DayPoint[] }) {
                 {formatSek(change)}
                 {changePct == null ? "" : ` (${changePct.toFixed(1).replace(".", ",")} %)`}
                 {" · "}
-                mot förra perioden
+                {t(locale, "ekonomi.board.vsPrevious")}
               </>
             )}
           </p>
@@ -114,7 +119,7 @@ export function SalesBoard({ points }: { points: DayPoint[] }) {
               }
               onClick={() => setSeries("sales")}
             >
-              Sålt
+              {t(locale, "ekonomi.board.sold")}
             </button>
             <button
               type="button"
@@ -123,7 +128,7 @@ export function SalesBoard({ points }: { points: DayPoint[] }) {
               }
               onClick={() => setSeries("received")}
             >
-              Inbetalt
+              {t(locale, "ekonomi.board.paidIn")}
             </button>
           </div>
           <div className="flex border border-line text-xs">
@@ -132,7 +137,7 @@ export function SalesBoard({ points }: { points: DayPoint[] }) {
               className={mode === "vol" ? "bg-ink px-2 py-1 text-paper" : "px-2 py-1 text-ink-soft"}
               onClick={() => setMode("vol")}
             >
-              Volym
+              {t(locale, "ekonomi.board.volume")}
             </button>
             <button
               type="button"
@@ -141,15 +146,26 @@ export function SalesBoard({ points }: { points: DayPoint[] }) {
               }
               onClick={() => setMode("platt")}
             >
-              Platt
+              {t(locale, "ekonomi.board.flat")}
             </button>
           </div>
         </div>
       </div>
 
-      <SalesChart points={visible} series={series} mode={mode} hover={hover} onHover={setHover} />
+      <SalesChart
+        points={visible}
+        series={series}
+        mode={mode}
+        hover={hover}
+        onHover={setHover}
+        locale={locale}
+      />
 
-      <div className="mt-3 flex flex-wrap gap-1" role="group" aria-label="Period">
+      <div
+        className="mt-3 flex flex-wrap gap-1"
+        role="group"
+        aria-label={t(locale, "ekonomi.board.period")}
+      >
         {PERIODS.map((item) => (
           <button
             key={item.id}
@@ -166,7 +182,7 @@ export function SalesBoard({ points }: { points: DayPoint[] }) {
               setHover(null);
             }}
           >
-            {item.label}
+            {t(locale, `ekonomi.board.period.${item.id}` as MessageKey)}
           </button>
         ))}
       </div>
@@ -178,15 +194,22 @@ export function SalesBoard({ points }: { points: DayPoint[] }) {
         endPct={endPct}
         onStart={setStartPct}
         onEnd={setEndPct}
+        locale={locale}
       />
 
       <p className="mt-2 text-xs text-muted">
-        {formatChartRange(visible[0]?.date ?? "", visible.at(-1)?.date ?? "")}
+        {formatChartRange(visible[0]?.date ?? "", visible.at(-1)?.date ?? "", locale)}
         {activeDays <= 1
           ? series === "sales"
-            ? " · Alla sälj i fönstret ligger på samma dag."
-            : " · Alla inbetalningar i fönstret ligger på samma dag."
-          : ` · ${activeDays} dagar med ${series === "sales" ? "sälj" : "inbetalning"}`}
+            ? ` · ${t(locale, "ekonomi.board.sameDaySales")}`
+            : ` · ${t(locale, "ekonomi.board.sameDayReceived")}`
+          : ` · ${t(locale, "ekonomi.board.daysWith", {
+              count: activeDays,
+              series:
+                series === "sales"
+                  ? t(locale, "ekonomi.board.seriesSales")
+                  : t(locale, "ekonomi.board.seriesReceived"),
+            })}`}
       </p>
     </section>
   );
@@ -223,12 +246,14 @@ function SalesChart({
   mode,
   hover,
   onHover,
+  locale,
 }: {
   points: DayPoint[];
   series: SeriesKey;
   mode: ChartMode;
   hover: number | null;
   onHover: (index: number | null) => void;
+  locale: Locale;
 }) {
   const width = 720;
   const height = 248;
@@ -265,7 +290,7 @@ function SalesChart({
         viewBox={`0 0 ${width} ${height}`}
         className="h-64 w-full"
         role="img"
-        aria-label="Sales chart"
+        aria-label={t(locale, "ekonomi.board.chartLabel")}
         onMouseLeave={() => onHover(null)}
         onMouseMove={(event) => {
           const box = event.currentTarget.getBoundingClientRect();
@@ -323,7 +348,7 @@ function SalesChart({
         {points.length > 1 ? (
           <>
             <text x={pad.left} y={height - 6} className="fill-muted" fontSize={tickSize}>
-              {formatChartDay(points[0]?.date ?? "", axisYear)}
+              {formatChartDay(points[0]?.date ?? "", axisYear, locale)}
             </text>
             <text
               x={width - pad.right}
@@ -332,7 +357,7 @@ function SalesChart({
               className="fill-muted"
               fontSize={tickSize}
             >
-              {formatChartDay(points.at(-1)?.date ?? "", axisYear)}
+              {formatChartDay(points.at(-1)?.date ?? "", axisYear, locale)}
             </text>
           </>
         ) : null}
@@ -342,12 +367,16 @@ function SalesChart({
           className="pointer-events-none absolute top-3 min-w-40 rounded-lg border border-line bg-surface px-3 py-2 text-xs shadow-sm"
           style={{ left: `${hoverLeft}%` }}
         >
-          <p className="font-medium">{formatChartDay(hoverPoint.date)}</p>
+          <p className="font-medium">{formatChartDay(hoverPoint.date, false, locale)}</p>
           <p className="mt-1 text-ink-soft">
-            Dagen {formatSek(seriesValue(hoverPoint, series, "day"))}
+            {t(locale, "ekonomi.board.day", {
+              amount: formatSek(seriesValue(hoverPoint, series, "day")),
+            })}
           </p>
           <p className="text-ink-soft">
-            Hittills {formatSek(seriesValue(hoverPoint, series, "cum"))}
+            {t(locale, "ekonomi.board.toDate", {
+              amount: formatSek(seriesValue(hoverPoint, series, "cum")),
+            })}
           </p>
         </div>
       ) : null}
@@ -362,6 +391,7 @@ function RangeBrush({
   endPct,
   onStart,
   onEnd,
+  locale,
 }: {
   points: DayPoint[];
   series: SeriesKey;
@@ -369,6 +399,7 @@ function RangeBrush({
   endPct: number;
   onStart: (value: number) => void;
   onEnd: (value: number) => void;
+  locale: Locale;
 }) {
   const width = 720;
   const height = 48;
@@ -414,7 +445,7 @@ function RangeBrush({
       </svg>
       <div className="ek-range">
         <label className="sr-only" htmlFor="ek-range-start">
-          Början av grafen
+          {t(locale, "ekonomi.board.rangeStart")}
         </label>
         <input
           id="ek-range-start"
@@ -428,7 +459,7 @@ function RangeBrush({
           }}
         />
         <label className="sr-only" htmlFor="ek-range-end">
-          Slutet av grafen
+          {t(locale, "ekonomi.board.rangeEnd")}
         </label>
         <input
           id="ek-range-end"

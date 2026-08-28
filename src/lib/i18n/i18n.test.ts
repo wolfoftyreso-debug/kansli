@@ -7,7 +7,16 @@ import {
   localeFromAcceptLanguage,
   parseLocale,
 } from "./locales.ts";
-import { catalogs, messageKeys, t, tyraCaseStatus, tyraIntentLabel, tyraStepStatus } from "./t.ts";
+import {
+  catalogs,
+  ekonomiInvoiceStatus,
+  ekonomiSmsStatus,
+  messageKeys,
+  t,
+  tyraCaseStatus,
+  tyraIntentLabel,
+  tyraStepStatus,
+} from "./t.ts";
 
 describe("locale registry", () => {
   it("ships English as the system language plus the decided set", () => {
@@ -66,6 +75,12 @@ describe("locale registry", () => {
     expect(t("sv", "tyra.case.bookSale")).toBe("Boka sälj");
     expect(tyraStepStatus("en", "TODO")).toBe("To do");
     expect(tyraStepStatus("sv", "TODO")).toBe("Att göra");
+    expect(t("en", "ekonomi.desk.newSale")).toBe("New sale");
+    expect(t("sv", "ekonomi.desk.newSale")).toBe("Nytt sälj");
+    expect(ekonomiInvoiceStatus("en", "draft")).toBe("Draft");
+    expect(ekonomiInvoiceStatus("sv", "draft")).toBe("Utkast");
+    expect(ekonomiSmsStatus("en", "SENT")).toBe("Sent");
+    expect(ekonomiSmsStatus("sv", "SENT")).toBe("Skickat");
     expect(t("sv", "chrome.signIn")).toBe("Logga in");
     expect(t("pl", "chrome.language")).toBe("Język");
     expect(t("de", "chrome.signIn")).toBe("Anmelden");

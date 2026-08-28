@@ -26,6 +26,18 @@ export function formatSwedishDateTime(value: string | Date): string {
   return formatDateTime(value, "sv");
 }
 
+/** 3 Sep 2026 — Swedish wall time, chrome locale. */
+export function formatDate(value: string | Date, locale: Locale = DEFAULT_LOCALE): string {
+  const date = asDate(value);
+  if (!date) return "";
+  return new Intl.DateTimeFormat(localeTag(locale), {
+    timeZone: STOCKHOLM,
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(date);
+}
+
 /** 3 september 2026 */
 export function formatSwedishDate(value: string | Date): string {
   const date = asDate(value);

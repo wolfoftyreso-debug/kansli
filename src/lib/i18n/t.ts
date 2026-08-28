@@ -113,3 +113,18 @@ export function tyraStepStatus(locale: Locale, status: string): string {
   const key = `tyra.step.${status}` as MessageKey;
   return key in catalogs.en ? t(locale, key) : status;
 }
+
+export function ekonomiInvoiceStatus(locale: Locale, status: string): string {
+  const key = `ekonomi.status.${status}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : status;
+}
+
+export function ekonomiSmsStatus(locale: Locale, status: string): string {
+  const key = `ekonomi.sms.${status}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : status;
+}
+
+export function ekonomiRailLabel(locale: Locale, id: string): string {
+  const key = `ekonomi.rail.${id}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : id;
+}
