@@ -57,7 +57,8 @@ async function json(url: string, init?: RequestInit): Promise<{ status: number; 
 const main = async () => {
   // 1. AI Gateway (platform channel): model list + real 16-token inference.
   await probe("AI Gateway (plattformskanal)", ["AI_GATEWAY_API_KEY"], async () => {
-    const base = process.env.AI_GATEWAY_BASE_URL?.replace(/\/+$/, "") || "https://ai-gateway.vercel.sh/v1";
+    const base =
+      process.env.AI_GATEWAY_BASE_URL?.replace(/\/+$/, "") || "https://ai-gateway.vercel.sh/v1";
     const headers = {
       authorization: `Bearer ${process.env.AI_GATEWAY_API_KEY}`,
       "content-type": "application/json",
@@ -105,7 +106,8 @@ const main = async () => {
         messages: [{ role: "user", content: "Svara med ett ord: pong" }],
       }),
     });
-    if (chat.status !== 200) throw new Error(`messages ${chat.status}: ${JSON.stringify(chat.body)}`);
+    if (chat.status !== 200)
+      throw new Error(`messages ${chat.status}: ${JSON.stringify(chat.body)}`);
     const text = (chat.body as { content: { text?: string }[] }).content?.[0]?.text ?? "";
     return `${models.length} modeller · ${model}: "${text.trim()}"`;
   });
@@ -163,7 +165,10 @@ const main = async () => {
       .filter((m) => m.methods.includes("generateContent"))
       .map((m) => m.id)
       .filter((id) => !/image|lite|8b|tts|live|embed/.test(id));
-    const flash = usable.filter((id) => id.includes("flash")).sort().reverse();
+    const flash = usable
+      .filter((id) => id.includes("flash"))
+      .sort()
+      .reverse();
     const candidates = [...new Set([...flash, ...usable])].slice(0, 6);
     const generate = (target: string) =>
       json(
@@ -189,7 +194,8 @@ const main = async () => {
       }
       if (chat.status === 200 || chat.status === 401 || chat.status === 403) break;
     }
-    if (chat.status !== 200) throw new Error(`generate ${chat.status}: ${JSON.stringify(chat.body)}`);
+    if (chat.status !== 200)
+      throw new Error(`generate ${chat.status}: ${JSON.stringify(chat.body)}`);
     const text =
       (chat.body as { candidates?: { content?: { parts?: { text?: string }[] } }[] })
         .candidates?.[0]?.content?.parts?.[0]?.text ?? "";
@@ -230,7 +236,8 @@ const main = async () => {
     const res = await json(
       `https://www.semrush.com/users/countapiunits.html?key=${process.env.SEMRUSH_API_KEY}`,
     );
-    if (res.status !== 200) throw new Error(`countapiunits ${res.status}: ${JSON.stringify(res.body)}`);
+    if (res.status !== 200)
+      throw new Error(`countapiunits ${res.status}: ${JSON.stringify(res.body)}`);
     const text = String(res.body).trim();
     if (/ERROR/i.test(text)) throw new Error(text);
     return `nyckel ok · ${Number(text).toLocaleString("sv-SE")} API-units kvar`;

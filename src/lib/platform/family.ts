@@ -205,7 +205,8 @@ export const FAMILY_SYSTEMS: readonly FamilySystem[] = [
     mission: "Measure, analyse, adjust. Search visibility as decisions, not dashboards.",
     question: "What changed in search — and what should we do about it?",
     does: "Takes a domain, a market and a goal. Watches search data through platform channels, weighs the evidence, and proposes a short queue of decisions with a full provenance trail. Every completed change is published as a versioned release.",
-    doesNot: "MAJ never buys links, fakes reviews or touches a competitor's assets. It shows decisions, not vendor metrics — the customer never needs to understand the data sources.",
+    doesNot:
+      "MAJ never buys links, fakes reviews or touches a competitor's assets. It shows decisions, not vendor metrics — the customer never needs to understand the data sources.",
     owns: [
       "maj.projects",
       "maj.signals",

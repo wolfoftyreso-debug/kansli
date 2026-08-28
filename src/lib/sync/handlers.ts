@@ -238,7 +238,9 @@ export function registerSyncHandlers(events: EventLog, pool: pg.Pool): void {
       event.orgRef,
       "kansli",
       "Ny registrering",
-      String(event.payload["title"] ?? "En kund registrerade sig. Faktura med 10 dagars betalning."),
+      String(
+        event.payload["title"] ?? "En kund registrerade sig. Faktura med 10 dagars betalning.",
+      ),
       event.subjectRef,
     );
   });

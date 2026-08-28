@@ -35,15 +35,13 @@ export default async function UpphandlingPage({
       <div className="grid gap-8 lg:grid-cols-[1fr_1.15fr] lg:items-start">
         <aside className="flex flex-col gap-4">
           <p className="pd-label text-faint">Registrera</p>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Välj moduler och teckna ett år
-          </h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Välj moduler och teckna ett år</h1>
           <p className="text-ink-soft">
-            Du registrerar dig själv och inloggningen skapas direkt. Ett år är{" "}
-            {YEAR_INSTALMENTS} betalningar för tolv månader. Alla {YEAR_INSTALMENTS} fakturorna
-            ställs ut samtidigt, med en detaljerad orderspecifikation som bilaga — den första
-            förfaller om {PAYMENT_DAYS} dagar, resten var {INSTALMENT_INTERVAL_DAYS}:e dag. Betalda
-            i tid — allt fortsätter fungera.
+            Du registrerar dig själv och inloggningen skapas direkt. Ett år är {YEAR_INSTALMENTS}{" "}
+            betalningar för tolv månader. Alla {YEAR_INSTALMENTS} fakturorna ställs ut samtidigt,
+            med en detaljerad orderspecifikation som bilaga — den första förfaller om {PAYMENT_DAYS}{" "}
+            dagar, resten var {INSTALMENT_INTERVAL_DAYS}:e dag. Betalda i tid — allt fortsätter
+            fungera.
           </p>
           <ul className="flex flex-col gap-2 text-sm text-ink-soft">
             <li>Kansli och plattformen ingår alltid, utan kostnad.</li>
