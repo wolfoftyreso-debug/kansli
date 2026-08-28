@@ -1,6 +1,8 @@
 import { AppShell } from "@/components/app/AppShell";
 import { CheckField, Field, Notice, Submit } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
+import { t, type Locale, type MessageKey } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 import {
   ALL_MODULES_MONTHLY_NET_ORE,
   INSTALMENT_INTERVAL_DAYS,
@@ -9,13 +11,22 @@ import {
   PAYMENT_DAYS,
   SELLABLE_MODULES,
   YEAR_INSTALMENTS,
+  type SellableModule,
 } from "@/lib/kansli/pricing";
 
-export const metadata = {
-  title: "Registrera — Pixdrift",
-  description:
-    "Välj moduler och teckna ett år. Tio fakturor ställs ut direkt med orderspecifikation som bilaga. Inga demos, inga möten.",
-};
+export const dynamic = "force-dynamic";
+
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "intake.metaTitle"),
+    description: t(locale, "intake.metaDescription"),
+  };
+}
+
+function moduleBlurb(locale: Locale, id: SellableModule): string {
+  return t(locale, `intake.module.${id}` as MessageKey);
+}
 
 /**
  * Self-service, like buying a desktop-software subscription but simpler:
@@ -27,30 +38,29 @@ export default async function UpphandlingPage({
   searchParams: Promise<{ fel?: string }>;
 }) {
   const session = await readSession();
+  const locale = await readLocale();
   const fel = (await searchParams).fel;
   const orgNumberWrong = fel === "orgnr";
   const noModules = fel === "moduler";
+  const vars = {
+    instalments: YEAR_INSTALMENTS,
+    paymentDays: PAYMENT_DAYS,
+    interval: INSTALMENT_INTERVAL_DAYS,
+  };
   return (
     <AppShell current="upphandling" session={session}>
       <div className="grid gap-8 lg:grid-cols-[1fr_1.15fr] lg:items-start">
         <aside className="flex flex-col gap-4">
-          <p className="pd-label text-faint">Registrera</p>
-          <h1 className="text-2xl font-semibold tracking-tight">Välj moduler och teckna ett år</h1>
-          <p className="text-ink-soft">
-            Du registrerar dig själv och inloggningen skapas direkt. Ett år är {YEAR_INSTALMENTS}{" "}
-            betalningar för tolv månader. Alla {YEAR_INSTALMENTS} fakturorna ställs ut samtidigt,
-            med en detaljerad orderspecifikation som bilaga — den första förfaller om {PAYMENT_DAYS}{" "}
-            dagar, resten var {INSTALMENT_INTERVAL_DAYS}:e dag. Betalda i tid — allt fortsätter
-            fungera.
-          </p>
+          <p className="pd-label text-faint">{t(locale, "intake.kicker")}</p>
+          <h1 className="text-2xl font-semibold tracking-tight">{t(locale, "intake.heading")}</h1>
+          <p className="text-ink-soft">{t(locale, "intake.lead", vars)}</p>
           <ul className="flex flex-col gap-2 text-sm text-ink-soft">
-            <li>Kansli och plattformen ingår alltid, utan kostnad.</li>
-            <li>Köp en modul eller flera — du väljer.</li>
+            <li>{t(locale, "intake.bullet.kansli")}</li>
+            <li>{t(locale, "intake.bullet.pick")}</li>
             <li>
-              Allt i Pixdrift kostar aldrig mer än {kronor(ALL_MODULES_MONTHLY_NET_ORE)}/mån exkl.
-              moms. Når valet taket får du alla moduler.
+              {t(locale, "intake.bullet.cap", { price: kronor(ALL_MODULES_MONTHLY_NET_ORE) })}
             </li>
-            <li>Betala för {YEAR_INSTALMENTS} månader — få tolv.</li>
+            <li>{t(locale, "intake.bullet.year", { instalments: YEAR_INSTALMENTS })}</li>
           </ul>
           <div className="border border-line bg-surface">
             {SELLABLE_MODULES.map((id) => (
@@ -60,15 +70,17 @@ export default async function UpphandlingPage({
               >
                 <span>
                   <span className="font-medium">{MODULE_PRICING[id].label}</span>
-                  <span className="text-ink-soft"> — {MODULE_PRICING[id].blurb}</span>
+                  <span className="text-ink-soft"> — {moduleBlurb(locale, id)}</span>
                 </span>
                 <span className="shrink-0 tabular-nums text-ink-soft">
-                  {kronor(MODULE_PRICING[id].monthlyNetOre)}/mån
+                  {t(locale, "intake.perMonth", {
+                    price: kronor(MODULE_PRICING[id].monthlyNetOre),
+                  })}
                 </span>
               </p>
             ))}
           </div>
-          <p className="text-sm text-muted">Priser exkl. moms. Inga demos, inga säljmöten.</p>
+          <p className="text-sm text-muted">{t(locale, "intake.pricesNote")}</p>
         </aside>
 
         <form
@@ -76,50 +88,63 @@ export default async function UpphandlingPage({
           method="post"
           className="flex flex-col gap-4 border border-line bg-surface p-4"
         >
-          {orgNumberWrong ? (
-            <Notice>Organisationsnumret stämmer inte. Kontrollera siffrorna.</Notice>
-          ) : null}
-          {noModules ? <Notice>Välj minst en modul.</Notice> : null}
+          {orgNumberWrong ? <Notice>{t(locale, "intake.errorOrg")}</Notice> : null}
+          {noModules ? <Notice>{t(locale, "intake.errorModules")}</Notice> : null}
           <fieldset className="flex flex-col gap-1">
-            <legend className="text-sm text-ink-soft">Moduler *</legend>
+            <legend className="text-sm text-ink-soft">{t(locale, "intake.modulesLegend")}</legend>
             {SELLABLE_MODULES.map((id) => (
               <CheckField
                 key={id}
                 name="modules"
                 value={id}
                 large
-                label={`${MODULE_PRICING[id].label} — ${MODULE_PRICING[id].blurb} · ${kronor(MODULE_PRICING[id].monthlyNetOre)}/mån`}
+                label={t(locale, "intake.moduleLine", {
+                  label: MODULE_PRICING[id].label,
+                  blurb: moduleBlurb(locale, id),
+                  price: kronor(MODULE_PRICING[id].monthlyNetOre),
+                })}
               />
             ))}
           </fieldset>
-          <Field name="contactEmail" label="Arbets-e-post" type="email" required large />
+          <Field
+            name="contactEmail"
+            label={t(locale, "intake.email")}
+            type="email"
+            required
+            large
+          />
           <div className="grid gap-4 sm:grid-cols-2">
             <Field
               name="contactName"
-              label="Kontaktperson"
+              label={t(locale, "intake.contact")}
               required
               large
-              placeholder="Anna Andersson"
+              placeholder={t(locale, "intake.placeholder.contact")}
             />
-            <Field name="contactTitle" label="Roll" large placeholder="Verkstadschef" />
+            <Field
+              name="contactTitle"
+              label={t(locale, "intake.role")}
+              large
+              placeholder={t(locale, "intake.placeholder.role")}
+            />
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field
               name="companyName"
-              label="Bolag"
+              label={t(locale, "intake.company")}
               required
               large
-              placeholder="Bilia Personbilar AB"
+              placeholder={t(locale, "intake.placeholder.company")}
             />
-            <Field name="orgNumber" label="Organisationsnummer" large placeholder="556xxx-xxxx" />
+            <Field
+              name="orgNumber"
+              label={t(locale, "intake.orgNumber")}
+              large
+              placeholder="556xxx-xxxx"
+            />
           </div>
-          <CheckField
-            name="termsAccepted"
-            required
-            large
-            label={`Jag tecknar ett år med de valda modulerna. Inloggning skapas nu och alla ${YEAR_INSTALMENTS} fakturor ställs ut samtidigt med orderspecifikation som bilaga — den första förfaller om ${PAYMENT_DAYS} dagar, resten var ${INSTALMENT_INTERVAL_DAYS}:e dag. Förfaller en obetald pausas rummen tills den är betald. Priser exkl. moms.`}
-          />
-          <Submit large>Teckna året och få fakturorna</Submit>
+          <CheckField name="termsAccepted" required large label={t(locale, "intake.terms", vars)} />
+          <Submit large>{t(locale, "intake.submit")}</Submit>
         </form>
       </div>
     </AppShell>

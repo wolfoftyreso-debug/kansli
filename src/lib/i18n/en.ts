@@ -747,6 +747,68 @@ export const EN = {
   "events.signInTitle": "Sign in to read the log",
   "events.signInBody": "The events belong to your company. Sign in to see them.",
   "events.empty": "No events yet. They appear when you start using the systems.",
+
+  "intake.metaTitle": "Register — Pixdrift",
+  "intake.metaDescription":
+    "Pick modules and sign a year. Ten invoices are issued at once with the order specification as an attachment. No demos, no meetings.",
+  "intake.kicker": "Register",
+  "intake.heading": "Pick modules and sign a year",
+  "intake.lead":
+    "You register yourself and sign-in is created at once. One year is {instalments} payments for twelve months. All {instalments} invoices are issued together, with a detailed order specification as an attachment — the first is due in {paymentDays} days, the rest every {interval} days. Paid on time — everything keeps working.",
+  "intake.bullet.kansli": "Kansli and the platform are always included, at no charge.",
+  "intake.bullet.pick": "Buy one module or several — you choose.",
+  "intake.bullet.cap":
+    "Everything in Pixdrift never costs more than {price}/mo excl. VAT. When the selection hits the cap you get every module.",
+  "intake.bullet.year": "Pay for {instalments} months — get twelve.",
+  "intake.perMonth": "{price}/mo",
+  "intake.pricesNote": "Prices excl. VAT. No demos, no sales meetings.",
+  "intake.errorOrg": "The organisation number does not check out. Check the digits.",
+  "intake.errorModules": "Pick at least one module.",
+  "intake.modulesLegend": "Modules *",
+  "intake.moduleLine": "{label} — {blurb} · {price}/mo",
+  "intake.email": "Work email",
+  "intake.contact": "Contact person",
+  "intake.role": "Role",
+  "intake.company": "Company",
+  "intake.orgNumber": "Organisation number",
+  "intake.placeholder.contact": "Anna Andersson",
+  "intake.placeholder.role": "Workshop manager",
+  "intake.placeholder.company": "Bilia Personbilar AB",
+  "intake.terms":
+    "I sign a year with the selected modules. Sign-in is created now and all {instalments} invoices are issued together with the order specification as an attachment — the first is due in {paymentDays} days, the rest every {interval} days. If one goes unpaid the rooms pause until it is paid. Prices excl. VAT.",
+  "intake.submit": "Sign the year and get the invoices",
+  "intake.module.ekonomi": "bookkeeping, invoices and payments",
+  "intake.module.tyra": "tyre hotel and customer cards",
+  "intake.module.irma": "digital agreements",
+  "intake.module.tora": "procurements",
+  "intake.module.rita": "tax analysis",
+  "intake.module.creditae": "counterpart assessment",
+  "intake.module.britt": "inbox and follow-up",
+  "intake.module.alva": "cases and checks",
+  "intake.confirm.metaTitle": "You are running — Pixdrift",
+  "intake.confirm.missingTitle": "The registration was not found",
+  "intake.confirm.missingBody": "Open the link from the confirmation, or register again.",
+  "intake.confirm.back": "Back to registration",
+  "intake.confirm.kicker": "Registration",
+  "intake.confirm.heading": "You are running",
+  "intake.confirm.lead":
+    "{company}. Everything works from now, for twelve months. All {instalments} invoices are issued with the order specification as an attachment — the first is due in {paymentDays} days. Paid on time — everything keeps working.",
+  "intake.confirm.modules": "Modules",
+  "intake.confirm.kansliIncluded": "Kansli and the platform are always included.",
+  "intake.confirm.signIn": "Sign-in",
+  "intake.confirm.passwordOnce": "One-time password — copy it now",
+  "intake.confirm.passwordGone":
+    "The password was shown when you registered. It is not in this link.",
+  "intake.confirm.loginHidden":
+    "Sign-in was created when you registered. The password is not shown at this address.",
+  "intake.confirm.noAccount": "No account was created.",
+  "intake.confirm.plan": "Payment plan — {instalments} invoices for twelve months, issued now",
+  "intake.confirm.gross": "{amount} incl. VAT × {instalments}",
+  "intake.confirm.part": "part {part} of {total}",
+  "intake.confirm.due": " · due {when}",
+  "intake.confirm.planNote":
+    "Paid on time — everything keeps working. If one goes unpaid the rooms pause until it is paid. The order specification is attached to each invoice.",
+  "intake.confirm.openInvoice": "Sign in and open the invoice",
 } as const;
 
 export type MessageKey = keyof typeof EN;
