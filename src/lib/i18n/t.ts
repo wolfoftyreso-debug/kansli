@@ -204,3 +204,12 @@ export function alvaOutcome(locale: Locale, value: string): string {
   if (value === "no") return t(locale, "alva.no");
   return t(locale, "alva.unknown");
 }
+
+export function catalogField(
+  locale: Locale,
+  slug: string,
+  field: "purpose" | "category" | "summary",
+): string {
+  const key = `site.catalog.${slug}.${field}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : slug;
+}

@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getSystem, STEWARDSHIP_LABEL, systems } from "@/lib/pixdrift/systems";
-import { toolsForSystem } from "@/lib/mcp/catalog";
 import { Container } from "@/components/site/Container";
 import { SpecTable } from "@/components/site/SpecTable";
 import { RegionIndicator, StatusIndicator } from "@/components/site/indicators";
+import { catalogField, t } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
+import { toolsForSystem } from "@/lib/mcp/catalog";
+import { getSystem, STEWARDSHIP_LABEL, systems } from "@/lib/pixdrift/systems";
 
 export function generateStaticParams() {
   return systems.map((s) => ({ slug: s.slug }));
@@ -17,16 +19,18 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
+  const locale = await readLocale();
   const system = getSystem(slug);
-  if (!system) return { title: "System — PIXDRIFT" };
+  if (!system) return { title: t(locale, "site.systems.metaTitle") };
   return {
     title: `${system.name} — PIXDRIFT`,
-    description: system.summary,
+    description: catalogField(locale, slug, "summary"),
   };
 }
 
 export default async function SystemPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const locale = await readLocale();
   const system = getSystem(slug);
   if (!system) notFound();
 
@@ -41,7 +45,7 @@ export default async function SystemPage({ params }: { params: Promise<{ slug: s
             </Link>
             <span aria-hidden>/</span>
             <Link href="/systems" className="hover:text-ink">
-              Systems
+              {t(locale, "site.systems.eyebrow")}
             </Link>
             <span aria-hidden>/</span>
             <span className="text-ink">{system.name}</span>
@@ -54,11 +58,13 @@ export default async function SystemPage({ params }: { params: Promise<{ slug: s
         <Container>
           <p className="pd-label">System {system.index}</p>
           <h1 className="mt-2 text-2xl font-semibold tracking-tight text-ink">{system.name}</h1>
-          <p className="mt-3 max-w-2xl text-sm text-ink-soft">{system.purpose}</p>
+          <p className="mt-3 max-w-2xl text-sm text-ink-soft">
+            {catalogField(locale, system.slug, "purpose")}
+          </p>
           <div className="mt-10">
             <SpecTable
               rows={[
-                { label: "Category", value: system.category },
+                { label: "Category", value: catalogField(locale, system.slug, "category") },
                 { label: "Stewardship", value: STEWARDSHIP_LABEL[system.stewardship] },
                 { label: "Status", value: <StatusIndicator status={system.status} /> },
                 { label: "Region", value: <RegionIndicator regions={system.regions} /> },

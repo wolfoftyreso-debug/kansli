@@ -1507,4 +1507,42 @@ export const DA: Record<MessageKey, string> = {
   "site.systems.intro":
     "One job per system. TORA takes procurement. RITA takes tax. The same sign-in everywhere.",
   "site.systems.open": "Open",
+
+  "site.catalog.identity.purpose": "One sign-in for every system.",
+  "site.catalog.identity.category": "Sign-in",
+  "site.catalog.identity.summary":
+    "Sign in once. Then you are in Kansli, TORA, RITA and the others.",
+  "site.catalog.alva.purpose":
+    "The customer's fault, notes and measurements. Diagnosis comes later.",
+  "site.catalog.alva.category": "Workshop",
+  "site.catalog.alva.summary":
+    "Takes what the customer said, what you noted and what was measured. Does not diagnose.",
+  "site.catalog.rita.purpose": "Looks for tax savings in your books.",
+  "site.catalog.rita.category": "Tax",
+  "site.catalog.rita.summary":
+    "Reads the accounts against Swedish tax rules and leaves proposals to check. Not tax advice.",
+  "site.catalog.tora.purpose": "Which procurements your company can take.",
+  "site.catalog.tora.category": "Procurement",
+  "site.catalog.tora.summary":
+    "Compares the company to the procurements: requirements, gaps, amounts, dates and next step. Not RITA.",
+  "site.catalog.irma.purpose": "Send an agreement, see if it is read and confirmed.",
+  "site.catalog.irma.category": "Agreements",
+  "site.catalog.irma.summary": "Sends the agreement. Shows if it is opened, signed or declined.",
+  "site.catalog.britt.purpose": "What happened and needs follow-up.",
+  "site.catalog.britt.category": "Follow-up",
+  "site.catalog.britt.summary":
+    "Collects things that must be followed up. One thing at a time, with a next step.",
+  "site.catalog.tyra.purpose": "Customer, car, wheels and what to do next.",
+  "site.catalog.tyra.category": "Tyre hotel",
+  "site.catalog.tyra.summary":
+    "Keeps customer, vehicle and tyres together. Shows when it is time to swap or collect.",
+  "site.catalog.ekonomi.purpose": "Invoices, VAT and how the money came in.",
+  "site.catalog.ekonomi.category": "Book",
+  "site.catalog.ekonomi.summary":
+    "Writes the invoice, books VAT and matches incoming payments when the bank is connected. No invented payment.",
+  "site.catalog.creditae.purpose":
+    "Counterpart credit assessment. Your conclusion, no invented score.",
+  "site.catalog.creditae.category": "Credit",
+  "site.catalog.creditae.summary":
+    "Takes an organisation number and your assessment. The bureau report goes through the platform credit channel. Does not set a credit score.",
 };

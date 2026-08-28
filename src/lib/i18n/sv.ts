@@ -1507,4 +1507,40 @@ export const SV: Record<MessageKey, string> = {
   "site.systems.intro":
     "Ett jobb per system. TORA tar upphandlingar. RITA tar skatt. Samma inloggning överallt.",
   "site.systems.open": "Öppna",
+
+  "site.catalog.identity.purpose": "En inloggning till alla system.",
+  "site.catalog.identity.category": "Inloggning",
+  "site.catalog.identity.summary":
+    "Logga in en gång. Sedan är du inne i Kansli, TORA, RITA och de andra.",
+  "site.catalog.alva.purpose": "Kundens fel, anteckningar och mätvärden. Diagnosen kommer senare.",
+  "site.catalog.alva.category": "Verkstad",
+  "site.catalog.alva.summary":
+    "Tar emot vad kunden sa, vad ni antecknade och vad som mättes. Ställer ingen diagnos själv.",
+  "site.catalog.rita.purpose": "Letar skattebesparingar i era böcker.",
+  "site.catalog.rita.category": "Skatt",
+  "site.catalog.rita.summary":
+    "Läser bokslutet mot svenska skatteregler och lämnar förslag att kolla. Inte skatteråd.",
+  "site.catalog.tora.purpose": "Vilka upphandlingar just ert bolag kan ta.",
+  "site.catalog.tora.category": "Upphandling",
+  "site.catalog.tora.summary":
+    "Jämför bolaget mot upphandlingarna: krav, luckor, belopp, datum och nästa steg. Inte RITA.",
+  "site.catalog.irma.purpose": "Skicka ett avtal, se om det är läst och bekräftat.",
+  "site.catalog.irma.category": "Avtal",
+  "site.catalog.irma.summary": "Skickar avtalet. Visar om det är öppnat, signerat eller avvisat.",
+  "site.catalog.britt.purpose": "Det som hänt och behöver följas upp.",
+  "site.catalog.britt.category": "Uppföljning",
+  "site.catalog.britt.summary":
+    "Samlar saker som måste följas upp. En sak i taget, med nästa steg.",
+  "site.catalog.tyra.purpose": "Kund, bil, hjul och vad som ska göras härnäst.",
+  "site.catalog.tyra.category": "Däckhotell",
+  "site.catalog.tyra.summary":
+    "Håller ihop kund, fordon och däck. Visar när det är dags att byta eller hämta.",
+  "site.catalog.ekonomi.purpose": "Fakturor, moms och hur pengarna kom in.",
+  "site.catalog.ekonomi.category": "Ekonomi",
+  "site.catalog.ekonomi.summary":
+    "Skriver faktura, bokför moms och matchar inbetalningar när banken är ansluten. Ingen påhittad inbetalning.",
+  "site.catalog.creditae.purpose": "Kreditbedömning av motpart. Er slutsats, inget påhittat betyg.",
+  "site.catalog.creditae.category": "Kredit",
+  "site.catalog.creditae.summary":
+    "Tar emot organisationsnummer och er bedömning. Byråns rapport går via plattformens kreditkanal. Sätter inget kreditbetyg.",
 };

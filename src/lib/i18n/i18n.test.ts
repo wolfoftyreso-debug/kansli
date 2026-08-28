@@ -10,6 +10,7 @@ import {
 import {
   catalogs,
   alvaOutcome,
+  catalogField,
   brittObsStatus,
   brittSource,
   ekonomiConnSlot,
@@ -158,6 +159,10 @@ describe("locale registry", () => {
     expect(t("sv", "platform.gatewayPinging")).toBe("Anropar…");
     expect(t("en", "site.systems.title")).toBe("What each system does.");
     expect(t("sv", "site.systems.open")).toBe("Öppna");
+    expect(catalogField("en", "identity", "purpose")).toBe("One sign-in for every system.");
+    expect(catalogField("sv", "rita", "purpose")).toBe("Letar skattebesparingar i era böcker.");
+    expect(catalogField("en", "tyra", "category")).toBe("Tyre hotel");
+    expect(catalogField("sv", "alva", "category")).toBe("Verkstad");
     expect(t("sv", "chrome.signIn")).toBe("Logga in");
     expect(t("pl", "chrome.language")).toBe("Język");
     expect(t("de", "chrome.signIn")).toBe("Anmelden");

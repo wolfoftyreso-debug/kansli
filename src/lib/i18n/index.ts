@@ -19,6 +19,7 @@ export {
 export {
   catalogs,
   alvaOutcome,
+  catalogField,
   brittObsStatus,
   brittSource,
   ekonomiConnSlot,
