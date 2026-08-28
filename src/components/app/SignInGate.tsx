@@ -55,6 +55,7 @@ export function Field({
   multiline,
   large,
   type = "text",
+  inputMode,
 }: {
   name: string;
   label: string;
@@ -64,6 +65,7 @@ export function Field({
   multiline?: boolean;
   large?: boolean;
   type?: "text" | "email" | "tel";
+  inputMode?: "text" | "decimal" | "numeric" | "tel" | "email";
 }) {
   const cls = large
     ? "min-h-12 border border-line bg-paper px-4 py-3 text-base"
@@ -88,6 +90,7 @@ export function Field({
         <input
           name={name}
           type={type}
+          inputMode={inputMode}
           required={required}
           defaultValue={defaultValue}
           placeholder={placeholder}

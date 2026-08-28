@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb } from "@/components/app/ProductCrumb";
-import { SignInGate, Submit } from "@/components/app/SignInGate";
+import { Field, SignInGate, Submit } from "@/components/app/SignInGate";
 import { Button } from "@/components/tyra/Button";
 import { StatusBanner } from "@/components/tyra/Status";
 import { TaskRow } from "@/components/tyra/Rows";
@@ -167,31 +167,24 @@ export default async function TyraCasePage({
               <h2 className="text-lg font-semibold">Kund</h2>
               <input type="hidden" name="id" value={id} />
               <input type="hidden" name="customerId" value={card.customerId ?? ""} />
-              <label className="flex flex-col gap-1">
-                <span className="text-sm text-ink-soft">Namn</span>
-                <input
-                  name="customerName"
-                  required
-                  defaultValue={card.customerName ?? ""}
-                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
-                />
-              </label>
-              <label className="flex flex-col gap-1">
-                <span className="text-sm text-ink-soft">Telefon</span>
-                <input
-                  name="phone"
-                  defaultValue={card.customerPhone ?? ""}
-                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
-                />
-              </label>
-              <label className="flex flex-col gap-1">
-                <span className="text-sm text-ink-soft">E-post</span>
-                <input
-                  name="email"
-                  defaultValue={card.customerEmail ?? ""}
-                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
-                />
-              </label>
+              <Field
+                name="customerName"
+                label="Namn"
+                required
+                defaultValue={card.customerName ?? ""}
+              />
+              <Field
+                name="phone"
+                label="Telefon"
+                type="tel"
+                defaultValue={card.customerPhone ?? ""}
+              />
+              <Field
+                name="email"
+                label="E-post"
+                type="email"
+                defaultValue={card.customerEmail ?? ""}
+              />
               <Submit>Spara kund</Submit>
             </form>
 
@@ -204,16 +197,13 @@ export default async function TyraCasePage({
                 Verkstadens egen kod. Inte ett live-lager. Sätter hjulsetet som inlagrat.
               </p>
               <input type="hidden" name="id" value={id} />
-              <label className="flex flex-col gap-1">
-                <span className="text-sm text-ink-soft">Plats</span>
-                <input
-                  name="storageCode"
-                  required
-                  defaultValue={card.storageCode ?? ""}
-                  placeholder="A-12"
-                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
-                />
-              </label>
+              <Field
+                name="storageCode"
+                label="Plats"
+                required
+                defaultValue={card.storageCode ?? ""}
+                placeholder="A-12"
+              />
               <Submit>Spara lagerplats</Submit>
             </form>
           </section>
@@ -225,12 +215,7 @@ export default async function TyraCasePage({
             <h2 className="text-lg font-semibold">Verkstadsanteckning</h2>
             <p className="text-sm text-ink-soft">Bara ni. Inte kunden i hubben.</p>
             <input type="hidden" name="id" value={id} />
-            <textarea
-              name="notes"
-              rows={3}
-              defaultValue={card.advisorNotes}
-              className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
-            />
+            <Field name="notes" label="Anteckning" multiline defaultValue={card.advisorNotes} />
             <Submit>Spara anteckning</Submit>
           </form>
 
@@ -283,16 +268,14 @@ export default async function TyraCasePage({
             <form action={recordTyraInspection} className="grid gap-3 sm:grid-cols-4">
               <input type="hidden" name="id" value={id} />
               {INSPECTION_POSITIONS.map((position) => (
-                <label key={position} className="flex flex-col gap-1">
-                  <span className="text-sm text-ink-soft">{position} mm</span>
-                  <input
-                    name={`tread_${position}`}
-                    required
-                    inputMode="decimal"
-                    placeholder="5.5"
-                    className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
-                  />
-                </label>
+                <Field
+                  key={position}
+                  name={`tread_${position}`}
+                  label={`${position} mm`}
+                  required
+                  inputMode="decimal"
+                  placeholder="5.5"
+                />
               ))}
               <div className="sm:col-span-4">
                 <Submit>Spara inspektion</Submit>
@@ -308,61 +291,32 @@ export default async function TyraCasePage({
             </p>
             <form action={saveAndBookTyraQuote} className="grid gap-3 sm:grid-cols-2">
               <input type="hidden" name="id" value={id} />
-              <label className="flex flex-col gap-1 sm:col-span-2">
-                <span className="text-sm text-ink-soft">Rubrik</span>
-                <input
-                  name="title"
-                  defaultValue="Däck + montering"
-                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
-                />
-              </label>
-              <label className="flex flex-col gap-1">
-                <span className="text-sm text-ink-soft">Antal</span>
-                <input
-                  name="quantity"
-                  defaultValue="4"
-                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
-                />
-              </label>
-              <label className="flex flex-col gap-1">
-                <span className="text-sm text-ink-soft">Inköp per däck (kr)</span>
-                <input
-                  name="unitCostSek"
-                  defaultValue="1200"
-                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
-                />
-              </label>
-              <label className="flex flex-col gap-1">
-                <span className="text-sm text-ink-soft">Påslag %</span>
-                <input
-                  name="markupPercent"
-                  defaultValue="20"
-                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
-                />
-              </label>
-              <label className="flex flex-col gap-1">
-                <span className="text-sm text-ink-soft">Montering per däck (kr)</span>
-                <input
-                  name="installationSek"
-                  defaultValue="150"
-                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
-                />
-              </label>
-              <label className="flex flex-col gap-1">
-                <span className="text-sm text-ink-soft">Miljöavgift per däck (kr)</span>
-                <input
-                  name="environmentalSek"
-                  defaultValue="25"
-                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
-                />
-              </label>
-              <label className="flex flex-col gap-1 sm:col-span-2">
-                <span className="text-sm text-ink-soft">Intern notering</span>
-                <input
-                  name="note"
-                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
-                />
-              </label>
+              <div className="sm:col-span-2">
+                <Field name="title" label="Rubrik" defaultValue="Däck + montering" />
+              </div>
+              <Field name="quantity" label="Antal" defaultValue="4" inputMode="numeric" />
+              <Field
+                name="unitCostSek"
+                label="Inköp per däck (kr)"
+                defaultValue="1200"
+                inputMode="decimal"
+              />
+              <Field name="markupPercent" label="Påslag %" defaultValue="20" inputMode="decimal" />
+              <Field
+                name="installationSek"
+                label="Montering per däck (kr)"
+                defaultValue="150"
+                inputMode="decimal"
+              />
+              <Field
+                name="environmentalSek"
+                label="Miljöavgift per däck (kr)"
+                defaultValue="25"
+                inputMode="decimal"
+              />
+              <div className="sm:col-span-2">
+                <Field name="note" label="Intern notering" />
+              </div>
               <div className="flex flex-wrap gap-3 sm:col-span-2">
                 <Submit>Boka sälj</Submit>
                 <button
