@@ -9,6 +9,8 @@ import {
 } from "./locales.ts";
 import {
   catalogs,
+  brittObsStatus,
+  brittSource,
   ekonomiConnSlot,
   ekonomiInvoiceStatus,
   ekonomiPayStatus,
@@ -137,6 +139,12 @@ describe("locale registry", () => {
     expect(ritaCategory("sv", "vat")).toBe("Moms");
     expect(ritaFindingStatus("en", "warning")).toBe("Warning");
     expect(ritaFindingStatus("sv", "identified")).toBe("Identifierat");
+    expect(t("en", "britt.demoTitle")).toBe("Demonstration analysis");
+    expect(t("sv", "britt.demoRun")).toBe("Kör analys");
+    expect(brittSource("en", "rita")).toBe("RITA — tax findings");
+    expect(brittSource("sv", "tyra")).toBe("TYRA — däckhotell");
+    expect(brittObsStatus("en", "open")).toBe("Open");
+    expect(brittObsStatus("sv", "done")).toBe("Klar");
     expect(t("sv", "chrome.signIn")).toBe("Logga in");
     expect(t("pl", "chrome.language")).toBe("Język");
     expect(t("de", "chrome.signIn")).toBe("Anmelden");

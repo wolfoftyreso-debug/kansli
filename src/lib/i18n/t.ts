@@ -188,3 +188,13 @@ export function ritaFindingStatus(locale: Locale, status: string): string {
   const key = `rita.find.${status}` as MessageKey;
   return key in catalogs.en ? t(locale, key) : status;
 }
+
+export function brittSource(locale: Locale, source: string): string {
+  const key = `britt.source.${source}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : source.toUpperCase();
+}
+
+export function brittObsStatus(locale: Locale, status: string): string {
+  const key = `britt.status.${status}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : status;
+}

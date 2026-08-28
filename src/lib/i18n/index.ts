@@ -18,6 +18,8 @@ export {
 } from "./locales.ts";
 export {
   catalogs,
+  brittObsStatus,
+  brittSource,
   ekonomiConnSlot,
   ekonomiInvoiceStatus,
   ekonomiPayStatus,

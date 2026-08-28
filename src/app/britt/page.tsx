@@ -2,12 +2,12 @@ import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { EmptyState, Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
-import { observationHref, sourceLabel } from "@/lib/britt/links";
+import { observationHref } from "@/lib/britt/links";
 import { canRunDemoIntel, listFindings, listRuns, listSnapshots } from "@/lib/britt/intel";
 import { listObservations, type Observation } from "@/lib/britt/observations";
 import { readSession } from "@/lib/auth/session";
-import { formatSwedishDateTime } from "@/lib/format/datetime";
-import { t } from "@/lib/i18n";
+import { formatDateTime } from "@/lib/format/datetime";
+import { brittObsStatus, brittSource, t } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
 import { tryRuntime } from "@/lib/platform/page";
 import {
@@ -78,29 +78,25 @@ export default async function BrittPage({
         <>
           {demoIntel ? (
             <form action={runBrittIntel} className="rounded-xl border border-line bg-surface p-4">
-              <h2 className="text-lg font-semibold">Demonstrationsanalys</h2>
-              <p className="mt-1 text-sm text-ink-soft">
-                Jämför omsättning mot plan, kollar kassan och hur beroende ni är av er största kund
-                — med exempelsiffror för huset.
-              </p>
+              <h2 className="text-lg font-semibold">{t(locale, "britt.demoTitle")}</h2>
+              <p className="mt-1 text-sm text-ink-soft">{t(locale, "britt.demoBody")}</p>
               {runs[0] ? (
                 <p className="mt-1 text-xs text-faint">
-                  {runs[0].findingCount} fynd · {formatSwedishDateTime(runs[0].createdAt)}
+                  {t(locale, "britt.demoFindings", { count: runs[0].findingCount })} ·{" "}
+                  {formatDateTime(runs[0].createdAt, locale)}
                 </p>
               ) : null}
               <div className="mt-3">
-                <Submit>Kör analys</Submit>
+                <Submit>{t(locale, "britt.demoRun")}</Submit>
               </div>
             </form>
           ) : null}
 
           <section className="flex flex-col gap-3">
-            <h2 className="text-lg font-semibold">Fynd</h2>
+            <h2 className="text-lg font-semibold">{t(locale, "britt.findings")}</h2>
             {findings.length === 0 ? (
               <EmptyState>
-                {demoIntel
-                  ? "Inga fynd ännu. Kör demonstrationsanalysen."
-                  : "Inga fynd ännu. Observationer från TORA, RITA och IRMA hamnar här."}
+                {demoIntel ? t(locale, "britt.emptyDemo") : t(locale, "britt.emptyOwn")}
               </EmptyState>
             ) : (
               <ul className="flex flex-col gap-3">
@@ -130,46 +126,48 @@ export default async function BrittPage({
             action={recordObservation}
             className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
           >
-            <h2 className="text-lg font-semibold">Ny observation</h2>
-            <Field name="title" label="Rubrik" required />
-            <Field name="body" label="Anteckning" multiline />
-            <Submit>Spara</Submit>
+            <h2 className="text-lg font-semibold">{t(locale, "britt.newObs")}</h2>
+            <Field name="title" label={t(locale, "britt.title")} required />
+            <Field name="body" label={t(locale, "britt.note")} multiline />
+            <Submit>{t(locale, "britt.save")}</Submit>
           </form>
 
           <section className="flex flex-col gap-3">
-            <h2 className="text-lg font-semibold">Inkorgen</h2>
+            <h2 className="text-lg font-semibold">{t(locale, "britt.inbox")}</h2>
             <p className="flex flex-wrap gap-3 text-sm">
               <Link
                 href="/britt?status=open"
                 className="underline decoration-line underline-offset-4"
               >
-                Öppna
+                {t(locale, "britt.filterOpen")}
               </Link>
               <Link
                 href="/britt?status=done"
                 className="underline decoration-line underline-offset-4"
               >
-                Klara
+                {t(locale, "britt.filterDone")}
               </Link>
               <Link
                 href="/britt?status=all"
                 className="underline decoration-line underline-offset-4"
               >
-                Alla
+                {t(locale, "britt.filterAll")}
               </Link>
               <Link
                 href="/britt?status=open&mine=1"
                 className="underline decoration-line underline-offset-4"
               >
-                Mina
+                {t(locale, "britt.filterMine")}
               </Link>
             </p>
             {observations.length === 0 ? (
-              <EmptyState>Inga observationer i den här vyn.</EmptyState>
+              <EmptyState>{t(locale, "britt.emptyObs")}</EmptyState>
             ) : (
               groupedObservations(observations).map(([source, items]) => (
                 <div key={source} className="flex flex-col gap-2">
-                  <h3 className="text-sm font-medium text-ink-soft">{sourceLabel(source)}</h3>
+                  <h3 className="text-sm font-medium text-ink-soft">
+                    {brittSource(locale, source)}
+                  </h3>
                   <ul className="flex flex-col gap-3">
                     {items.map((item) => {
                       const href = observationHref(item.subjectRef);
@@ -188,32 +186,34 @@ export default async function BrittPage({
                                 href={href}
                                 className="underline decoration-line underline-offset-4"
                               >
-                                Öppna källan
+                                {t(locale, "britt.openSource")}
                               </Link>
                             </p>
                           ) : null}
                           <p className="mt-2 text-xs text-faint">
-                            {item.status}
-                            {item.assigneeRef ? " · tilldelad" : " · ingen ansvarig"}
+                            {brittObsStatus(locale, item.status)}
+                            {item.assigneeRef
+                              ? ` · ${t(locale, "britt.assigned")}`
+                              : ` · ${t(locale, "britt.unassigned")}`}
                             {" · "}
-                            {formatSwedishDateTime(item.createdAt)}
+                            {formatDateTime(item.createdAt, locale)}
                           </p>
                           <div className="mt-2 flex flex-wrap gap-2">
                             {item.status !== "done" ? (
                               <form action={closeObservation}>
                                 <input type="hidden" name="id" value={item.id} />
-                                <Submit>Markera klar</Submit>
+                                <Submit>{t(locale, "britt.markDone")}</Submit>
                               </form>
                             ) : (
                               <form action={reopenObservation}>
                                 <input type="hidden" name="id" value={item.id} />
-                                <Submit>Återöppna</Submit>
+                                <Submit>{t(locale, "britt.reopen")}</Submit>
                               </form>
                             )}
                             {!item.assigneeRef ? (
                               <form action={assignObservationToMe}>
                                 <input type="hidden" name="id" value={item.id} />
-                                <Submit>Ta den</Submit>
+                                <Submit>{t(locale, "britt.take")}</Submit>
                               </form>
                             ) : null}
                           </div>
@@ -229,18 +229,16 @@ export default async function BrittPage({
           {demoIntel && latest ? (
             <details className="rounded-xl border border-line bg-surface px-4 py-3">
               <summary className="cursor-pointer text-sm font-medium">
-                Visa demonstrationssiffror · {latest.period}
+                {t(locale, "britt.demoFigures", { period: latest.period })}
               </summary>
-              <p className="mt-2 text-sm text-ink-soft">
-                Seed för Exempelbolaget. Inte Fortnox. Inte livekassa.
-              </p>
+              <p className="mt-2 text-sm text-ink-soft">{t(locale, "britt.demoSeed")}</p>
               <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                <MetricCard label="Omsättning" value={kr(latest.revenue)} />
-                <MetricCard label="Plan" value={kr(latest.planRevenue)} />
-                <MetricCard label="Kassa" value={kr(latest.cash)} />
-                <MetricCard label="Utgifter per månad" value={kr(latest.monthlyBurn)} />
+                <MetricCard label={t(locale, "britt.metric.revenue")} value={kr(latest.revenue)} />
+                <MetricCard label={t(locale, "britt.metric.plan")} value={kr(latest.planRevenue)} />
+                <MetricCard label={t(locale, "britt.metric.cash")} value={kr(latest.cash)} />
+                <MetricCard label={t(locale, "britt.metric.burn")} value={kr(latest.monthlyBurn)} />
                 <MetricCard
-                  label="Största kund"
+                  label={t(locale, "britt.metric.top")}
                   value={`${Math.round(latest.topCustomerShare * 100)} %`}
                 />
               </div>
