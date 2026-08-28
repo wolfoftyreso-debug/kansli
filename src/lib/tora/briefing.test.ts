@@ -5,8 +5,12 @@ import { capabilityLabel, requirementStatusText } from "./labels.ts";
 
 describe("company briefing", () => {
   it("names what Tyresö El can do and which contract they already hold", () => {
-    const briefing = buildCompanyBriefing(demoCompany);
+    const briefing = buildCompanyBriefing(demoCompany, "en");
     expect(briefing.name).toBe("Tyresö El & Installation AB");
+    expect(briefing.facts.some((fact) => fact.label === "Size")).toBe(true);
+    expect(
+      buildCompanyBriefing(demoCompany, "sv").facts.some((fact) => fact.label === "Storlek"),
+    ).toBe(true);
     expect(briefing.facts.some((fact) => fact.value.includes("Elinstallation"))).toBe(true);
     expect(briefing.facts.some((fact) => fact.value.includes("Tyresö"))).toBe(true);
     expect(briefing.frameworks.some((item) => /Tyresö Bostäder/.test(item.buyer))).toBe(true);

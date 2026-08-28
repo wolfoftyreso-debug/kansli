@@ -122,6 +122,10 @@ describe("locale registry", () => {
     expect(t("sv", "tora.cal.thisWeek")).toBe("Den här veckan");
     expect(toraCalKind("en", "deadline")).toBe("Bid deadline");
     expect(toraCalKind("sv", "deadline")).toBe("Sista anbudsdag");
+    expect(t("en", "tora.doc.whyBid")).toBe("Why you may bid");
+    expect(t("sv", "tora.doc.requirements")).toBe("Krav mot ert bolag");
+    expect(t("en", "tora.brief.size")).toBe("Size");
+    expect(t("sv", "tyra.hub.kicker")).toBe("Kundhub");
     expect(t("sv", "chrome.signIn")).toBe("Logga in");
     expect(t("pl", "chrome.language")).toBe("Język");
     expect(t("de", "chrome.signIn")).toBe("Anmelden");

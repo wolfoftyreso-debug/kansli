@@ -37,7 +37,7 @@ export default async function ToraPage() {
     usingDemoCompany,
   });
   const market = loadToraMarket(tier, company);
-  const briefing = buildCompanyBriefing(company);
+  const briefing = buildCompanyBriefing(company, locale);
   const { summary } = market;
   const snapshots =
     session?.org?.ref && runtime ? await listSnapshots(runtime.pool, session.org.ref) : [];

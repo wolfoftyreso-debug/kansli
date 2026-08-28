@@ -1,4 +1,5 @@
 import { demoCompany, demoGraph, type Company } from "@pixdrift/tora";
+import { DEFAULT_LOCALE, t, type Locale } from "../i18n";
 import {
   areaLabel,
   capabilityLabel,
@@ -16,27 +17,43 @@ export type CompanyBriefing = {
   references: { customer: string; detail: string }[];
 };
 
-export function buildCompanyBriefing(company: Company): CompanyBriefing {
+export function buildCompanyBriefing(
+  company: Company,
+  locale: Locale = DEFAULT_LOCALE,
+): CompanyBriefing {
   const size = [
-    company.employees != null ? `${company.employees} anställda` : null,
-    company.annualRevenueSek != null ? `${sek(company.annualRevenueSek)} i omsättning` : null,
+    company.employees != null
+      ? t(locale, "tora.brief.employees", { count: company.employees })
+      : null,
+    company.annualRevenueSek != null
+      ? t(locale, "tora.brief.revenue", { amount: sek(company.annualRevenueSek) })
+      : null,
   ]
     .filter(Boolean)
     .join(" · ");
 
   const facts = [
-    size ? { label: "Storlek", value: size } : null,
+    size ? { label: t(locale, "tora.brief.size"), value: size } : null,
     company.capabilities.length
-      ? { label: "Ni kan", value: joinLabels(company.capabilities, capabilityLabel) }
+      ? {
+          label: t(locale, "tora.brief.can"),
+          value: joinLabels(company.capabilities, capabilityLabel),
+        }
       : null,
     company.servesAreas.length
-      ? { label: "Ni jobbar i", value: joinLabels(company.servesAreas, areaLabel) }
+      ? { label: t(locale, "tora.brief.areas"), value: joinLabels(company.servesAreas, areaLabel) }
       : null,
     company.certifications.length
-      ? { label: "Certifikat", value: joinLabels(company.certifications, certificationLabel) }
+      ? {
+          label: t(locale, "tora.brief.certs"),
+          value: joinLabels(company.certifications, certificationLabel),
+        }
       : null,
     company.registrations.length
-      ? { label: "Registrerat", value: joinLabels(company.registrations, registrationLabel) }
+      ? {
+          label: t(locale, "tora.brief.regs"),
+          value: joinLabels(company.registrations, registrationLabel),
+        }
       : null,
   ].filter((row): row is { label: string; value: string } => row != null);
 
@@ -49,11 +66,13 @@ export function buildCompanyBriefing(company: Company): CompanyBriefing {
     .map((contract) => {
       const buyer =
         demoGraph.organizations.find((org) => org.id === contract.organizationId)?.name ??
-        "Offentlig köpare";
+        t(locale, "tora.brief.publicBuyer");
       return {
         title: contract.title,
         buyer,
-        detail: `Ni är etta på avtalet${contract.valueSek ? ` · ${sek(contract.valueSek)}` : ""}.`,
+        detail: contract.valueSek
+          ? `${t(locale, "tora.brief.rankOne")} · ${sek(contract.valueSek)}`
+          : t(locale, "tora.brief.rankOne"),
       };
     });
 
@@ -70,8 +89,8 @@ export function buildCompanyBriefing(company: Company): CompanyBriefing {
 
   const headline =
     company.id === demoCompany.id
-      ? `TORA räknar på ${company.name}: vad ni kan ta, vad som saknas, och vad ni ska göra härnäst.`
-      : `TORA räknar på ${company.name} mot samma marknad.`;
+      ? t(locale, "tora.brief.demoHeadline", { name: company.name })
+      : t(locale, "tora.brief.savedHeadline", { name: company.name });
 
   return { name: company.name, headline, facts, frameworks, references };
 }
