@@ -50,6 +50,8 @@ describe("locale registry", () => {
     expect(t("sv", "ops.kicker")).toBe("Sambandscentral");
     expect(t("en", "ready.heading")).toBe("First customer");
     expect(t("sv", "ready.heading")).toBe("Första kunden");
+    expect(t("en", "events.heading")).toBe("Event log");
+    expect(t("sv", "events.heading")).toBe("Händelselogg");
     expect(t("sv", "chrome.signIn")).toBe("Logga in");
     expect(t("pl", "chrome.language")).toBe("Język");
     expect(t("de", "chrome.signIn")).toBe("Anmelden");

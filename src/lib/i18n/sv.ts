@@ -724,4 +724,13 @@ export const SV: Record<MessageKey, string> = {
   "ready.gate.honesty.title": "Kunden skriver under vad produkten inte är",
   "ready.gate.honesty.detail":
     "Ingen kvalificerad e-signatur, inga live-däckpriser, ingen Visma eller Fortnox, ingen ALVA-diagnos, inget kreditbetyg från CREDITAE. SMS vid sälj bara när telefonen är kopplad och ni sagt ja. TYRA-påminnelser skickas inte. Stripe och Revolut bara när de är inkopplade.",
+
+  "events.metaTitle": "Händelser — Pixdrift",
+  "events.metaDescription": "Allt som hänt i era system, i tidsordning.",
+  "events.heading": "Händelselogg",
+  "events.lead": "Listan fylls bara på — inget ändras eller tas bort i efterhand.",
+  "events.notice": "Du ser händelser för det företag du är inloggad som.",
+  "events.signInTitle": "Logga in för att läsa loggen",
+  "events.signInBody": "Händelserna tillhör ert företag. Logga in för att se dem.",
+  "events.empty": "Inga händelser ännu. De dyker upp när ni börjar använda systemen.",
 };

@@ -738,6 +738,15 @@ export const EN = {
   "ready.gate.honesty.title": "The customer signs what the product is not",
   "ready.gate.honesty.detail":
     "No qualified e-signature, no live tyre prices, no Visma or Fortnox, no ALVA diagnosis, no credit score from CREDITAE. Sales SMS only when the phone is connected and you have said yes. TYRA reminders are not sent. Stripe and Revolut only when they are wired.",
+
+  "events.metaTitle": "Events — Pixdrift",
+  "events.metaDescription": "Everything that happened in your systems, in time order.",
+  "events.heading": "Event log",
+  "events.lead": "The list only grows — nothing is changed or removed afterwards.",
+  "events.notice": "You see events for the company you are signed in as.",
+  "events.signInTitle": "Sign in to read the log",
+  "events.signInBody": "The events belong to your company. Sign in to see them.",
+  "events.empty": "No events yet. They appear when you start using the systems.",
 } as const;
 
 export type MessageKey = keyof typeof EN;
