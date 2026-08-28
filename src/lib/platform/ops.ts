@@ -4,6 +4,7 @@ import { metricsSnapshot } from "@pixdrift/mcp-core";
 import { SYSTEM_MODULES } from "@pixdrift/systems";
 import { isHardenedRuntime } from "../auth/secrets.ts";
 import { revolutConfigState } from "../ekonomi/revolut/config.ts";
+import { DEFAULT_LOCALE, type Locale } from "../i18n/index.ts";
 import { isHouseSession } from "../kansli/intakes.ts";
 import { ritaEngineSnapshot } from "../rita/resolve-engine.ts";
 import { gatewaySnapshot } from "./ai.ts";
@@ -326,7 +327,7 @@ async function loadIdentity(
 
 export async function loadOpsSnapshot(
   pool: pg.Pool,
-  input: { orgRef: string; orgName?: string | null; scope?: OpsScope },
+  input: { orgRef: string; orgName?: string | null; scope?: OpsScope; locale?: Locale },
 ): Promise<OpsSnapshot> {
   const scope = input.scope ?? opsScopeFor(input.orgRef);
   const status = hubStatus();
@@ -348,6 +349,7 @@ export async function loadOpsSnapshot(
     scope,
     blockedGates,
     databaseDown: status.database === "down",
+    locale: input.locale ?? DEFAULT_LOCALE,
   });
   const [queues, lastErrors] = await Promise.all([
     loadOpsQueues(pool, scope, input.orgRef),

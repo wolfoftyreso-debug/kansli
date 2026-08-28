@@ -83,3 +83,18 @@ export function familyPartyLabel(locale: Locale, id: string): string {
   if (id === "platform.events") return t(locale, "family.party.events");
   return FAMILY_SYSTEMS.find((system) => system.id === id)?.name ?? id;
 }
+
+export function opsSmsKindLabel(locale: Locale, kind: string): string {
+  const key = `ops.sms.kind.${kind}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : kind;
+}
+
+export function opsQueueStatus(locale: Locale, status: string): string {
+  const key = `ops.status.${status}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : status;
+}
+
+export function opsNoticeLevel(locale: Locale, level: string): string {
+  const key = `ops.level.${level}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : level;
+}

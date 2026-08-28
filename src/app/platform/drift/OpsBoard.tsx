@@ -4,10 +4,18 @@ import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 import { SYSTEM_MODULES } from "@pixdrift/systems";
 import { formatSek } from "@/lib/ekonomi/money";
-import { FAMILY_STATUS_LABEL } from "@/lib/platform/family";
+import {
+  DEFAULT_LOCALE,
+  familyStatusLabel,
+  localeTag,
+  opsNoticeLevel,
+  opsQueueStatus,
+  opsSmsKindLabel,
+  t,
+  type Locale,
+} from "@/lib/i18n";
 import type { OpsDebugLookup, OpsQueueCounts } from "@/lib/platform/ops-debug-view";
 import {
-  OPS_SMS_KIND_LABEL,
   seriesChangePct,
   seriesTotal,
   type OpsNotice,
@@ -16,28 +24,32 @@ import {
 } from "@/lib/platform/ops-view";
 import { useNarrow } from "@/components/app/useNarrow";
 
-function when(value: string | null): string {
+function when(value: string | null, locale: Locale): string {
   if (!value) return "—";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleString("sv-SE");
+  return date.toLocaleString(localeTag(locale));
 }
 
-function hourLabel(value: string): string {
-  return new Date(value).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
+function hourLabel(value: string, locale: Locale): string {
+  return new Date(value).toLocaleTimeString(localeTag(locale), {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
-function numberSv(value: number | null | undefined): string {
+function formatNumber(value: number | null | undefined, locale: Locale): string {
   if (value == null) return "—";
-  return value.toLocaleString("sv-SE");
+  return value.toLocaleString(localeTag(locale));
 }
 
 function changeCopy(
+  locale: Locale,
   current: number,
   previous: number,
 ): { text: string; tone: "up" | "down" | "flat" } {
   const pct = seriesChangePct(current, previous);
-  if (pct == null || pct === 0) return { text: "samma som förra dygnet", tone: "flat" };
+  if (pct == null || pct === 0) return { text: t(locale, "ops.change.same"), tone: "flat" };
   const rounded = Math.abs(pct).toFixed(0);
   return {
     text: `${pct > 0 ? "+" : "−"}${rounded} %`,
@@ -45,7 +57,16 @@ function changeCopy(
   };
 }
 
-function ActivityChart({ points }: { points: OpsPoint[] }) {
+function queueHint(locale: Locale, counts: OpsQueueCounts): string {
+  if (counts.failed + counts.blocked > 0) {
+    return t(locale, "ops.queue.stopped", { count: counts.failed + counts.blocked });
+  }
+  if (counts.pending > 0) return t(locale, "ops.queue.pending", { count: counts.pending });
+  if (counts.sent > 0) return t(locale, "ops.queue.sent", { count: counts.sent });
+  return t(locale, "ops.queue.empty");
+}
+
+function ActivityChart({ points, locale }: { points: OpsPoint[]; locale: Locale }) {
   const [hover, setHover] = useState<number | null>(null);
   const width = 720;
   const height = 220;
@@ -78,15 +99,15 @@ function ActivityChart({ points }: { points: OpsPoint[] }) {
         viewBox={`0 0 ${width} ${height}`}
         className="h-44 w-full sm:h-52"
         role="img"
-        aria-label="Händelser de senaste 24 timmarna"
+        aria-label={t(locale, "ops.chartAria")}
         onMouseLeave={() => setHover(null)}
         onMouseMove={(event) => {
           const box = event.currentTarget.getBoundingClientRect();
           const svgX = ((event.clientX - box.left) / box.width) * width;
-          const t = (svgX - pad.left) / innerW;
+          const frac = (svgX - pad.left) / innerW;
           const index = Math.min(
             points.length - 1,
-            Math.max(0, Math.round(t * Math.max(points.length - 1, 0))),
+            Math.max(0, Math.round(frac * Math.max(points.length - 1, 0))),
           );
           setHover(index);
         }}
@@ -129,7 +150,7 @@ function ActivityChart({ points }: { points: OpsPoint[] }) {
             className="fill-faint"
             fontSize={tickSize}
           >
-            {hourLabel(points[index].at)}
+            {hourLabel(points[index].at, locale)}
           </text>
         ))}
         {focus != null && focusPoint ? (
@@ -154,28 +175,14 @@ function ActivityChart({ points }: { points: OpsPoint[] }) {
             transform: "translateX(-50%)",
           }}
         >
-          <p className="font-mono text-xs text-faint">{hourLabel(focusPoint.at)}</p>
-          <p className="text-sm font-medium tabular-nums">{numberSv(focusPoint.count)} händelser</p>
+          <p className="font-mono text-xs text-faint">{hourLabel(focusPoint.at, locale)}</p>
+          <p className="text-sm font-medium tabular-nums">
+            {t(locale, "ops.chartEvents", { count: formatNumber(focusPoint.count, locale) })}
+          </p>
         </div>
       ) : null}
     </div>
   );
-}
-
-const QUEUE_STATUS: Record<string, string> = {
-  PENDING: "Väntar",
-  SENT: "Skickat",
-  FAILED: "Misslyckades",
-  BLOCKED: "Stoppat",
-};
-
-function queueHint(counts: OpsQueueCounts): string {
-  if (counts.failed + counts.blocked > 0) {
-    return `${counts.failed + counts.blocked} stoppade`;
-  }
-  if (counts.pending > 0) return `${counts.pending} väntar`;
-  if (counts.sent > 0) return `${counts.sent} skickade`;
-  return "tom kö";
 }
 
 function StatusDot({ ok }: { ok: boolean }) {
@@ -224,7 +231,7 @@ function MetricCell({
   );
 }
 
-function DeskNotice({ notice }: { notice: OpsNotice }) {
+function DeskNotice({ notice, locale }: { notice: OpsNotice; locale: Locale }) {
   const box =
     notice.level === "larm"
       ? "border-line-strong bg-accent-soft"
@@ -233,7 +240,7 @@ function DeskNotice({ notice }: { notice: OpsNotice }) {
         : "border-line bg-accent-soft";
   return (
     <div className={`border px-4 py-3 ${box}`}>
-      <p className="pd-label">{notice.level}</p>
+      <p className="pd-label">{opsNoticeLevel(locale, notice.level)}</p>
       <p className="mt-1 text-base font-medium">{notice.title}</p>
       <p className="mt-1 text-sm text-ink-soft">{notice.detail}</p>
       {notice.href ? (
@@ -241,35 +248,37 @@ function DeskNotice({ notice }: { notice: OpsNotice }) {
           href={notice.href}
           className="mt-3 inline-flex min-h-11 items-center text-sm underline decoration-line underline-offset-4"
         >
-          {notice.hrefLabel ?? "Öppna"}
+          {notice.hrefLabel ?? t(locale, "ops.open")}
         </Link>
       ) : null}
     </div>
   );
 }
 
-function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
+function OpsView({ snapshot, locale }: { snapshot: OpsSnapshot; locale: Locale }) {
   const statusById = new Map(SYSTEM_MODULES.map((module) => [module.id, module.status]));
   const last24 = seriesTotal(snapshot.series);
-  const change = changeCopy(last24, snapshot.previousWindow);
+  const change = changeCopy(locale, last24, snapshot.previousWindow);
   const ready = snapshot.readiness.gates.filter((gate) => gate.state === "ready").length;
   const blocked = snapshot.readiness.gates.filter((gate) => gate.state === "blocked").length;
   const extra = snapshot.tables.filter((table) => !table.expected);
   const missing = snapshot.tables.filter((table) => table.expected && table.rows === null);
   const openOre = snapshot.ledger.notDueOre + snapshot.ledger.overdueOre;
   const alarmsOn = snapshot.sms.routes.filter((route) => route.enabled).length;
+  const changeHint =
+    change.tone === "flat" ? change.text : `${change.text}${t(locale, "ops.change.vsPrev")}`;
 
   return (
     <>
       {snapshot.notices.length > 0 ? (
-        <section className="flex flex-col gap-2" aria-label="Notiser">
+        <section className="flex flex-col gap-2" aria-label={t(locale, "ops.notices")}>
           {snapshot.notices.map((notice) => (
-            <DeskNotice key={notice.id} notice={notice} />
+            <DeskNotice key={notice.id} notice={notice} locale={locale} />
           ))}
         </section>
       ) : (
         <p className="border border-line bg-accent-soft px-4 py-3 text-sm text-ink-soft">
-          Inget larm just nu. Reskontra, ärenden och rutter syns nedan.
+          {t(locale, "ops.noAlarm")}
         </p>
       )}
 
@@ -277,68 +286,77 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3">
           <MetricCell
             selected
-            label="Händelser"
-            value={numberSv(last24)}
-            hint={`24 timmar · ${change.text}${change.tone === "flat" ? "" : " mot förra dygnet"}`}
+            label={t(locale, "ops.metric.events")}
+            value={formatNumber(last24, locale)}
+            hint={t(locale, "ops.hint.hours", { change: changeHint })}
             hintTone={change.tone}
           />
           <MetricCell
-            label="Förfallet"
+            label={t(locale, "ops.metric.overdue")}
             value={formatSek(snapshot.ledger.overdueOre)}
             hint={
               snapshot.ledger.overdueCount === 0
-                ? "inget förfallet"
-                : `${snapshot.ledger.overdueCount} ${snapshot.ledger.overdueCount === 1 ? "faktura" : "fakturor"}`
+                ? t(locale, "ops.overdue.none")
+                : snapshot.ledger.overdueCount === 1
+                  ? t(locale, "ops.overdue.one")
+                  : t(locale, "ops.overdue.many", { count: snapshot.ledger.overdueCount })
             }
             hintTone={snapshot.ledger.overdueOre > 0 ? "down" : "flat"}
           />
           <MetricCell
-            label="Reskontra"
+            label={t(locale, "ops.metric.ledger")}
             value={formatSek(openOre)}
-            hint={`${snapshot.ledger.openCount} öppna fakturor`}
+            hint={t(locale, "ops.ledger.open", { count: snapshot.ledger.openCount })}
           />
           <MetricCell
-            label="Ärenden"
-            value={numberSv(snapshot.support.open)}
+            label={t(locale, "ops.metric.cases")}
+            value={formatNumber(snapshot.support.open, locale)}
             hint={
               snapshot.support.open === 0
-                ? "inget öppet"
-                : `${snapshot.support.cases} TYRA · ${snapshot.support.tasks} Kansli`
+                ? t(locale, "ops.cases.none")
+                : t(locale, "ops.cases.split", {
+                    cases: snapshot.support.cases,
+                    tasks: snapshot.support.tasks,
+                  })
             }
           />
           <MetricCell
-            label="Larm"
+            label={t(locale, "ops.metric.alarms")}
             value={`${alarmsOn}/${snapshot.sms.routes.length}`}
-            hint={snapshot.sms.vendor ? "telefon kopplad" : "telefon saknas"}
+            hint={snapshot.sms.vendor ? t(locale, "ops.alarms.on") : t(locale, "ops.alarms.off")}
           />
           <MetricCell
-            label="Beredskap"
+            label={t(locale, "ops.metric.readiness")}
             value={`${ready}/${snapshot.readiness.gates.length}`}
-            hint={blocked === 0 ? "inget blockerat" : `${blocked} blockerade`}
+            hint={
+              blocked === 0
+                ? t(locale, "ops.readiness.none")
+                : t(locale, "ops.readiness.blocked", { count: blocked })
+            }
           />
         </div>
         <div className="border-t border-line px-4 py-5">
           <div className="mb-3 flex items-baseline justify-between gap-3">
-            <p className="pd-label">Senaste dygnet</p>
-            <p className="pd-label">24 timmar</p>
+            <p className="pd-label">{t(locale, "ops.last24h")}</p>
+            <p className="pd-label">{t(locale, "ops.hours24")}</p>
           </div>
-          <ActivityChart points={snapshot.series} />
+          <ActivityChart points={snapshot.series} locale={locale} />
         </div>
       </section>
 
       <section className="grid gap-8 lg:grid-cols-2">
         <div>
           <div className="flex items-baseline justify-between gap-3 border-b border-line pb-2">
-            <h2 className="text-lg font-semibold">Reskontra</h2>
+            <h2 className="text-lg font-semibold">{t(locale, "ops.ledger")}</h2>
             <Link
               href="/ekonomi"
               className="min-h-11 text-sm underline decoration-line underline-offset-4"
             >
-              Boken
+              {t(locale, "ops.book")}
             </Link>
           </div>
           {snapshot.ledger.overdue.length === 0 ? (
-            <p className="py-3 text-sm text-muted">Inget förfallet i det här fönstret.</p>
+            <p className="py-3 text-sm text-muted">{t(locale, "ops.ledger.empty")}</p>
           ) : (
             <ul>
               {snapshot.ledger.overdue.map((invoice) => (
@@ -353,7 +371,9 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
                     <p className="shrink-0 text-sm tabular-nums">{formatSek(invoice.openOre)}</p>
                   </div>
                   <p className="mt-1 font-mono text-xs text-faint">
-                    Förföll {invoice.dueAt ? when(invoice.dueAt) : "—"}
+                    {t(locale, "ops.due", {
+                      when: invoice.dueAt ? when(invoice.dueAt, locale) : "—",
+                    })}
                   </p>
                 </li>
               ))}
@@ -362,16 +382,16 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
         </div>
         <div>
           <div className="flex items-baseline justify-between gap-3 border-b border-line pb-2">
-            <h2 className="text-lg font-semibold">Ärenden</h2>
+            <h2 className="text-lg font-semibold">{t(locale, "ops.cases")}</h2>
             <Link
               href="/kansli"
               className="min-h-11 text-sm underline decoration-line underline-offset-4"
             >
-              Kansli
+              {t(locale, "ops.kansli")}
             </Link>
           </div>
           {snapshot.support.items.length === 0 ? (
-            <p className="py-3 text-sm text-muted">Inga öppna ärenden i det här fönstret.</p>
+            <p className="py-3 text-sm text-muted">{t(locale, "ops.cases.empty")}</p>
           ) : (
             <ul>
               {snapshot.support.items.map((item) => (
@@ -383,7 +403,7 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
                     {item.title}
                   </Link>
                   <p className="mt-1 text-xs text-faint">
-                    {item.detail} · {when(item.at)}
+                    {item.detail} · {when(item.at, locale)}
                   </p>
                 </li>
               ))}
@@ -395,37 +415,40 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
       <section className="border border-line bg-surface">
         <div className="grid sm:grid-cols-3">
           <MetricCell
-            label="Sälj-SMS"
-            value={numberSv(
+            label={t(locale, "ops.queue.sales")}
+            value={formatNumber(
               snapshot.queues.sales.pending +
                 snapshot.queues.sales.failed +
                 snapshot.queues.sales.blocked,
+              locale,
             )}
-            hint={queueHint(snapshot.queues.sales)}
+            hint={queueHint(locale, snapshot.queues.sales)}
             hintTone={
               snapshot.queues.sales.failed + snapshot.queues.sales.blocked > 0 ? "down" : "flat"
             }
           />
           <MetricCell
-            label="Driftslarm"
-            value={numberSv(
+            label={t(locale, "ops.queue.alarms")}
+            value={formatNumber(
               snapshot.queues.alarms.pending +
                 snapshot.queues.alarms.failed +
                 snapshot.queues.alarms.blocked,
+              locale,
             )}
-            hint={queueHint(snapshot.queues.alarms)}
+            hint={queueHint(locale, snapshot.queues.alarms)}
             hintTone={
               snapshot.queues.alarms.failed + snapshot.queues.alarms.blocked > 0 ? "down" : "flat"
             }
           />
           <MetricCell
-            label="Däckpåminnelser"
-            value={numberSv(
+            label={t(locale, "ops.queue.reminders")}
+            value={formatNumber(
               snapshot.queues.reminders.pending +
                 snapshot.queues.reminders.failed +
                 snapshot.queues.reminders.blocked,
+              locale,
             )}
-            hint={queueHint(snapshot.queues.reminders)}
+            hint={queueHint(locale, snapshot.queues.reminders)}
             hintTone={
               snapshot.queues.reminders.failed + snapshot.queues.reminders.blocked > 0
                 ? "down"
@@ -437,18 +460,18 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
 
       <section>
         <div className="flex items-baseline justify-between gap-3 border-b border-line pb-2">
-          <h2 className="text-lg font-semibold">Senaste fel</h2>
-          <p className="pd-label">Misslyckat och stoppat</p>
+          <h2 className="text-lg font-semibold">{t(locale, "ops.lastErrors")}</h2>
+          <p className="pd-label">{t(locale, "ops.lastErrorsHint")}</p>
         </div>
         {snapshot.lastErrors.length === 0 ? (
-          <p className="py-3 text-sm text-muted">Inga fel i det här fönstret.</p>
+          <p className="py-3 text-sm text-muted">{t(locale, "ops.lastErrors.empty")}</p>
         ) : (
           <ul>
             {snapshot.lastErrors.slice(0, 8).map((item) => (
               <li key={`${item.system}-${item.id}`} className="border-b border-line py-3">
                 <div className="flex items-baseline justify-between gap-3">
                   <p className="text-sm">{item.headline ?? item.kind}</p>
-                  <p className="shrink-0 font-mono text-xs text-faint">{when(item.at)}</p>
+                  <p className="shrink-0 font-mono text-xs text-faint">{when(item.at, locale)}</p>
                 </div>
                 <p className="mt-1 font-mono text-xs text-accent">{item.kind}</p>
                 {item.requestId ? (
@@ -462,54 +485,61 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
 
       <section className="grid gap-px border border-line bg-line sm:grid-cols-3">
         <div className="bg-surface px-4 py-4">
-          <p className="pd-label">Postgres</p>
+          <p className="pd-label">{t(locale, "ops.postgres")}</p>
           <p className="mt-2 flex items-center gap-2 text-sm font-medium">
             <StatusDot ok={snapshot.health.database === "up"} />
-            {snapshot.health.database === "up" ? "Svarar" : "Nere"}
+            {snapshot.health.database === "up" ? t(locale, "ops.up") : t(locale, "ops.down")}
           </p>
         </div>
         <div className="bg-surface px-4 py-4">
-          <p className="pd-label">RITA</p>
+          <p className="pd-label">{t(locale, "ops.rita")}</p>
           <p className="mt-2 flex items-center gap-2 text-sm font-medium">
             <StatusDot ok={snapshot.health.rita.available} />
             {snapshot.health.rita.available
               ? snapshot.health.rita.modelReady
-                ? "regler + modell"
-                : "bara regler"
-              : "saknas"}
+                ? t(locale, "ops.rita.rulesModel")
+                : t(locale, "ops.rita.rulesOnly")
+              : t(locale, "ops.rita.missing")}
           </p>
         </div>
         <div className="bg-surface px-4 py-4">
-          <p className="pd-label">Anslutningar</p>
+          <p className="pd-label">{t(locale, "ops.connections")}</p>
           <p className="mt-2 text-sm font-medium">
-            Gateway {snapshot.health.gateway.configured ? snapshot.health.gateway.auth : "saknas"}
+            {snapshot.health.gateway.configured
+              ? t(locale, "ops.gateway", { auth: snapshot.health.gateway.auth })
+              : t(locale, "ops.gateway.missing")}
             {" · "}
-            SMS {snapshot.health.sms ? "på" : "av"}
+            {t(locale, "ops.sms")}{" "}
+            {snapshot.health.sms ? t(locale, "ops.on") : t(locale, "ops.off")}
             {" · "}
-            Tal {snapshot.health.tts ? "på" : "av"}
+            {t(locale, "ops.speech")}{" "}
+            {snapshot.health.tts ? t(locale, "ops.on") : t(locale, "ops.off")}
             {" · "}
-            Kredit {snapshot.health.credit ? "på" : "av"}
+            {t(locale, "ops.credit")}{" "}
+            {snapshot.health.credit ? t(locale, "ops.on") : t(locale, "ops.off")}
             {" · "}
-            Webbdata {snapshot.health.webintel ? "på" : "av"}
+            {t(locale, "ops.webdata")}{" "}
+            {snapshot.health.webintel ? t(locale, "ops.on") : t(locale, "ops.off")}
             {" · "}
-            Revolut{" "}
-            {snapshot.health.revolut.configured ? snapshot.health.revolut.environment : "av"}
+            {t(locale, "ops.revolut")}{" "}
+            {snapshot.health.revolut.configured
+              ? snapshot.health.revolut.environment
+              : t(locale, "ops.off")}
           </p>
         </div>
       </section>
 
       <section>
         <div className="flex items-baseline justify-between gap-3 border-b border-line pb-2">
-          <h2 className="text-lg font-semibold">Channels</h2>
+          <h2 className="text-lg font-semibold">{t(locale, "ops.channels")}</h2>
           <p className="pd-label">
-            {snapshot.health.channels.filter((item) => item.configured).length} on ·{" "}
-            {snapshot.health.channels.filter((item) => !item.configured).length} off
+            {t(locale, "ops.channels.count", {
+              on: snapshot.health.channels.filter((item) => item.configured).length,
+              off: snapshot.health.channels.filter((item) => !item.configured).length,
+            })}
           </p>
         </div>
-        <p className="mt-2 text-xs text-muted">
-          Environment variable names only. Values are never shown. Live probes stay in{" "}
-          <span className="font-mono">pnpm ops:vendors</span>.
-        </p>
+        <p className="mt-2 text-xs text-muted">{t(locale, "ops.channels.hint")}</p>
         <ul className="mt-3">
           {snapshot.health.channels.map((channel) => (
             <li
@@ -533,8 +563,8 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
       <section className="grid gap-8 lg:grid-cols-2">
         <div>
           <div className="flex items-baseline justify-between gap-3 border-b border-line pb-2">
-            <h2 className="text-lg font-semibold">Rum</h2>
-            <p className="pd-label">Händelser</p>
+            <h2 className="text-lg font-semibold">{t(locale, "ops.rooms")}</h2>
+            <p className="pd-label">{t(locale, "ops.roomEvents")}</p>
           </div>
           <ul>
             {snapshot.events.map((item) => (
@@ -545,28 +575,28 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
                 <div>
                   <p className="text-sm">{item.system}</p>
                   <p className="text-xs text-faint">
-                    {FAMILY_STATUS_LABEL[statusById.get(item.system as never) ?? "pilot"] ?? ""}
+                    {familyStatusLabel(locale, statusById.get(item.system as never) ?? "pilot")}
                   </p>
                 </div>
-                <p className="text-sm tabular-nums">{numberSv(item.count)}</p>
+                <p className="text-sm tabular-nums">{formatNumber(item.count, locale)}</p>
               </li>
             ))}
           </ul>
         </div>
         <div>
           <div className="flex items-baseline justify-between gap-3 border-b border-line pb-2">
-            <h2 className="text-lg font-semibold">Senast</h2>
-            <p className="pd-label">Tid</p>
+            <h2 className="text-lg font-semibold">{t(locale, "ops.recent")}</h2>
+            <p className="pd-label">{t(locale, "ops.time")}</p>
           </div>
           {snapshot.recent.length === 0 ? (
-            <p className="py-3 text-sm text-muted">Inga händelser i det här fönstret.</p>
+            <p className="py-3 text-sm text-muted">{t(locale, "ops.recent.empty")}</p>
           ) : (
             <ul>
               {snapshot.recent.map((item) => (
                 <li key={item.id} className="border-b border-line py-3">
                   <div className="flex items-baseline justify-between gap-3">
                     <p className="text-sm">{item.headline ?? item.system}</p>
-                    <p className="shrink-0 font-mono text-xs text-faint">{when(item.at)}</p>
+                    <p className="shrink-0 font-mono text-xs text-faint">{when(item.at, locale)}</p>
                   </div>
                   <p className="mt-1 font-mono text-xs text-accent">{item.kind}</p>
                 </li>
@@ -578,30 +608,34 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
 
       <details className="border border-line bg-surface px-4 py-3">
         <summary className="min-h-11 cursor-pointer list-none text-sm font-medium [&::-webkit-details-marker]:hidden">
-          Tabeller och scheman
+          {t(locale, "ops.tables")}
         </summary>
         <p className="mt-3 text-sm text-ink-soft">
-          En Postgres. Rollen {snapshot.contract.role}. Pin {snapshot.contract.pin}. Live count,
-          inte uppskattning.
+          {t(locale, "ops.tables.lead", {
+            role: snapshot.contract.role,
+            pin: snapshot.contract.pin,
+          })}
         </p>
         <ul className="mt-3 flex flex-col gap-1">
           {snapshot.schemas.map((schema) => (
             <li key={schema.schema} className="flex justify-between gap-3 text-sm">
               <span>{schema.schema}</span>
               <span className="font-mono text-xs text-faint">
-                {schema.present ? `${schema.migrations.length} migrationer` : "saknas"}
+                {schema.present
+                  ? t(locale, "ops.migrations", { count: schema.migrations.length })
+                  : t(locale, "ops.rita.missing")}
               </span>
             </li>
           ))}
         </ul>
         <div className="mt-4 overflow-x-auto">
           <table className="w-full border-collapse text-sm">
-            <caption className="sr-only">Tabeller och rader</caption>
+            <caption className="sr-only">{t(locale, "ops.tables.caption")}</caption>
             <thead>
               <tr className="border-b border-line text-left">
-                <th className="pd-label py-2 font-normal">Schema</th>
-                <th className="pd-label py-2 font-normal">Tabell</th>
-                <th className="pd-label py-2 text-right font-normal">Rader</th>
+                <th className="pd-label py-2 font-normal">{t(locale, "ops.schema")}</th>
+                <th className="pd-label py-2 font-normal">{t(locale, "ops.table")}</th>
+                <th className="pd-label py-2 text-right font-normal">{t(locale, "ops.rows")}</th>
               </tr>
             </thead>
             <tbody>
@@ -610,7 +644,7 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
                   <td className="py-2 font-mono text-xs text-faint">{table.schema}</td>
                   <td className="py-2">{table.table}</td>
                   <td className="py-2 text-right tabular-nums">
-                    {table.rows == null ? "—" : numberSv(table.rows)}
+                    {table.rows == null ? "—" : formatNumber(table.rows, locale)}
                   </td>
                 </tr>
               ))}
@@ -619,24 +653,30 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
         </div>
         {extra.length > 0 ? (
           <p className="mt-3 text-sm text-muted">
-            Extra: {extra.map((table) => `${table.schema}.${table.table}`).join(", ")}
+            {t(locale, "ops.extra", {
+              list: extra.map((table) => `${table.schema}.${table.table}`).join(", "),
+            })}
           </p>
         ) : null}
         {missing.length > 0 ? (
           <p className="mt-3 text-sm text-muted">
-            Saknas: {missing.map((table) => `${table.schema}.${table.table}`).join(", ")}
+            {t(locale, "ops.missing", {
+              list: missing.map((table) => `${table.schema}.${table.table}`).join(", "),
+            })}
           </p>
         ) : null}
       </details>
 
       <details className="border border-line bg-surface px-4 py-3">
         <summary className="min-h-11 cursor-pointer list-none text-sm font-medium [&::-webkit-details-marker]:hidden">
-          Beredskap och MCP
+          {t(locale, "ops.readinessMcp")}
         </summary>
         <p className="mt-3 font-mono text-xs text-faint">
-          MCP anrop {snapshot.health.mcp.mcp_requests_total} · verktyg{" "}
-          {snapshot.health.mcp.mcp_tool_calls_total} · fel{" "}
-          {snapshot.health.mcp.mcp_tool_errors_total}
+          {t(locale, "ops.mcpLine", {
+            requests: snapshot.health.mcp.mcp_requests_total,
+            tools: snapshot.health.mcp.mcp_tool_calls_total,
+            errors: snapshot.health.mcp.mcp_tool_errors_total,
+          })}
         </p>
         <ul className="mt-3 flex flex-col gap-2">
           {snapshot.readiness.gates.map((gate) => (
@@ -645,10 +685,10 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
                 <p className="text-sm font-medium">{gate.title}</p>
                 <p className="pd-label">
                   {gate.state === "ready"
-                    ? "Klar"
+                    ? t(locale, "ops.gate.ready")
                     : gate.state === "blocked"
-                      ? "Blockerad"
-                      : "Öppen"}
+                      ? t(locale, "ops.gate.blocked")
+                      : t(locale, "ops.gate.open")}
                 </p>
               </div>
               <p className="mt-1 text-sm text-ink-soft">{gate.detail}</p>
@@ -660,7 +700,10 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
             .filter((route) => route.enabled)
             .map((route) => (
               <li key={route.kind}>
-                {OPS_SMS_KIND_LABEL[route.kind]} → {route.phone || "inget nummer"}
+                {t(locale, "ops.routeTo", {
+                  kind: opsSmsKindLabel(locale, route.kind),
+                  phone: route.phone || t(locale, "ops.noPhone"),
+                })}
               </li>
             ))}
         </ul>
@@ -669,16 +712,16 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
   );
 }
 
-function RuntimeMarks({ snapshot }: { snapshot: OpsSnapshot }) {
+function RuntimeMarks({ snapshot, locale }: { snapshot: OpsSnapshot; locale: Locale }) {
   const marks = snapshot.runtimeDebug;
   const flags = [
-    marks.hardened ? "härdad" : "öppen",
-    marks.seedDemo ? "demofrö" : null,
-    marks.cronSet ? "cron satt" : "cron saknas",
-    marks.smsSet ? "sms på" : "sms av",
-    marks.ttsSet ? "tal på" : "tal av",
-    marks.sessionSecretSet ? "session satt" : "session saknas",
-    marks.cookieSecure ? "cookie låst" : "cookie öppen",
+    marks.hardened ? t(locale, "ops.mark.hardened") : t(locale, "ops.mark.open"),
+    marks.seedDemo ? t(locale, "ops.mark.seed") : null,
+    marks.cronSet ? t(locale, "ops.mark.cronOn") : t(locale, "ops.mark.cronOff"),
+    marks.smsSet ? t(locale, "ops.mark.smsOn") : t(locale, "ops.mark.smsOff"),
+    marks.ttsSet ? t(locale, "ops.mark.ttsOn") : t(locale, "ops.mark.ttsOff"),
+    marks.sessionSecretSet ? t(locale, "ops.mark.sessionOn") : t(locale, "ops.mark.sessionOff"),
+    marks.cookieSecure ? t(locale, "ops.mark.cookieLocked") : t(locale, "ops.mark.cookieOpen"),
   ].filter(Boolean);
   return (
     <p className="text-sm text-muted">
@@ -691,7 +734,7 @@ function RuntimeMarks({ snapshot }: { snapshot: OpsSnapshot }) {
   );
 }
 
-function OpsSearch() {
+function OpsSearch({ locale }: { locale: Locale }) {
   const [q, setQ] = useState("");
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<OpsDebugLookup | null>(null);
@@ -705,11 +748,11 @@ function OpsSearch() {
       const response = await fetch(`/api/platform/ops/debug?q=${encodeURIComponent(q.trim())}`, {
         headers: { accept: "application/json" },
       });
-      if (!response.ok) throw new Error("Kunde inte söka.");
+      if (!response.ok) throw new Error(t(locale, "ops.searchError"));
       setResult((await response.json()) as OpsDebugLookup);
     } catch (caught) {
       setResult(null);
-      setError(caught instanceof Error ? caught.message : "Kunde inte söka.");
+      setError(caught instanceof Error ? caught.message : t(locale, "ops.searchError"));
     } finally {
       setBusy(false);
     }
@@ -719,13 +762,13 @@ function OpsSearch() {
     <section className="border border-line bg-surface px-4 py-4">
       <form onSubmit={onSubmit} className="flex flex-col gap-3">
         <label className="flex flex-col gap-1">
-          <span className="text-sm text-ink-soft">Sök request-id eller ärende</span>
+          <span className="text-sm text-ink-soft">{t(locale, "ops.searchLabel")}</span>
           <input
             type="search"
             value={q}
             onChange={(event) => setQ(event.target.value)}
             minLength={3}
-            placeholder="Minst tre tecken"
+            placeholder={t(locale, "ops.searchPlaceholder")}
             className="min-h-12 w-full border border-line bg-paper px-4 py-3 text-base"
             autoComplete="off"
             enterKeyHint="search"
@@ -736,7 +779,7 @@ function OpsSearch() {
           disabled={busy || q.trim().length < 3}
           className="min-h-12 w-full bg-ink px-4 py-3 text-base font-medium text-paper hover:bg-ink-soft disabled:opacity-50 sm:w-auto"
         >
-          {busy ? "Söker…" : "Sök"}
+          {busy ? t(locale, "ops.searching") : t(locale, "ops.search")}
         </button>
       </form>
       {error ? <p className="mt-3 text-sm text-muted">{error}</p> : null}
@@ -747,14 +790,14 @@ function OpsSearch() {
             <li key={`event-${item.id}`} className="border-b border-line py-3">
               <p className="text-sm">{item.kind}</p>
               <p className="mt-1 font-mono text-xs text-faint">
-                {item.system} · {when(item.at)}
+                {item.system} · {when(item.at, locale)}
                 {item.requestId ? ` · ${item.requestId}` : ""}
               </p>
             </li>
           ))}
           {result.outbox.map((item) => (
             <li key={`outbox-${item.source}-${item.id}`} className="border-b border-line py-3">
-              <p className="pd-label">{QUEUE_STATUS[item.status] ?? item.status}</p>
+              <p className="pd-label">{opsQueueStatus(locale, item.status)}</p>
               <p className="mt-1 text-sm">{item.body}</p>
               {item.lastError ? <p className="mt-1 text-sm text-muted">{item.lastError}</p> : null}
             </li>
@@ -765,7 +808,13 @@ function OpsSearch() {
   );
 }
 
-export function OpsBoard({ initial }: { initial: OpsSnapshot }) {
+export function OpsBoard({
+  initial,
+  locale = DEFAULT_LOCALE,
+}: {
+  initial: OpsSnapshot;
+  locale?: Locale;
+}) {
   const [snapshot, setSnapshot] = useState(initial);
   const [error, setError] = useState<string | null>(null);
   const [requestId, setRequestId] = useState<string | null>(null);
@@ -778,13 +827,13 @@ export function OpsBoard({ initial }: { initial: OpsSnapshot }) {
           signal: controller.signal,
           headers: { accept: "application/json" },
         });
-        if (!response.ok) throw new Error("Kunde inte läsa mätningen.");
+        if (!response.ok) throw new Error(t(locale, "ops.pollError"));
         setSnapshot((await response.json()) as OpsSnapshot);
         setRequestId(response.headers.get("x-request-id"));
         setError(null);
       } catch (caught) {
         if (controller.signal.aborted) return;
-        setError(caught instanceof Error ? caught.message : "Kunde inte läsa mätningen.");
+        setError(caught instanceof Error ? caught.message : t(locale, "ops.pollError"));
       }
     };
     const id = window.setInterval(tick, 15_000);
@@ -792,24 +841,27 @@ export function OpsBoard({ initial }: { initial: OpsSnapshot }) {
       controller.abort();
       window.clearInterval(id);
     };
-  }, []);
+  }, [locale]);
 
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <p className="pd-label">
-          {snapshot.scope === "house" ? "Flotta" : "Bolag"} · {snapshot.runtime}
-          {snapshot.hardened ? " · härdad" : ""}
+          {snapshot.scope === "house" ? t(locale, "ops.scope.house") : t(locale, "ops.scope.org")} ·{" "}
+          {snapshot.runtime}
+          {snapshot.hardened ? ` · ${t(locale, "ops.hardened")}` : ""}
         </p>
-        <p className="pd-label">{when(snapshot.takenAt)}</p>
+        <p className="pd-label">{when(snapshot.takenAt, locale)}</p>
       </div>
-      <RuntimeMarks snapshot={snapshot} />
+      <RuntimeMarks snapshot={snapshot} locale={locale} />
       {requestId ? (
-        <p className="break-all font-mono text-xs text-faint">Senaste mätning · {requestId}</p>
+        <p className="break-all font-mono text-xs text-faint">
+          {t(locale, "ops.lastMeasurement", { id: requestId })}
+        </p>
       ) : null}
       {error ? <p className="text-sm text-muted">{error}</p> : null}
-      <OpsSearch />
-      <OpsView snapshot={snapshot} />
+      <OpsSearch locale={locale} />
+      <OpsView snapshot={snapshot} locale={locale} />
     </div>
   );
 }

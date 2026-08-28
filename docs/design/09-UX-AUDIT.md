@@ -25,7 +25,7 @@ and the locked visual contract (00–08). Not a redesign. Preserve before replac
 | /ekonomi | Book sale | Daily | High (real invoice) | Good; chart axis text ~6px rendered on mobile (P2) |
 | /upphandling (New customer) | Submit intake | Per prospect | Medium | Stacked fine but 36px fields, 16px checkboxes, hand-rolled selects |
 | /irma + /irma/l/[token] | Create/confirm agreement | Weekly | High | Guest leg already uses large fields — KEEP |
-| /platform/drift | Watch ops | On demand | High (blind ops) | Type errors broke `next build` (P0) |
+| /platform/drift | Watch ops | On demand | High (blind ops) | Chrome, notices and SMS routes follow `pd_locale` (English canonical) |
 | /kansli, /alva, /creditae, /tora, /rita, /britt | Room work | Weekly | Medium | Sound structure; shared primitives |
 
 ## Benchmarks used (converging patterns, not copies)

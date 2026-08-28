@@ -129,11 +129,12 @@ export const OPS_SMS_KINDS: readonly OpsSmsKind[] = [
   "readiness",
 ];
 
+/** Canonical English fallback. UI uses `opsSmsKindLabel(locale, kind)`. */
 export const OPS_SMS_KIND_LABEL: Record<OpsSmsKind, string> = {
-  overdue: "Förfallen reskontra",
-  support: "Öppna ärenden",
-  sms_failed: "Misslyckat SMS",
-  readiness: "Blockerad beredskap",
+  overdue: "Overdue ledger",
+  support: "Open cases",
+  sms_failed: "Failed SMS",
+  readiness: "Blocked readiness",
 };
 
 export type OpsChannel = {
