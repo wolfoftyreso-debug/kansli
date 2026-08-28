@@ -70,7 +70,7 @@ Ingen OpenAPI. Ingen publik `api.pixdrift.com/v1`.
 Flera skrivvägar saknar MCP-par (se §4).
 
 **MCP — PARTIAL.**
-`POST /mcp`, protokoll `2026-07-28`, 18 verktyg i
+`POST /mcp`, protokoll `2026-07-28`, 21 verktyg i
 `src/lib/mcp/tools.ts`. Alla anropar befintliga tjänster.
 Inte alla REST-operationer har verktyg. Ingen L4-kö.
 Rate limit och idempotens är per process.
@@ -138,7 +138,7 @@ ingen syntetisk bevakning av login/MCP/docs. Hemligheter dumpas inte.
 
 ## 4. Capability Graph — frö mot full täckning
 
-Grafen i kod är **bara** de 14 MCP-verktygen.
+Grafen i kod är **bara** de 21 MCP-verktygen.
 Varje verktyg har redan `rest.method` + `rest.path`.
 Det är medvetet: ingen parallell lista.
 
@@ -155,10 +155,10 @@ REST som **finns** men **inte** sitter i grafen än:
 | GET `/api/tora/calendar` | tora | Kalender utan MCP |
 | GET `/api/rita/analyses/:id` | rita | Detalj utan MCP |
 | GET/POST `/api/britt/findings` | britt | Findings utan MCP |
-| GET `/api/irma/agreements` | irma | Lista utan MCP |
+| GET `/api/irma/agreements` | irma | Lista. MCP `list_agreements` |
 | GET/POST `/api/irma/agreements/:id` | irma | Detalj/revoke utan MCP |
 | GET/POST `/api/irma/l/:token` | irma | Gästlänk, medvetet utan agent |
-| GET `/api/tyra/cases` | tyra | Lista utan MCP |
+| GET `/api/tyra/cases` | tyra | Lista. MCP `list_vehicle_cases` |
 | GET `/api/tyra/cases/:id` | tyra | Detalj utan MCP |
 | POST `/api/tyra/hub/link` | tyra | Hubblänk utan MCP |
 | GET `/api/tyra/reminders` | tyra | Outbox utan MCP |

@@ -7,8 +7,13 @@ import { evaluateMarket, persistSnapshot } from "@/lib/tora/persist";
 import { resolveCompany } from "@/lib/tora/profile";
 import { listAnalyses, requestAnalysis } from "@/lib/rita/analyses";
 import { listObservations } from "@/lib/britt/observations";
-import { createAgreement } from "@/lib/irma/agreements";
-import { createCase as createTyraCase, parseIntent, parseOperations } from "@/lib/tyra/cases";
+import { createAgreement, listAgreements } from "@/lib/irma/agreements";
+import {
+  createCase as createTyraCase,
+  listCases as listTyraCases,
+  parseIntent,
+  parseOperations,
+} from "@/lib/tyra/cases";
 import { createCase as createAlvaCase } from "@/lib/alva/cases";
 import { createInquiry as createCreditaeInquiry } from "@/lib/creditae/inquiries";
 import { majIsOpen } from "@/lib/maj/access";
@@ -537,6 +542,56 @@ export function buildPixdriftRegistry(): ToolRegistry {
 
   registry.registerTool(
     base({
+      name: "list_agreements",
+      title: "List agreements",
+      description:
+        "Lists IRMA agreements for the authenticated organisation. Returns identity fields only, not body or clauses. Same listAgreements service as GET /api/irma/agreements.",
+      system: "irma",
+      domain: "agreements",
+      inputSchema: {
+        type: "object",
+        properties: {
+          query: { type: "string" },
+          limit: { type: "integer" },
+          cursor: { type: "string" },
+        },
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need existing agreements.",
+      whenNotToUse: "You want to create an agreement — use create_agreement.",
+      rest: { method: "GET", path: "/api/irma/agreements" },
+      flags: { ...readFlags(true), pii: true },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const query = typeof input.query === "string" ? input.query : undefined;
+        const rows = await listAgreements(pool, actor.orgRef, query);
+        return page(
+          rows.map((item) => ({
+            id: item.id,
+            title: item.title,
+            counterparty: item.counterparty,
+            status: item.status,
+            createdAt: item.createdAt,
+            viewedAt: item.viewedAt,
+            signedAt: item.signedAt,
+          })),
+          input,
+        );
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
       name: "create_agreement",
       title: "Create agreement",
       description:
@@ -585,6 +640,51 @@ export function buildPixdriftRegistry(): ToolRegistry {
           counterparty: created.counterparty,
           status: created.status,
         };
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "list_vehicle_cases",
+      title: "List vehicle cases",
+      description:
+        "Lists TYRA workshop cases for the authenticated organisation. Returns identity fields only. Same listCases service as GET /api/tyra/cases.",
+      system: "tyra",
+      domain: "workshop",
+      inputSchema: {
+        type: "object",
+        properties: { limit: { type: "integer" }, cursor: { type: "string" } },
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need existing workshop cases.",
+      whenNotToUse: "You want to store a case — use create_vehicle_case.",
+      rest: { method: "GET", path: "/api/tyra/cases" },
+      flags: { ...readFlags(true), pii: true },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const rows = await listTyraCases(pool, actor.orgRef);
+        return page(
+          rows.map((item) => ({
+            id: item.id,
+            intent: item.intent,
+            caseStatus: item.caseStatus,
+            updatedAt: item.updatedAt,
+            customerId: item.customerId,
+            registrationNumber: item.registrationNumber,
+            customerName: item.customerName,
+          })),
+          input,
+        );
       },
     }),
   );

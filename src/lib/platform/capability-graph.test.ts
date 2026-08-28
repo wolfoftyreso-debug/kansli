@@ -12,7 +12,7 @@ describe("capability graph seed", () => {
       tools.map((tool) => tool.name).sort(),
     );
     expect(graph.capabilities).toHaveLength(tools.length);
-    expect(graph.capabilities.length).toBeGreaterThanOrEqual(14);
+    expect(graph.capabilities.length).toBe(21);
   });
 
   it("keeps REST bindings on every registered tool", () => {
@@ -54,5 +54,17 @@ describe("capability graph seed", () => {
     expect(byId.run_search_analysis.interfaces.event).toBe("maj.action.proposed");
     expect(byId.decide_search_action.interfaces.event).toBe("maj.action.decided");
     expect(byId.list_search_actions.interfaces.event).toBeNull();
+    expect(byId.list_agreements.product).toBe("irma");
+    expect(byId.list_agreements.interfaces.event).toBeNull();
+    expect(byId.list_agreements.interfaces.rest).toEqual({
+      method: "GET",
+      path: "/api/irma/agreements",
+    });
+    expect(byId.list_vehicle_cases.product).toBe("tyra");
+    expect(byId.list_vehicle_cases.interfaces.event).toBeNull();
+    expect(byId.list_vehicle_cases.interfaces.rest).toEqual({
+      method: "GET",
+      path: "/api/tyra/cases",
+    });
   });
 });
