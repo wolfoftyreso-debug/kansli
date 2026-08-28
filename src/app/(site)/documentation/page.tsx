@@ -47,6 +47,9 @@ export default function DocumentationPage() {
           >
             Capability Graph
           </Link>
+          <Link href="/documentation/rest" className="underline decoration-line underline-offset-4">
+            REST
+          </Link>
         </p>
       </div>
 

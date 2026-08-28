@@ -4,6 +4,7 @@ import { mcpCatalog } from "./handle";
 export const MCP_DOC_LINKS = [
   { href: "/documentation/mcp", label: "Overview" },
   { href: "/documentation/capabilities", label: "Capability Graph" },
+  { href: "/documentation/rest", label: "REST" },
   { href: "/documentation/mcp/authentication", label: "Authentication" },
   { href: "/documentation/mcp/clients", label: "Connecting a client" },
   { href: "/documentation/mcp/tools", label: "Tools" },

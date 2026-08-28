@@ -66,8 +66,9 @@ service accounts) hör till Platform Core, inte till “har de inloggning?”.
 
 **REST — PARTIAL.**
 JSON-API under `/api/{system}` med `@pixdrift/api-core`.
-Ingen OpenAPI. Ingen publik `api.pixdrift.com/v1`.
-Flera skrivvägar saknar MCP-par (se §4).
+OpenAPI 3.1 genereras ur Capability Graph:
+`GET /api/platform/openapi`, HTML `/documentation/rest`.
+Ingen publik `api.pixdrift.com/v1`. Inte alla REST-ytor sitter i grafen (se §4).
 
 **MCP — PARTIAL.**
 `POST /mcp`, protokoll `2026-07-28`, 27 verktyg i
@@ -76,7 +77,7 @@ Inte alla REST-operationer har verktyg. Ingen L4-kö.
 Rate limit och idempotens är per process.
 
 **SDK — MISSING.**
-Inga paket `@pixdrift/sdk-*`. Ingen OpenAPI att generera från.
+Inga paket `@pixdrift/sdk-*`. OpenAPI finns som frö, ingen generator.
 
 **WEBHOOK — MISSING.**
 `platform.events` är intern append-only-logg.
@@ -127,7 +128,7 @@ ingen syntetisk bevakning av login/MCP/docs. Hemligheter dumpas inte.
 | Lager | Betyg | Vad som finns | Vad som saknas |
 | --- | --- | --- | --- |
 | 1. Platform Core | PARTIAL | Identity, org, session, `noun:verb`-behörighet, API Core, events, request-id, `org_ref` + RLS när `app.org_ref` är satt, tunn SMS-kanal (`src/lib/platform/sms.ts`) för Ekonomi-sälj | ABAC/OPA, entitlements, billing, feature flags, notifieringskärna, hemlighetsvalv, OTel, per-tjänst SLO, sandbox-tenant |
-| 2. Universal Integration | PARTIAL | REST + MCP mot samma `src/lib/{produkt}`. Revolut OAuth. | OpenAPI, webhooks, SDK, service accounts, OAuth-appar för tredje part |
+| 2. Universal Integration | PARTIAL | REST + MCP mot samma `src/lib/{produkt}`. OpenAPI ur grafen. Revolut OAuth. | Publik `api.`-host, webhooks, SDK, service accounts, OAuth-appar för tredje part |
 | 3. Developer Platform | PARTIAL | `/documentation`, MCP-docs, MCP-explorer | Sandbox, Try-it, recipes, changelog-data, status, request replay |
 | 4. App / Agent | PARTIAL | MCP + klientinstruktioner i docs | ChatGPT Apps, Apps SDK-UI, produktappar |
 | 5. Knowledge & Search | PARTIAL | `/systems`, `/documentation`, sitemap, robots, OG i root layout | Locale-URL, hreflang, knowledge, verktyg, intent-graf, llms.txt |
@@ -234,7 +235,7 @@ Mål: kall extern utvecklare gör första anropet på en kvart.
 | Hitta plattformen | PARTIAL | `/documentation` och `/documentation/mcp` finns. Ingen `developers.pixdrift.com`. |
 | Skapa sandbox | MISSING | Ingen isolering. Demo-org kräver `PIXDRIFT_SEED_DEMO`. |
 | Autentisera | PARTIAL | Session-cookie eller Bearer mot IdP. Ingen self-serve token-knapp. Klienthemligheter är env. |
-| Läsa docs | PARTIAL | MCP-docs genereras. REST saknar OpenAPI och per-operation HTML. |
+| Läsa docs | PARTIAL | MCP-docs, OpenAPI och REST-HTML genereras ur grafen. Ingen Try-it mot sandbox. |
 | Första REST-anrop | PARTIAL | Går mot `/api/...` med session. Ingen Try-it mot sandbox. |
 | Koppla MCP | PARTIAL | `POST /mcp` + `/documentation/mcp/clients`. Inga färdiga Cursor/ChatGPT-installationspaket med OAuth. |
 | Första tool | PARTIAL | Inloggad explorer `/platform/mcp`. Extern klient måste bära token själv. |
@@ -317,7 +318,7 @@ Påstå inte ISO/SOC. De finns inte i repot.
 Ändra bara om ny kod motbevisar tabellen.
 
 1. Håll Capability Graph som enda katalog. Fyll REST-luckor som *ska* vara agentbara.
-2. OpenAPI ur grafen — inte en handskriven spec vid sidan av.
+2. OpenAPI ur grafen — frö i `GET /api/platform/openapi`. Inte en handskriven spec. SDK/Try-it väntar.
 3. Developer Portal: sandbox + Try-it på *befintlig* `/documentation`.
 4. SDK-generering ur kontraktet.
 5. ChatGPT Apps bara där MCP redan har ett ärligt läsverktyg och ev. säker skrivning.

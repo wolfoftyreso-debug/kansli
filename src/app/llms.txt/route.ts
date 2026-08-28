@@ -18,10 +18,12 @@ Ett system. Ett rum per jobb. Samma inloggning.
 - GET /api/platform/health
 - GET /api/platform/ops
 - GET /api/platform/capabilities
+- GET /api/platform/openapi
 - /platform/drift
 - /documentation
 - /documentation/mcp
 - /documentation/capabilities
+- /documentation/rest
 
 ## Inte här
 NORA, MOVA, SAGA, Stripe Checkout, Swish Handel, Visma, Fortnox, ChatGPT Apps.

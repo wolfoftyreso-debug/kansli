@@ -17,6 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/documentation/mcp/systems",
     "/documentation/mcp/errors",
     "/documentation/capabilities",
+    "/documentation/rest",
     "/llms.txt",
     "/why",
     "/company",

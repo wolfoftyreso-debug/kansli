@@ -56,6 +56,10 @@ export default function McpOverviewPage() {
           Tool catalog
         </Link>
         {" · "}
+        <Link href="/documentation/rest" className="underline decoration-line underline-offset-4">
+          REST
+        </Link>
+        {" · "}
         <Link href="/platform/mcp" className="underline decoration-line underline-offset-4">
           Signed-in explorer
         </Link>
