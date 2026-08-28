@@ -31,7 +31,11 @@ export default async function PlatformMcpPage() {
         <p className="max-w-xl text-ink-soft">{t(locale, "mcp.lead")}</p>
       </header>
       {!session ? (
-        <SignInGate next="/platform/mcp" title={t(locale, "mcp.signInTitle")}>
+        <SignInGate
+          next="/platform/mcp"
+          title={t(locale, "mcp.signInTitle")}
+          actionLabel={t(locale, "chrome.signIn")}
+        >
           {t(locale, "mcp.signInBody")}
         </SignInGate>
       ) : (

@@ -1,8 +1,9 @@
 import Link from "next/link";
+import { t, type Locale } from "@/lib/i18n";
 import type { PixSystem } from "@/lib/pixdrift/systems";
 import { RegionIndicator, StatusIndicator } from "./indicators";
 
-export function SystemCard({ system }: { system: PixSystem }) {
+export function SystemCard({ system, locale }: { system: PixSystem; locale: Locale }) {
   return (
     <Link
       href={`/systems/${system.slug}`}
@@ -22,7 +23,7 @@ export function SystemCard({ system }: { system: PixSystem }) {
           <span className="pd-label">{system.category}</span>
           <RegionIndicator regions={system.regions} />
         </div>
-        <span className="text-sm font-medium text-ink">Öppna</span>
+        <span className="text-sm font-medium text-ink">{t(locale, "site.systems.open")}</span>
       </div>
     </Link>
   );

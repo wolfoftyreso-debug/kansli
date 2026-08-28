@@ -156,6 +156,8 @@ describe("locale registry", () => {
     expect(t("sv", "mcp.toolCount", { count: 12 })).toBe("12 verktyg i registret.");
     expect(t("en", "platform.gatewayPing")).toBe("Ping the gateway");
     expect(t("sv", "platform.gatewayPinging")).toBe("Anropar…");
+    expect(t("en", "site.systems.title")).toBe("What each system does.");
+    expect(t("sv", "site.systems.open")).toBe("Öppna");
     expect(t("sv", "chrome.signIn")).toBe("Logga in");
     expect(t("pl", "chrome.language")).toBe("Język");
     expect(t("de", "chrome.signIn")).toBe("Anmelden");

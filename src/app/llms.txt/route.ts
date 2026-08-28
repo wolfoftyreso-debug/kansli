@@ -1,20 +1,20 @@
 export function GET() {
   const body = `# PIXDRIFT
 
-Ett system. Ett rum per jobb. Samma inloggning.
+One system. One room per job. The same sign-in.
 
-## Rum
-- Kansli — start och uppgifter
-- Ekonomi — boka sälj i kronor, faktura, moms. Inte Visma. Inte Fortnox.
-- TORA — vilka upphandlingar ni kan ta
-- RITA — skatteförslag, inte skatteråd
-- BRITT — det som hänt och ska följas upp
-- IRMA — avtalslänk, enkel bekräftelse
-- TYRA — kund, bil, hjul. Däck bokas i Ekonomi.
-- ALVA — intag. Ingen diagnos.
+## Rooms
+- Kansli — start and tasks
+- Ekonomi — book sales in kronor, invoice, VAT. Not Visma. Not Fortnox.
+- TORA — which procurements you can take
+- RITA — tax proposals, not tax advice
+- BRITT — what happened and what to follow up
+- IRMA — agreement link, simple confirmation
+- TYRA — customer, car, wheels. Tires book into Ekonomi.
+- ALVA — intake. No diagnosis.
 
-## Maskiner
-- POST /mcp — agentgränssnitt, samma tjänster som REST
+## Machines
+- POST /mcp — agent interface, the same services as REST
 - GET /api/platform/health
 - GET /api/platform/ops
 - GET /api/platform/capabilities
@@ -25,7 +25,7 @@ Ett system. Ett rum per jobb. Samma inloggning.
 - /documentation/capabilities
 - /documentation/rest
 
-## Inte här
+## Not here
 NORA, MOVA, SAGA, Stripe Checkout, Swish Handel, Visma, Fortnox, ChatGPT Apps.
 `;
   return new Response(body, {

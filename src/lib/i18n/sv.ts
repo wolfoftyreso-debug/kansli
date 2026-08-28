@@ -1499,4 +1499,12 @@ export const SV: Record<MessageKey, string> = {
   "platform.gatewayPing": "Pinga gatewayen",
   "platform.gatewayPinging": "Anropar…",
   "platform.gatewayReply": "{model} · {ms} ms · svar “{text}”",
+
+  "site.systems.metaTitle": "System — PIXDRIFT",
+  "site.systems.metaDescription": "Vad varje system gör. Ett jobb per system. Samma inloggning.",
+  "site.systems.eyebrow": "System",
+  "site.systems.title": "Vad varje system gör.",
+  "site.systems.intro":
+    "Ett jobb per system. TORA tar upphandlingar. RITA tar skatt. Samma inloggning överallt.",
+  "site.systems.open": "Öppna",
 };

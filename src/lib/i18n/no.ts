@@ -1501,4 +1501,12 @@ export const NO: Record<MessageKey, string> = {
   "platform.gatewayPing": "Ping the gateway",
   "platform.gatewayPinging": "Calling…",
   "platform.gatewayReply": "{model} · {ms} ms · reply “{text}”",
+
+  "site.systems.metaTitle": "Systems — PIXDRIFT",
+  "site.systems.metaDescription": "What each system does. One job per system. The same sign-in.",
+  "site.systems.eyebrow": "Systems",
+  "site.systems.title": "What each system does.",
+  "site.systems.intro":
+    "One job per system. TORA takes procurement. RITA takes tax. The same sign-in everywhere.",
+  "site.systems.open": "Open",
 };
