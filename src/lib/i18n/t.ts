@@ -158,3 +158,13 @@ export function ekonomiRevolutError(locale: Locale, category: string): string {
   const key = `ekonomi.rev.err.${category}` as MessageKey;
   return key in catalogs.en ? t(locale, key) : t(locale, "ekonomi.rev.err.unknown");
 }
+
+export function irmaStatus(locale: Locale, status: string): string {
+  const key = `irma.status.${status}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : status;
+}
+
+export function irmaVerification(locale: Locale, level: number): string {
+  const key = `irma.verify.${level}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : String(level);
+}

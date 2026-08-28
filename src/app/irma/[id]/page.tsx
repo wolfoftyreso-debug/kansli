@@ -3,21 +3,40 @@ import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { SignInGate, Submit } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
+import { formatDateTime } from "@/lib/format/datetime";
+import { irmaStatus, irmaVerification, t, type Locale } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 import { exportAgreementRecord, getAgreement } from "@/lib/irma/agreements";
 import { verifyAgreementIntegrity } from "@/lib/irma/integrity";
-import { daysUntilExpiry, statusLabel, verificationLabel } from "@/lib/irma/status";
+import { daysUntilExpiry } from "@/lib/irma/status";
 import { tryRuntime } from "@/lib/platform/page";
 import { ttsConfigured } from "@/lib/platform/tts";
 import { ListenUnderlag } from "../ListenUnderlag";
 import { reissueIrmaAgreement, revokeIrmaAgreement } from "../actions";
 
-export const metadata = {
-  title: "Avtal — IRMA — Pixdrift",
-};
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "irma.doc.metaTitle"),
+  };
+}
+
+function contentState(locale: Locale, matches: boolean | undefined): string {
+  if (matches === true) return t(locale, "irma.doc.contentUnchanged");
+  if (matches === false) return t(locale, "irma.doc.contentChanged");
+  return t(locale, "irma.doc.contentUnknown");
+}
+
+function artifactState(locale: Locale, matches: boolean | undefined): string {
+  if (matches === true) return t(locale, "irma.doc.artifactOk");
+  if (matches === false) return t(locale, "irma.doc.artifactBad");
+  return t(locale, "irma.doc.artifactUnknown");
+}
 
 export default async function IrmaAgreementPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await readSession();
+  const locale = await readLocale();
   const runtime = tryRuntime(session?.org?.ref);
   const agreement =
     session?.org?.ref && runtime ? await getAgreement(runtime.pool, session.org.ref, id) : null;
@@ -35,33 +54,45 @@ export default async function IrmaAgreementPage({ params }: { params: Promise<{ 
         artifactSha256: agreement.artifactSha256,
       })
     : null;
+  const daysLeft = agreement ? daysUntilExpiry(agreement.tokenExpiresAt) : null;
 
   return (
     <AppShell current="irma" session={session}>
       <ProductCrumb crumbs={[{ href: "/irma", label: "IRMA" }]} />
       {!session?.org ? (
-        <SignInGate next="/irma" title="Logga in för att se avtalet">
-          Avtalet tillhör organisationen.
+        <SignInGate
+          next="/irma"
+          title={t(locale, "irma.doc.signInTitle")}
+          actionLabel={t(locale, "chrome.signIn")}
+        >
+          {t(locale, "irma.doc.signInBody")}
         </SignInGate>
       ) : agreement ? (
         <>
           <h1 className="text-3xl font-semibold tracking-tight">{agreement.title}</h1>
           <p className="text-ink-soft">{agreement.counterparty}</p>
           <p className="text-xs font-medium uppercase tracking-wide text-accent">
-            {statusLabel(agreement.status)}
+            {irmaStatus(locale, agreement.status)}
           </p>
-          <p className="text-sm text-ink-soft">{verificationLabel(agreement.verificationLevel)}</p>
+          <p className="text-sm text-ink-soft">
+            {irmaVerification(locale, agreement.verificationLevel)}
+          </p>
 
           {agreement.body ? <p className="text-sm text-ink-soft">{agreement.body}</p> : null}
 
           {ttsConfigured() ? (
-            <ListenUnderlag src={`/api/irma/agreements/${agreement.id}/speech`} available />
+            <ListenUnderlag
+              src={`/api/irma/agreements/${agreement.id}/speech`}
+              available
+              listenLabel={t(locale, "irma.listen")}
+              unsupportedLabel={t(locale, "irma.listenUnsupported")}
+            />
           ) : (
-            <p className="text-sm text-muted">Uppläsning är inte kopplad.</p>
+            <p className="text-sm text-muted">{t(locale, "irma.doc.listenUnavailable")}</p>
           )}
 
           <section className="flex flex-col gap-3">
-            <h2 className="text-lg font-semibold">Klausuler</h2>
+            <h2 className="text-lg font-semibold">{t(locale, "irma.doc.clauses")}</h2>
             <ol className="flex flex-col gap-3">
               {agreement.clauses.map((clause, index) => (
                 <li key={clause.id} className="rounded-xl border border-line bg-surface p-4">
@@ -75,44 +106,42 @@ export default async function IrmaAgreementPage({ params }: { params: Promise<{ 
           </section>
 
           <section className="flex flex-col gap-2 rounded-xl border border-line bg-surface p-4">
-            <h2 className="text-lg font-semibold">Bevis</h2>
+            <h2 className="text-lg font-semibold">{t(locale, "irma.doc.proof")}</h2>
             <p className="text-sm text-ink-soft">
-              Innehåll{" "}
-              {integrity?.contentMatches === true
-                ? "oförändrat"
-                : integrity?.contentMatches === false
-                  ? "har ändrats"
-                  : "går inte att kontrollera (äldre avtal)"}
+              {t(locale, "irma.doc.contentPrefix")}{" "}
+              {contentState(locale, integrity?.contentMatches)}
               {agreement.artifactSha256
-                ? ` · bekräftelse ${integrity?.artifactMatches === true ? "stämmer" : integrity?.artifactMatches === false ? "stämmer inte" : "kan inte räknas om"}`
+                ? ` · ${artifactState(locale, integrity?.artifactMatches)}`
                 : ""}
             </p>
             {agreement.contentSha256 ? (
               <p className="break-all font-mono text-xs text-faint">
-                innehåll {agreement.contentSha256}
+                {t(locale, "irma.doc.hashContent")} {agreement.contentSha256}
               </p>
             ) : null}
             {agreement.artifactSha256 ? (
               <p className="break-all font-mono text-xs text-faint">
-                artefakt {agreement.artifactSha256}
+                {t(locale, "irma.doc.hashArtifact")} {agreement.artifactSha256}
               </p>
             ) : null}
             {agreement.signerName ? (
               <p className="text-sm text-ink-soft">
-                Bekräftat av {agreement.signerName}
-                {agreement.signedAt ? ` · ${agreement.signedAt}` : ""}
+                {t(locale, "irma.doc.confirmedBy", { name: agreement.signerName })}
+                {agreement.signedAt ? ` · ${formatDateTime(agreement.signedAt, locale)}` : ""}
               </p>
             ) : null}
             {agreement.tokenExpiresAt && agreement.status !== "signed" ? (
               <p className="text-sm text-muted">
-                Länken giltig till {agreement.tokenExpiresAt}
-                {daysUntilExpiry(agreement.tokenExpiresAt) != null
-                  ? ` · ${daysUntilExpiry(agreement.tokenExpiresAt)} dagar kvar`
-                  : ""}
+                {t(locale, "irma.doc.linkUntil", {
+                  when: formatDateTime(agreement.tokenExpiresAt, locale),
+                })}
+                {daysLeft != null ? ` · ${t(locale, "irma.doc.daysLeft", { days: daysLeft })}` : ""}
               </p>
             ) : null}
             <details className="mt-2">
-              <summary className="cursor-pointer text-sm font-medium">Exportera underlag</summary>
+              <summary className="cursor-pointer text-sm font-medium">
+                {t(locale, "irma.doc.export")}
+              </summary>
               <pre className="mt-2 overflow-x-auto font-mono text-xs">
                 {exportAgreementRecord(agreement)}
               </pre>
@@ -123,11 +152,11 @@ export default async function IrmaAgreementPage({ params }: { params: Promise<{ 
             <div className="flex flex-wrap gap-3">
               <form action={reissueIrmaAgreement}>
                 <input type="hidden" name="id" value={agreement.id} />
-                <Submit>Återutfärda länken</Submit>
+                <Submit>{t(locale, "irma.doc.reissue")}</Submit>
               </form>
               <form action={revokeIrmaAgreement}>
                 <input type="hidden" name="id" value={agreement.id} />
-                <Submit>Återkalla länken</Submit>
+                <Submit>{t(locale, "irma.doc.revoke")}</Submit>
               </form>
             </div>
           ) : null}

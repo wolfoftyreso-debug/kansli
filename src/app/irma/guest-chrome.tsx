@@ -1,11 +1,17 @@
 import type { ReactNode } from "react";
 
-const STEPS = ["Läs", "Bekräfta", "Klart"] as const;
-
-export function GuestProgress({ step }: { step: 1 | 2 | 3 }) {
+export function GuestProgress({
+  step,
+  ariaLabel,
+  labels,
+}: {
+  step: 1 | 2 | 3;
+  ariaLabel: string;
+  labels: readonly [string, string, string];
+}) {
   return (
-    <ol className="flex gap-1.5" aria-label={`Steg ${step} av 3`}>
-      {STEPS.map((label, index) => {
+    <ol className="flex gap-1.5" aria-label={ariaLabel}>
+      {labels.map((label, index) => {
         const n = (index + 1) as 1 | 2 | 3;
         const reached = n <= step;
         const current = n === step;
@@ -37,9 +43,13 @@ export function GuestProgress({ step }: { step: 1 | 2 | 3 }) {
 export function GuestReceipt({
   signerName,
   signedAt,
+  heading,
+  lead,
 }: {
   signerName: string;
   signedAt: string | null;
+  heading: string;
+  lead: string;
 }) {
   return (
     <section className="flex flex-col items-center gap-5 rounded-2xl border border-line bg-surface px-5 py-10 text-center">
@@ -50,15 +60,13 @@ export function GuestReceipt({
         ✓
       </span>
       <div className="flex flex-col gap-2">
-        <h2 className="text-2xl font-semibold tracking-tight">Bekräftat</h2>
+        <h2 className="text-2xl font-semibold tracking-tight">{heading}</h2>
         <p className="text-base text-ink-soft">
           {signerName}
           {signedAt ? ` · ${signedAt}` : ""}
         </p>
       </div>
-      <p className="max-w-sm text-sm leading-relaxed text-muted">
-        Det här är en enkel digital bekräftelse — inte en juridisk e-signatur.
-      </p>
+      <p className="max-w-sm text-sm leading-relaxed text-muted">{lead}</p>
     </section>
   );
 }

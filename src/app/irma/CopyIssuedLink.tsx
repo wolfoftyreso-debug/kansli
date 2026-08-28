@@ -2,7 +2,15 @@
 
 import { useState } from "react";
 
-export function CopyIssuedLink({ url }: { url: string }) {
+export function CopyIssuedLink({
+  url,
+  copyLabel,
+  copiedLabel,
+}: {
+  url: string;
+  copyLabel: string;
+  copiedLabel: string;
+}) {
   const [copied, setCopied] = useState(false);
 
   async function copy() {
@@ -26,7 +34,7 @@ export function CopyIssuedLink({ url }: { url: string }) {
         onClick={copy}
         className="self-start rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper hover:bg-ink-soft"
       >
-        {copied ? "Kopierad" : "Kopiera länken"}
+        {copied ? copiedLabel : copyLabel}
       </button>
     </div>
   );

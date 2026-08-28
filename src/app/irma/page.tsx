@@ -5,11 +5,11 @@ import { CheckField, EmptyState, Field, SignInGate, Submit } from "@/components/
 import { readSession } from "@/lib/auth/session";
 import { listAgreements, type Agreement } from "@/lib/irma/agreements";
 import { peekIssuedLink, publicIrmaUrl } from "@/lib/irma/issued-link";
-import { daysUntilExpiry, effectiveStatus, statusLabel } from "@/lib/irma/status";
+import { daysUntilExpiry, effectiveStatus } from "@/lib/irma/status";
 import { tryRuntime } from "@/lib/platform/page";
 import { CopyIssuedLink } from "./CopyIssuedLink";
 import { createIrmaAgreement } from "./actions";
-import { t } from "@/lib/i18n";
+import { irmaStatus, t, type Locale } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
 
 export async function generateMetadata() {
@@ -20,24 +20,24 @@ export async function generateMetadata() {
   };
 }
 
-function expiryCopy(item: Agreement): string {
-  if (item.status === "expired") return "Länken har gått ut. Skicka en ny länk från avtalet.";
+function expiryCopy(locale: Locale, item: Agreement): string {
+  if (item.status === "expired") return t(locale, "irma.expiry.expired");
   const days = daysUntilExpiry(item.tokenExpiresAt);
-  if (days == null) return "Väntar på motparten.";
-  if (days <= 0) return "Länken har gått ut. Skicka en ny länk från avtalet.";
-  if (days === 1) return "1 dag kvar till länken går ut.";
-  return `${days} dagar kvar till länken går ut.`;
+  if (days == null) return t(locale, "irma.expiry.waiting");
+  if (days <= 0) return t(locale, "irma.expiry.expired");
+  if (days === 1) return t(locale, "irma.expiry.oneDay");
+  return t(locale, "irma.expiry.days", { days });
 }
 
 function needsAttention(item: Agreement): boolean {
   return item.status === "draft" || item.status === "viewed" || item.status === "expired";
 }
 
-function AgreementCard({ item }: { item: Agreement }) {
+function AgreementCard({ item, locale }: { item: Agreement; locale: Locale }) {
   return (
     <li className="rounded-2xl border border-line bg-surface px-5 py-4">
       <p className="text-xs font-medium uppercase tracking-wide text-accent">
-        {statusLabel(item.status)}
+        {irmaStatus(locale, item.status)}
       </p>
       <p className="mt-2 text-lg font-medium tracking-tight">
         <Link href={`/irma/${item.id}`} className="hover:underline">
@@ -46,7 +46,7 @@ function AgreementCard({ item }: { item: Agreement }) {
       </p>
       <p className="mt-1 text-sm text-ink-soft">{item.counterparty}</p>
       {item.status !== "signed" && item.status !== "cancelled" ? (
-        <p className="mt-2 text-xs text-muted">{expiryCopy(item)}</p>
+        <p className="mt-2 text-xs text-muted">{expiryCopy(locale, item)}</p>
       ) : null}
     </li>
   );
@@ -99,13 +99,17 @@ export default async function IrmaPage({
 
       {issued ? (
         <section className="rounded-md border border-line bg-accent-soft px-3 py-3 text-sm text-ink-soft">
-          <p>Länk till motparten — giltig tio minuter i den här webbläsaren. Kopiera den nu.</p>
-          <CopyIssuedLink url={publicIrmaUrl(issued)} />
+          <p>{t(locale, "irma.issuedBanner")}</p>
+          <CopyIssuedLink
+            url={publicIrmaUrl(issued)}
+            copyLabel={t(locale, "irma.copyLink")}
+            copiedLabel={t(locale, "irma.copied")}
+          />
           <a
             href={issued}
             className="mt-2 inline-block font-medium text-ink underline decoration-line underline-offset-4"
           >
-            Öppna länken
+            {t(locale, "irma.openLink")}
           </a>
         </section>
       ) : null}
@@ -122,61 +126,68 @@ export default async function IrmaPage({
         <>
           {waiting.length > 0 ? (
             <section className="flex flex-col gap-3">
-              <h2 className="text-sm font-medium text-ink-soft">Behöver uppmärksamhet</h2>
+              <h2 className="text-sm font-medium text-ink-soft">
+                {t(locale, "irma.needsAttention")}
+              </h2>
               <ul className="flex flex-col gap-3">
                 {waiting.map((item) => (
-                  <AgreementCard key={item.id} item={item} />
+                  <AgreementCard key={item.id} item={item} locale={locale} />
                 ))}
               </ul>
             </section>
           ) : null}
 
           <form action={createIrmaAgreement} className="flex flex-col gap-4">
-            <Field name="title" label="Titel" required large />
-            <Field name="counterparty" label="Motpart" required large />
+            <Field name="title" label={t(locale, "irma.field.title")} required large />
+            <Field
+              name="counterparty"
+              label={t(locale, "irma.field.counterparty")}
+              required
+              large
+            />
             <Field
               name="body"
-              label="Vad motparten ska läsa"
+              label={t(locale, "irma.field.body")}
               multiline
               large
-              placeholder="Valfri text. Klausuler läggs till automatiskt."
+              placeholder={t(locale, "irma.field.bodyPlaceholder")}
             />
             <CheckField
               name="requireAck"
               defaultChecked
-              label="Kräv bekräftelse (nivå 1). Avmarkera för rent informationsunderlag."
+              label={t(locale, "irma.field.requireAck")}
             />
-            <Submit large>Skapa och visa länk</Submit>
+            <Submit large>{t(locale, "irma.create")}</Submit>
           </form>
 
           <section className="flex flex-col gap-3">
             <p className="flex flex-wrap gap-3 text-sm">
               <Link href="/irma" className="underline decoration-line underline-offset-4">
-                Alla
+                {t(locale, "irma.filter.all")}
               </Link>
               <Link
                 href="/irma?status=waiting"
                 className="underline decoration-line underline-offset-4"
               >
-                Väntar
+                {t(locale, "irma.filter.waiting")}
               </Link>
               <Link
                 href="/irma?status=signed"
                 className="underline decoration-line underline-offset-4"
               >
-                Bekräftade
+                {t(locale, "irma.filter.signed")}
               </Link>
               <Link
                 href="/irma?status=expired"
                 className="underline decoration-line underline-offset-4"
               >
-                Utgångna
+                {t(locale, "irma.filter.expired")}
               </Link>
               <Link
                 href="/irma?status=cancelled"
                 className="underline decoration-line underline-offset-4"
               >
-                Återkallade
+                {t(locale, "irma.filter.cancelled")}
               </Link>
             </p>
             <form className="flex gap-2" action="/irma" method="get">
@@ -184,22 +195,24 @@ export default async function IrmaPage({
               <input
                 name="q"
                 defaultValue={query}
-                placeholder="Sök titel eller motpart"
+                placeholder={t(locale, "irma.searchPlaceholder")}
                 className="min-h-12 flex-1 rounded-lg border border-line bg-paper px-4 py-3 text-base"
               />
               <button
                 type="submit"
                 className="min-h-12 rounded-lg border border-line px-4 text-sm text-ink-soft"
               >
-                Sök
+                {t(locale, "irma.search")}
               </button>
             </form>
             {rest.length === 0 && waiting.length === 0 ? (
-              <EmptyState>{query ? "Inget matchade sökningen." : "Inga avtal ännu."}</EmptyState>
+              <EmptyState>
+                {query ? t(locale, "irma.emptySearch") : t(locale, "irma.empty")}
+              </EmptyState>
             ) : rest.length > 0 ? (
               <ul className="flex flex-col gap-3">
                 {rest.map((item) => (
-                  <AgreementCard key={item.id} item={item} />
+                  <AgreementCard key={item.id} item={item} locale={locale} />
                 ))}
               </ul>
             ) : null}

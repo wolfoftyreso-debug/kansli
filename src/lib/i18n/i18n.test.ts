@@ -15,6 +15,8 @@ import {
   ekonomiRevolutError,
   ekonomiRevolutStatus,
   ekonomiSmsStatus,
+  irmaStatus,
+  irmaVerification,
   messageKeys,
   t,
   tyraCaseStatus,
@@ -105,6 +107,14 @@ describe("locale registry", () => {
     expect(ekonomiRevolutError("sv", "configuration")).toBe(
       "Revolut-konfigurationen är inte klar.",
     );
+    expect(t("en", "irma.create")).toBe("Create and show link");
+    expect(t("sv", "irma.create")).toBe("Skapa och visa länk");
+    expect(irmaStatus("en", "signed")).toBe("Confirmed");
+    expect(irmaStatus("sv", "signed")).toBe("Bekräftat");
+    expect(irmaVerification("en", 1)).toBe("Digital confirmation (level 1)");
+    expect(irmaVerification("sv", 0)).toBe("Ingen bekräftelse (informationsunderlag)");
+    expect(t("en", "irma.guest.opened")).toBe("I have opened the document");
+    expect(t("sv", "irma.guest.readHeading")).toBe("Det här ska du läsa");
     expect(t("sv", "chrome.signIn")).toBe("Logga in");
     expect(t("pl", "chrome.language")).toBe("Język");
     expect(t("de", "chrome.signIn")).toBe("Anmelden");

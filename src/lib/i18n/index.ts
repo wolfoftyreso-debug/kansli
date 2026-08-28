@@ -34,6 +34,8 @@ export {
   familyPartyLabel,
   familyStackLine,
   familyStatusLabel,
+  irmaStatus,
+  irmaVerification,
   messageKeys,
   opsNoticeLevel,
   opsQueueStatus,
