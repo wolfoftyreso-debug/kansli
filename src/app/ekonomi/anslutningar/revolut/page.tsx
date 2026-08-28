@@ -3,51 +3,46 @@ import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { Notice, SignInGate, Submit } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
+import { formatDateTime } from "@/lib/format/datetime";
+import {
+  ekonomiRevolutCert,
+  ekonomiRevolutError,
+  ekonomiRevolutKey,
+  ekonomiRevolutStatus,
+  t,
+  type Locale,
+} from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 import { tryRuntime } from "@/lib/platform/page";
 import { REVOLUT_CONNECT_PATH, revolutConfigState } from "@/lib/ekonomi/revolut/config";
-import { describeCategory, type RevolutErrorCategory } from "@/lib/ekonomi/revolut/errors";
+import { type RevolutErrorCategory } from "@/lib/ekonomi/revolut/errors";
 import { revolutHealth, type RevolutHealth } from "@/lib/ekonomi/revolut/health";
 import { disconnectRevolutAction } from "../../actions";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "Revolut Business — Ekonomi" };
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "ekonomi.rev.metaTitle"),
+    description: t(locale, "ekonomi.rev.metaDescription"),
+  };
+}
 
-const STATUS_LABEL: Record<RevolutHealth["status"], string> = {
-  not_configured: "Inte konfigurerad",
-  pending_authorization: "Väntar på godkännande",
-  active: "Ansluten",
-  refreshing: "Förnyar anslutningen",
-  action_required: "Åtgärd krävs",
-  revoked: "Inte ansluten",
-  error: "Fel i konfigurationen",
-};
-
-const CERT_LABEL: Record<RevolutHealth["certificate"]["health"], string> = {
-  unknown: "Okänt utgångsdatum",
-  valid: "Giltigt",
-  expiring: "Går ut snart",
-  expired: "Utgånget",
-};
-
-const KEY_MATCH_LABEL: Record<RevolutHealth["certificate"]["keyMatch"]["state"], string> = {
-  match: "Stämmer med certifikatet",
-  mismatch: "Stämmer inte med certifikatet",
-  unknown: "Inte kontrollerat",
-};
-
-function when(value: string | null): string {
-  if (!value) return "aldrig";
-  return new Date(value).toLocaleString("sv-SE", { dateStyle: "short", timeStyle: "short" });
+function when(value: string | null, locale: Locale): string {
+  if (!value) return t(locale, "ekonomi.rev.never");
+  return formatDateTime(value, locale);
 }
 
 /**
  * The grant can be alive in Revolut while this deployment still cannot sign for
- * it, and calling that "Frisk" would contradict everything else on the page.
+ * it, and calling that "Working" would contradict everything else on the page.
  */
-function authenticationLabel(health: RevolutHealth): string {
-  if (health.certificate.keyMatch.state === "mismatch") return "Nyckeln matchar inte";
-  return health.oauthConnected ? "Fungerar" : "Inte ansluten";
+function authenticationLabel(locale: Locale, health: RevolutHealth): string {
+  if (health.certificate.keyMatch.state === "mismatch") {
+    return t(locale, "ekonomi.rev.authMismatch");
+  }
+  return health.oauthConnected ? t(locale, "ekonomi.rev.authOk") : t(locale, "ekonomi.rev.authOff");
 }
 
 function Row({ label, value }: { label: string; value: string }) {
@@ -65,6 +60,7 @@ export default async function RevolutConnectionPage({
   searchParams: Promise<{ connected?: string; error?: string }>;
 }) {
   const session = await readSession();
+  const locale = await readLocale();
   const params = await searchParams;
   const config = revolutConfigState();
   const runtime = tryRuntime(session?.org?.ref);
@@ -76,59 +72,81 @@ export default async function RevolutConnectionPage({
       <ProductCrumb
         crumbs={[
           { href: "/ekonomi", label: "Ekonomi" },
-          { href: "/ekonomi/anslutningar", label: "Anslutningar" },
+          { href: "/ekonomi/anslutningar", label: t(locale, "ekonomi.connections") },
           { href: "/ekonomi/anslutningar/revolut", label: "Revolut" },
         ]}
       />
-      <h1 className="text-3xl font-semibold tracking-tight">Revolut Business</h1>
-      <p className="max-w-xl text-ink-soft">
-        Anslut en gång, sen sköter det sig självt. Du behöver bara logga in i Revolut igen om banken
-        stänger anslutningen.
-      </p>
+      <h1 className="text-3xl font-semibold tracking-tight">{t(locale, "ekonomi.rev.heading")}</h1>
+      <p className="max-w-xl text-ink-soft">{t(locale, "ekonomi.rev.lead")}</p>
 
       {params.error ? (
-        <Notice>{describeCategory(params.error as RevolutErrorCategory)}</Notice>
+        <Notice>{ekonomiRevolutError(locale, params.error as RevolutErrorCategory)}</Notice>
       ) : null}
-      {params.connected ? <Notice>Revolut är ansluten. Förnyelsen sköter sig själv.</Notice> : null}
+      {params.connected ? <Notice>{t(locale, "ekonomi.rev.connected")}</Notice> : null}
 
       {!session ? (
-        <SignInGate next="/ekonomi/anslutningar/revolut" title="Logga in för att ansluta Revolut">
-          Bankanslutningen tillhör organisationen.
+        <SignInGate
+          next="/ekonomi/anslutningar/revolut"
+          title={t(locale, "ekonomi.rev.signInTitle")}
+          actionLabel={t(locale, "chrome.signIn")}
+        >
+          {t(locale, "ekonomi.rev.signInBody")}
         </SignInGate>
       ) : (
         <>
           <section className="rounded-xl border border-line bg-surface px-4 py-4">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <h2 className="text-lg font-semibold">
-                {health ? STATUS_LABEL[health.status] : "Okänd status"}
+                {health
+                  ? ekonomiRevolutStatus(locale, health.status)
+                  : t(locale, "ekonomi.rev.statusUnknown")}
               </h2>
               <span className="pd-label text-faint">{config.environment}</span>
             </div>
             <p className="mt-2 text-sm text-ink-soft">
-              {health?.summary ?? "Databasen svarar inte, så statusen kan inte läsas."}
+              {health?.summary ?? t(locale, "ekonomi.rev.noDb")}
             </p>
 
             {health ? (
               <div className="mt-4">
-                <Row label="Inloggning mot banken" value={authenticationLabel(health)} />
                 <Row
-                  label="Automatisk förnyelse"
-                  value={health.automaticRenewal ? "Aktiv" : "Inaktiv"}
+                  label={t(locale, "ekonomi.rev.auth")}
+                  value={authenticationLabel(locale, health)}
                 />
-                <Row label="Senast verifierad" value={when(health.lastSuccessAt)} />
-                <Row label="Senaste förnyelse" value={when(health.lastRefreshAt)} />
-                <Row label="Ansluten sedan" value={when(health.connectedAt)} />
                 <Row
-                  label="Certifikat"
+                  label={t(locale, "ekonomi.rev.renewal")}
                   value={
-                    health.certificate.daysUntilExpiry === null
-                      ? CERT_LABEL[health.certificate.health]
-                      : `${CERT_LABEL[health.certificate.health]} · ${health.certificate.daysUntilExpiry} dagar`
+                    health.automaticRenewal
+                      ? t(locale, "ekonomi.rev.active")
+                      : t(locale, "ekonomi.rev.inactive")
                   }
                 />
                 <Row
-                  label="Nyckel och certifikat"
-                  value={KEY_MATCH_LABEL[health.certificate.keyMatch.state]}
+                  label={t(locale, "ekonomi.rev.lastVerified")}
+                  value={when(health.lastSuccessAt, locale)}
+                />
+                <Row
+                  label={t(locale, "ekonomi.rev.lastRenewal")}
+                  value={when(health.lastRefreshAt, locale)}
+                />
+                <Row
+                  label={t(locale, "ekonomi.rev.connectedSince")}
+                  value={when(health.connectedAt, locale)}
+                />
+                <Row
+                  label={t(locale, "ekonomi.rev.cert")}
+                  value={
+                    health.certificate.daysUntilExpiry === null
+                      ? ekonomiRevolutCert(locale, health.certificate.health)
+                      : t(locale, "ekonomi.rev.certDays", {
+                          label: ekonomiRevolutCert(locale, health.certificate.health),
+                          days: health.certificate.daysUntilExpiry,
+                        })
+                  }
+                />
+                <Row
+                  label={t(locale, "ekonomi.rev.keyAndCert")}
+                  value={ekonomiRevolutKey(locale, health.certificate.keyMatch.state)}
                 />
               </div>
             ) : null}
@@ -145,39 +163,38 @@ export default async function RevolutConnectionPage({
                   className="rounded-lg border border-line px-3 py-2 text-sm font-medium hover:bg-surface-2"
                 >
                   {health?.oauthConnected || health?.actionRequired
-                    ? "Anslut om Revolut"
-                    : "Anslut Revolut"}
+                    ? t(locale, "ekonomi.stmt.reconnect")
+                    : t(locale, "ekonomi.stmt.connect")}
                 </Link>
               ) : config.missing.length > 0 ? (
                 <span className="text-sm text-ink-soft">
-                  Anslut går att trycka på när {config.missing.join(", ")} är satt.
+                  {t(locale, "ekonomi.rev.connectWhenEnv", { keys: config.missing.join(", ") })}
                 </span>
               ) : (
                 <span className="text-sm text-ink-soft">
-                  Anslut går att trycka på när nyckeln och certifikatet hör samman.
+                  {t(locale, "ekonomi.rev.connectWhenMatch")}
                 </span>
               )}
               {health && health.status !== "not_configured" && health.status !== "revoked" ? (
                 <form action={disconnectRevolutAction}>
-                  <Submit>Koppla bort</Submit>
+                  <Submit>{t(locale, "ekonomi.rev.disconnect")}</Submit>
                 </form>
               ) : null}
             </div>
           </section>
 
           <section className="rounded-xl border border-line bg-surface px-4 py-4">
-            <h2 className="text-lg font-semibold">Det här klistrar du in i Revolut</h2>
-            <p className="mt-2 text-sm text-ink-soft">
-              Adressen nedan klistrar du in hos Revolut. Den ändras aldrig och hör inte till
-              Pixdrift-inloggningen.
-            </p>
+            <h2 className="text-lg font-semibold">{t(locale, "ekonomi.rev.pasteHeading")}</h2>
+            <p className="mt-2 text-sm text-ink-soft">{t(locale, "ekonomi.rev.pasteLead")}</p>
             <p className="mt-2 break-all font-mono text-sm">{config.redirect.uri}</p>
             <p className="mt-3 text-sm text-ink-soft">{config.redirect.reason}</p>
             <p className="mt-3 text-sm text-ink-soft">
-              JWT iss: <span className="font-mono">{config.jwtIssuer}</span>
+              {t(locale, "ekonomi.rev.jwtIss")}{" "}
+              <span className="font-mono">{config.jwtIssuer}</span>
               {config.certificate.fingerprint ? (
                 <>
-                  {" · certifikatets fingeravtryck: "}
+                  {" · "}
+                  {t(locale, "ekonomi.rev.fingerprint")}{" "}
                   <span className="font-mono">{config.certificate.fingerprint}</span>
                 </>
               ) : null}
@@ -185,11 +202,8 @@ export default async function RevolutConnectionPage({
           </section>
 
           <section className="rounded-xl border border-line bg-surface px-4 py-4">
-            <h2 className="text-lg font-semibold">Om du kopplar bort</h2>
-            <p className="mt-2 text-sm text-ink-soft">
-              Vi tar bort anslutningen här. Vill du stänga dörren helt, ta även bort anslutningen
-              inne i Revolut Business (under APIs).
-            </p>
+            <h2 className="text-lg font-semibold">{t(locale, "ekonomi.rev.disconnectHeading")}</h2>
+            <p className="mt-2 text-sm text-ink-soft">{t(locale, "ekonomi.rev.disconnectLead")}</p>
           </section>
 
           <p>
@@ -197,7 +211,7 @@ export default async function RevolutConnectionPage({
               href="/ekonomi/kontoutdrag"
               className="underline decoration-line underline-offset-4"
             >
-              Öppna kontoutdrag
+              {t(locale, "ekonomi.conn.openStatements")}
             </Link>
           </p>
         </>

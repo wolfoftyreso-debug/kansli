@@ -138,3 +138,23 @@ export function ekonomiConnSlot(locale: Locale, provider: string): string {
   const key = `ekonomi.conn.slot.${provider}` as MessageKey;
   return key in catalogs.en ? t(locale, key) : provider;
 }
+
+export function ekonomiRevolutStatus(locale: Locale, status: string): string {
+  const key = `ekonomi.rev.status.${status}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : status;
+}
+
+export function ekonomiRevolutCert(locale: Locale, health: string): string {
+  const key = `ekonomi.rev.cert.${health}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : health;
+}
+
+export function ekonomiRevolutKey(locale: Locale, state: string): string {
+  const key = `ekonomi.rev.key.${state}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : state;
+}
+
+export function ekonomiRevolutError(locale: Locale, category: string): string {
+  const key = `ekonomi.rev.err.${category}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : t(locale, "ekonomi.rev.err.unknown");
+}

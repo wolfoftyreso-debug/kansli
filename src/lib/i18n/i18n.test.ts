@@ -12,6 +12,8 @@ import {
   ekonomiConnSlot,
   ekonomiInvoiceStatus,
   ekonomiPayStatus,
+  ekonomiRevolutError,
+  ekonomiRevolutStatus,
   ekonomiSmsStatus,
   messageKeys,
   t,
@@ -93,6 +95,16 @@ describe("locale registry", () => {
     expect(t("sv", "ekonomi.vouch.heading")).toBe("Verifikat");
     expect(ekonomiConnSlot("en", "revolut_business")).toBe("Revolut Business (statements)");
     expect(ekonomiConnSlot("sv", "revolut_business")).toBe("Revolut Business (kontoutdrag)");
+    expect(t("en", "ekonomi.rev.heading")).toBe("Revolut Business");
+    expect(t("sv", "ekonomi.rev.signInTitle")).toBe("Logga in för att ansluta Revolut");
+    expect(ekonomiRevolutStatus("en", "not_configured")).toBe("Not configured");
+    expect(ekonomiRevolutStatus("sv", "not_configured")).toBe("Inte konfigurerad");
+    expect(ekonomiRevolutError("en", "configuration")).toBe(
+      "The Revolut configuration is not ready.",
+    );
+    expect(ekonomiRevolutError("sv", "configuration")).toBe(
+      "Revolut-konfigurationen är inte klar.",
+    );
     expect(t("sv", "chrome.signIn")).toBe("Logga in");
     expect(t("pl", "chrome.language")).toBe("Język");
     expect(t("de", "chrome.signIn")).toBe("Anmelden");
