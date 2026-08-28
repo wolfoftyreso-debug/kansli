@@ -310,7 +310,7 @@ export async function fetchWebPresence(input: {
       organicKeywords: null,
       organicTraffic: null,
       adwordsKeywords: null,
-      reason: "Ingen webbdatakälla är kopplad. Uppgifterna hämtas inte.",
+      reason: "No search-visibility source is connected. Nothing is fetched.",
     };
   } else {
     report = await requestDomainOverview({ domain }, input.fetchImpl ?? fetch, env);

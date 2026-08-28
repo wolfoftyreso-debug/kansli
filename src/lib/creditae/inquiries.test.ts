@@ -259,7 +259,7 @@ live("creditae.inquiries (live Postgres)", () => {
       fetchImpl: async () => new Response("ERROR 50 :: NOTHING FOUND", { status: 200 }),
     });
     expect(failed.webStatus).toBe("failed");
-    expect(failed.webReason).toMatch(/hittades inte/);
+    expect(failed.webReason).toMatch(/not found/i);
     const failedEvents = await events.list({ orgRef, kind: "creditae.web.failed" });
     expect(failedEvents).toHaveLength(1);
   });
