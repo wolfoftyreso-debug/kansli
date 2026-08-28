@@ -117,7 +117,7 @@ export default async function PlatformPage() {
           {" · "}
           Gateway {status.gateway.configured ? status.gateway.auth : t(locale, "common.missing")}
           {" · "}
-          {ritaStatusLine(status.rita)}
+          {ritaStatusLine(status.rita, locale)}
         </p>
         <ul className="flex flex-col gap-2">
           {FAMILY_STACK.map((row) => (

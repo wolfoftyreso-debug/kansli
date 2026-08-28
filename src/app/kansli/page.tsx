@@ -82,7 +82,7 @@ export default async function KansliHub({
               Gateway{" "}
               {status.gateway.configured ? status.gateway.auth : t(locale, "common.missing")}
               {" · "}
-              {ritaStatusLine(status.rita)}
+              {ritaStatusLine(status.rita, locale)}
             </p>
             <p className="mt-3 text-sm">
               <Link

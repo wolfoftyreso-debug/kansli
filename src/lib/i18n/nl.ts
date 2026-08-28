@@ -1670,4 +1670,8 @@ export const NL: Record<MessageKey, string> = {
   "hold.body":
     "The subscription invoice of {amount} incl. VAT fell due {when}. The rooms are paused until it is paid — nothing is deleted, everything is still there.",
   "hold.openInvoice": "Open the invoice in Ekonomi",
+
+  "platform.rita.missing": "RITA analysis is missing. New analyses are stopped.",
+  "platform.rita.rulesModel": "RITA · rules + model",
+  "platform.rita.rulesOnly": "RITA · fixed rules only",
 };

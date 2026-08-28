@@ -1654,4 +1654,8 @@ export const SV: Record<MessageKey, string> = {
   "hold.body":
     "Abonnemangsfakturan på {amount} inkl. moms förföll {when}. Rummen är pausade tills den är betald — inget är raderat, allt finns kvar.",
   "hold.openInvoice": "Öppna fakturan i Ekonomi",
+
+  "platform.rita.missing": "RITA:s analys saknas. Nya analyser stoppas.",
+  "platform.rita.rulesModel": "RITA · regler + modell",
+  "platform.rita.rulesOnly": "RITA · bara fasta regler",
 };
