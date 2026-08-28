@@ -3,17 +3,25 @@ import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { EmptyState, SignInGate } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
+import { t, tyraCaseStatus } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 import { tryRuntime } from "@/lib/platform/page";
 import { listCases } from "@/lib/tyra/cases";
 import { listCustomerCards } from "@/lib/tyra/hotel";
 
-export const metadata = {
-  title: "Kunder — TYRA",
-  description: "Kunder, fordon och hjulset. Inga live-priser, inga SMS.",
-};
+export const dynamic = "force-dynamic";
+
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "tyra.cards.metaTitle"),
+    description: t(locale, "tyra.cards.metaDescription"),
+  };
+}
 
 export default async function TyraCustomersPage() {
   const session = await readSession();
+  const locale = await readLocale();
   const runtime = tryRuntime(session?.org?.ref);
   const cards =
     session?.org?.ref && runtime ? await listCustomerCards(runtime.pool, session.org.ref) : [];
@@ -24,20 +32,21 @@ export default async function TyraCustomersPage() {
       <ProductCrumb
         crumbs={[
           { href: "/tyra", label: "TYRA" },
-          { href: "/tyra/kunder", label: "Kundkort" },
+          { href: "/tyra/kunder", label: t(locale, "tyra.customers") },
         ]}
       />
-      <h1 className="text-3xl font-semibold tracking-tight">Kundkort</h1>
-      <p className="max-w-xl text-ink-soft">
-        Kunder, fordon och hjulset ni har registrerat. Nästa åtgärd är ett förslag från systemet —
-        inte en färdig offert.
-      </p>
+      <h1 className="text-3xl font-semibold tracking-tight">{t(locale, "tyra.cards.heading")}</h1>
+      <p className="max-w-xl text-ink-soft">{t(locale, "tyra.cards.lead")}</p>
       {!session?.org ? (
-        <SignInGate next="/tyra/kunder" title="Logga in för att se kundkort">
-          Kundkortet tillhör organisationen.
+        <SignInGate
+          next="/tyra/kunder"
+          title={t(locale, "tyra.cards.signInTitle")}
+          actionLabel={t(locale, "chrome.signIn")}
+        >
+          {t(locale, "tyra.cards.signInBody")}
         </SignInGate>
       ) : cards.length === 0 ? (
-        <EmptyState>Inga kunder ännu. Öppna ett ärende först.</EmptyState>
+        <EmptyState>{t(locale, "tyra.cards.empty")}</EmptyState>
       ) : (
         <ul className="flex flex-col gap-3">
           {cards.map((card) => (
@@ -47,7 +56,10 @@ export default async function TyraCustomersPage() {
               </p>
               <p className="mt-2 text-lg font-medium">{card.customer.name}</p>
               <p className="text-sm text-ink-soft">
-                {card.counts.vehicles} fordon · {card.counts.wheelSets} hjulset
+                {t(locale, "tyra.cards.counts", {
+                  vehicles: card.counts.vehicles,
+                  wheels: card.counts.wheelSets,
+                })}
               </p>
               <ul className="mt-3 flex flex-col gap-2">
                 {card.vehicles.map((row) => (
@@ -61,7 +73,7 @@ export default async function TyraCustomersPage() {
                               `${ws.season} ${ws.storageStatus}${ws.storageCode ? ` ${ws.storageCode}` : ""}`,
                           )
                           .join(", ")}`
-                      : " · inget hjulset"}
+                      : t(locale, "tyra.cards.noWheels")}
                   </li>
                 ))}
               </ul>
@@ -74,7 +86,8 @@ export default async function TyraCustomersPage() {
                         href={`/tyra/cases/${item.id}`}
                         className="text-sm underline decoration-line underline-offset-4 hover:text-ink"
                       >
-                        {item.registrationNumber ?? "Ärende"} · {item.caseStatus}
+                        {item.registrationNumber ?? t(locale, "tyra.caseFallback")} ·{" "}
+                        {tyraCaseStatus(locale, item.caseStatus)}
                       </Link>
                     </li>
                   ))}

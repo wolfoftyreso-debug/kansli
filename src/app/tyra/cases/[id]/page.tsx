@@ -7,16 +7,18 @@ import { Button } from "@/components/tyra/Button";
 import { StatusBanner } from "@/components/tyra/Status";
 import { TaskRow } from "@/components/tyra/Rows";
 import { WorkCard } from "@/components/tyra/WorkCard";
+import { bookTyraQuoteAction } from "@/app/ekonomi/actions";
 import { readSession } from "@/lib/auth/session";
-import { formatSwedishDateTime } from "@/lib/format/datetime";
+import { listBookedTyraQuotes, listUnbookedTyraQuotes } from "@/lib/ekonomi/tyra-sales";
+import { formatDateTime } from "@/lib/format/datetime";
+import { t, tyraCaseStatus, tyraStepStatus } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 import { tryRuntime } from "@/lib/platform/page";
-import { CASE_STATUS_LABELS, STEP_STATUS_LABELS, getCaseWorkCard } from "@/lib/tyra/cases";
+import { getCaseWorkCard } from "@/lib/tyra/cases";
 import { listCaseEvents } from "@/lib/tyra/hotel";
 import { INSPECTION_POSITIONS } from "@/lib/tyra/inspections";
 import { peekIssuedHubLink, publicTyraUrl } from "@/lib/tyra/issued-link";
 import { formatSekFromOre, listQuoteDrafts } from "@/lib/tyra/quotes";
-import { listBookedTyraQuotes, listUnbookedTyraQuotes } from "@/lib/ekonomi/tyra-sales";
-import { bookTyraQuoteAction } from "@/app/ekonomi/actions";
 import {
   cancelTyraCase,
   enqueueTyraReminder,
@@ -30,10 +32,15 @@ import {
   updateTyraStep,
 } from "../../actions";
 
-export const metadata = {
-  title: "Ärende — TYRA",
-  description: "Arbetssteg för ett däckärende.",
-};
+export const dynamic = "force-dynamic";
+
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "tyra.case.metaTitle"),
+    description: t(locale, "tyra.case.metaDescription"),
+  };
+}
 
 function caseTone(status: string) {
   if (status === "DONE") return "good" as const;
@@ -59,6 +66,7 @@ export default async function TyraCasePage({
   const { id } = await params;
   const query = await searchParams;
   const session = await readSession();
+  const locale = await readLocale();
   const runtime = tryRuntime(session?.org?.ref);
   const card =
     session?.org?.ref && runtime ? await getCaseWorkCard(runtime.pool, session.org.ref, id) : null;
@@ -82,37 +90,41 @@ export default async function TyraCasePage({
   const bookedByQuoteId = new Map(bookedQuotes.map((row) => [row.quoteId, row]));
   if (session?.org && !card) notFound();
   const issued = query.issued === "1" ? await peekIssuedHubLink() : null;
-  const senderName = session?.org?.name ?? "Verkstaden";
+  const senderName = session?.org?.name ?? t(locale, "tyra.case.workshop");
 
   return (
     <AppShell current="tyra" session={session}>
       {!session?.org ? (
-        <SignInGate next="/tyra" title="Logga in för att se ärendet">
-          Ärendet tillhör organisationen. Logga in med Pixdrift.
+        <SignInGate
+          next="/tyra"
+          title={t(locale, "tyra.case.signInTitle")}
+          actionLabel={t(locale, "chrome.signIn")}
+        >
+          {t(locale, "tyra.case.signInBody")}
         </SignInGate>
       ) : card ? (
         <>
           <ProductCrumb
             crumbs={[
               { href: "/tyra", label: "TYRA" },
-              { href: "/tyra/kunder", label: "Kundkort" },
-              { href: "/tyra/integrations", label: "Integrationer" },
+              { href: "/tyra/kunder", label: t(locale, "tyra.customers") },
+              { href: "/tyra/integrations", label: t(locale, "tyra.integrations") },
             ]}
           />
 
           <WorkCard
             title={card.headline}
-            subtitle={card.summary || "Inga åtgärder"}
+            subtitle={card.summary || t(locale, "tyra.case.noJobs")}
             status={{
               tone: caseTone(card.caseStatus),
-              label: CASE_STATUS_LABELS[card.caseStatus] ?? card.caseStatus,
+              label: tyraCaseStatus(locale, card.caseStatus),
             }}
-            nextTitle={card.nextBestAction?.title ?? "Klart."}
+            nextTitle={card.nextBestAction?.title ?? t(locale, "tyra.case.doneFallback")}
             nextHint={card.customerName}
           >
             {issued ? (
-              <StatusBanner tone="attention" title="Länk till kunden">
-                Giltig två minuter i den här webbläsaren. Kopiera den nu.
+              <StatusBanner tone="attention" title={t(locale, "tyra.case.hubLinkTitle")}>
+                {t(locale, "tyra.case.hubLinkBody")}
                 <input
                   readOnly
                   value={publicTyraUrl(issued)}
@@ -123,7 +135,7 @@ export default async function TyraCasePage({
                     href={issued}
                     className="text-sm underline decoration-line underline-offset-4 hover:text-ink"
                   >
-                    Öppna kundvyn
+                    {t(locale, "tyra.case.openHub")}
                   </a>
                 </p>
               </StatusBanner>
@@ -135,11 +147,13 @@ export default async function TyraCasePage({
                   <input type="hidden" name="id" value={id} />
                   <input type="hidden" name="customerId" value={card.customerId} />
                   <Button type="submit" tone="primary">
-                    Skapa kundhub-länk
+                    {t(locale, "tyra.case.createHub")}
                   </Button>
                 </form>
               ) : (
-                <StatusBanner tone="neutral">Ingen kund är kopplad.</StatusBanner>
+                <StatusBanner tone="neutral">
+                  {t(locale, "tyra.case.noCustomerLinked")}
+                </StatusBanner>
               )}
               {card.vehicleId && card.registrationNumber ? (
                 <form action={enqueueTyraReminder}>
@@ -153,7 +167,7 @@ export default async function TyraCasePage({
                   <input type="hidden" name="phone" value={card.customerPhone ?? ""} />
                   <input type="hidden" name="email" value={card.customerEmail ?? ""} />
                   <input type="hidden" name="senderName" value={senderName} />
-                  <Button type="submit">Köa säsongspåminnelse</Button>
+                  <Button type="submit">{t(locale, "tyra.case.queueReminder")}</Button>
                 </form>
               ) : null}
             </div>
@@ -164,47 +178,45 @@ export default async function TyraCasePage({
               action={saveTyraCustomer}
               className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
             >
-              <h2 className="text-lg font-semibold">Kund</h2>
+              <h2 className="text-lg font-semibold">{t(locale, "tyra.case.customerHeading")}</h2>
               <input type="hidden" name="id" value={id} />
               <input type="hidden" name="customerId" value={card.customerId ?? ""} />
               <Field
                 name="customerName"
-                label="Namn"
+                label={t(locale, "tyra.field.name")}
                 required
                 defaultValue={card.customerName ?? ""}
               />
               <Field
                 name="phone"
-                label="Telefon"
+                label={t(locale, "tyra.field.phone")}
                 type="tel"
                 defaultValue={card.customerPhone ?? ""}
               />
               <Field
                 name="email"
-                label="E-post"
+                label={t(locale, "tyra.field.email")}
                 type="email"
                 defaultValue={card.customerEmail ?? ""}
               />
-              <Submit>Spara kund</Submit>
+              <Submit>{t(locale, "tyra.case.saveCustomer")}</Submit>
             </form>
 
             <form
               action={saveTyraStorageCode}
               className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
             >
-              <h2 className="text-lg font-semibold">Lagerplats</h2>
-              <p className="text-sm text-ink-soft">
-                Verkstadens egen kod. Inte ett live-lager. Sätter hjulsetet som inlagrat.
-              </p>
+              <h2 className="text-lg font-semibold">{t(locale, "tyra.case.storageHeading")}</h2>
+              <p className="text-sm text-ink-soft">{t(locale, "tyra.case.storageLead")}</p>
               <input type="hidden" name="id" value={id} />
               <Field
                 name="storageCode"
-                label="Plats"
+                label={t(locale, "tyra.field.place")}
                 required
                 defaultValue={card.storageCode ?? ""}
                 placeholder="A-12"
               />
-              <Submit>Spara lagerplats</Submit>
+              <Submit>{t(locale, "tyra.case.saveStorage")}</Submit>
             </form>
           </section>
 
@@ -212,17 +224,22 @@ export default async function TyraCasePage({
             action={saveTyraCaseNotes}
             className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
           >
-            <h2 className="text-lg font-semibold">Verkstadsanteckning</h2>
-            <p className="text-sm text-ink-soft">Bara ni. Inte kunden i hubben.</p>
+            <h2 className="text-lg font-semibold">{t(locale, "tyra.case.notesHeading")}</h2>
+            <p className="text-sm text-ink-soft">{t(locale, "tyra.case.notesLead")}</p>
             <input type="hidden" name="id" value={id} />
-            <Field name="notes" label="Anteckning" multiline defaultValue={card.advisorNotes} />
-            <Submit>Spara anteckning</Submit>
+            <Field
+              name="notes"
+              label={t(locale, "tyra.field.notes")}
+              multiline
+              defaultValue={card.advisorNotes}
+            />
+            <Submit>{t(locale, "tyra.case.saveNotes")}</Submit>
           </form>
 
           {card.caseStatus !== "DONE" && card.caseStatus !== "CANCELLED" ? (
             <form action={cancelTyraCase}>
               <input type="hidden" name="id" value={id} />
-              <Button type="submit">Avbryt ärendet</Button>
+              <Button type="submit">{t(locale, "tyra.case.cancel")}</Button>
             </form>
           ) : null}
 
@@ -231,25 +248,28 @@ export default async function TyraCasePage({
               <li key={step.kind}>
                 <TaskRow
                   headline={step.title}
-                  subtitle={step.required ? undefined : "Valfritt"}
-                  status={{ tone: stepTone(step.status), label: STEP_STATUS_LABELS[step.status] }}
+                  subtitle={step.required ? undefined : t(locale, "tyra.step.optional")}
+                  status={{
+                    tone: stepTone(step.status),
+                    label: tyraStepStatus(locale, step.status),
+                  }}
                   right={
                     <form action={updateTyraStep} className="flex flex-wrap gap-2">
                       <input type="hidden" name="id" value={id} />
                       <input type="hidden" name="stepKind" value={step.kind} />
                       {step.status !== "DOING" ? (
                         <Button type="submit" name="status" value="DOING" size="md">
-                          Påbörja
+                          {t(locale, "tyra.step.start")}
                         </Button>
                       ) : null}
                       {step.status !== "DONE" ? (
                         <Button type="submit" name="status" value="DONE" tone="primary">
-                          Klart
+                          {t(locale, "tyra.step.done")}
                         </Button>
                       ) : null}
                       {step.status !== "BLOCKED" ? (
                         <Button type="submit" name="status" value="BLOCKED">
-                          Blockera
+                          {t(locale, "tyra.step.block")}
                         </Button>
                       ) : null}
                     </form>
@@ -260,11 +280,8 @@ export default async function TyraCasePage({
           </ol>
 
           <section className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4">
-            <h2 className="text-lg font-semibold">Verifierad inspektion</h2>
-            <p className="text-sm text-ink-soft">
-              Fyra mönsterdjup, tekniker-verifierade. Det är det kunden får se i hubben. Ingen
-              automation.
-            </p>
+            <h2 className="text-lg font-semibold">{t(locale, "tyra.case.inspectionHeading")}</h2>
+            <p className="text-sm text-ink-soft">{t(locale, "tyra.case.inspectionLead")}</p>
             <form action={recordTyraInspection} className="grid gap-3 sm:grid-cols-4">
               <input type="hidden" name="id" value={id} />
               {INSPECTION_POSITIONS.map((position) => (
@@ -278,53 +295,64 @@ export default async function TyraCasePage({
                 />
               ))}
               <div className="sm:col-span-4">
-                <Submit>Spara inspektion</Submit>
+                <Submit>{t(locale, "tyra.case.saveInspection")}</Submit>
               </div>
             </form>
           </section>
 
           <section className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4">
-            <h2 className="text-lg font-semibold">Sälj däck</h2>
-            <p className="text-sm text-ink-soft">
-              Era egna belopp. Ett klick bokar fakturan i Ekonomi, inklusive 25 % moms. Inte
-              live-leverantör.
-            </p>
+            <h2 className="text-lg font-semibold">{t(locale, "tyra.case.sellHeading")}</h2>
+            <p className="text-sm text-ink-soft">{t(locale, "tyra.case.sellLead")}</p>
             <form action={saveAndBookTyraQuote} className="grid gap-3 sm:grid-cols-2">
               <input type="hidden" name="id" value={id} />
               <div className="sm:col-span-2">
-                <Field name="title" label="Rubrik" defaultValue="Däck + montering" />
+                <Field
+                  name="title"
+                  label={t(locale, "tyra.field.title")}
+                  defaultValue="Däck + montering"
+                />
               </div>
-              <Field name="quantity" label="Antal" defaultValue="4" inputMode="numeric" />
+              <Field
+                name="quantity"
+                label={t(locale, "tyra.field.quantity")}
+                defaultValue="4"
+                inputMode="numeric"
+              />
               <Field
                 name="unitCostSek"
-                label="Inköp per däck (kr)"
+                label={t(locale, "tyra.field.unitCost")}
                 defaultValue="1200"
                 inputMode="decimal"
               />
-              <Field name="markupPercent" label="Påslag %" defaultValue="20" inputMode="decimal" />
+              <Field
+                name="markupPercent"
+                label={t(locale, "tyra.field.markup")}
+                defaultValue="20"
+                inputMode="decimal"
+              />
               <Field
                 name="installationSek"
-                label="Montering per däck (kr)"
+                label={t(locale, "tyra.field.installation")}
                 defaultValue="150"
                 inputMode="decimal"
               />
               <Field
                 name="environmentalSek"
-                label="Miljöavgift per däck (kr)"
+                label={t(locale, "tyra.field.environmental")}
                 defaultValue="25"
                 inputMode="decimal"
               />
               <div className="sm:col-span-2">
-                <Field name="note" label="Intern notering" />
+                <Field name="note" label={t(locale, "tyra.field.internalNote")} />
               </div>
               <div className="flex flex-wrap gap-3 sm:col-span-2">
-                <Submit>Boka sälj</Submit>
+                <Submit>{t(locale, "tyra.case.bookSale")}</Submit>
                 <button
                   type="submit"
                   formAction={saveTyraQuote}
                   className="self-start border border-line bg-paper px-4 py-2 text-sm"
                 >
-                  Spara utkast
+                  {t(locale, "tyra.case.saveDraft")}
                 </button>
               </div>
             </form>
@@ -339,23 +367,23 @@ export default async function TyraCasePage({
                     >
                       <span>
                         {quote.title}: {formatSekFromOre(quote.snapshot.totalCustomerPriceOre)} ·{" "}
-                        {formatSwedishDateTime(quote.createdAt)}
+                        {formatDateTime(quote.createdAt, locale)}
                       </span>
                       {unbookedIds.has(quote.id) ? (
                         <form action={bookTyraQuoteAction}>
                           <input type="hidden" name="quoteId" value={quote.id} />
                           <input type="hidden" name="tireCaseId" value={id} />
-                          <Submit>Boka sälj</Submit>
+                          <Submit>{t(locale, "tyra.case.bookSale")}</Submit>
                         </form>
                       ) : booked ? (
                         <Link
                           href={`/ekonomi/fakturor/${booked.invoiceId}`}
                           className="underline decoration-line underline-offset-4"
                         >
-                          Bokad {booked.invoiceNumber}
+                          {t(locale, "tyra.case.bookedInvoice", { number: booked.invoiceNumber })}
                         </Link>
                       ) : (
-                        <span>Bokad i Ekonomi</span>
+                        <span>{t(locale, "tyra.case.bookedEkonomi")}</span>
                       )}
                     </li>
                   );
@@ -366,12 +394,12 @@ export default async function TyraCasePage({
 
           {timeline.length > 0 ? (
             <section className="flex flex-col gap-3">
-              <h2 className="text-lg font-semibold">Händelser i ärendet</h2>
+              <h2 className="text-lg font-semibold">{t(locale, "tyra.case.eventsHeading")}</h2>
               <ol className="flex flex-col gap-2">
                 {timeline.map((item) => (
                   <li key={`${item.eventType}-${item.createdAt}`} className="text-sm text-ink-soft">
                     <span className="text-xs text-faint">
-                      {formatSwedishDateTime(item.createdAt)}
+                      {formatDateTime(item.createdAt, locale)}
                     </span>
                     {" · "}
                     {item.eventType.replaceAll("_", " ").toLowerCase()}

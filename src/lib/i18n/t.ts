@@ -108,3 +108,8 @@ export function tyraCaseStatus(locale: Locale, status: string): string {
   const key = `tyra.status.${status}` as MessageKey;
   return key in catalogs.en ? t(locale, key) : status;
 }
+
+export function tyraStepStatus(locale: Locale, status: string): string {
+  const key = `tyra.step.${status}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : status;
+}

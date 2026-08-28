@@ -32,5 +32,6 @@ export {
   t,
   tyraCaseStatus,
   tyraIntentLabel,
+  tyraStepStatus,
   type MessageVars,
 } from "./t.ts";
