@@ -18,6 +18,9 @@ import {
   irmaStatus,
   irmaVerification,
   messageKeys,
+  ritaAnalysisStatus,
+  ritaCategory,
+  ritaFindingStatus,
   t,
   toraCalKind,
   tyraCaseStatus,
@@ -126,6 +129,14 @@ describe("locale registry", () => {
     expect(t("sv", "tora.doc.requirements")).toBe("Krav mot ert bolag");
     expect(t("en", "tora.brief.size")).toBe("Size");
     expect(t("sv", "tyra.hub.kicker")).toBe("Kundhub");
+    expect(t("en", "rita.request")).toBe("Request analysis");
+    expect(t("sv", "rita.formTitle")).toBe("Ny analys");
+    expect(ritaAnalysisStatus("en", "completed")).toBe("Done");
+    expect(ritaAnalysisStatus("sv", "requested")).toBe("Begärd");
+    expect(ritaCategory("en", "tax")).toBe("Tax");
+    expect(ritaCategory("sv", "vat")).toBe("Moms");
+    expect(ritaFindingStatus("en", "warning")).toBe("Warning");
+    expect(ritaFindingStatus("sv", "identified")).toBe("Identifierat");
     expect(t("sv", "chrome.signIn")).toBe("Logga in");
     expect(t("pl", "chrome.language")).toBe("Język");
     expect(t("de", "chrome.signIn")).toBe("Anmelden");

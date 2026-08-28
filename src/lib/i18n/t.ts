@@ -173,3 +173,18 @@ export function toraCalKind(locale: Locale, kind: string): string {
   const key = `tora.cal.kind.${kind}` as MessageKey;
   return key in catalogs.en ? t(locale, key) : kind;
 }
+
+export function ritaAnalysisStatus(locale: Locale, status: string): string {
+  const key = `rita.status.${status}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : status;
+}
+
+export function ritaCategory(locale: Locale, category: string): string {
+  const key = `rita.cat.${category.trim().toLowerCase()}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : category.trim() || t(locale, "rita.cat.other");
+}
+
+export function ritaFindingStatus(locale: Locale, status: string): string {
+  const key = `rita.find.${status}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : status;
+}

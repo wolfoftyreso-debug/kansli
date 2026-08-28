@@ -3,8 +3,10 @@ import {
   analysisDisclaimer,
   analysisLimitations,
   analysisSummary,
+  analysisSummaryText,
   categoryLabel,
   estimatedTotalHint,
+  estimatedTotalHintText,
   findingsFromAnalysis,
 } from "./findings.ts";
 
@@ -84,5 +86,13 @@ describe("findingsFromAnalysis", () => {
     expect(analysisLimitations(result)[0]).toMatch(/rådgivare/);
     expect(estimatedTotalHint(result)).toMatch(/ingen garanti/);
     expect(estimatedTotalHint(result)).not.toMatch(/Du sparar/);
+    expect(estimatedTotalHintText(result, "en")).toMatch(/no guarantee/);
+    expect(estimatedTotalHintText(result, "sv")).toMatch(/ingen garanti/);
+    expect(analysisSummaryText({ result: { summary: { found_nothing: true } } }, "en")).toMatch(
+      /nothing to report/,
+    );
+    expect(analysisSummaryText({ result: { summary: { found_nothing: true } } }, "sv")).toMatch(
+      /inget/,
+    );
   });
 });

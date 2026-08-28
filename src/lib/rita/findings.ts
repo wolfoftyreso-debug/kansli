@@ -1,3 +1,5 @@
+import { t, type Locale } from "../i18n";
+
 export interface RitaFinding {
   id: string;
   title: string;
@@ -67,6 +69,10 @@ export function findingsFromAnalysis(result: unknown): RitaFinding[] {
 }
 
 export function analysisSummary(result: unknown): string | null {
+  return analysisSummaryText(result);
+}
+
+export function analysisSummaryText(result: unknown, locale?: Locale): string | null {
   const inner = innerResult(result);
   if (!inner) return null;
   const summary = inner["summary"];
@@ -75,8 +81,12 @@ export function analysisSummary(result: unknown): string | null {
   const identified = Number(row.identified_opportunities ?? 0);
   const high = Number(row.high_priority_count ?? 0);
   const nothing = Boolean(row.found_nothing);
-  if (nothing) return "Analysen hittade inget att rapportera.";
-  return `${identified} fynd, varav ${high} med hög prioritet.`;
+  if (nothing) {
+    return locale ? t(locale, "rita.doc.foundNothing") : "Analysen hittade inget att rapportera.";
+  }
+  return locale
+    ? t(locale, "rita.doc.summaryCounts", { identified, high })
+    : `${identified} fynd, varav ${high} med hög prioritet.`;
 }
 
 export function analysisDisclaimer(result: unknown): string | null {
@@ -100,6 +110,10 @@ export function analysisLimitations(result: unknown): string[] {
 }
 
 export function estimatedTotalHint(result: unknown): string | null {
+  return estimatedTotalHintText(result);
+}
+
+export function estimatedTotalHintText(result: unknown, locale?: Locale): string | null {
   const inner = innerResult(result);
   const summary = inner?.summary;
   if (!summary || typeof summary !== "object") return null;
@@ -108,7 +122,9 @@ export function estimatedTotalHint(result: unknown): string | null {
   if (impact.high == null || impact.high <= 0) return null;
   const low = formatOre(impact.low ?? 0);
   const high = formatOre(impact.high);
-  return `Ungefär ${low}–${high} (ingen garanti). Stäm av med er rådgivare innan ni agerar.`;
+  return locale
+    ? t(locale, "rita.doc.totalHint", { low, high })
+    : `Ungefär ${low}–${high} (ingen garanti). Stäm av med er rådgivare innan ni agerar.`;
 }
 
 export function formatOre(ore: number): string {
