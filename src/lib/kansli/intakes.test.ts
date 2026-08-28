@@ -1,6 +1,7 @@
 import { afterAll, describe, expect, it } from "vitest";
 import { createPool, migrateWorkspace } from "@pixdrift/db";
 import { EventLog } from "@pixdrift/events";
+import { pgBootstrap } from "@pixdrift/identity";
 import {
   getHouseIntake,
   houseOrgRefFromEnv,
@@ -13,7 +14,6 @@ import { generateWorkshopPassword, slugifyCompany } from "./provision.ts";
 import { registrationHold } from "./registration-hold.ts";
 import { submitIntake } from "./submit-intake.ts";
 import { listTasks } from "./tasks.ts";
-import { ownerDatabaseUrl } from "../platform/env.ts";
 import { DEMO_ORG_NUMBER } from "../rita/request.ts";
 
 describe("self-service registration domain", () => {
@@ -89,13 +89,17 @@ live("kansli.intakes (live Postgres)", () => {
 
   it("registers a year: login plus ten instalment invoices with the order spec attached", async () => {
     await migrateWorkspace({ ownerUrl: OWNER!, root: process.cwd(), appRole: "pixdrift_app" });
+    // Identity sits in public and is not part of migrateWorkspace. CI starts
+    // from empty Postgres; without this, provision fails with
+    // `relation "users" does not exist` and the year still books on the house.
+    await pgBootstrap({ ownerUrl: OWNER!, appRole: "pixdrift_app", seedDemo: false });
     const events = new EventLog(pool);
     const email = `inkop-${Date.now()}@bilia-test.se`;
     const result = await submitIntake({
       pool,
       events,
       form: filledForm(email),
-      ownerUrl: ownerDatabaseUrl() ?? OWNER,
+      ownerUrl: OWNER,
       houseOrgRef: `pixdrift:org:intake-house-${Date.now()}`,
     });
 
@@ -103,9 +107,9 @@ live("kansli.intakes (live Postgres)", () => {
     expect(result.intake.modules).toEqual(["tyra", "ekonomi"]);
     // TYRA 349 + Ekonomi 349 = 698 kr net → 872,50 kr gross per instalment.
     expect(result.intake.monthlyNetOre).toBe(69_800);
+    expect(result.intake.blocked).toEqual([]);
     expect(result.provision?.status).toBe("created");
     expect(result.passwordOnce).toMatch(/-/);
-    expect(result.intake.blocked).toEqual([]);
 
     // All ten invoices issued at once, one row each, spec attached to every one.
     expect(result.invoices).toHaveLength(10);
