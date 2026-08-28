@@ -8,7 +8,7 @@ describe("ritaStatusLine", () => {
     ).toMatch(/saknas/);
   });
 
-  it("names subprocess and model when ready", () => {
+  it("does not name the vendor model on the customer line", () => {
     expect(
       ritaStatusLine({
         available: true,
@@ -16,7 +16,7 @@ describe("ritaStatusLine", () => {
         modelReady: true,
         modelId: "claude-fable-5",
       }),
-    ).toBe("RITA · regler + claude-fable-5");
+    ).toBe("RITA · regler + modell");
   });
 
   it("does not say AI when the model id is missing", () => {

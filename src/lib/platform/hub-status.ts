@@ -16,12 +16,8 @@ export function hubStatus(): HubStatus {
   };
 }
 
+/** Customer rooms. Model id stays on `/platform/drift`. */
 export function ritaStatusLine(rita: RitaEngineSnapshot): string {
   if (!rita.available) return "RITA:s analys saknas. Nya analyser stoppas.";
-  const model = rita.modelReady
-    ? rita.modelId
-      ? `regler + ${rita.modelId}`
-      : "regler + modell"
-    : "bara fasta regler";
-  return `RITA · ${model}`;
+  return rita.modelReady ? "RITA · regler + modell" : "RITA · bara fasta regler";
 }

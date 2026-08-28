@@ -45,10 +45,13 @@ and the locked visual contract (00–08). Not a redesign. Preserve before replac
 3. **New customer form ergonomics** — the public intake ("kontakten") used 36px fields, 16px checkbox targets and two hand-rolled `rounded-md` selects. Fixed: all fields/selects/checkboxes use the `large` (48px) variants; selects extracted into a shared `SelectField` matching `Field`.
 4. **TYRA intake and Ekonomi "Nytt sälj"** — workshop-counter and sales booking now use the `large` (48px) `Field` / `SelectField` / `CheckField` / `Submit`. Intent, VAT and line kind use `SelectField` (no empty option when a default is set). Desktop keeps the two-column grid; density is the form, not the case list.
 
+### P1 — fixed (continued)
+
+5. **Chart axis on a phone** — SalesBoard and the ops activity chart keep min/max ticks only below `sm`, with 20-unit labels (about 11px at 390). Desktop still has the mid ticks at 12 units.
+6. **Kansli / platform tech row** — `ritaStatusLine` no longer prints the vendor model id. That belongs on `/platform/drift`.
+
 ### P2 — known, not changed here
 
-5. SalesBoard/OpsBoard chart axis text is ~6px rendered at 390px (11px inside a 720-wide viewBox). Consider a mobile tick size or fewer ticks.
-6. The Kansli session card exposes the engine name in the mono meta row; review whether the vendor/model belongs in the customer-facing room or only in /platform/drift.
 7. Hand-rolled `rounded-md` selects remain in tyra/alva/ekonomi/creditae *detail* pages. Visually square (facade nulls radius) but should migrate to `SelectField` when each room is next touched.
 
 ### P3 — polish backlog

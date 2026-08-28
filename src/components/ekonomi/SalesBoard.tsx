@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useNarrow } from "@/components/app/useNarrow";
 import { formatSek } from "@/lib/ekonomi/money";
 import {
   PERIODS,
@@ -245,7 +246,9 @@ function SalesChart({
     )
     .join(" ");
   const area = `${line} L ${x(values.length - 1).toFixed(1)} ${pad.top + innerH} L ${x(0).toFixed(1)} ${pad.top + innerH} Z`;
-  const ticks = [0, 0.33, 0.66, 1].map((part) => Math.round(max * part));
+  const narrow = useNarrow();
+  const ticks = (narrow ? [0, 1] : [0, 0.33, 0.66, 1]).map((part) => Math.round(max * part));
+  const tickSize = narrow ? 20 : 12;
   const step = points.length <= 1 ? innerW : innerW / (points.length - 1);
   const barW = Math.max(6, Math.min(28, step * 0.55));
   const hoverPoint = hover != null ? points[hover] : null;
@@ -291,7 +294,7 @@ function SalesChart({
               y={y(tick) + 4}
               textAnchor="end"
               className="fill-muted"
-              fontSize="11"
+              fontSize={tickSize}
             >
               {formatSekCompact(tick)}
             </text>
@@ -319,7 +322,7 @@ function SalesChart({
         )}
         {points.length > 1 ? (
           <>
-            <text x={pad.left} y={height - 6} className="fill-muted" fontSize="11">
+            <text x={pad.left} y={height - 6} className="fill-muted" fontSize={tickSize}>
               {formatChartDay(points[0]?.date ?? "", axisYear)}
             </text>
             <text
@@ -327,7 +330,7 @@ function SalesChart({
               y={height - 6}
               textAnchor="end"
               className="fill-muted"
-              fontSize="11"
+              fontSize={tickSize}
             >
               {formatChartDay(points.at(-1)?.date ?? "", axisYear)}
             </text>

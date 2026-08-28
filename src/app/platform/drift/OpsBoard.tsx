@@ -14,6 +14,7 @@ import {
   type OpsPoint,
   type OpsSnapshot,
 } from "@/lib/platform/ops-view";
+import { useNarrow } from "@/components/app/useNarrow";
 
 function when(value: string | null): string {
   if (!value) return "—";
@@ -62,7 +63,9 @@ function ActivityChart({ points }: { points: OpsPoint[] }) {
     )
     .join(" ");
   const area = `${line} L ${x(values.length - 1).toFixed(1)} ${pad.top + innerH} L ${x(0).toFixed(1)} ${pad.top + innerH} Z`;
-  const ticks = [0, 0.5, 1].map((part) => Math.round(max * part));
+  const narrow = useNarrow();
+  const ticks = (narrow ? [0, 1] : [0, 0.5, 1]).map((part) => Math.round(max * part));
+  const tickSize = narrow ? 20 : 12;
   const axisHours = [0, Math.floor((points.length - 1) / 2), points.length - 1].filter(
     (index, pos, list) => points[index] && list.indexOf(index) === pos,
   );
@@ -109,7 +112,7 @@ function ActivityChart({ points }: { points: OpsPoint[] }) {
               y={y(tick) + 4}
               textAnchor="end"
               className="fill-muted"
-              fontSize="11"
+              fontSize={tickSize}
             >
               {tick}
             </text>
@@ -124,7 +127,7 @@ function ActivityChart({ points }: { points: OpsPoint[] }) {
             y={height - 6}
             textAnchor={index === 0 ? "start" : index === points.length - 1 ? "end" : "middle"}
             className="fill-faint"
-            fontSize="11"
+            fontSize={tickSize}
           >
             {hourLabel(points[index].at)}
           </text>
