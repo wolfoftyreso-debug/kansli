@@ -1486,4 +1486,17 @@ export const FI: Record<MessageKey, string> = {
 
   "creditae.choose": "Choose",
   "creditae.saveAssessment": "Save assessment",
+
+  "mcp.metaTitle": "MCP — Pixdrift",
+  "mcp.lead":
+    "The same sign-in as the rest. Here you can try read tools against this environment — not against production from the outside.",
+  "mcp.signInTitle": "Sign in to try MCP",
+  "mcp.signInBody": "The tools use your Pixdrift session.",
+  "mcp.toolCount": "{count} tools in the registry.",
+  "mcp.safeTool": "Safe tool",
+  "mcp.run": "Run",
+  "mcp.request": "request {id}",
+  "platform.gatewayPing": "Ping the gateway",
+  "platform.gatewayPinging": "Calling…",
+  "platform.gatewayReply": "{model} · {ms} ms · reply “{text}”",
 };

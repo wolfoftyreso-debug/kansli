@@ -144,7 +144,7 @@ export default async function PlatformPage() {
         </p>
         {session?.org && gateway.configured ? (
           <div className="mt-3">
-            <GatewayPing />
+            <GatewayPing locale={locale} />
           </div>
         ) : null}
         {!gateway.configured ? (

@@ -152,6 +152,10 @@ describe("locale registry", () => {
     expect(alvaOutcome("sv", "unknown")).toBe("Okänt");
     expect(t("en", "creditae.saveAssessment")).toBe("Save assessment");
     expect(t("sv", "creditae.choose")).toBe("Välj");
+    expect(t("en", "mcp.signInTitle")).toBe("Sign in to try MCP");
+    expect(t("sv", "mcp.toolCount", { count: 12 })).toBe("12 verktyg i registret.");
+    expect(t("en", "platform.gatewayPing")).toBe("Ping the gateway");
+    expect(t("sv", "platform.gatewayPinging")).toBe("Anropar…");
     expect(t("sv", "chrome.signIn")).toBe("Logga in");
     expect(t("pl", "chrome.language")).toBe("Język");
     expect(t("de", "chrome.signIn")).toBe("Anmelden");

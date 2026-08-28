@@ -1486,4 +1486,17 @@ export const SV: Record<MessageKey, string> = {
 
   "creditae.choose": "Välj",
   "creditae.saveAssessment": "Spara bedömning",
+
+  "mcp.metaTitle": "MCP — Pixdrift",
+  "mcp.lead":
+    "Samma inloggning som resten. Här kan du prova läsverktyg mot den här miljön — inte mot produktion utifrån.",
+  "mcp.signInTitle": "Logga in för att prova MCP",
+  "mcp.signInBody": "Verktygen använder din Pixdrift-session.",
+  "mcp.toolCount": "{count} verktyg i registret.",
+  "mcp.safeTool": "Säkert verktyg",
+  "mcp.run": "Kör",
+  "mcp.request": "anrop {id}",
+  "platform.gatewayPing": "Pinga gatewayen",
+  "platform.gatewayPinging": "Anropar…",
+  "platform.gatewayReply": "{model} · {ms} ms · svar “{text}”",
 };
