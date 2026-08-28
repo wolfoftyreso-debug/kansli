@@ -7,6 +7,7 @@ import { evaluateMarket, persistSnapshot } from "@/lib/tora/persist";
 import { resolveCompany } from "@/lib/tora/profile";
 import { listAnalyses, requestAnalysis } from "@/lib/rita/analyses";
 import { listObservations } from "@/lib/britt/observations";
+import { canRunDemoIntel, listFindings, runIntel } from "@/lib/britt/intel";
 import { createAgreement, listAgreements } from "@/lib/irma/agreements";
 import {
   createCase as createTyraCase,
@@ -539,6 +540,105 @@ export function buildPixdriftRegistry(): ToolRegistry {
           })),
           input,
         );
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "list_findings",
+      title: "List findings",
+      description:
+        "Lists BRITT findings for the authenticated organisation. Returns identity fields only, not body or evidence. Same listFindings service as GET /api/britt/findings.",
+      system: "britt",
+      domain: "followup",
+      inputSchema: {
+        type: "object",
+        properties: { limit: { type: "integer" }, cursor: { type: "string" } },
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need what BRITT has already found.",
+      whenNotToUse: "You need the follow-up inbox — use list_followups. Do not invent a finding.",
+      rest: { method: "GET", path: "/api/britt/findings" },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const rows = await listFindings(pool, actor.orgRef);
+        return page(
+          rows.map((item) => ({
+            id: item.id,
+            runId: item.runId,
+            fingerprint: item.fingerprint,
+            severity: item.severity,
+            category: item.category,
+            title: item.title,
+            createdAt: item.createdAt,
+          })),
+          input,
+        );
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "run_operational_analysis",
+      title: "Run operational analysis",
+      description:
+        "Runs BRITT demo-metrics analysis for the house organisation. Same runIntel service as POST /api/britt/findings. Workshops are blocked. Does not invent a finding.",
+      system: "britt",
+      domain: "followup",
+      inputSchema: {
+        type: "object",
+        properties: { idempotency_key: { type: "string" } },
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: "finding:read",
+      tenantScope: "org",
+      sideEffects: "write",
+      risk: 2,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "heavy",
+      whenToUse: "The house needs a fresh demo analysis.",
+      whenNotToUse: "You are on a workshop, or you want to invent a finding.",
+      rest: { method: "POST", path: "/api/britt/findings" },
+      flags: readFlags(false),
+      handler: async (ctx) => {
+        const actor = orgOf(ctx);
+        if (!canRunDemoIntel(actor.orgRef)) {
+          return { blocked: true, reason: "Demo metrics run on the house only." };
+        }
+        const { pool, events } = needStore(ctx);
+        const result = await runIntel({
+          pool,
+          events,
+          orgRef: actor.orgRef,
+          actorRef: actor.sub,
+          requestId: ctx.requestId,
+        });
+        return {
+          runId: result.run.id,
+          status: result.run.status,
+          findingCount: result.run.findingCount,
+          period: result.snapshot.period,
+          findings: result.findings.map((item) => ({
+            id: item.id,
+            fingerprint: item.fingerprint,
+            severity: item.severity,
+            category: item.category,
+            title: item.title,
+          })),
+        };
       },
     }),
   );

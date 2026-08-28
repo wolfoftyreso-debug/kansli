@@ -5,6 +5,8 @@ const listAgreements = vi.fn();
 const listTyraCases = vi.fn();
 const listAlvaCases = vi.fn();
 const listCreditaeInquiries = vi.fn();
+const listFindings = vi.fn();
+const runIntel = vi.fn();
 
 vi.mock("@/lib/irma/agreements", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/irma/agreements")>();
@@ -38,6 +40,15 @@ vi.mock("@/lib/creditae/inquiries", async (importOriginal) => {
   };
 });
 
+vi.mock("@/lib/britt/intel", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/britt/intel")>();
+  return {
+    ...actual,
+    listFindings: (...args: unknown[]) => listFindings(...args),
+    runIntel: (...args: unknown[]) => runIntel(...args),
+  };
+});
+
 import { buildPixdriftRegistry } from "./tools";
 
 const actor: Actor = {
@@ -68,6 +79,8 @@ describe("MCP list bindings", () => {
     listTyraCases.mockReset();
     listAlvaCases.mockReset();
     listCreditaeInquiries.mockReset();
+    listFindings.mockReset();
+    runIntel.mockReset();
   });
 
   it("lists agreements by identity fields only", async () => {
@@ -227,5 +240,104 @@ describe("MCP list bindings", () => {
     expect(JSON.stringify(result)).not.toMatch(
       /hemlig|vendorScore|vendorLimit|webRank|webOrganic|Creditsafe|87|500000/,
     );
+  });
+
+  it("lists findings without body or evidence", async () => {
+    listFindings.mockResolvedValue([
+      {
+        id: "f-1",
+        runId: "run-1",
+        fingerprint: "revenue_below_plan",
+        severity: "high",
+        category: "revenue",
+        title: "Omsättning under plan",
+        body: "hemlig brödtext",
+        evidence: [{ label: "revenue", value: "hemlig" }],
+        createdAt: "2026-08-28T00:00:00.000Z",
+      },
+    ]);
+    const tool = buildPixdriftRegistry().getTool("list_findings");
+    expect(tool).toBeTruthy();
+    const result = (await tool!.handler(runtime(), { limit: 10 })) as {
+      items: Record<string, unknown>[];
+    };
+    expect(listFindings).toHaveBeenCalledWith({}, actor.orgRef);
+    expect(result.items).toEqual([
+      {
+        id: "f-1",
+        runId: "run-1",
+        fingerprint: "revenue_below_plan",
+        severity: "high",
+        category: "revenue",
+        title: "Omsättning under plan",
+        createdAt: "2026-08-28T00:00:00.000Z",
+      },
+    ]);
+    expect(JSON.stringify(result)).not.toMatch(/hemlig|evidence|"body"/);
+  });
+
+  it("blocks operational analysis off the house and strips finding body on the house", async () => {
+    const runTool = buildPixdriftRegistry().getTool("run_operational_analysis");
+    expect(runTool).toBeTruthy();
+    const workshop = await runTool!.handler(runtime(), {});
+    expect(workshop).toEqual({
+      blocked: true,
+      reason: "Demo metrics run on the house only.",
+    });
+    expect(runIntel).not.toHaveBeenCalled();
+
+    runIntel.mockResolvedValue({
+      run: {
+        id: "run-9",
+        status: "completed",
+        findingCount: 1,
+        createdAt: "2026-08-28T00:00:00.000Z",
+      },
+      snapshot: {
+        id: "snap-1",
+        period: "2026-07",
+        revenue: 1,
+        planRevenue: 2,
+        cash: 3,
+        monthlyBurn: 4,
+        topCustomerShare: 0.5,
+        createdAt: "2026-08-28T00:00:00.000Z",
+      },
+      findings: [
+        {
+          id: "f-9",
+          runId: "run-9",
+          fingerprint: "liquidity_runway",
+          severity: "high",
+          category: "cash",
+          title: "Likviditet",
+          body: "hemlig brödtext",
+          evidence: [{ label: "cash", value: "hemlig" }],
+          createdAt: "2026-08-28T00:00:00.000Z",
+        },
+      ],
+    });
+    const house = {
+      ...runtime(),
+      actor: { ...actor, orgRef: "pixdrift:org:org-exempelbolaget" },
+    };
+    const result = (await runTool!.handler(house, {})) as Record<string, unknown>;
+    expect(runIntel).toHaveBeenCalledTimes(1);
+    expect(result).toEqual({
+      runId: "run-9",
+      status: "completed",
+      findingCount: 1,
+      period: "2026-07",
+      findings: [
+        {
+          id: "f-9",
+          fingerprint: "liquidity_runway",
+          severity: "high",
+          category: "cash",
+          title: "Likviditet",
+        },
+      ],
+    });
+    expect(JSON.stringify(result)).not.toMatch(/hemlig|evidence|revenue|monthlyBurn/);
   });
 });

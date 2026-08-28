@@ -70,7 +70,7 @@ Ingen OpenAPI. Ingen publik `api.pixdrift.com/v1`.
 Flera skrivvägar saknar MCP-par (se §4).
 
 **MCP — PARTIAL.**
-`POST /mcp`, protokoll `2026-07-28`, 23 verktyg i
+`POST /mcp`, protokoll `2026-07-28`, 25 verktyg i
 `src/lib/mcp/tools.ts`. Alla anropar befintliga tjänster.
 Inte alla REST-operationer har verktyg. Ingen L4-kö.
 Rate limit och idempotens är per process.
@@ -138,7 +138,7 @@ ingen syntetisk bevakning av login/MCP/docs. Hemligheter dumpas inte.
 
 ## 4. Capability Graph — frö mot full täckning
 
-Grafen i kod är **bara** de 23 MCP-verktygen.
+Grafen i kod är **bara** de 25 MCP-verktygen.
 Varje verktyg har redan `rest.method` + `rest.path`.
 Det är medvetet: ingen parallell lista.
 
@@ -154,7 +154,7 @@ REST som **finns** men **inte** sitter i grafen än:
 | GET `/api/tora/opportunities/:id` | tora | Detalj utan MCP |
 | GET `/api/tora/calendar` | tora | Kalender utan MCP |
 | GET `/api/rita/analyses/:id` | rita | Detalj utan MCP |
-| GET/POST `/api/britt/findings` | britt | Findings utan MCP |
+| GET/POST `/api/britt/findings` | britt | Lista/kör. MCP `list_findings` / `run_operational_analysis` |
 | GET `/api/irma/agreements` | irma | Lista. MCP `list_agreements` |
 | GET/POST `/api/irma/agreements/:id` | irma | Detalj/revoke utan MCP |
 | GET/POST `/api/irma/l/:token` | irma | Gästlänk, medvetet utan agent |

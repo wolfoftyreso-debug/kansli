@@ -56,6 +56,7 @@ const DOMAIN_EVENTS: Record<string, string> = {
   register_credit_inquiry: "creditae.inquiry.created",
   run_search_analysis: "maj.action.proposed",
   decide_search_action: "maj.action.decided",
+  run_operational_analysis: "britt.finding.recorded",
 };
 
 /** Conservative intents from existing public product copy. Not a keyword farm. */

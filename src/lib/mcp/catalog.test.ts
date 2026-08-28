@@ -16,6 +16,8 @@ describe("MCP catalog contract", () => {
     expect(names).toContain("list_vehicle_cases");
     expect(names).toContain("list_diagnostic_cases");
     expect(names).toContain("list_credit_inquiries");
+    expect(names).toContain("list_findings");
+    expect(names).toContain("run_operational_analysis");
     expect(names).not.toContain("query_database");
     expect(names).not.toContain("execute_sql");
     for (const tool of catalog.tools) {
