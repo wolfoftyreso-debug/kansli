@@ -136,6 +136,15 @@ export const OPS_SMS_KIND_LABEL: Record<OpsSmsKind, string> = {
   readiness: "Blockerad beredskap",
 };
 
+export type OpsChannel = {
+  id: string;
+  label: string;
+  vendor: string;
+  env: string[];
+  configured: boolean;
+  note: string | null;
+};
+
 export type OpsSnapshot = {
   takenAt: string;
   scope: OpsScope;
@@ -159,6 +168,7 @@ export type OpsSnapshot = {
     credit: boolean;
     webintel: boolean;
     revolut: { configured: boolean; environment: string };
+    channels: OpsChannel[];
     mcp: {
       mcp_requests_total: number;
       mcp_tool_calls_total: number;

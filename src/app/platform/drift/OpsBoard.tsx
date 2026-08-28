@@ -495,6 +495,38 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
         </div>
       </section>
 
+      <section>
+        <div className="flex items-baseline justify-between gap-3 border-b border-line pb-2">
+          <h2 className="text-lg font-semibold">Channels</h2>
+          <p className="pd-label">
+            {snapshot.health.channels.filter((item) => item.configured).length} on ·{" "}
+            {snapshot.health.channels.filter((item) => !item.configured).length} off
+          </p>
+        </div>
+        <p className="mt-2 text-xs text-muted">
+          Environment variable names only. Values are never shown. Live probes stay in{" "}
+          <span className="font-mono">pnpm ops:vendors</span>.
+        </p>
+        <ul className="mt-3">
+          {snapshot.health.channels.map((channel) => (
+            <li
+              key={channel.id}
+              className="flex flex-col gap-1 border-b border-line py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
+            >
+              <div className="min-w-0">
+                <p className="flex items-center gap-2 text-sm font-medium">
+                  <StatusDot ok={channel.configured} />
+                  {channel.label}
+                  <span className="font-normal text-faint">{channel.vendor}</span>
+                </p>
+                {channel.note ? <p className="mt-1 text-xs text-muted">{channel.note}</p> : null}
+              </div>
+              <p className="shrink-0 font-mono text-xs text-faint">{channel.env.join(" · ")}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
       <section className="grid gap-8 lg:grid-cols-2">
         <div>
           <div className="flex items-baseline justify-between gap-3 border-b border-line pb-2">

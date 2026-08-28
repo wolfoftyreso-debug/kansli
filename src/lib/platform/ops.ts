@@ -21,6 +21,7 @@ import type {
   OpsSnapshot,
   OpsTableMeasure,
 } from "./ops-view.ts";
+import { vendorChannels } from "./channels.ts";
 import { creditConfigured } from "./credit.ts";
 import { smsConfigured } from "./sms.ts";
 import { ttsConfigured } from "./tts.ts";
@@ -370,6 +371,7 @@ export async function loadOpsSnapshot(
       credit: creditConfigured(),
       webintel: webintelConfigured(),
       revolut: { configured: revolut.missing.length === 0, environment: revolut.environment },
+      channels: vendorChannels(),
       mcp: metricsSnapshot(),
     },
     identity,
