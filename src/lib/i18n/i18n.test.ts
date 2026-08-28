@@ -48,6 +48,8 @@ describe("locale registry", () => {
     expect(t("en", "home.helloNamed", { name: "Landvex" })).toBe("Hello, Landvex");
     expect(t("en", "ops.kicker")).toBe("Ops desk");
     expect(t("sv", "ops.kicker")).toBe("Sambandscentral");
+    expect(t("en", "ready.heading")).toBe("First customer");
+    expect(t("sv", "ready.heading")).toBe("Första kunden");
     expect(t("sv", "chrome.signIn")).toBe("Logga in");
     expect(t("pl", "chrome.language")).toBe("Język");
     expect(t("de", "chrome.signIn")).toBe("Anmelden");

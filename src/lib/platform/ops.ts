@@ -339,7 +339,7 @@ export async function loadOpsSnapshot(
     loadTables(pool, scope),
     loadEvents(pool, scope, input.orgRef),
     loadIdentity(pool, scope, input.orgRef),
-    loadFirstCustomerBoard(pool, input.orgRef),
+    loadFirstCustomerBoard(pool, input.orgRef, input.locale ?? DEFAULT_LOCALE),
     Promise.all([loadSeries(pool, scope, input.orgRef), loadRecent(pool, scope, input.orgRef)]),
   ]);
   const [{ series, previousWindow }, recent] = activity;

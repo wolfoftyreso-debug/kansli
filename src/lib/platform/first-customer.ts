@@ -1,5 +1,6 @@
 import type pg from "pg";
 import { isHardenedRuntime } from "../auth/secrets.ts";
+import { DEFAULT_LOCALE, t, type Locale } from "../i18n/index.ts";
 import { listAgreements } from "../irma/agreements.ts";
 import { ritaEngineSnapshot } from "../rita/resolve-engine.ts";
 import { getCompanyProfile } from "../tora/profile.ts";
@@ -43,48 +44,50 @@ export function evaluateFirstCustomerGates(input: {
   smsEnabled: boolean;
   creditVendor?: boolean;
   hardened?: boolean;
+  locale?: Locale;
 }): FirstCustomerBoard {
+  const locale = input.locale ?? DEFAULT_LOCALE;
   const hardened = input.hardened ?? (input.appEnv === "prod" || input.appEnv === "production");
   const gates: FirstCustomerGate[] = [
     {
       id: "database",
-      title: "Postgres svarar",
+      title: t(locale, "ready.gate.database.title"),
       state: input.databaseUp ? "ready" : "blocked",
       detail: input.databaseUp
-        ? "Databasen svarar."
-        : "Databasen svarar inte (DATABASE_URL saknas).",
+        ? t(locale, "ready.gate.database.up")
+        : t(locale, "ready.gate.database.down"),
     },
     {
       id: "secrets",
-      title: "Hemligheter i drift",
+      title: t(locale, "ready.gate.secrets.title"),
       state: !hardened ? "open" : input.sessionSecretSet ? "ready" : "blocked",
       detail: !hardened
-        ? `APP_ENV=${input.appEnv || "dev"} — fail-closed gäller först i prod.`
+        ? t(locale, "ready.gate.secrets.open", { env: input.appEnv || "dev" })
         : input.sessionSecretSet
-          ? "APP_SESSION_SECRET är satt."
-          : "APP_SESSION_SECRET saknas. Processen ska inte starta.",
+          ? t(locale, "ready.gate.secrets.ready")
+          : t(locale, "ready.gate.secrets.blocked"),
     },
     {
       id: "demo",
-      title: "Inte ett öppet demoläge mot kund",
+      title: t(locale, "ready.gate.demo.title"),
       state: input.seedDemo ? (hardened ? "blocked" : "open") : "ready",
       detail: input.seedDemo
         ? hardened
-          ? "PIXDRIFT_SEED_DEMO=true i produktion. Processen ska inte starta."
-          : "PIXDRIFT_SEED_DEMO=true. Stäng av innan första kunden loggar in."
-        : "Exempelläget är av.",
+          ? t(locale, "ready.gate.demo.blocked")
+          : t(locale, "ready.gate.demo.open")
+        : t(locale, "ready.gate.demo.ready"),
     },
     {
       id: "cron",
-      title: "Cron-hemlighet (TYRA-påminnelser)",
+      title: t(locale, "ready.gate.cron.title"),
       state: input.cronSecretSet ? "ready" : "open",
       detail: input.cronSecretSet
-        ? "CRON_SECRET är satt. Påminnelser läggs ändå i kö och skickas inte än."
-        : "CRON_SECRET saknas. Påminnelser kan inte köras automatiskt.",
+        ? t(locale, "ready.gate.cron.ready")
+        : t(locale, "ready.gate.cron.open"),
     },
     {
       id: "tyra",
-      title: "TYRA-verkstad har kört slingan",
+      title: t(locale, "ready.gate.tyra.title"),
       state:
         input.tyraCases > 0 && input.tyraInspections > 0 && input.tyraQuotes > 0
           ? "ready"
@@ -93,80 +96,85 @@ export function evaluateFirstCustomerGates(input: {
             : "open",
       detail:
         input.tyraCases === 0
-          ? "Inget ärende ännu. Öppna ett, mät mönsterdjup, skriv offertutkast, sätt lagerplats."
-          : `${input.tyraCases} ärende, ${input.tyraInspections} inspektion, ${input.tyraQuotes} offertutkast.`,
+          ? t(locale, "ready.gate.tyra.empty")
+          : t(locale, "ready.gate.tyra.count", {
+              cases: input.tyraCases,
+              inspections: input.tyraInspections,
+              quotes: input.tyraQuotes,
+            }),
     },
     {
       id: "irma",
-      title: "IRMA har använts",
+      title: t(locale, "ready.gate.irma.title"),
       state: input.irmaAgreements > 0 ? "ready" : "open",
       detail:
         input.irmaAgreements > 0
-          ? `${input.irmaAgreements} underlag. Enkel bekräftelse, inte e-signatur.`
-          : "Inget underlag skapat. Enkel bekräftelse, inte e-signatur.",
+          ? t(locale, "ready.gate.irma.some", { count: input.irmaAgreements })
+          : t(locale, "ready.gate.irma.none"),
     },
     {
       id: "tora",
-      title: "TORA kör er profil, inte Exempelbolaget",
+      title: t(locale, "ready.gate.tora.title"),
       state: input.toraProfileSaved ? "ready" : "open",
       detail: input.toraProfileSaved
-        ? "Bolagsprofil sparad. Marknaden är fortfarande demo."
-        : "Spara bolagsprofilen. Annars räknar vi på exempelbolaget.",
+        ? t(locale, "ready.gate.tora.ready")
+        : t(locale, "ready.gate.tora.open"),
     },
     {
       id: "rita",
-      title: "RITA:s analys",
+      title: t(locale, "ready.gate.rita.title"),
       state: input.ritaAvailable ? "ready" : "blocked",
       detail: input.ritaAvailable
-        ? "Analysen är inkopplad. Analysera bara riktiga underlag."
-        : "Analysen är inte inkopplad. Sälj inte RITA.",
+        ? t(locale, "ready.gate.rita.ready")
+        : t(locale, "ready.gate.rita.blocked"),
     },
     {
       id: "alva",
-      title: "ALVA-diagnos",
+      title: t(locale, "ready.gate.alva.title"),
       state: "blocked",
-      detail: "Diagnosen byggs separat. Här registrerar ni bara ärenden.",
+      detail: t(locale, "ready.gate.alva.detail"),
     },
     {
       id: "creditae",
-      title: "CREDITAE är bedömning, inte byrå",
+      title: t(locale, "ready.gate.creditae.title"),
       state: "open",
       detail: input.creditVendor
-        ? "Kreditupplysningen är inkopplad. Bedömningen är fortfarande er. Sälj inte byråns siffra som er slutsats."
-        : "Ni kan registrera motpart och er slutsats. Ingen kreditupplysningsbyrå är inkopplad. Sälj inte ett kreditbetyg.",
+        ? t(locale, "ready.gate.creditae.on")
+        : t(locale, "ready.gate.creditae.off"),
     },
     {
       id: "ekonomi",
-      title: "Ekonomi är en bok, inte Visma",
+      title: t(locale, "ready.gate.ekonomi.title"),
       state: input.ekonomiIssued > 0 ? "ready" : "open",
       detail:
         input.ekonomiIssued === 0
-          ? "Ingen utfärdad faktura ännu. Boken tar 10-dagarsfaktura och verifikat. Visma och Fortnox är inte inkopplade."
-          : `${input.ekonomiIssued} utfärdade, ${input.ekonomiPaid} betalda. Visma är inte anslutet. Stripe och Swish bara med nyckel.`,
+          ? t(locale, "ready.gate.ekonomi.empty")
+          : t(locale, "ready.gate.ekonomi.count", {
+              issued: input.ekonomiIssued,
+              paid: input.ekonomiPaid,
+            }),
     },
     {
       id: "sms",
-      title: "SMS vid sälj är valt, inte påtvingat",
+      title: t(locale, "ready.gate.sms.title"),
       state: input.smsVendor && input.smsEnabled ? "ready" : "open",
       detail: input.smsVendor
         ? input.smsEnabled
-          ? "Telefonen är kopplad och ni har sagt ja. Ett missat SMS rullar inte tillbaka en bokad sälj."
-          : "Telefonen är kopplad. SMS är avstängt tills ni säger ja."
-        : "Numret kan sparas. SMS går inte ut förrän telefonen är kopplad i drift.",
+          ? t(locale, "ready.gate.sms.ready")
+          : t(locale, "ready.gate.sms.vendor")
+        : t(locale, "ready.gate.sms.off"),
     },
     {
       id: "upphandling",
-      title: "Registreringen är självbetjäning",
+      title: t(locale, "ready.gate.upphandling.title"),
       state: "ready",
-      detail:
-        "Kunden tecknar ett år själv: väljer moduler, får inloggning direkt och alla tio fakturor utställda samtidigt med orderspecifikation som bilaga. Första förfaller om tio dagar. Betalda i tid — allt fortsätter fungera. Inga demos, inga möten.",
+      detail: t(locale, "ready.gate.upphandling.detail"),
     },
     {
       id: "honesty",
-      title: "Kunden skriver under vad produkten inte är",
+      title: t(locale, "ready.gate.honesty.title"),
       state: "open",
-      detail:
-        "Ingen kvalificerad e-signatur, inga live-däckpriser, ingen Visma eller Fortnox, ingen ALVA-diagnos, inget kreditbetyg från CREDITAE. SMS vid sälj bara när telefonen är kopplad och ni sagt ja. TYRA-påminnelser skickas inte. Stripe och Revolut bara när de är inkopplade.",
+      detail: t(locale, "ready.gate.honesty.detail"),
     },
   ];
 
@@ -186,6 +194,7 @@ export function evaluateFirstCustomerGates(input: {
 export async function loadFirstCustomerBoard(
   pool: pg.Pool | null,
   orgRef: string | null,
+  locale: Locale = DEFAULT_LOCALE,
 ): Promise<FirstCustomerBoard> {
   const status = hubStatus();
   const rita = ritaEngineSnapshot();
@@ -255,5 +264,6 @@ export async function loadFirstCustomerBoard(
     smsVendor: smsConfigured(),
     smsEnabled,
     creditVendor: creditConfigured(),
+    locale,
   });
 }

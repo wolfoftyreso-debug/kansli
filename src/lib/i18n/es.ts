@@ -666,4 +666,73 @@ export const ES: Record<MessageKey, string> = {
   "ops.item.tyreCase": "Tyre case",
   "ops.item.tyra": "TYRA · {status}",
   "ops.item.newCustomer": "New customer",
+
+  "ready.metaTitle": "Readiness — Kansli",
+  "ready.metaDescription": "The checklist for the first customer. Not a date.",
+  "ready.heading": "First customer",
+  "ready.lead": "No launch day — a checklist. Each point is read from the system, not from a plan.",
+  "ready.signInTitle": "Sign in to read the checklist",
+  "ready.signInBody": "The checklist is built from how your system actually is right now.",
+  "ready.pilotYes": "A pilot can be offered — if the customer signs what the product is not.",
+  "ready.pilotNo": "A pilot cannot be offered. A blocked point must be resolved first.",
+  "ready.allLabel": "All six systems ready: {answer}",
+  "ready.allYes": "yes.",
+  "ready.allNo": "no. ALVA diagnosis and RITA analysis sit outside this system.",
+  "ready.procurementLink": "Group procurement is the form",
+  "ready.procurementHint": " — source material for a demo and a meeting in ten days.",
+  "ready.footer":
+    "Sell nothing that is not there. Ekonomi is a book, not Visma. Sales SMS only goes when the phone is connected and you have said yes. TYRA reminders are queued but not sent. RITA without analysis is not sold. ALVA without diagnosis is registration only.",
+  "ready.gate.database.title": "Postgres answers",
+  "ready.gate.database.up": "The database answers.",
+  "ready.gate.database.down": "The database is not answering (DATABASE_URL is missing).",
+  "ready.gate.secrets.title": "Secrets in operations",
+  "ready.gate.secrets.open": "APP_ENV={env} — fail-closed applies only in production.",
+  "ready.gate.secrets.ready": "APP_SESSION_SECRET is set.",
+  "ready.gate.secrets.blocked": "APP_SESSION_SECRET is missing. The process must not start.",
+  "ready.gate.demo.title": "Not an open demo mode toward a customer",
+  "ready.gate.demo.blocked": "PIXDRIFT_SEED_DEMO=true in production. The process must not start.",
+  "ready.gate.demo.open":
+    "PIXDRIFT_SEED_DEMO=true. Turn it off before the first customer signs in.",
+  "ready.gate.demo.ready": "The example mode is off.",
+  "ready.gate.cron.title": "Cron secret (TYRA reminders)",
+  "ready.gate.cron.ready": "CRON_SECRET is set. Reminders are still queued and not sent yet.",
+  "ready.gate.cron.open": "CRON_SECRET is missing. Reminders cannot run automatically.",
+  "ready.gate.tyra.title": "The TYRA workshop has run the loop",
+  "ready.gate.tyra.empty":
+    "No case yet. Open one, measure tread depth, write a quote draft, set a storage place.",
+  "ready.gate.tyra.count": "{cases} cases, {inspections} inspections, {quotes} quote drafts.",
+  "ready.gate.irma.title": "IRMA has been used",
+  "ready.gate.irma.some": "{count} drafts. Simple confirmation, not e-signature.",
+  "ready.gate.irma.none": "No draft created. Simple confirmation, not e-signature.",
+  "ready.gate.tora.title": "TORA runs your profile, not Exempelbolaget",
+  "ready.gate.tora.ready": "Company profile saved. The market is still demo.",
+  "ready.gate.tora.open":
+    "Save the company profile. Otherwise we calculate on the example company.",
+  "ready.gate.rita.title": "RITA's analysis",
+  "ready.gate.rita.ready": "The analysis is wired. Analyse only real source material.",
+  "ready.gate.rita.blocked": "The analysis is not wired. Do not sell RITA.",
+  "ready.gate.alva.title": "ALVA diagnosis",
+  "ready.gate.alva.detail": "Diagnosis is built separately. Here you only register cases.",
+  "ready.gate.creditae.title": "CREDITAE is an assessment, not a bureau",
+  "ready.gate.creditae.on":
+    "The credit report is wired. The assessment is still yours. Do not sell the bureau figure as your conclusion.",
+  "ready.gate.creditae.off":
+    "You can register a counterpart and your conclusion. No credit bureau is wired. Do not sell a credit score.",
+  "ready.gate.ekonomi.title": "Ekonomi is a book, not Visma",
+  "ready.gate.ekonomi.empty":
+    "No issued invoice yet. The book takes a 10-day invoice and a voucher. Visma and Fortnox are not wired.",
+  "ready.gate.ekonomi.count":
+    "{issued} issued, {paid} paid. Visma is not connected. Stripe and Swish only with a key.",
+  "ready.gate.sms.title": "Sales SMS is chosen, not forced",
+  "ready.gate.sms.ready":
+    "The phone is connected and you have said yes. A missed SMS does not roll back a booked sale.",
+  "ready.gate.sms.vendor": "The phone is connected. SMS stays off until you say yes.",
+  "ready.gate.sms.off":
+    "The number can be saved. SMS will not go out until the phone is connected in operations.",
+  "ready.gate.upphandling.title": "Registration is self-serve",
+  "ready.gate.upphandling.detail":
+    "The customer signs a year themselves: picks modules, gets sign-in at once and all ten invoices issued together with the order specification as an attachment. The first is due in ten days. Paid on time — everything keeps working. No demos, no meetings.",
+  "ready.gate.honesty.title": "The customer signs what the product is not",
+  "ready.gate.honesty.detail":
+    "No qualified e-signature, no live tyre prices, no Visma or Fortnox, no ALVA diagnosis, no credit score from CREDITAE. Sales SMS only when the phone is connected and you have said yes. TYRA reminders are not sent. Stripe and Revolut only when they are wired.",
 };
