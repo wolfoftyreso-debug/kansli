@@ -277,7 +277,8 @@ export default async function TyraCasePage({
           <section className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4">
             <h2 className="text-lg font-semibold">Verifierad inspektion</h2>
             <p className="text-sm text-ink-soft">
-              Fyra mönsterdjup, tekniker-verifierade. Det är det kunden får se i hubben. Ingen AI.
+              Fyra mönsterdjup, tekniker-verifierade. Det är det kunden får se i hubben. Ingen
+              automation.
             </p>
             <form action={recordTyraInspection} className="grid gap-3 sm:grid-cols-4">
               <input type="hidden" name="id" value={id} />

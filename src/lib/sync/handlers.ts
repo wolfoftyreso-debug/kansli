@@ -15,7 +15,7 @@ export function ritaCompletedObservationBody(payload: Record<string, unknown>): 
   const findings = Number.isFinite(count) ? `${count} fynd` : "fyndunderlag klart";
   const head = company ? `${company}: ${findings}` : findings;
   const model =
-    payload.modelConfigured === true ? "Med AI-stöd." : "Utan AI-stöd — bara fasta regler.";
+    payload.modelConfigured === true ? "Med modellstöd." : "Utan modellstöd — bara fasta regler.";
   return `${head}. ${model}`;
 }
 

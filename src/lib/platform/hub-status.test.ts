@@ -18,4 +18,15 @@ describe("ritaStatusLine", () => {
       }),
     ).toBe("RITA · regler + claude-fable-5");
   });
+
+  it("does not say AI when the model id is missing", () => {
+    expect(
+      ritaStatusLine({
+        available: true,
+        kind: "subprocess",
+        modelReady: true,
+        modelId: null,
+      }),
+    ).toBe("RITA · regler + modell");
+  });
 });

@@ -471,7 +471,7 @@ function OpsView({ snapshot }: { snapshot: OpsSnapshot }) {
             <StatusDot ok={snapshot.health.rita.available} />
             {snapshot.health.rita.available
               ? snapshot.health.rita.modelReady
-                ? "regler + AI"
+                ? "regler + modell"
                 : "bara regler"
               : "saknas"}
           </p>

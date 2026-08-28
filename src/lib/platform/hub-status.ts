@@ -21,7 +21,7 @@ export function ritaStatusLine(rita: RitaEngineSnapshot): string {
   const model = rita.modelReady
     ? rita.modelId
       ? `regler + ${rita.modelId}`
-      : "regler + AI"
+      : "regler + modell"
     : "bara fasta regler";
   return `RITA · ${model}`;
 }
