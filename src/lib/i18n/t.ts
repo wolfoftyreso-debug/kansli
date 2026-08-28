@@ -98,3 +98,13 @@ export function opsNoticeLevel(locale: Locale, level: string): string {
   const key = `ops.level.${level}` as MessageKey;
   return key in catalogs.en ? t(locale, key) : level;
 }
+
+export function tyraIntentLabel(locale: Locale, intent: string): string {
+  const key = `tyra.intent.${intent}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : intent;
+}
+
+export function tyraCaseStatus(locale: Locale, status: string): string {
+  const key = `tyra.status.${status}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : status;
+}

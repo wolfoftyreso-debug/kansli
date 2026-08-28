@@ -27,11 +27,11 @@ export interface TireCaseListItem {
 }
 
 export const INTENT_LABELS: Record<TireCaseIntent, string> = {
-  TIRE_SWAP_APPOINTMENT: "Hjulskifte",
-  STORE_ONLY: "Inlagring",
-  PICKUP_ONLY: "Utlämning",
-  QUOTE_ONLY: "Däck",
-  MIXED: "Blandat",
+  TIRE_SWAP_APPOINTMENT: "Wheel change",
+  STORE_ONLY: "Storage in",
+  PICKUP_ONLY: "Pickup",
+  QUOTE_ONLY: "Quote",
+  MIXED: "Mixed",
 };
 
 export const CASE_STATUS_LABELS: Record<string, string> = {

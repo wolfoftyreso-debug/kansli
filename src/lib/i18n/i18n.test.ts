@@ -7,7 +7,7 @@ import {
   localeFromAcceptLanguage,
   parseLocale,
 } from "./locales.ts";
-import { catalogs, messageKeys, t } from "./t.ts";
+import { catalogs, messageKeys, t, tyraCaseStatus, tyraIntentLabel } from "./t.ts";
 
 describe("locale registry", () => {
   it("ships English as the system language plus the decided set", () => {
@@ -56,6 +56,12 @@ describe("locale registry", () => {
     expect(t("sv", "intake.submit")).toBe("Teckna året och få fakturorna");
     expect(t("en", "intake.inbox.heading")).toBe("Registrations");
     expect(t("sv", "intake.inbox.heading")).toBe("Registreringar");
+    expect(t("en", "tyra.openCase")).toBe("Open case");
+    expect(t("sv", "tyra.openCase")).toBe("Öppna ärende");
+    expect(tyraIntentLabel("en", "TIRE_SWAP_APPOINTMENT")).toBe("Wheel change");
+    expect(tyraIntentLabel("sv", "TIRE_SWAP_APPOINTMENT")).toBe("Hjulskifte");
+    expect(tyraCaseStatus("en", "OPEN")).toBe("Open");
+    expect(tyraCaseStatus("sv", "OPEN")).toBe("Öppet");
     expect(t("sv", "chrome.signIn")).toBe("Logga in");
     expect(t("pl", "chrome.language")).toBe("Język");
     expect(t("de", "chrome.signIn")).toBe("Anmelden");
