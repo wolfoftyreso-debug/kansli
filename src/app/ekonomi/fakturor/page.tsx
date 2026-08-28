@@ -67,19 +67,19 @@ export default async function FakturorPage() {
             className="flex flex-col gap-4 rounded-xl border border-line bg-surface px-4 py-4"
           >
             <h2 className="text-lg font-semibold">Nytt sälj</h2>
-            <Field name="customerName" label="Kund" required />
-            <Field name="customerRef" label="Kundreferens (valfritt)" />
+            <Field name="customerName" label="Kund" required large />
+            <Field name="customerRef" label="Kundreferens (valfritt)" large />
             <InvoiceLineFields rows={3} />
             <Notice>
               Skriv kronor. 2 500 eller 2500,50 går bra. Boken sparar öre. Moms 6 % och 0 % går inte
               att boka än — boken har inte de kontona.
             </Notice>
             <div className="flex flex-wrap gap-3">
-              <Submit>Boka sälj</Submit>
+              <Submit large>Boka sälj</Submit>
               <button
                 type="submit"
                 formAction={createInvoiceAction}
-                className="self-start border border-line bg-paper px-4 py-2 text-sm"
+                className="min-h-12 self-start border border-line bg-paper px-4 py-3 text-base"
               >
                 Spara utkast
               </button>

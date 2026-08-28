@@ -40,16 +40,16 @@ and the locked visual contract (00–08). Not a redesign. Preserve before replac
 1. **`next build` failed** — `OpsEventMeasure` unimported in `src/lib/platform/ops.ts`, Swedish runtime literals left in `OpsSnapshot` after the English-canonical migration, narrow `includes` in `structure.ts`, unnarrowed `focus` in `OpsBoard.tsx`, and lint errors from the vendored referens proofs. All fixed; referens is excluded from lint (proofs are not app code).
 2. **Mobile topbar collision (every page)** — at 390px the PIXDRIFT wordmark and room label rendered on top of each other and "Switch company" wrapped inside the 36px bar. Fixed: room label shows from `sm` (the breadcrumb + H1 carry context below), identity label from `lg`, switch-company from `md`, and org switching moved into the mobile Menu under a "Companies" heading. No-wrap on all bar controls.
 
-### P1 — fixed in this pass
+### P1 — fixed
 
 3. **New customer form ergonomics** — the public intake ("kontakten") used 36px fields, 16px checkbox targets and two hand-rolled `rounded-md` selects. Fixed: all fields/selects/checkboxes use the `large` (48px) variants; selects extracted into a shared `SelectField` matching `Field`.
+4. **TYRA intake and Ekonomi "Nytt sälj"** — workshop-counter and sales booking now use the `large` (48px) `Field` / `SelectField` / `CheckField` / `Submit`. Intent, VAT and line kind use `SelectField` (no empty option when a default is set). Desktop keeps the two-column grid; density is the form, not the case list.
 
 ### P2 — known, not changed here
 
-4. TYRA intake and Ekonomi "Nytt sälj" use standard 36px fields; the workshop counter is phone-first, so `large` would fit. Do it room by room, verifying desktop density is not hurt.
 5. SalesBoard/OpsBoard chart axis text is ~6px rendered at 390px (11px inside a 720-wide viewBox). Consider a mobile tick size or fewer ticks.
 6. The Kansli session card exposes the engine name in the mono meta row; review whether the vendor/model belongs in the customer-facing room or only in /platform/drift.
-7. Hand-rolled `rounded-md` selects remain in tyra/alva/ekonomi/creditae detail pages. Visually square (facade nulls radius) but should migrate to `SelectField` when each room is next touched.
+7. Hand-rolled `rounded-md` selects remain in tyra/alva/ekonomi/creditae *detail* pages. Visually square (facade nulls radius) but should migrate to `SelectField` when each room is next touched.
 
 ### P3 — polish backlog
 

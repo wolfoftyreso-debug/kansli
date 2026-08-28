@@ -1,4 +1,4 @@
-import { Field } from "@/components/app/SignInGate";
+import { Field, SelectField } from "@/components/app/SignInGate";
 import { vatLabel } from "@/lib/ekonomi/money";
 
 export function InvoiceLineFields({ rows = 1 }: { rows?: number }) {
@@ -10,37 +10,37 @@ export function InvoiceLineFields({ rows = 1 }: { rows?: number }) {
             name="description"
             label={index === 0 ? "Rad 1" : `Rad ${index + 1} (valfritt)`}
             required={index === 0}
+            large
             placeholder={index === 0 ? "Hjulskifte" : ""}
           />
-          <Field name="quantity" label="Antal" defaultValue="1" />
+          <Field name="quantity" label="Antal" large defaultValue="1" />
           <Field
             name="unitNetKronor"
             label="Á-pris netto, kr"
             required={index === 0}
+            large
             placeholder="2500"
           />
-          <label className="flex flex-col gap-1">
-            <span className="text-sm text-ink-soft">Moms</span>
-            <select
-              name="vatRateBps"
-              className="border border-line bg-paper px-3 py-2 text-sm"
-              defaultValue="2500"
-            >
-              <option value="2500">{vatLabel(2500)}</option>
-              <option value="1200">{vatLabel(1200)}</option>
-            </select>
-          </label>
-          <label className="flex flex-col gap-1">
-            <span className="text-sm text-ink-soft">Slag</span>
-            <select
-              name="kind"
-              className="border border-line bg-paper px-3 py-2 text-sm"
-              defaultValue="service"
-            >
-              <option value="service">Tjänst</option>
-              <option value="goods">Vara</option>
-            </select>
-          </label>
+          <SelectField
+            name="vatRateBps"
+            label="Moms"
+            large
+            defaultValue="2500"
+            options={[
+              { value: "2500", label: vatLabel(2500) },
+              { value: "1200", label: vatLabel(1200) },
+            ]}
+          />
+          <SelectField
+            name="kind"
+            label="Slag"
+            large
+            defaultValue="service"
+            options={[
+              { value: "service", label: "Tjänst" },
+              { value: "goods", label: "Vara" },
+            ]}
+          />
         </div>
       ))}
     </div>

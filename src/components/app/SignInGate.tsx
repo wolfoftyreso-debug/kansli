@@ -109,7 +109,7 @@ export function SelectField({
   name: string;
   label: string;
   options: { value: string; label: string }[];
-  placeholder: string;
+  placeholder?: string;
   defaultValue?: string;
   large?: boolean;
 }) {
@@ -120,7 +120,7 @@ export function SelectField({
     <label className="flex flex-col gap-1">
       <span className="text-sm text-ink-soft">{label}</span>
       <select name={name} defaultValue={defaultValue} className={cls}>
-        <option value="">{placeholder}</option>
+        {placeholder ? <option value="">{placeholder}</option> : null}
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}

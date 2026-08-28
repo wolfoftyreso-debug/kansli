@@ -6,6 +6,7 @@ import {
   EmptyState,
   Field,
   Notice,
+  SelectField,
   SignInGate,
   Submit,
 } from "@/components/app/SignInGate";
@@ -74,44 +75,49 @@ export default async function TyraPage() {
       ) : (
         <>
           <form action={createTyraCase} className="flex flex-col gap-4">
-            <Field name="customerName" label="Kund" required placeholder="Anna Andersson" />
+            <Field name="customerName" label="Kund" required large placeholder="Anna Andersson" />
             <Field
               name="registrationNumber"
               label="Registreringsnummer"
               required
+              large
               placeholder="ABC123"
             />
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field name="make" label="Märke" placeholder="Volvo" />
-              <Field name="model" label="Modell" placeholder="XC60" />
+              <Field name="make" label="Märke" large placeholder="Volvo" />
+              <Field name="model" label="Modell" large placeholder="XC60" />
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field name="phone" label="Telefon" placeholder="+46…" />
-              <Field name="email" label="E-post" placeholder="kund@exempel.se" />
+              <Field name="phone" label="Telefon" type="tel" large placeholder="+46…" />
+              <Field name="email" label="E-post" type="email" large placeholder="kund@exempel.se" />
             </div>
-            <label className="flex flex-col gap-1">
-              <span className="text-sm text-ink-soft">Avsikt</span>
-              <select
-                name="intent"
-                defaultValue="TIRE_SWAP_APPOINTMENT"
-                className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
-              >
-                <option value="TIRE_SWAP_APPOINTMENT">Hjulskifte</option>
-                <option value="STORE_ONLY">Inlagring</option>
-                <option value="PICKUP_ONLY">Utlämning</option>
-                <option value="QUOTE_ONLY">Offert</option>
-                <option value="MIXED">Blandat</option>
-              </select>
-            </label>
+            <SelectField
+              name="intent"
+              label="Avsikt"
+              large
+              defaultValue="TIRE_SWAP_APPOINTMENT"
+              options={[
+                { value: "TIRE_SWAP_APPOINTMENT", label: "Hjulskifte" },
+                { value: "STORE_ONLY", label: "Inlagring" },
+                { value: "PICKUP_ONLY", label: "Utlämning" },
+                { value: "QUOTE_ONLY", label: "Offert" },
+                { value: "MIXED", label: "Blandat" },
+              ]}
+            />
             <fieldset className="flex flex-col gap-2">
               <legend className="text-sm text-ink-soft">Åtgärder</legend>
-              <CheckField name="swapFromStorage" label="Hjulskifte från lager" defaultChecked />
-              <CheckField name="wash" label="Tvätt" defaultChecked />
-              <CheckField name="balance" label="Balansering" defaultChecked />
-              <CheckField name="storageIn" label="Lägga in hjul" />
-              <CheckField name="quote" label="Sälj däck" />
+              <CheckField
+                name="swapFromStorage"
+                label="Hjulskifte från lager"
+                large
+                defaultChecked
+              />
+              <CheckField name="wash" label="Tvätt" large defaultChecked />
+              <CheckField name="balance" label="Balansering" large defaultChecked />
+              <CheckField name="storageIn" label="Lägga in hjul" large />
+              <CheckField name="quote" label="Sälj däck" large />
             </fieldset>
-            <Submit>Öppna ärende</Submit>
+            <Submit large>Öppna ärende</Submit>
           </form>
 
           <section className="flex flex-col gap-3">

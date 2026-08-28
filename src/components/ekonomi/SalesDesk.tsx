@@ -72,9 +72,9 @@ export function SalesDesk({
       >
         <input type="hidden" name="stay" value="1" />
         <h3 className="font-medium">Nytt sälj</h3>
-        <Field name="customerName" label="Kund" required />
+        <Field name="customerName" label="Kund" required large />
         <InvoiceLineFields rows={1} />
-        <Submit>Boka sälj</Submit>
+        <Submit large>Boka sälj</Submit>
       </form>
 
       {waiting === 0 ? (
