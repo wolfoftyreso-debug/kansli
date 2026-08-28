@@ -24,7 +24,7 @@ export type OpsErrorRow = {
 };
 
 export type OpsRuntimeDebug = {
-  mark: "produktion" | "förhandsvisning" | "lokal";
+  mark: "production" | "preview" | "local";
   hardened: boolean;
   vercelEnv: string | null;
   appEnv: string | null;

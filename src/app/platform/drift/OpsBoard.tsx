@@ -13,6 +13,7 @@ import {
   opsSmsKindLabel,
   t,
   type Locale,
+  type MessageKey,
 } from "@/lib/i18n";
 import type { OpsDebugLookup, OpsQueueCounts } from "@/lib/platform/ops-debug-view";
 import {
@@ -725,7 +726,7 @@ function RuntimeMarks({ snapshot, locale }: { snapshot: OpsSnapshot; locale: Loc
   ].filter(Boolean);
   return (
     <p className="text-sm text-muted">
-      {marks.mark}
+      {t(locale, `runtime.${marks.mark}` as MessageKey)}
       {marks.vercelEnv ? ` · ${marks.vercelEnv}` : ""}
       {marks.appEnv ? ` · ${marks.appEnv}` : ""}
       {" · "}

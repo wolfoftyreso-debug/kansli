@@ -48,15 +48,13 @@ function headlineFrom(payload: Record<string, unknown>, fallback: string | null)
   return fallback;
 }
 
-function runtimeMark(
-  env: Record<string, string | undefined>,
-): "produktion" | "förhandsvisning" | "lokal" {
-  if (env.VERCEL_ENV === "preview") return "förhandsvisning";
-  if (env.VERCEL_ENV === "development") return "lokal";
+function runtimeMark(env: Record<string, string | undefined>): "production" | "preview" | "local" {
+  if (env.VERCEL_ENV === "preview") return "preview";
+  if (env.VERCEL_ENV === "development") return "local";
   if (env.VERCEL_ENV === "production" || env.APP_ENV === "prod" || env.APP_ENV === "production") {
-    return "produktion";
+    return "production";
   }
-  return "lokal";
+  return "local";
 }
 
 async function countOutbox(
