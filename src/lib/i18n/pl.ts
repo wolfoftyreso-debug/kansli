@@ -796,4 +796,27 @@ export const PL: Record<MessageKey, string> = {
   "intake.confirm.planNote":
     "Paid on time — everything keeps working. If one goes unpaid the rooms pause until it is paid. The order specification is attached to each invoice.",
   "intake.confirm.openInvoice": "Sign in and open the invoice",
+
+  "intake.inbox.metaTitle": "Registrations — Kansli",
+  "intake.inbox.metaDescription": "Customers who registered, their modules and invoices.",
+  "intake.inbox.crumb": "Registrations",
+  "intake.inbox.heading": "Registrations",
+  "intake.inbox.lead":
+    "Customers who registered themselves. Each registration is an account and a monthly invoice with ten days to pay — no demos, no meetings.",
+  "intake.inbox.signInTitle": "Sign in to read the registrations",
+  "intake.inbox.signInBody":
+    "This is the office inbox. The open registration is on the Register page.",
+  "intake.inbox.notHouse":
+    "This is the office inbox, not the workshop's. You only see it when you are in as the house.",
+  "intake.inbox.empty": "No registrations yet.",
+  "intake.inbox.accountCreated": " · account created",
+  "intake.inbox.price": " · {price}/mo excl. VAT",
+  "intake.inbox.signInDetailTitle": "Sign in to read the registration",
+  "intake.inbox.signInDetailBody": "The registration belongs to the office.",
+  "intake.inbox.registered": "Registered {when}. Account and invoice were created at once.",
+  "intake.inbox.monthly": "Monthly price",
+  "intake.inbox.monthlyValue": "{price}/mo excl. VAT",
+  "intake.inbox.notes": "Note",
+  "intake.inbox.account": "Account",
+  "intake.inbox.invoice": "Invoice",
 };

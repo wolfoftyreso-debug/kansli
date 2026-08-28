@@ -54,6 +54,8 @@ describe("locale registry", () => {
     expect(t("sv", "events.heading")).toBe("Händelselogg");
     expect(t("en", "intake.heading")).toBe("Pick modules and sign a year");
     expect(t("sv", "intake.submit")).toBe("Teckna året och få fakturorna");
+    expect(t("en", "intake.inbox.heading")).toBe("Registrations");
+    expect(t("sv", "intake.inbox.heading")).toBe("Registreringar");
     expect(t("sv", "chrome.signIn")).toBe("Logga in");
     expect(t("pl", "chrome.language")).toBe("Język");
     expect(t("de", "chrome.signIn")).toBe("Anmelden");

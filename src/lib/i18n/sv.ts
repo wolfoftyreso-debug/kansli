@@ -795,4 +795,27 @@ export const SV: Record<MessageKey, string> = {
   "intake.confirm.planNote":
     "Betalda i tid — allt fortsätter fungera. Förfaller en obetald pausas rummen tills den är betald. Orderspecifikationen ligger som bilaga på varje faktura.",
   "intake.confirm.openInvoice": "Logga in och öppna fakturan",
+
+  "intake.inbox.metaTitle": "Registreringar — Kansli",
+  "intake.inbox.metaDescription": "Kunder som registrerat sig, deras moduler och fakturor.",
+  "intake.inbox.crumb": "Registreringar",
+  "intake.inbox.heading": "Registreringar",
+  "intake.inbox.lead":
+    "Kunder som registrerat sig själva. Varje registrering är ett konto och en månadsfaktura med tio dagars betalning — inga demos, inga möten.",
+  "intake.inbox.signInTitle": "Logga in för att läsa registreringarna",
+  "intake.inbox.signInBody":
+    "Det här är kansliets inkorg. Den öppna registreringen finns på sidan Registrera.",
+  "intake.inbox.notHouse":
+    "Det här är kansliets inkorg, inte verkstadens. Du ser den bara när du är inne som huset.",
+  "intake.inbox.empty": "Inga registreringar ännu.",
+  "intake.inbox.accountCreated": " · konto skapat",
+  "intake.inbox.price": " · {price}/mån exkl. moms",
+  "intake.inbox.signInDetailTitle": "Logga in för att läsa registreringen",
+  "intake.inbox.signInDetailBody": "Registreringen tillhör kansliet.",
+  "intake.inbox.registered": "Registrerade sig {when}. Konto och faktura skapades direkt.",
+  "intake.inbox.monthly": "Månadspris",
+  "intake.inbox.monthlyValue": "{price}/mån exkl. moms",
+  "intake.inbox.notes": "Anteckning",
+  "intake.inbox.account": "Konto",
+  "intake.inbox.invoice": "Faktura",
 };

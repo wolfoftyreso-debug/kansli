@@ -1,22 +1,27 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb } from "@/components/app/ProductCrumb";
-import { EmptyState, SignInGate } from "@/components/app/SignInGate";
+import { EmptyState, Notice, SignInGate } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
-import { Notice } from "@/components/app/SignInGate";
+import { t } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 import { houseOrgRefFromEnv, isHouseSession, listIntakes } from "@/lib/kansli/intakes";
 import { kronor, MODULE_PRICING } from "@/lib/kansli/pricing";
 import { tryRuntime } from "@/lib/platform/page";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: "Registreringar — Kansli",
-  description: "Kunder som registrerat sig, deras moduler och fakturor.",
-};
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "intake.inbox.metaTitle"),
+    description: t(locale, "intake.inbox.metaDescription"),
+  };
+}
 
 export default async function KansliUpphandlingPage() {
   const session = await readSession();
+  const locale = await readLocale();
   const runtime = tryRuntime();
   const houseOrgRef = houseOrgRefFromEnv();
   const house = isHouseSession(session?.org?.ref);
@@ -27,24 +32,23 @@ export default async function KansliUpphandlingPage() {
       <ProductCrumb
         crumbs={[
           { href: "/kansli", label: "Kansli" },
-          { href: "/kansli/upphandling", label: "Registreringar" },
+          { href: "/kansli/upphandling", label: t(locale, "intake.inbox.crumb") },
         ]}
       />
-      <h1 className="text-3xl font-semibold tracking-tight">Registreringar</h1>
-      <p className="max-w-xl text-ink-soft">
-        Kunder som registrerat sig själva. Varje registrering är ett konto och en månadsfaktura med
-        tio dagars betalning — inga demos, inga möten.
-      </p>
+      <h1 className="text-3xl font-semibold tracking-tight">{t(locale, "intake.inbox.heading")}</h1>
+      <p className="max-w-xl text-ink-soft">{t(locale, "intake.inbox.lead")}</p>
       {!session ? (
-        <SignInGate next="/kansli/upphandling" title="Logga in för att läsa registreringarna">
-          Det här är kansliets inkorg. Den öppna registreringen finns på sidan Registrera.
+        <SignInGate
+          next="/kansli/upphandling"
+          title={t(locale, "intake.inbox.signInTitle")}
+          actionLabel={t(locale, "chrome.signIn")}
+        >
+          {t(locale, "intake.inbox.signInBody")}
         </SignInGate>
       ) : !house ? (
-        <Notice>
-          Det här är kansliets inkorg, inte verkstadens. Du ser den bara när du är inne som huset.
-        </Notice>
+        <Notice>{t(locale, "intake.inbox.notHouse")}</Notice>
       ) : intakes.length === 0 ? (
-        <EmptyState>Inga registreringar ännu.</EmptyState>
+        <EmptyState>{t(locale, "intake.inbox.empty")}</EmptyState>
       ) : (
         <ul className="flex flex-col gap-3">
           {intakes.map((item) => (
@@ -60,10 +64,10 @@ export default async function KansliUpphandlingPage() {
                 <p className="mt-2 text-sm text-ink-soft">
                   {item.modules.map((moduleId) => MODULE_PRICING[moduleId].label).join(" · ")}
                   {item.monthlyNetOre != null
-                    ? ` · ${kronor(item.monthlyNetOre)}/mån exkl. moms`
+                    ? t(locale, "intake.inbox.price", { price: kronor(item.monthlyNetOre) })
                     : ""}
                   {item.invoiceNumber ? ` · ${item.invoiceNumber}` : ""}
-                  {item.provisionedEmail ? " · konto skapat" : ""}
+                  {item.provisionedEmail ? t(locale, "intake.inbox.accountCreated") : ""}
                 </p>
               </Link>
             </li>

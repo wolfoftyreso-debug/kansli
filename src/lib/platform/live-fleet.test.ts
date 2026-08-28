@@ -476,7 +476,10 @@ async function runFleet(): Promise<{ passed: number; companies: number; failures
 
       const inbox = await request(jar, "/kansli/upphandling");
       const listed = inbox.text.includes(`Test Kontakt · ${email}`);
-      const inboxOk = inbox.status === 200 && inbox.text.includes("kansliets inkorg") && !listed;
+      const inboxOk =
+        inbox.status === 200 &&
+        (inbox.text.includes("office inbox") || inbox.text.includes("kansliets inkorg")) &&
+        !listed;
       report.checks.push(
         check(
           "house-inbox",
