@@ -11,6 +11,7 @@ import {
   catalogs,
   alvaOutcome,
   catalogField,
+  catalogSection,
   brittObsStatus,
   brittSource,
   ekonomiConnSlot,
@@ -163,6 +164,13 @@ describe("locale registry", () => {
     expect(catalogField("sv", "rita", "purpose")).toBe("Letar skattebesparingar i era böcker.");
     expect(catalogField("en", "tyra", "category")).toBe("Tyre hotel");
     expect(catalogField("sv", "alva", "category")).toBe("Verkstad");
+    expect(catalogSection("en", "identity", "01", "")).toBe(
+      "One sign-in for every system, so you do not sign in again and again.",
+    );
+    expect(catalogSection("sv", "identity", "01", "")).toBe(
+      "En inloggning till alla system, så ni inte loggar in om och om igen.",
+    );
+    expect(t("sv", "site.catalog.forthcoming")).toBe("Kommer");
     expect(t("sv", "chrome.signIn")).toBe("Logga in");
     expect(t("pl", "chrome.language")).toBe("Język");
     expect(t("de", "chrome.signIn")).toBe("Anmelden");

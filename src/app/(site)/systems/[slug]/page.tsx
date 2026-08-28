@@ -4,10 +4,10 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/site/Container";
 import { SpecTable } from "@/components/site/SpecTable";
 import { RegionIndicator, StatusIndicator } from "@/components/site/indicators";
-import { catalogField, t } from "@/lib/i18n";
+import { catalogField, catalogSection, catalogSteward, t } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
 import { toolsForSystem } from "@/lib/mcp/catalog";
-import { getSystem, STEWARDSHIP_LABEL, systems } from "@/lib/pixdrift/systems";
+import { getSystem, systems } from "@/lib/pixdrift/systems";
 
 export function generateStaticParams() {
   return systems.map((s) => ({ slug: s.slug }));
@@ -64,20 +64,34 @@ export default async function SystemPage({ params }: { params: Promise<{ slug: s
           <div className="mt-10">
             <SpecTable
               rows={[
-                { label: "Category", value: catalogField(locale, system.slug, "category") },
-                { label: "Stewardship", value: STEWARDSHIP_LABEL[system.stewardship] },
-                { label: "Status", value: <StatusIndicator status={system.status} /> },
-                { label: "Region", value: <RegionIndicator regions={system.regions} /> },
                 {
-                  label: "REST API",
-                  value: "Available",
+                  label: t(locale, "site.catalog.spec.category"),
+                  value: catalogField(locale, system.slug, "category"),
                 },
                 {
-                  label: "MCP",
+                  label: t(locale, "site.catalog.spec.stewardship"),
+                  value: catalogSteward(locale, system.stewardship),
+                },
+                {
+                  label: t(locale, "site.catalog.spec.status"),
+                  value: <StatusIndicator status={system.status} />,
+                },
+                {
+                  label: t(locale, "site.catalog.spec.region"),
+                  value: <RegionIndicator regions={system.regions} />,
+                },
+                {
+                  label: t(locale, "site.catalog.spec.rest"),
+                  value: t(locale, "site.catalog.spec.available"),
+                },
+                {
+                  label: t(locale, "site.catalog.spec.mcp"),
                   value:
                     toolsForSystem(system.slug).length > 0
-                      ? `${toolsForSystem(system.slug).length} tools`
-                      : "Not exposed",
+                      ? t(locale, "site.catalog.spec.tools", {
+                          count: toolsForSystem(system.slug).length,
+                        })
+                      : t(locale, "site.catalog.spec.notExposed"),
                 },
               ]}
             />
@@ -100,12 +114,12 @@ export default async function SystemPage({ params }: { params: Promise<{ slug: s
                 {section.body.length > 0 ? (
                   section.body.map((p, i) => (
                     <p key={i} className="text-lg leading-relaxed text-ink">
-                      {p}
+                      {catalogSection(locale, system.slug, section.no, p, { name: system.name })}
                     </p>
                   ))
                 ) : (
                   <p className="text-ink-soft">
-                    <span className="pd-label">Forthcoming</span>
+                    <span className="pd-label">{t(locale, "site.catalog.forthcoming")}</span>
                   </p>
                 )}
               </div>
@@ -130,7 +144,7 @@ export default async function SystemPage({ params }: { params: Promise<{ slug: s
             href="/systems"
             className="px-5 py-3 text-sm font-medium text-ink underline-offset-4 hover:underline"
           >
-            ← All systems
+            ← {t(locale, "site.catalog.allSystems")}
           </Link>
         </div>
       </Container>

@@ -20,6 +20,8 @@ export {
   catalogs,
   alvaOutcome,
   catalogField,
+  catalogSection,
+  catalogSteward,
   brittObsStatus,
   brittSource,
   ekonomiConnSlot,

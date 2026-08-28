@@ -1543,4 +1543,109 @@ export const SV: Record<MessageKey, string> = {
   "site.catalog.creditae.category": "Kredit",
   "site.catalog.creditae.summary":
     "Tar emot organisationsnummer och er bedömning. Byråns rapport går via plattformens kreditkanal. Sätter inget kreditbetyg.",
+
+  "site.catalog.forthcoming": "Kommer",
+  "site.catalog.allSystems": "Alla system",
+  "site.catalog.spec.category": "Kategori",
+  "site.catalog.spec.stewardship": "Förvaltning",
+  "site.catalog.spec.status": "Status",
+  "site.catalog.spec.region": "Region",
+  "site.catalog.spec.rest": "REST API",
+  "site.catalog.spec.available": "Tillgängligt",
+  "site.catalog.spec.mcp": "MCP",
+  "site.catalog.spec.tools": "{count} verktyg",
+  "site.catalog.spec.notExposed": "Inte exponerat",
+  "site.catalog.steward.INTERNAL": "Internt",
+  "site.catalog.steward.OPEN_SOURCE": "Öppen källkod",
+  "site.catalog.steward.MANAGED_PRODUCT": "Förvaltad produkt",
+  "site.catalog.identity.s01":
+    "En inloggning till alla system, så ni inte loggar in om och om igen.",
+  "site.catalog.identity.s02":
+    "Varje system får egna konton. Folk loggar in om och om igen, och lösenord sprids.",
+  "site.catalog.identity.s03":
+    "Egen inloggning. Du loggar in en gång. De andra systemen litar på den inloggningen.",
+  "site.catalog.identity.s04":
+    "Ett system kan kolla att du är inloggad, men inte logga in någon annan i ditt namn.",
+  "site.catalog.identity.s05":
+    "Användare och bolag ligger i en egen databas. Nycklar byts. Produkterna delar inte listan.",
+  "site.catalog.identity.s07":
+    "Alla andra system kopplar hit. Ett nytt system läggs till utan att inloggningen byggs om.",
+  "site.catalog.identity.s08": "Inloggningen är en gång. Hemligheter skickas inte mellan systemen.",
+  "site.catalog.identity.s09": "Teknisk text under Dokumentation → System → Identity.",
+  "site.catalog.identity.s10": "Igång. Europa och USA.",
+  "site.catalog.alva.s01":
+    "Tar emot kundens fel, anteckningar och mätvärden. Diagnosen kopplas in senare. Systemet ställer ingen diagnos och ger inget råd.",
+  "site.catalog.alva.s02":
+    "Kundens fel sitter i huvudet och i lappar. Det som sagts och mätts går inte att följa senare.",
+  "site.catalog.alva.s03":
+    "Ett ärende per kundfel: anteckningar och mätvärden. Ingen diagnos från systemet.",
+  "site.catalog.alva.s07":
+    "Samma inloggning som de andra systemen. Ni loggar in en gång. Produkterna delar inte varandras användarlistor.",
+  "site.catalog.alva.s09": "Skrivs när diagnosen är inkopplad.",
+  "site.catalog.alva.s10": "Inte klart än. Europa.",
+  "site.catalog.rita.s01":
+    "Letar skattebesparingar i era böcker: avdrag, moms och andra luckor. Förslagen är att kolla — inte skatteråd.",
+  "site.catalog.rita.s07":
+    "Samma inloggning som de andra systemen. Ni loggar in en gång. Produkterna delar inte varandras användarlistor.",
+  "site.catalog.rita.s09": "Skrivs när mer av produkten är klar.",
+  "site.catalog.rita.s10": "Inte klart än. Europa.",
+  "site.catalog.tora.s01":
+    "Visa vilka upphandlingar just ert bolag kan lämna anbud på — och varför. Krav, luckor och nästa steg.",
+  "site.catalog.tora.s02":
+    "Bolaget lägger tid på upphandlingar de inte kan ta, eller missar dem de kan ta. Kraven, datumen och nästa steg sitter i olika huvuden.",
+  "site.catalog.tora.s03":
+    "Jämför bolagsprofilen mot upphandlingarna. Visar krav, luckor, belopp och vad ni ska göra nu. RITA tittar i räkenskaperna. TORA gör det inte.",
+  "site.catalog.tora.s04":
+    "Bolaget läggs mot upphandlingarna. Ni får en bedömning och ett nästa steg, inte en juridisk slutsats.",
+  "site.catalog.tora.s05":
+    "TORA räknar i samma sajt. Uppgifterna är TORAs. Inloggningen är densamma som i de andra systemen.",
+  "site.catalog.tora.s06": "Finns under /tora. Upphandlingarna i demon är exempel.",
+  "site.catalog.tora.s07":
+    "Samma inloggning som de andra systemen. Ni loggar in en gång. Produkterna delar inte varandras användarlistor.",
+  "site.catalog.tora.s08": "Bedömningen räknas på servern. Exempeldata är märkt som exempel.",
+  "site.catalog.tora.s09": "Kör {name} i navet för att se hur det fungerar.",
+  "site.catalog.tora.s10": "På väg. Europa.",
+  "site.catalog.irma.s01":
+    "Skicka ett avtal med en länk. Motparten läser och bekräftar. Ni ser var avtalet är.",
+  "site.catalog.irma.s07":
+    "Samma inloggning som de andra systemen. Ni loggar in en gång. Produkterna delar inte varandras användarlistor.",
+  "site.catalog.irma.s09": "Skrivs när mer av produkten är klar.",
+  "site.catalog.irma.s10": "Inte klart än. Europa.",
+  "site.catalog.britt.s01":
+    "Samlar det som redan hänt och behöver en uppföljning. Inte ett ärendesystem och inte en chatt.",
+  "site.catalog.britt.s07":
+    "Samma inloggning som de andra systemen. Ni loggar in en gång. Produkterna delar inte varandras användarlistor.",
+  "site.catalog.britt.s09": "Skrivs när mer av produkten är klar.",
+  "site.catalog.britt.s10": "Inte klart än. Europa.",
+  "site.catalog.tyra.s01":
+    "Håller ihop kund, bil och hjul, och visar vad som ska göras härnäst. Inte ett allmänt kundregister.",
+  "site.catalog.tyra.s02":
+    "Kund, bil och hjul sitter i lappar, SMS och huvudet. Kunden ser sällan samma sak som verkstaden.",
+  "site.catalog.tyra.s03":
+    "Kund, fordon, ärende och en kundlänk. Offert och live-priser är inte inkopplade än.",
+  "site.catalog.tyra.s07":
+    "Samma inloggning som de andra systemen. Ni loggar in en gång. Produkterna delar inte varandras användarlistor.",
+  "site.catalog.tyra.s09": "Kör {name} i navet för att se hur det fungerar.",
+  "site.catalog.tyra.s10": "På väg. Europa.",
+  "site.catalog.ekonomi.s01":
+    "Fakturor, moms och hur pengarna kom in. De andra systemen lägger sina fakturor här.",
+  "site.catalog.ekonomi.s02":
+    "Pengarna sitter i Fortnox, Swish-bilder och huvudet. Momsen och inbetalningen möts inte.",
+  "site.catalog.ekonomi.s03":
+    "Faktura i öre, moms och koppling till Stripe och Revolut. Ingen påhittad inbetalning.",
+  "site.catalog.ekonomi.s07":
+    "Samma inloggning som de andra systemen. Ni loggar in en gång. Produkterna delar inte varandras användarlistor.",
+  "site.catalog.ekonomi.s09": "Kör {name} i navet för att se hur det fungerar.",
+  "site.catalog.ekonomi.s10": "På väg. Europa. Kort och Swish kräver att de är inkopplade.",
+  "site.catalog.creditae.s01":
+    "Kreditbedömning av motpart: vem ni ska bedöma och vad ni själva kom fram till. Systemet sätter inget kreditbetyg.",
+  "site.catalog.creditae.s02":
+    "Beslutet att ge kredit sitter i huvudet och i mejl. Det som sagts om motparten går inte att följa senare.",
+  "site.catalog.creditae.s03":
+    "En förfrågan per motpart: organisationsnummer, valfritt namn och er slutsats. Kör, bevaka eller stanna. Rapport via kreditkanalen när den är kopplad.",
+  "site.catalog.creditae.s07":
+    "Samma inloggning som de andra systemen. Ni loggar in en gång. Produkterna delar inte varandras användarlistor.",
+  "site.catalog.creditae.s09": "Kör {name} i navet för att se hur det fungerar.",
+  "site.catalog.creditae.s10":
+    "På väg. Europa. Kreditrapport via Creditsafe när kanalen är kopplad.",
 };

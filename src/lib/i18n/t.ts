@@ -213,3 +213,19 @@ export function catalogField(
   const key = `site.catalog.${slug}.${field}` as MessageKey;
   return key in catalogs.en ? t(locale, key) : slug;
 }
+
+export function catalogSection(
+  locale: Locale,
+  slug: string,
+  no: string,
+  fallback: string,
+  vars?: MessageVars,
+): string {
+  const key = `site.catalog.${slug}.s${no}` as MessageKey;
+  return key in catalogs.en ? t(locale, key, vars) : fallback;
+}
+
+export function catalogSteward(locale: Locale, stewardship: string): string {
+  const key = `site.catalog.steward.${stewardship}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : stewardship;
+}

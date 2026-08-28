@@ -1547,4 +1547,110 @@ export const NO: Record<MessageKey, string> = {
   "site.catalog.creditae.category": "Credit",
   "site.catalog.creditae.summary":
     "Takes an organisation number and your assessment. The bureau report goes through the platform credit channel. Does not set a credit score.",
+
+  "site.catalog.forthcoming": "Forthcoming",
+  "site.catalog.allSystems": "All systems",
+  "site.catalog.spec.category": "Category",
+  "site.catalog.spec.stewardship": "Stewardship",
+  "site.catalog.spec.status": "Status",
+  "site.catalog.spec.region": "Region",
+  "site.catalog.spec.rest": "REST API",
+  "site.catalog.spec.available": "Available",
+  "site.catalog.spec.mcp": "MCP",
+  "site.catalog.spec.tools": "{count} tools",
+  "site.catalog.spec.notExposed": "Not exposed",
+  "site.catalog.steward.INTERNAL": "Internal",
+  "site.catalog.steward.OPEN_SOURCE": "Open source",
+  "site.catalog.steward.MANAGED_PRODUCT": "Managed product",
+  "site.catalog.identity.s01":
+    "One sign-in for every system, so you do not sign in again and again.",
+  "site.catalog.identity.s02":
+    "Each system gets its own accounts. People sign in again and again, and passwords spread.",
+  "site.catalog.identity.s03":
+    "Own sign-in. You sign in once. The other systems trust that sign-in.",
+  "site.catalog.identity.s04":
+    "A system can check that you are signed in, but cannot sign someone else in under your name.",
+  "site.catalog.identity.s05":
+    "Users and companies sit in their own database. Keys are rotated. Products do not share the list.",
+  "site.catalog.identity.s07":
+    "Every other system connects here. A new system is added without rebuilding sign-in.",
+  "site.catalog.identity.s08": "Sign-in is once. Secrets are not sent between systems.",
+  "site.catalog.identity.s09": "Technical text under Documentation → Systems → Identity.",
+  "site.catalog.identity.s10": "Running. Europe and the United States.",
+  "site.catalog.alva.s01":
+    "Takes the customer's fault, notes and measurements. Diagnosis is wired later. The system does not diagnose and does not give advice.",
+  "site.catalog.alva.s02":
+    "The customer's fault sits in heads and on notes. What was said and measured cannot be followed later.",
+  "site.catalog.alva.s03":
+    "One case per customer fault: notes and measurements. No diagnosis from the system.",
+  "site.catalog.alva.s07":
+    "The same sign-in as the other systems. You sign in once. Products do not share each other's user lists.",
+  "site.catalog.alva.s09": "Written when diagnosis is wired.",
+  "site.catalog.alva.s10": "Not ready yet. Europe.",
+  "site.catalog.rita.s01":
+    "Looks for tax savings in your books: deductions, VAT and other gaps. The proposals are to check — not tax advice.",
+  "site.catalog.rita.s07":
+    "The same sign-in as the other systems. You sign in once. Products do not share each other's user lists.",
+  "site.catalog.rita.s09": "Written when more of the product is ready.",
+  "site.catalog.rita.s10": "Not ready yet. Europe.",
+  "site.catalog.tora.s01":
+    "Show which procurements your company can bid on — and why. Requirements, gaps and next step.",
+  "site.catalog.tora.s02":
+    "The company spends time on procurements it cannot take, or misses those it can. Requirements, dates and next step sit in different heads.",
+  "site.catalog.tora.s03":
+    "Compares the company profile to the procurements. Shows requirements, gaps, amounts and what to do now. RITA looks at the accounts. TORA does not.",
+  "site.catalog.tora.s04":
+    "The company is set against the procurements. You get an assessment and a next step, not a legal conclusion.",
+  "site.catalog.tora.s05":
+    "TORA calculates in the same site. The records are TORA's. Sign-in is the same as in the other systems.",
+  "site.catalog.tora.s06": "Lives under /tora. The procurements in the demo are examples.",
+  "site.catalog.tora.s07":
+    "The same sign-in as the other systems. You sign in once. Products do not share each other's user lists.",
+  "site.catalog.tora.s08":
+    "The assessment is calculated on the server. Sample data is marked as sample.",
+  "site.catalog.tora.s09": "Run {name} in the hub to see how it works.",
+  "site.catalog.tora.s10": "On the way. Europe.",
+  "site.catalog.irma.s01":
+    "Send an agreement with a link. The counterpart reads and confirms. You see where the agreement is.",
+  "site.catalog.irma.s07":
+    "The same sign-in as the other systems. You sign in once. Products do not share each other's user lists.",
+  "site.catalog.irma.s09": "Written when more of the product is ready.",
+  "site.catalog.irma.s10": "Not ready yet. Europe.",
+  "site.catalog.britt.s01":
+    "Collects what already happened and needs a follow-up. Not a case system and not a chat.",
+  "site.catalog.britt.s07":
+    "The same sign-in as the other systems. You sign in once. Products do not share each other's user lists.",
+  "site.catalog.britt.s09": "Written when more of the product is ready.",
+  "site.catalog.britt.s10": "Not ready yet. Europe.",
+  "site.catalog.tyra.s01":
+    "Keeps customer, car and wheels together, and shows what to do next. Not a general customer register.",
+  "site.catalog.tyra.s02":
+    "Customer, car and wheels sit on notes, SMS and in heads. The customer rarely sees the same thing as the workshop.",
+  "site.catalog.tyra.s03":
+    "Customer, vehicle, case and a customer link. Quotes and live prices are not wired yet.",
+  "site.catalog.tyra.s07":
+    "The same sign-in as the other systems. You sign in once. Products do not share each other's user lists.",
+  "site.catalog.tyra.s09": "Run {name} in the hub to see how it works.",
+  "site.catalog.tyra.s10": "On the way. Europe.",
+  "site.catalog.ekonomi.s01":
+    "Invoices, VAT and how the money came in. The other systems put their invoices here.",
+  "site.catalog.ekonomi.s02":
+    "The money sits in Fortnox, Swish pictures and in heads. VAT and the incoming payment do not meet.",
+  "site.catalog.ekonomi.s03":
+    "Invoice in öre, VAT and a connection to Stripe and Revolut. No invented payment.",
+  "site.catalog.ekonomi.s07":
+    "The same sign-in as the other systems. You sign in once. Products do not share each other's user lists.",
+  "site.catalog.ekonomi.s09": "Run {name} in the hub to see how it works.",
+  "site.catalog.ekonomi.s10": "On the way. Europe. Cards and Swish require them to be wired.",
+  "site.catalog.creditae.s01":
+    "Counterpart credit assessment: who you should assess and what you yourself concluded. The system does not set a credit score.",
+  "site.catalog.creditae.s02":
+    "The decision to give credit sits in heads and in email. What was said about the counterpart cannot be followed later.",
+  "site.catalog.creditae.s03":
+    "One inquiry per counterpart: organisation number, optional name and your conclusion. Go, watch or stop. Report through the credit channel when it is wired.",
+  "site.catalog.creditae.s07":
+    "The same sign-in as the other systems. You sign in once. Products do not share each other's user lists.",
+  "site.catalog.creditae.s09": "Run {name} in the hub to see how it works.",
+  "site.catalog.creditae.s10":
+    "On the way. Europe. Credit report through Creditsafe when the channel is wired.",
 };
