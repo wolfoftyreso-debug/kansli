@@ -9,6 +9,7 @@ import {
 } from "./locales.ts";
 import {
   catalogs,
+  alvaOutcome,
   brittObsStatus,
   brittSource,
   ekonomiConnSlot,
@@ -145,6 +146,10 @@ describe("locale registry", () => {
     expect(brittSource("sv", "tyra")).toBe("TYRA — däckhotell");
     expect(brittObsStatus("en", "open")).toBe("Open");
     expect(brittObsStatus("sv", "done")).toBe("Klar");
+    expect(t("en", "alva.workflow")).toBe("Workflow");
+    expect(t("sv", "alva.saveStatus")).toBe("Spara status");
+    expect(alvaOutcome("en", "yes")).toBe("Yes");
+    expect(alvaOutcome("sv", "unknown")).toBe("Okänt");
     expect(t("sv", "chrome.signIn")).toBe("Logga in");
     expect(t("pl", "chrome.language")).toBe("Język");
     expect(t("de", "chrome.signIn")).toBe("Anmelden");

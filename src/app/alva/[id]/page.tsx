@@ -8,10 +8,9 @@ import {
   buildProtocolFacts,
   listProtocolMeasurements,
   listProtocolObservations,
-  observationValueLabel,
 } from "@/lib/alva/protocol";
 import { readSession } from "@/lib/auth/session";
-import { t } from "@/lib/i18n";
+import { alvaOutcome, t } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
 import { tryRuntime } from "@/lib/platform/page";
 import {
@@ -101,12 +100,12 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
             action={saveAlvaCaseStatus}
             className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
           >
-            <h2 className="text-lg font-semibold">Arbetsflöde</h2>
-            <p className="text-sm text-ink-soft">Öppet / pågår / stängt. Inte diagnostiserat.</p>
+            <h2 className="text-lg font-semibold">{t(locale, "alva.workflow")}</h2>
+            <p className="text-sm text-ink-soft">{t(locale, "alva.workflowLead")}</p>
             <input type="hidden" name="id" value={id} />
             <SelectField
               name="status"
-              label="Status"
+              label={t(locale, "alva.statusLabel")}
               defaultValue={status}
               options={[
                 { value: "open", label: t(locale, "alva.status.open") },
@@ -114,14 +113,14 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
                 { value: "closed", label: t(locale, "alva.status.closed") },
               ]}
             />
-            <Submit large>Spara status</Submit>
+            <Submit large>{t(locale, "alva.saveStatus")}</Submit>
           </form>
 
           <form
             action={saveAlvaCaseNotes}
             className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
           >
-            <h2 className="text-lg font-semibold">Verkstadsanteckning</h2>
+            <h2 className="text-lg font-semibold">{t(locale, "alva.notes")}</h2>
             <input type="hidden" name="id" value={id} />
             <textarea
               name="notes"
@@ -129,47 +128,44 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
               defaultValue={item.technicianNotes}
               className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
             />
-            <Submit large>Spara anteckning</Submit>
+            <Submit large>{t(locale, "alva.saveNotes")}</Submit>
           </form>
 
           <section className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4">
-            <h2 className="text-lg font-semibold">Kontrollerade fakta</h2>
-            <p className="text-sm text-ink-soft">Svara ja, nej eller okänt på varje kontroll.</p>
+            <h2 className="text-lg font-semibold">{t(locale, "alva.facts")}</h2>
+            <p className="text-sm text-ink-soft">{t(locale, "alva.factsLead")}</p>
             {observations.length === 0 && measurements.length === 0 ? (
-              <Notice>
-                Protokollet är tomt tills ni fyller i kontroller eller mätvärden. Diagnosen är inte
-                inkopplad än.
-              </Notice>
+              <Notice>{t(locale, "alva.protocolEmpty")}</Notice>
             ) : null}
             <form action={recordAlvaObservation} className="grid gap-3 sm:grid-cols-3">
               <input type="hidden" name="id" value={id} />
               <div className="sm:col-span-2">
                 <SelectField
                   name="label"
-                  label="Kontroll"
+                  label={t(locale, "alva.check")}
                   defaultValue={PROTOCOL_CHECKS[0]}
                   options={PROTOCOL_CHECKS.map((label) => ({ value: label, label }))}
                 />
               </div>
               <SelectField
                 name="value"
-                label="Utfall"
+                label={t(locale, "alva.outcome")}
                 defaultValue="yes"
                 options={[
-                  { value: "yes", label: "Ja" },
-                  { value: "no", label: "Nej" },
-                  { value: "unknown", label: "Okänt" },
+                  { value: "yes", label: t(locale, "alva.yes") },
+                  { value: "no", label: t(locale, "alva.no") },
+                  { value: "unknown", label: t(locale, "alva.unknown") },
                 ]}
               />
               <div className="sm:col-span-3">
-                <Submit large>Spara kontroll</Submit>
+                <Submit large>{t(locale, "alva.saveCheck")}</Submit>
               </div>
             </form>
             {observations.length > 0 ? (
               <ul className="flex flex-col gap-2">
                 {observations.map((row) => (
                   <li key={row.id} className="text-sm text-ink-soft">
-                    {row.label}: {observationValueLabel(row.value)}
+                    {row.label}: {alvaOutcome(locale, row.value)}
                   </li>
                 ))}
               </ul>
@@ -177,21 +173,21 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
           </section>
 
           <section className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4">
-            <h2 className="text-lg font-semibold">Mätvärden</h2>
-            <p className="text-sm text-ink-soft">Namn, värde, enhet. Inte tolkade av systemet.</p>
+            <h2 className="text-lg font-semibold">{t(locale, "alva.measurements")}</h2>
+            <p className="text-sm text-ink-soft">{t(locale, "alva.measurementsLead")}</p>
             <form action={recordAlvaMeasurement} className="grid gap-3 sm:grid-cols-3">
               <input type="hidden" name="id" value={id} />
               <label className="flex flex-col gap-1">
-                <span className="text-sm text-ink-soft">Namn</span>
+                <span className="text-sm text-ink-soft">{t(locale, "alva.name")}</span>
                 <input
                   name="name"
                   required
-                  placeholder="Kylvätska"
+                  placeholder={t(locale, "alva.namePlaceholder")}
                   className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-sm text-ink-soft">Värde</span>
+                <span className="text-sm text-ink-soft">{t(locale, "alva.value")}</span>
                 <input
                   name="value"
                   required
@@ -200,7 +196,7 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-sm text-ink-soft">Enhet</span>
+                <span className="text-sm text-ink-soft">{t(locale, "alva.unit")}</span>
                 <input
                   name="unit"
                   required
@@ -209,7 +205,7 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
                 />
               </label>
               <div className="sm:col-span-3">
-                <Submit large>Spara mätning</Submit>
+                <Submit large>{t(locale, "alva.saveMeasurement")}</Submit>
               </div>
             </form>
             {measurements.length > 0 ? (
@@ -225,16 +221,14 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
 
           {facts ? (
             <section className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4">
-              <h2 className="text-lg font-semibold">Fakta som JSON</h2>
-              <p className="text-sm text-ink-soft">
-                Export av det ni fyllt i. `diagnosis` är null. Ingen slutsats läggs till.
-              </p>
+              <h2 className="text-lg font-semibold">{t(locale, "alva.factsJson")}</h2>
+              <p className="text-sm text-ink-soft">{t(locale, "alva.factsJsonLead")}</p>
               <a
                 href={factsHref}
                 download={`alva-${id}.json`}
                 className="self-start text-sm underline decoration-line underline-offset-4 hover:text-ink"
               >
-                Ladda ner protokollfakta
+                {t(locale, "alva.downloadFacts")}
               </a>
               <pre className="overflow-x-auto rounded-md border border-line bg-paper p-3 font-mono text-xs text-ink-soft">
                 {factsJson}

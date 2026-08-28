@@ -198,3 +198,9 @@ export function brittObsStatus(locale: Locale, status: string): string {
   const key = `britt.status.${status}` as MessageKey;
   return key in catalogs.en ? t(locale, key) : status;
 }
+
+export function alvaOutcome(locale: Locale, value: string): string {
+  if (value === "yes") return t(locale, "alva.yes");
+  if (value === "no") return t(locale, "alva.no");
+  return t(locale, "alva.unknown");
+}

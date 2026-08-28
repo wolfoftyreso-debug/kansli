@@ -18,6 +18,7 @@ export {
 } from "./locales.ts";
 export {
   catalogs,
+  alvaOutcome,
   brittObsStatus,
   brittSource,
   ekonomiConnSlot,
