@@ -128,3 +128,8 @@ export function ekonomiRailLabel(locale: Locale, id: string): string {
   const key = `ekonomi.rail.${id}` as MessageKey;
   return key in catalogs.en ? t(locale, key) : id;
 }
+
+export function ekonomiPayStatus(locale: Locale, status: string): string {
+  const key = `ekonomi.pay.${status}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : status;
+}

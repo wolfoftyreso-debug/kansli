@@ -19,6 +19,7 @@ export {
 export {
   catalogs,
   ekonomiInvoiceStatus,
+  ekonomiPayStatus,
   ekonomiRailLabel,
   ekonomiSmsStatus,
   familyBlockedNeed,

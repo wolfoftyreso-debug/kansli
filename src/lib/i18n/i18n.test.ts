@@ -10,6 +10,7 @@ import {
 import {
   catalogs,
   ekonomiInvoiceStatus,
+  ekonomiPayStatus,
   ekonomiSmsStatus,
   messageKeys,
   t,
@@ -81,6 +82,10 @@ describe("locale registry", () => {
     expect(ekonomiInvoiceStatus("sv", "draft")).toBe("Utkast");
     expect(ekonomiSmsStatus("en", "SENT")).toBe("Sent");
     expect(ekonomiSmsStatus("sv", "SENT")).toBe("Skickat");
+    expect(t("en", "ekonomi.doc.lines")).toBe("Lines");
+    expect(t("sv", "ekonomi.doc.lines")).toBe("Rader");
+    expect(ekonomiPayStatus("en", "received")).toBe("Received");
+    expect(ekonomiPayStatus("sv", "received")).toBe("Mottagen");
     expect(t("sv", "chrome.signIn")).toBe("Logga in");
     expect(t("pl", "chrome.language")).toBe("Język");
     expect(t("de", "chrome.signIn")).toBe("Anmelden");

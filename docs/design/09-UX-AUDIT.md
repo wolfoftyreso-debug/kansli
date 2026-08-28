@@ -22,7 +22,7 @@ and the locked visual contract (00–08). Not a redesign. Preserve before replac
 | --- | --- | --- | --- | --- |
 | Chrome (Facade topbar/rail) | Move between rooms | Every visit | Low | Broken at 390px: wordmark and room label overlapped, four text controls competed |
 | /tyra | Receive vehicle | Daily | Medium | Intake, case card, customer cards and integrations follow `pd_locale`; 48px fields (P2) |
-| /ekonomi | Book sale | Daily | High (real invoice) | Desk, invoice list and chart chrome follow `pd_locale`; chart axis text ~6px rendered on mobile (P2) |
+| /ekonomi | Book sale | Daily | High (real invoice) | Desk, invoice list, invoice card and chart chrome follow `pd_locale`; chart axis text ~6px rendered on mobile (P2) |
 | /upphandling (New customer) | Submit intake | Per prospect | Medium | Stacked fine but 36px fields, 16px checkboxes, hand-rolled selects; chrome follows `pd_locale` |
 | /kansli/upphandling (house inbox) | Read registrations | On demand | Medium | House-only list and detail; chrome follows `pd_locale` (English canonical) |
 | /irma + /irma/l/[token] | Create/confirm agreement | Weekly | High | Guest leg already uses large fields — KEEP |
