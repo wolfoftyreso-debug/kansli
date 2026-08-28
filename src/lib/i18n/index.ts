@@ -18,6 +18,7 @@ export {
 } from "./locales.ts";
 export {
   catalogs,
+  ekonomiConnSlot,
   ekonomiInvoiceStatus,
   ekonomiPayStatus,
   ekonomiRailLabel,

@@ -9,6 +9,7 @@ import {
 } from "./locales.ts";
 import {
   catalogs,
+  ekonomiConnSlot,
   ekonomiInvoiceStatus,
   ekonomiPayStatus,
   ekonomiSmsStatus,
@@ -86,6 +87,12 @@ describe("locale registry", () => {
     expect(t("sv", "ekonomi.doc.lines")).toBe("Rader");
     expect(ekonomiPayStatus("en", "received")).toBe("Received");
     expect(ekonomiPayStatus("sv", "received")).toBe("Mottagen");
+    expect(t("en", "ekonomi.stmt.heading")).toBe("Statements");
+    expect(t("sv", "ekonomi.stmt.heading")).toBe("Kontoutdrag");
+    expect(t("en", "ekonomi.rep.heading")).toBe("VAT and receivables");
+    expect(t("sv", "ekonomi.vouch.heading")).toBe("Verifikat");
+    expect(ekonomiConnSlot("en", "revolut_business")).toBe("Revolut Business (statements)");
+    expect(ekonomiConnSlot("sv", "revolut_business")).toBe("Revolut Business (kontoutdrag)");
     expect(t("sv", "chrome.signIn")).toBe("Logga in");
     expect(t("pl", "chrome.language")).toBe("Język");
     expect(t("de", "chrome.signIn")).toBe("Anmelden");

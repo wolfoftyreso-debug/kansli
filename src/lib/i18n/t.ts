@@ -133,3 +133,8 @@ export function ekonomiPayStatus(locale: Locale, status: string): string {
   const key = `ekonomi.pay.${status}` as MessageKey;
   return key in catalogs.en ? t(locale, key) : status;
 }
+
+export function ekonomiConnSlot(locale: Locale, provider: string): string {
+  const key = `ekonomi.conn.slot.${provider}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : provider;
+}
