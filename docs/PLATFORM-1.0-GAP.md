@@ -70,7 +70,7 @@ Ingen OpenAPI. Ingen publik `api.pixdrift.com/v1`.
 Flera skrivvägar saknar MCP-par (se §4).
 
 **MCP — PARTIAL.**
-`POST /mcp`, protokoll `2026-07-28`, 25 verktyg i
+`POST /mcp`, protokoll `2026-07-28`, 27 verktyg i
 `src/lib/mcp/tools.ts`. Alla anropar befintliga tjänster.
 Inte alla REST-operationer har verktyg. Ingen L4-kö.
 Rate limit och idempotens är per process.
@@ -138,7 +138,7 @@ ingen syntetisk bevakning av login/MCP/docs. Hemligheter dumpas inte.
 
 ## 4. Capability Graph — frö mot full täckning
 
-Grafen i kod är **bara** de 25 MCP-verktygen.
+Grafen i kod är **bara** de 27 MCP-verktygen.
 Varje verktyg har redan `rest.method` + `rest.path`.
 Det är medvetet: ingen parallell lista.
 
@@ -146,7 +146,7 @@ REST som **finns** men **inte** sitter i grafen än:
 
 | REST | Produkt | Varför den saknas i grafen |
 | --- | --- | --- |
-| PATCH/DELETE `/api/kansli/tasks/:id` | kansli | Ingen MCP-skrivning för uppdatering/radering |
+| PATCH/DELETE `/api/kansli/tasks/:id` | kansli | MCP `toggle_office_task` / `delete_office_task` |
 | GET `/api/ekonomi/invoices/:id` | ekonomi | Bara listan är verktyg |
 | GET/POST `/api/ekonomi/connectors` | ekonomi | Connector-yta, inte MCP |
 | GET `/api/ekonomi/reports` | ekonomi | Rapport-yta, inte MCP |

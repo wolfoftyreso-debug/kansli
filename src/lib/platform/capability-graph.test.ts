@@ -12,7 +12,7 @@ describe("capability graph seed", () => {
       tools.map((tool) => tool.name).sort(),
     );
     expect(graph.capabilities).toHaveLength(tools.length);
-    expect(graph.capabilities.length).toBe(25);
+    expect(graph.capabilities.length).toBe(27);
   });
 
   it("keeps REST bindings on every registered tool", () => {
@@ -46,6 +46,12 @@ describe("capability graph seed", () => {
     const graph = buildCapabilityGraph();
     const byId = Object.fromEntries(graph.capabilities.map((item) => [item.id, item]));
     expect(byId.create_office_task.interfaces.event).toBe("kansli.task.created");
+    expect(byId.toggle_office_task.interfaces.event).toBe("kansli.task.updated");
+    expect(byId.delete_office_task.interfaces.event).toBe("kansli.task.updated");
+    expect(byId.delete_office_task.interfaces.rest).toEqual({
+      method: "DELETE",
+      path: "/api/kansli/tasks/:id",
+    });
     expect(byId.list_office_tasks.interfaces.event).toBeNull();
     expect(byId.register_diagnostic_case.product).toBe("alva");
     expect(byId.register_credit_inquiry.product).toBe("creditae");

@@ -1,7 +1,7 @@
 import { requireOrg, type Actor } from "@pixdrift/api-core";
 import { SYSTEM_MODULES } from "@pixdrift/systems";
 import { ToolRegistry, type McpRuntime, type ToolDefinition, page } from "@pixdrift/mcp-core";
-import { addTask, listTasks } from "@/lib/kansli/tasks";
+import { addTask, deleteTask, listTasks, toggleTask } from "@/lib/kansli/tasks";
 import { listInvoices } from "@/lib/ekonomi/invoices";
 import { evaluateMarket, persistSnapshot } from "@/lib/tora/persist";
 import { resolveCompany } from "@/lib/tora/profile";
@@ -225,6 +225,99 @@ export function buildPixdriftRegistry(): ToolRegistry {
           payload: { title: task.title, via: "mcp" },
         });
         return { id: task.id, title: task.title, owner: task.owner, done: task.done };
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "toggle_office_task",
+      title: "Toggle office task",
+      description:
+        "Toggles a Kansli task done/open. Same toggleTask service as PATCH /api/kansli/tasks/:id.",
+      system: "kansli",
+      domain: "office",
+      inputSchema: {
+        type: "object",
+        properties: { id: { type: "string" }, idempotency_key: { type: "string" } },
+        required: ["id"],
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: "task:write",
+      tenantScope: "org",
+      sideEffects: "write",
+      risk: 2,
+      approvalRequired: false,
+      idempotent: false,
+      rateClass: "write",
+      whenToUse: "An existing office task should be marked done or reopened.",
+      whenNotToUse: "You want to create a task — use create_office_task. Do not delete here.",
+      rest: { method: "PATCH", path: "/api/kansli/tasks/:id" },
+      flags: readFlags(false),
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool, events } = needStore(ctx);
+        const task = await toggleTask(pool, actor.orgRef, String(input.id));
+        if (!task) return { error: "not_found" };
+        await events.publish({
+          system: "kansli",
+          kind: "kansli.task.updated",
+          orgRef: actor.orgRef,
+          actorKind: "integration",
+          actorRef: actor.sub,
+          subjectRef: `kansli:task:${task.id}`,
+          requestId: ctx.requestId,
+          payload: { done: task.done, via: "mcp" },
+        });
+        return { id: task.id, title: task.title, owner: task.owner, done: task.done };
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "delete_office_task",
+      title: "Delete office task",
+      description:
+        "Deletes a Kansli task. Same deleteTask service as DELETE /api/kansli/tasks/:id. This removes the row.",
+      system: "kansli",
+      domain: "office",
+      inputSchema: {
+        type: "object",
+        properties: { id: { type: "string" }, idempotency_key: { type: "string" } },
+        required: ["id"],
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: "task:write",
+      tenantScope: "org",
+      sideEffects: "write",
+      risk: 2,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "write",
+      whenToUse: "An office task should be removed, not just marked done.",
+      whenNotToUse: "You only want to mark the task done — use toggle_office_task.",
+      rest: { method: "DELETE", path: "/api/kansli/tasks/:id" },
+      flags: { ...readFlags(false), destructive: true },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool, events } = needStore(ctx);
+        const id = String(input.id);
+        const ok = await deleteTask(pool, actor.orgRef, id);
+        if (!ok) return { error: "not_found" };
+        await events.publish({
+          system: "kansli",
+          kind: "kansli.task.updated",
+          orgRef: actor.orgRef,
+          actorKind: "integration",
+          actorRef: actor.sub,
+          subjectRef: `kansli:task:${id}`,
+          requestId: ctx.requestId,
+          payload: { deleted: true, via: "mcp" },
+        });
+        return { ok: true, id };
       },
     }),
   );

@@ -48,6 +48,8 @@ export interface CapabilityGraph {
 /** Domain events published by the *service* the tool already calls. */
 const DOMAIN_EVENTS: Record<string, string> = {
   create_office_task: "kansli.task.created",
+  toggle_office_task: "kansli.task.updated",
+  delete_office_task: "kansli.task.updated",
   persist_procurement_snapshot: "tora.market.evaluated",
   request_tax_analysis: "rita.analysis.requested",
   create_agreement: "irma.agreement.created",
