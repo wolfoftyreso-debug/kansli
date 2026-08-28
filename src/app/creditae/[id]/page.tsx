@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb } from "@/components/app/ProductCrumb";
-import { Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
+import { Field, Notice, SelectField, SignInGate, Submit } from "@/components/app/SignInGate";
 import {
   ASSESSMENTS,
   assessmentLabel,
@@ -193,24 +193,17 @@ export default async function CreditaeInquiryPage({ params }: { params: Promise<
           >
             <h2 className="text-lg font-semibold">{t(locale, "creditae.yourAssessment")}</h2>
             <input type="hidden" name="id" value={item.id} />
-            <label className="flex flex-col gap-1">
-              <span className="text-sm text-ink-soft">{t(locale, "creditae.conclusion")}</span>
-              <select
-                name="assessment"
-                required
-                defaultValue={item.assessment ?? ""}
-                className="border border-line bg-paper px-3 py-2 text-sm"
-              >
-                <option value="" disabled>
-                  Välj
-                </option>
-                {ASSESSMENTS.map((value) => (
-                  <option key={value} value={value}>
-                    {assessmentLabel(value, locale)}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <SelectField
+              name="assessment"
+              label={t(locale, "creditae.conclusion")}
+              placeholder="Välj"
+              required
+              defaultValue={item.assessment ?? ""}
+              options={ASSESSMENTS.map((value) => ({
+                value,
+                label: assessmentLabel(value, locale),
+              }))}
+            />
             <label className="flex flex-col gap-1">
               <span className="text-sm text-ink-soft">Anteckning</span>
               <textarea

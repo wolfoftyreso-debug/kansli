@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb } from "@/components/app/ProductCrumb";
-import { Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
+import { Field, Notice, SelectField, SignInGate, Submit } from "@/components/app/SignInGate";
 import { INVOICE_STATUS_LABELS, getInvoice, remainingOre } from "@/lib/ekonomi/invoices";
 import { formatKronorInput, formatSek, vatLabel } from "@/lib/ekonomi/money";
 import { listPayments } from "@/lib/ekonomi/payments";
@@ -112,15 +112,19 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
               >
                 <h2 className="text-lg font-semibold">Erbjud betalspår</h2>
                 <input type="hidden" name="invoiceId" value={invoice.id} />
-                <select
-                  name="rail"
-                  className="mt-3 rounded-md border border-line bg-paper px-3 py-2 text-sm"
-                >
-                  <option value="invoice_10">Faktura 10 dagar</option>
-                  <option value="stripe">Stripe</option>
-                  <option value="swish">Swish</option>
-                  <option value="revolut">Revolut</option>
-                </select>
+                <div className="mt-3">
+                  <SelectField
+                    name="rail"
+                    label="Spår"
+                    defaultValue="invoice_10"
+                    options={[
+                      { value: "invoice_10", label: "Faktura 10 dagar" },
+                      { value: "stripe", label: "Stripe" },
+                      { value: "swish", label: "Swish" },
+                      { value: "revolut", label: "Revolut" },
+                    ]}
+                  />
+                </div>
                 <p className="mt-2 text-sm text-ink-soft">{rails.stripe.reason}</p>
                 <div className="mt-3">
                   <Submit>Skapa erbjudande</Submit>
@@ -137,15 +141,17 @@ export default async function InvoicePage({ params }: { params: Promise<{ id: st
                   Bokningen skapar ett verifikat och går inte att ta bort.
                 </Notice>
                 <input type="hidden" name="invoiceId" value={invoice.id} />
-                <select
+                <SelectField
                   name="rail"
-                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
-                >
-                  <option value="invoice_10">Faktura / manuell</option>
-                  <option value="stripe">Stripe</option>
-                  <option value="swish">Swish</option>
-                  <option value="revolut">Revolut</option>
-                </select>
+                  label="Spår"
+                  defaultValue="invoice_10"
+                  options={[
+                    { value: "invoice_10", label: "Faktura / manuell" },
+                    { value: "stripe", label: "Stripe" },
+                    { value: "swish", label: "Swish" },
+                    { value: "revolut", label: "Revolut" },
+                  ]}
+                />
                 <Field
                   name="amountKronor"
                   label="Belopp, kr"

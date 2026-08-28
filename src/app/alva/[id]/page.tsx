@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb } from "@/components/app/ProductCrumb";
-import { Notice, SignInGate, Submit } from "@/components/app/SignInGate";
+import { Notice, SelectField, SignInGate, Submit } from "@/components/app/SignInGate";
 import { caseStatusLine, getCase, parseCaseStatus } from "@/lib/alva/cases";
 import {
   PROTOCOL_CHECKS,
@@ -104,18 +104,16 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
             <h2 className="text-lg font-semibold">Arbetsflöde</h2>
             <p className="text-sm text-ink-soft">Öppet / pågår / stängt. Inte diagnostiserat.</p>
             <input type="hidden" name="id" value={id} />
-            <label className="flex flex-col gap-1">
-              <span className="text-sm text-ink-soft">Status</span>
-              <select
-                name="status"
-                defaultValue={status}
-                className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
-              >
-                <option value="open">{t(locale, "alva.status.open")}</option>
-                <option value="in_progress">{t(locale, "alva.status.in_progress")}</option>
-                <option value="closed">{t(locale, "alva.status.closed")}</option>
-              </select>
-            </label>
+            <SelectField
+              name="status"
+              label="Status"
+              defaultValue={status}
+              options={[
+                { value: "open", label: t(locale, "alva.status.open") },
+                { value: "in_progress", label: t(locale, "alva.status.in_progress") },
+                { value: "closed", label: t(locale, "alva.status.closed") },
+              ]}
+            />
             <Submit large>Spara status</Submit>
           </form>
 
@@ -145,30 +143,24 @@ export default async function AlvaCasePage({ params }: { params: Promise<{ id: s
             ) : null}
             <form action={recordAlvaObservation} className="grid gap-3 sm:grid-cols-3">
               <input type="hidden" name="id" value={id} />
-              <label className="flex flex-col gap-1 sm:col-span-2">
-                <span className="text-sm text-ink-soft">Kontroll</span>
-                <select
+              <div className="sm:col-span-2">
+                <SelectField
                   name="label"
-                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
-                >
-                  {PROTOCOL_CHECKS.map((label) => (
-                    <option key={label} value={label}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="flex flex-col gap-1">
-                <span className="text-sm text-ink-soft">Utfall</span>
-                <select
-                  name="value"
-                  className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
-                >
-                  <option value="yes">Ja</option>
-                  <option value="no">Nej</option>
-                  <option value="unknown">Okänt</option>
-                </select>
-              </label>
+                  label="Kontroll"
+                  defaultValue={PROTOCOL_CHECKS[0]}
+                  options={PROTOCOL_CHECKS.map((label) => ({ value: label, label }))}
+                />
+              </div>
+              <SelectField
+                name="value"
+                label="Utfall"
+                defaultValue="yes"
+                options={[
+                  { value: "yes", label: "Ja" },
+                  { value: "no", label: "Nej" },
+                  { value: "unknown", label: "Okänt" },
+                ]}
+              />
               <div className="sm:col-span-3">
                 <Submit large>Spara kontroll</Submit>
               </div>

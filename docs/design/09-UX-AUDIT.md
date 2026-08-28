@@ -50,9 +50,7 @@ and the locked visual contract (00–08). Not a redesign. Preserve before replac
 5. **Chart axis on a phone** — SalesBoard and the ops activity chart keep min/max ticks only below `sm`, with 20-unit labels (about 11px at 390). Desktop still has the mid ticks at 12 units.
 6. **Kansli / platform tech row** — `ritaStatusLine` no longer prints the vendor model id. That belongs on `/platform/drift`.
 
-### P2 — known, not changed here
-
-7. Hand-rolled `rounded-md` selects remain in tyra/alva/ekonomi/creditae *detail* pages. Visually square (facade nulls radius) but should migrate to `SelectField` when each room is next touched.
+7. **Detail-page selects** — ALVA status/protocol, CREDITAE assessment and Ekonomi invoice rails now use `SelectField`. TYRA case card still has `rounded-md` text inputs (facade already nulls radius). Locale picker and MCP explorer stay native (chrome / tool, not room forms).
 
 ### P3 — polish backlog
 

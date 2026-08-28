@@ -105,6 +105,7 @@ export function SelectField({
   placeholder,
   defaultValue = "",
   large,
+  required,
 }: {
   name: string;
   label: string;
@@ -112,6 +113,7 @@ export function SelectField({
   placeholder?: string;
   defaultValue?: string;
   large?: boolean;
+  required?: boolean;
 }) {
   const cls = large
     ? "min-h-12 border border-line bg-paper px-4 py-3 text-base"
@@ -119,7 +121,7 @@ export function SelectField({
   return (
     <label className="flex flex-col gap-1">
       <span className="text-sm text-ink-soft">{label}</span>
-      <select name={name} defaultValue={defaultValue} className={cls}>
+      <select name={name} defaultValue={defaultValue} required={required} className={cls}>
         {placeholder ? <option value="">{placeholder}</option> : null}
         {options.map((option) => (
           <option key={option.value} value={option.value}>
