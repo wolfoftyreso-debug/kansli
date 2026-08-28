@@ -274,7 +274,7 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
   {
     id: "maj",
     name: "MAJ",
-    purpose: "Mät, analysera, justera. Söksynlighet som beslut att godkänna, inte siffror.",
+    purpose: "Measure, analyse, adjust. Search visibility as decisions to approve, not figures.",
     status: "pilot",
     schema: "maj",
     basePath: "/maj",
@@ -290,6 +290,8 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
     capabilities: [
       "projects",
       "signals",
+      "keywords",
+      "backlinks",
       "opportunities",
       "releases",
       "usage-ledger",

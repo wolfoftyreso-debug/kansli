@@ -54,6 +54,8 @@ const DOMAIN_EVENTS: Record<string, string> = {
   create_vehicle_case: "tyra.case.created",
   register_diagnostic_case: "alva.case.created",
   register_credit_inquiry: "creditae.inquiry.created",
+  run_search_analysis: "maj.action.proposed",
+  decide_search_action: "maj.action.decided",
 };
 
 /** Conservative intents from existing public product copy. Not a keyword farm. */
@@ -67,6 +69,7 @@ const PRODUCT_INTENTS: Partial<Record<CapabilityProduct, string[]>> = {
   tyra: ["däckhotell", "tyre hotel"],
   alva: ["diagnosärende", "vehicle diagnostic case registration"],
   creditae: ["kreditbedömning", "counterpart credit assessment"],
+  maj: ["search visibility", "search intelligence"],
 };
 
 const MARKETED = new Set(marketing.map((item) => item.slug));

@@ -5,10 +5,12 @@ import { redirect } from "next/navigation";
 import { runAnalysis } from "@/lib/maj/engine";
 import { createProject, getProject, parseGoal, parsePosture, setPosture } from "@/lib/maj/projects";
 import { completeAction, decideAction } from "@/lib/maj/releases";
+import { majIsOpen } from "@/lib/maj/access";
 import { requireOrgAction } from "@/lib/platform/actions";
 
 export async function createMajProject(formData: FormData) {
   const { session, pool, events } = await requireOrgAction("/maj", "arende:write");
+  if (!majIsOpen(session.org.ref)) return;
   const domain = String(formData.get("domain") ?? "").trim();
   const goal = parseGoal(formData.get("goal"));
   if (!domain || !goal) return;
@@ -43,6 +45,7 @@ export async function createMajProject(formData: FormData) {
 
 export async function runMajAnalysis(formData: FormData) {
   const { session, pool, events } = await requireOrgAction("/maj", "arende:write");
+  if (!majIsOpen(session.org.ref)) return;
   const id = String(formData.get("id") ?? "").trim();
   const project = id ? await getProject(pool, session.org.ref, id) : null;
   if (!project) return;
@@ -60,6 +63,7 @@ export async function runMajAnalysis(formData: FormData) {
 
 export async function decideMajAction(formData: FormData) {
   const { session, pool, events } = await requireOrgAction("/maj", "arende:write");
+  if (!majIsOpen(session.org.ref)) return;
   const actionId = String(formData.get("actionId") ?? "").trim();
   const projectId = String(formData.get("projectId") ?? "").trim();
   const decision = String(formData.get("decision") ?? "");
@@ -82,6 +86,7 @@ export async function decideMajAction(formData: FormData) {
 
 export async function completeMajAction(formData: FormData) {
   const { session, pool, events } = await requireOrgAction("/maj", "arende:write");
+  if (!majIsOpen(session.org.ref)) return;
   const actionId = String(formData.get("actionId") ?? "").trim();
   const projectId = String(formData.get("projectId") ?? "").trim();
   if (!actionId) return;
@@ -105,6 +110,7 @@ export async function completeMajAction(formData: FormData) {
 
 export async function setMajPosture(formData: FormData) {
   const { session, pool } = await requireOrgAction("/maj", "arende:write");
+  if (!majIsOpen(session.org.ref)) return;
   const projectId = String(formData.get("projectId") ?? "").trim();
   const posture = parsePosture(formData.get("posture"));
   if (!projectId || !posture) return;

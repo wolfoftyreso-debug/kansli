@@ -50,5 +50,9 @@ describe("capability graph seed", () => {
     expect(byId.register_diagnostic_case.product).toBe("alva");
     expect(byId.register_credit_inquiry.product).toBe("creditae");
     expect(byId.register_credit_inquiry.interfaces.event).toBe("creditae.inquiry.created");
+    expect(byId.list_search_projects.product).toBe("maj");
+    expect(byId.run_search_analysis.interfaces.event).toBe("maj.action.proposed");
+    expect(byId.decide_search_action.interfaces.event).toBe("maj.action.decided");
+    expect(byId.list_search_actions.interfaces.event).toBeNull();
   });
 });

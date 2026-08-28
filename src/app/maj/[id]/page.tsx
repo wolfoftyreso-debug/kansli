@@ -3,16 +3,13 @@ import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { Notice, SignInGate, Submit } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
-import { formatSwedishDateTime } from "@/lib/format/datetime";
+import { formatDateTime } from "@/lib/format/datetime";
+import { t, type MessageKey } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 import { isHouseSession } from "@/lib/kansli/intakes";
 import { capabilityStatuses, listActions, listSignals } from "@/lib/maj/engine";
 import { compileImplementationPrompt } from "@/lib/maj/prompt";
-import {
-  MAJ_GOAL_LABELS,
-  MAJ_POSTURE_LABELS,
-  MAJ_POSTURES,
-  getProject,
-} from "@/lib/maj/projects";
+import { MAJ_POSTURES, getProject } from "@/lib/maj/projects";
 import { listReleases } from "@/lib/maj/releases";
 import { usageTotals } from "@/lib/maj/usage";
 import { tryRuntime } from "@/lib/platform/page";
@@ -20,11 +17,24 @@ import { completeMajAction, decideMajAction, runMajAnalysis, setMajPosture } fro
 
 export const dynamic = "force-dynamic";
 
-const IMPACT: Record<string, string> = { low: "Låg", medium: "Medel", high: "Hög" };
+const IMPACT_KEY = {
+  low: "maj.impact.low",
+  medium: "maj.impact.medium",
+  high: "maj.impact.high",
+} as const;
+
+const GOAL_KEY = {
+  customers: "maj.goal.customers",
+  rank: "maj.goal.rank",
+  competitors: "maj.goal.competitors",
+  authority: "maj.goal.authority",
+  all: "maj.goal.all",
+} as const;
 
 export default async function MajProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await readSession();
+  const locale = await readLocale();
   const runtime = tryRuntime(session?.org?.ref);
   const internal = isHouseSession(session?.org?.ref);
   const project =
@@ -51,31 +61,40 @@ export default async function MajProjectPage({ params }: { params: Promise<{ id:
     <AppShell current="maj" session={session}>
       <ProductCrumb crumbs={[{ href: "/maj", label: "MAJ" }]} />
       {!session?.org ? (
-        <SignInGate next="/maj" title="Logga in för att se projektet">
-          Projektet tillhör organisationen.
+        <SignInGate
+          next="/maj"
+          title={t(locale, "maj.signInTitle")}
+          actionLabel={t(locale, "chrome.signIn")}
+        >
+          {t(locale, "maj.signInBody")}
         </SignInGate>
       ) : !internal ? (
-        <Notice>MAJ är i intern alfa.</Notice>
+        <Notice>{t(locale, "maj.alphaShort")}</Notice>
       ) : project ? (
         <>
           <h1 className="text-3xl font-semibold tracking-tight">{project.domain}</h1>
           <p className="text-ink-soft">
-            {project.market} · {project.language} · {MAJ_GOAL_LABELS[project.goal]} ·{" "}
-            {MAJ_POSTURE_LABELS[project.posture]}
+            {project.market} · {project.language} · {t(locale, GOAL_KEY[project.goal])} ·{" "}
+            {project.posture.toUpperCase()}
           </p>
           <p className="text-sm text-muted">
-            {capabilities.map((cap) => `${cap.label} ${cap.configured ? "på" : "av"}`).join(" · ")}
-            {usage ? ` · ${usage.vendor_units} units bokförda` : ""}
+            {capabilities
+              .map(
+                (cap) =>
+                  `${t(locale, `maj.cap.${cap.id}` as MessageKey)} ${t(locale, cap.configured ? "maj.cap.on" : "maj.cap.off")}`,
+              )
+              .join(" · ")}
+            {usage ? ` · ${t(locale, "maj.unitsBooked", { n: usage.vendor_units })}` : ""}
           </p>
 
           <section className="flex flex-col gap-3">
             <h2 className="text-lg font-semibold">
               {open.length === 0
-                ? "Inga beslut väntar"
-                : `${open.length} beslut behöver din uppmärksamhet`}
+                ? t(locale, "maj.queueNone")
+                : t(locale, "maj.queueCount", { n: open.length })}
             </h2>
             {open.length === 0 && actions.length === 0 ? (
-              <EmptyRow />
+              <p className="text-sm text-muted">{t(locale, "maj.empty")}</p>
             ) : (
               [...open, ...approved].map((action) => (
                 <article
@@ -83,13 +102,25 @@ export default async function MajProjectPage({ params }: { params: Promise<{ id:
                   className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
                 >
                   <p className="pd-label text-faint">
-                    {action.state === "approved" ? "Godkänt — väntar på utförande" : "Föreslaget"}
+                    {action.state === "approved"
+                      ? t(locale, "maj.approvedWait")
+                      : t(locale, "maj.proposed")}
                   </p>
                   <h3 className="text-lg font-semibold">{action.title}</h3>
                   <p className="text-sm text-ink-soft">{action.why}</p>
                   <p className="text-sm text-muted">
-                    Förväntad effekt: {IMPACT[action.expectedImpact] ?? action.expectedImpact} ·
-                    Risk: {IMPACT[action.risk] ?? action.risk} · Confidence: {action.confidence} %
+                    {t(locale, "maj.impact")}:{" "}
+                    {t(
+                      locale,
+                      IMPACT_KEY[action.expectedImpact as keyof typeof IMPACT_KEY] ??
+                        "maj.impact.medium",
+                    )}{" "}
+                    · {t(locale, "maj.risk")}:{" "}
+                    {t(
+                      locale,
+                      IMPACT_KEY[action.risk as keyof typeof IMPACT_KEY] ?? "maj.impact.medium",
+                    )}{" "}
+                    · {t(locale, "maj.confidence")}: {action.confidence} %
                   </p>
                   <div className="flex flex-wrap items-center gap-3">
                     {action.state === "proposed" ? (
@@ -98,7 +129,7 @@ export default async function MajProjectPage({ params }: { params: Promise<{ id:
                           <input type="hidden" name="actionId" value={action.id} />
                           <input type="hidden" name="projectId" value={project.id} />
                           <input type="hidden" name="decision" value="approved" />
-                          <Submit>Godkänn</Submit>
+                          <Submit>{t(locale, "maj.approve")}</Submit>
                         </form>
                         <form action={decideMajAction}>
                           <input type="hidden" name="actionId" value={action.id} />
@@ -108,7 +139,7 @@ export default async function MajProjectPage({ params }: { params: Promise<{ id:
                             type="submit"
                             className="px-3 py-2 text-sm text-ink-soft underline underline-offset-4 hover:text-ink"
                           >
-                            Avstå
+                            {t(locale, "maj.decline")}
                           </button>
                         </form>
                       </>
@@ -116,13 +147,13 @@ export default async function MajProjectPage({ params }: { params: Promise<{ id:
                       <form action={completeMajAction} className="flex items-center gap-2">
                         <input type="hidden" name="actionId" value={action.id} />
                         <input type="hidden" name="projectId" value={project.id} />
-                        <Submit>Markera utförd — publicera release</Submit>
+                        <Submit>{t(locale, "maj.complete")}</Submit>
                       </form>
                     )}
                   </div>
                   <details>
                     <summary className="cursor-pointer text-sm text-ink-soft underline underline-offset-4">
-                      Visa varför
+                      {t(locale, "maj.showWhy")}
                     </summary>
                     <pre className="mt-2 overflow-x-auto border border-line bg-paper p-3 font-mono text-xs text-ink-soft">
                       {JSON.stringify(action.evidence, null, 2)}
@@ -130,7 +161,7 @@ export default async function MajProjectPage({ params }: { params: Promise<{ id:
                   </details>
                   <details>
                     <summary className="cursor-pointer text-sm text-ink-soft underline underline-offset-4">
-                      Generera implementationsprompt
+                      {t(locale, "maj.showPrompt")}
                     </summary>
                     <pre className="mt-2 whitespace-pre-wrap border border-line bg-paper p-3 font-mono text-xs text-ink-soft">
                       {compileImplementationPrompt({ project, action })}
@@ -141,16 +172,14 @@ export default async function MajProjectPage({ params }: { params: Promise<{ id:
             )}
             <form action={runMajAnalysis}>
               <input type="hidden" name="id" value={project.id} />
-              <Submit>Analysera igen</Submit>
+              <Submit>{t(locale, "maj.analyzeAgain")}</Submit>
             </form>
           </section>
 
           <section className="flex flex-col gap-3">
-            <h2 className="text-lg font-semibold">Search Updates</h2>
+            <h2 className="text-lg font-semibold">{t(locale, "maj.releases")}</h2>
             {releases.length === 0 ? (
-              <p className="text-sm text-muted">
-                Inga releaser ännu. Varje utfört beslut publiceras som en versionerad release.
-              </p>
+              <p className="text-sm text-muted">{t(locale, "maj.releasesEmpty")}</p>
             ) : (
               releases.map((release) => (
                 <article
@@ -159,13 +188,13 @@ export default async function MajProjectPage({ params }: { params: Promise<{ id:
                 >
                   <p className="pd-label text-faint">
                     Search Update {release.version.replace("maj-", "")} ·{" "}
-                    {formatSwedishDateTime(release.publishedAt)}
+                    {formatDateTime(release.publishedAt, locale)}
                   </p>
                   <h3 className="font-semibold">{release.title}</h3>
                   <p className="text-sm text-ink-soft">{release.summary}</p>
                   <details>
                     <summary className="cursor-pointer text-sm text-ink-soft underline underline-offset-4">
-                      Visa teknisk rapport (release.v1)
+                      release.v1
                     </summary>
                     <pre className="mt-2 overflow-x-auto border border-line bg-paper p-3 font-mono text-xs text-ink-soft">
                       {JSON.stringify(release.machine, null, 2)}
@@ -177,50 +206,43 @@ export default async function MajProjectPage({ params }: { params: Promise<{ id:
           </section>
 
           <section className="flex flex-col gap-3">
-            <h2 className="text-lg font-semibold">Competitive posture</h2>
+            <h2 className="text-lg font-semibold">{t(locale, "maj.posture")}</h2>
             <form action={setMajPosture} className="flex flex-wrap items-end gap-3">
               <input type="hidden" name="projectId" value={project.id} />
               <label className="flex flex-col gap-1">
-                <span className="text-sm text-ink-soft">Läge</span>
+                <span className="text-sm text-ink-soft">{t(locale, "maj.postureLabel")}</span>
                 <select
                   name="posture"
                   defaultValue={project.posture}
-                  className="border border-line bg-paper px-3 py-2 text-sm"
+                  className="min-h-12 border border-line bg-paper px-3 py-2 text-sm"
                 >
                   {MAJ_POSTURES.map((posture) => (
                     <option key={posture} value={posture}>
-                      {MAJ_POSTURE_LABELS[posture]}
+                      {posture.toUpperCase()}
                     </option>
                   ))}
                 </select>
               </label>
-              <Submit>Spara</Submit>
+              <Submit>{t(locale, "maj.save")}</Submit>
             </form>
-            <p className="max-w-xl text-xs text-muted">
-              HEDGE maximerar laglig och plattformsförenlig konkurrensrespons: gap, jämförelser,
-              bättre resurser, digital PR. Aldrig falska omdömen, klickbedrägeri, negativa länkar
-              eller vilseledande sidor — sådant skapar juridisk risk och skadar er egen ranking.
-            </p>
+            <p className="max-w-xl text-xs text-muted">{t(locale, "maj.hedgeNote")}</p>
           </section>
 
           <section className="flex flex-col gap-2">
-            <h2 className="text-lg font-semibold">Signaler</h2>
+            <h2 className="text-lg font-semibold">{t(locale, "maj.signals")}</h2>
             <p className="text-sm text-muted">
               {signals.length === 0
-                ? "Inga signaler ännu. Koppla datakällor så börjar systemet mäta."
-                : `${signals.length} signaler lagrade med proveniens. Senaste: ${signals[0]!.kind} från ${signals[0]!.source}, ${formatSwedishDateTime(signals[0]!.observedAt)}.`}
+                ? t(locale, "maj.signalsEmpty")
+                : t(locale, "maj.signalsCount", {
+                    n: signals.length,
+                    kind: signals[0]!.kind,
+                    source: signals[0]!.source,
+                    when: formatDateTime(signals[0]!.observedAt, locale),
+                  })}
             </p>
           </section>
         </>
       ) : null}
     </AppShell>
-  );
-}
-
-function EmptyRow() {
-  return (
-    <p className="text-sm text-muted">
-      Inga beslut ännu. Kör en analys så väger systemet evidensen och föreslår nästa steg.
-    </p>
   );
 }

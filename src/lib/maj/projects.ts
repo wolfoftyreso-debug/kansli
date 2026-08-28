@@ -11,12 +11,13 @@ import { normalizeDomain } from "../platform/webintel.ts";
 export const MAJ_GOALS = ["customers", "rank", "competitors", "authority", "all"] as const;
 export type MajGoal = (typeof MAJ_GOALS)[number];
 
+/** Canonical English labels. UI translates via i18n. */
 export const MAJ_GOAL_LABELS: Record<MajGoal, string> = {
-  customers: "Få fler kunder",
-  rank: "Ranka högre på Google",
-  competitors: "Slå mina konkurrenter",
-  authority: "Bygga ämnesauktoritet",
-  all: "Allt ovan",
+  customers: "Win more customers",
+  rank: "Rank higher",
+  competitors: "Beat my competitors",
+  authority: "Build subject authority",
+  all: "All of the above",
 };
 
 export const MAJ_POSTURES = ["conservative", "balanced", "aggressive", "hedge"] as const;
@@ -67,9 +68,9 @@ export async function createProject(input: {
   requestId: string;
 }): Promise<MajProject> {
   const domain = normalizeDomain(input.domain);
-  if (!domain) throw new Error("Domänen går inte att använda.");
+  if (!domain) throw new Error("The domain cannot be used.");
   const market = (input.market?.trim() || "SE").toUpperCase().slice(0, 2);
-  const language = (input.language?.trim() || "sv").toLowerCase().slice(0, 2);
+  const language = (input.language?.trim() || "en").toLowerCase().slice(0, 2);
   const id = randomUUID();
   const { rows } = await input.pool.query(
     `insert into maj.projects (id, org_ref, domain, market, language, goal)
@@ -85,7 +86,7 @@ export async function createProject(input: {
     actorRef: input.actorRef,
     subjectRef: `maj:project:${id}`,
     requestId: input.requestId,
-    payload: { title: `${domain} — nytt MAJ-projekt`, domain, market, language, goal: input.goal },
+    payload: { title: `${domain} — new MAJ project`, domain, market, language, goal: input.goal },
   });
   return toProject(rows[0]!);
 }

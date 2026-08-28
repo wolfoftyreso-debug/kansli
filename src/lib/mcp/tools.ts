@@ -11,6 +11,10 @@ import { createAgreement } from "@/lib/irma/agreements";
 import { createCase as createTyraCase, parseIntent, parseOperations } from "@/lib/tyra/cases";
 import { createCase as createAlvaCase } from "@/lib/alva/cases";
 import { createInquiry as createCreditaeInquiry } from "@/lib/creditae/inquiries";
+import { majIsOpen } from "@/lib/maj/access";
+import { listActions, runAnalysis } from "@/lib/maj/engine";
+import { getProject, listProjects } from "@/lib/maj/projects";
+import { decideAction } from "@/lib/maj/releases";
 import { needStore } from "./runtime";
 
 function orgOf(ctx: McpRuntime): Actor & { orgRef: string } {
@@ -748,6 +752,200 @@ export function buildPixdriftRegistry(): ToolRegistry {
           status: created.status,
           subjectOrgNumber: created.subjectOrgNumber,
         };
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "list_search_projects",
+      title: "List search projects",
+      description:
+        "Lists MAJ search projects for the house organisation. House alpha only. Same listProjects service as GET /api/maj/projects.",
+      system: "maj",
+      domain: "search",
+      inputSchema: {
+        type: "object",
+        properties: { limit: { type: "integer" }, cursor: { type: "string" } },
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need the current MAJ project list.",
+      whenNotToUse: "You want vendor metrics — MAJ shows decisions, not dashboards.",
+      rest: { method: "GET", path: "/api/maj/projects" },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        if (!majIsOpen(actor.orgRef)) return { blocked: true, reason: "MAJ is house alpha." };
+        const { pool } = needStore(ctx);
+        const projects = await listProjects(pool, actor.orgRef);
+        return page(
+          projects.map((item) => ({
+            id: item.id,
+            domain: item.domain,
+            market: item.market,
+            language: item.language,
+            goal: item.goal,
+            posture: item.posture,
+            status: item.status,
+          })),
+          input,
+        );
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "list_search_actions",
+      title: "List search actions",
+      description:
+        "Lists the MAJ action queue for one project. Evidence sits on each decision. Same listActions service as GET /api/maj/projects/:id/actions.",
+      system: "maj",
+      domain: "search",
+      inputSchema: {
+        type: "object",
+        properties: {
+          projectId: { type: "string" },
+          limit: { type: "integer" },
+          cursor: { type: "string" },
+        },
+        required: ["projectId"],
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need the open and settled decisions for a search project.",
+      whenNotToUse: "You want to approve a decision — use decide_search_action.",
+      rest: { method: "GET", path: "/api/maj/projects/:id/actions" },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        if (!majIsOpen(actor.orgRef)) return { blocked: true, reason: "MAJ is house alpha." };
+        const { pool } = needStore(ctx);
+        const projectId = String(input.projectId);
+        const project = await getProject(pool, actor.orgRef, projectId);
+        if (!project) return { projectId, actions: [] };
+        const actions = await listActions(pool, actor.orgRef, project.id);
+        return page(
+          actions.map((item) => ({
+            id: item.id,
+            kind: item.kind,
+            title: item.title,
+            state: item.state,
+            risk: item.risk,
+            expectedImpact: item.expectedImpact,
+            confidence: item.confidence,
+          })),
+          input,
+        );
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "run_search_analysis",
+      title: "Run search analysis",
+      description:
+        "Runs one MAJ analysis for a project. Books usage before every vendor call. Same runAnalysis service as POST /api/maj/projects/:id/analyze. Does not execute changes.",
+      system: "maj",
+      domain: "search",
+      inputSchema: {
+        type: "object",
+        properties: { projectId: { type: "string" }, idempotency_key: { type: "string" } },
+        required: ["projectId"],
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: "arende:write",
+      tenantScope: "org",
+      sideEffects: "write",
+      risk: 2,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "write",
+      whenToUse: "The project needs a fresh measurement and a short decision queue.",
+      whenNotToUse: "You want to approve or complete a decision — that is a separate tool.",
+      rest: { method: "POST", path: "/api/maj/projects/:id/analyze" },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        if (!majIsOpen(actor.orgRef)) return { blocked: true, reason: "MAJ is house alpha." };
+        const { pool, events } = needStore(ctx);
+        const project = await getProject(pool, actor.orgRef, String(input.projectId));
+        if (!project) return { error: "not_found" };
+        const analysis = await runAnalysis({
+          pool,
+          events,
+          orgRef: actor.orgRef,
+          actorRef: actor.sub,
+          project,
+          requestId: ctx.requestId,
+        });
+        return { projectId: project.id, ...analysis };
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "decide_search_action",
+      title: "Decide search action",
+      description:
+        "Approves or declines a proposed MAJ decision. Nothing executes without this. Same decideAction service as POST /api/maj/actions/:id/decide.",
+      system: "maj",
+      domain: "search",
+      inputSchema: {
+        type: "object",
+        properties: {
+          actionId: { type: "string" },
+          decision: { type: "string" },
+          idempotency_key: { type: "string" },
+        },
+        required: ["actionId", "decision"],
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: "arende:write",
+      tenantScope: "org",
+      sideEffects: "write",
+      risk: 2,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "write",
+      whenToUse: "A human has accepted or declined a proposed search decision.",
+      whenNotToUse: "You want the system to execute the change — MAJ never does that itself.",
+      rest: { method: "POST", path: "/api/maj/actions/:id/decide" },
+      flags: { ...readFlags(false), pii: false },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        if (!majIsOpen(actor.orgRef)) return { blocked: true, reason: "MAJ is house alpha." };
+        const { pool, events } = needStore(ctx);
+        const decision = String(input.decision);
+        if (decision !== "approved" && decision !== "declined") {
+          return { error: "invalid_decision" };
+        }
+        await decideAction({
+          pool,
+          events,
+          orgRef: actor.orgRef,
+          actorRef: actor.sub,
+          actionId: String(input.actionId),
+          decision,
+          requestId: ctx.requestId,
+        });
+        return { actionId: String(input.actionId), decision };
       },
     }),
   );

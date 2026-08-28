@@ -24,7 +24,7 @@ export async function decideAction(input: {
       where org_ref = $1 and id = $2 and state = 'proposed'`,
     [input.orgRef, input.actionId, input.decision, input.actorRef],
   );
-  if (!rowCount) throw new Error("Beslutet finns inte eller är redan avgjort.");
+  if (!rowCount) throw new Error("The decision is missing or already settled.");
   await input.events.publish({
     system: "maj",
     kind: "maj.action.decided",
@@ -33,7 +33,7 @@ export async function decideAction(input: {
     actorRef: input.actorRef,
     subjectRef: `maj:action:${input.actionId}`,
     requestId: input.requestId,
-    payload: { title: `Beslut: ${input.decision}`, actionId: input.actionId },
+    payload: { title: `Decision: ${input.decision}`, actionId: input.actionId },
   });
 }
 
@@ -97,8 +97,8 @@ export function buildReleaseMachine(input: {
     ],
     changes: [{ summary: input.note ?? input.action.title }],
     tests: [],
-    deployment: { mode: "manual", note: "Utfört utanför MAJ i alfa." },
-    rollback: { available: false, note: "Manuell återställning i alfa." },
+    deployment: { mode: "manual", note: "Carried out outside MAJ in alpha." },
+    rollback: { available: false, note: "Manual rollback in alpha." },
     measurement_plan: {
       window_days: 28,
       metrics: ["visibility", "clicks", "position"],
@@ -122,15 +122,15 @@ export async function completeAction(input: {
   requestId: string;
 }): Promise<MajRelease> {
   const action = await getAction(input.pool, input.orgRef, input.actionId);
-  if (!action) throw new Error("Beslutet finns inte.");
-  if (action.state !== "approved") throw new Error("Bara godkända beslut kan slutföras.");
+  if (!action) throw new Error("The decision does not exist.");
+  if (action.state !== "approved") throw new Error("Only approved decisions can be completed.");
 
   const { rowCount } = await input.pool.query(
     `update maj.actions set state = 'done', decided_at = now(), decided_by = $3
       where org_ref = $1 and id = $2 and state = 'approved'`,
     [input.orgRef, input.actionId, input.actorRef],
   );
-  if (!rowCount) throw new Error("Beslutet kunde inte slutföras.");
+  if (!rowCount) throw new Error("The decision could not be completed.");
 
   const version = await nextVersion(input.pool, input.orgRef, action.projectId);
   const note = input.note?.trim() || null;

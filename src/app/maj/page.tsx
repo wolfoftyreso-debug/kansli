@@ -1,24 +1,47 @@
 import Link from "next/link";
 import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb } from "@/components/app/ProductCrumb";
-import { EmptyState, Field, Notice, SelectField, SignInGate, Submit } from "@/components/app/SignInGate";
+import {
+  EmptyState,
+  Field,
+  Notice,
+  SelectField,
+  SignInGate,
+  Submit,
+} from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
-import { formatSwedishDateTime } from "@/lib/format/datetime";
+import { formatDateTime } from "@/lib/format/datetime";
+import { t, type MessageKey } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 import { isHouseSession } from "@/lib/kansli/intakes";
 import { capabilityStatuses } from "@/lib/maj/engine";
-import { MAJ_GOAL_LABELS, MAJ_GOALS, listProjects } from "@/lib/maj/projects";
+import { MAJ_GOALS, listProjects, type MajGoal } from "@/lib/maj/projects";
 import { tryRuntime } from "@/lib/platform/page";
 import { createMajProject } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = {
-  title: "MAJ — Pixdrift",
-  description: "Mät, analysera, justera. Söksynlighet som beslut att godkänna, inte siffror.",
-};
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "maj.metaTitle"),
+    description: t(locale, "maj.metaDescription"),
+  };
+}
+
+const MARKETS = ["SE", "NO", "DK", "FI", "DE"] as const;
+const LANGUAGES = ["sv", "no", "da", "fi", "de", "en"] as const;
+const GOAL_KEY = {
+  customers: "maj.goal.customers",
+  rank: "maj.goal.rank",
+  competitors: "maj.goal.competitors",
+  authority: "maj.goal.authority",
+  all: "maj.goal.all",
+} as const;
 
 export default async function MajPage() {
   const session = await readSession();
+  const locale = await readLocale();
   const runtime = tryRuntime(session?.org?.ref);
   const internal = isHouseSession(session?.org?.ref);
   const projects =
@@ -31,93 +54,85 @@ export default async function MajPage() {
     <AppShell current="maj" session={session}>
       <header className="flex flex-col gap-3">
         <ProductCrumb crumbs={[{ href: "/maj", label: "MAJ" }]} />
-        <h1 className="text-3xl font-semibold tracking-tight">Vad har hänt i sök?</h1>
-        <p className="max-w-xl text-ink-soft">
-          MAJ mäter, analyserar och justerar. Du anger domän, marknad och mål — systemet upptäcker
-          resten och kommer tillbaka med ett fåtal beslut: det här har förändrats, det här bör
-          göras, det här är varför. Evidensen ligger bakom varje beslut.
-        </p>
+        <h1 className="text-3xl font-semibold tracking-tight">{t(locale, "maj.heading")}</h1>
+        <p className="max-w-xl text-ink-soft">{t(locale, "maj.lead")}</p>
       </header>
 
       {!session?.org ? (
-        <SignInGate next="/maj" title="Logga in för att se era projekt">
-          Projekten tillhör organisationen. Samma inloggning som i alla rum.
+        <SignInGate
+          next="/maj"
+          title={t(locale, "maj.signInTitle")}
+          actionLabel={t(locale, "chrome.signIn")}
+        >
+          {t(locale, "maj.signInBody")}
         </SignInGate>
       ) : !internal ? (
-        <Notice>
-          MAJ är i intern alfa. Rummet öppnas för kunder när systemet arbetat klart på våra egna
-          domäner — vi använder samma produkt som ni kommer att få.
-        </Notice>
+        <Notice>{t(locale, "maj.alpha")}</Notice>
       ) : (
         <>
           <form
             action={createMajProject}
             className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
           >
-            <h2 className="text-lg font-semibold">Lägg till webbplats</h2>
-            <Field name="domain" label="Domän" required placeholder="exempel.se" />
+            <h2 className="text-lg font-semibold">{t(locale, "maj.addSite")}</h2>
+            <Field
+              name="domain"
+              label={t(locale, "maj.domain")}
+              required
+              placeholder="example.se"
+            />
             <div className="grid gap-4 sm:grid-cols-2">
               <SelectField
                 name="market"
-                label="Marknad"
-                placeholder="Sverige"
+                label={t(locale, "maj.market")}
+                placeholder={t(locale, "maj.market.SE")}
                 defaultValue="SE"
-                options={[
-                  { value: "SE", label: "Sverige" },
-                  { value: "NO", label: "Norge" },
-                  { value: "DK", label: "Danmark" },
-                  { value: "FI", label: "Finland" },
-                  { value: "DE", label: "Tyskland" },
-                ]}
+                options={MARKETS.map((value) => ({
+                  value,
+                  label: t(locale, `maj.market.${value}` as MessageKey),
+                }))}
               />
               <SelectField
                 name="language"
-                label="Språk"
-                placeholder="Svenska"
-                defaultValue="sv"
-                options={[
-                  { value: "sv", label: "Svenska" },
-                  { value: "no", label: "Norska" },
-                  { value: "da", label: "Danska" },
-                  { value: "fi", label: "Finska" },
-                  { value: "de", label: "Tyska" },
-                  { value: "en", label: "Engelska" },
-                ]}
+                label={t(locale, "maj.languageField")}
+                placeholder={t(locale, "maj.language.en")}
+                defaultValue="en"
+                options={LANGUAGES.map((value) => ({
+                  value,
+                  label: t(locale, `maj.language.${value}` as MessageKey),
+                }))}
               />
             </div>
             <fieldset className="flex flex-col gap-1">
-              <legend className="text-sm text-ink-soft">Vad vill du uppnå?</legend>
-              {MAJ_GOALS.map((goal) => (
+              <legend className="text-sm text-ink-soft">{t(locale, "maj.goal")}</legend>
+              {MAJ_GOALS.map((goal: MajGoal) => (
                 <label key={goal} className="flex min-h-9 items-center gap-2 text-sm text-ink-soft">
                   <input type="radio" name="goal" value={goal} defaultChecked={goal === "all"} />
-                  <span>{MAJ_GOAL_LABELS[goal]}</span>
+                  <span>{t(locale, GOAL_KEY[goal])}</span>
                 </label>
               ))}
             </fieldset>
-            <Submit>Analysera min webbplats</Submit>
-            <p className="text-xs text-muted">
-              Systemet hittar konkurrenter, rankings och möjligheter självt. Det frågar bara när
-              information verkligen saknas.
-            </p>
+            <Submit>{t(locale, "maj.submit")}</Submit>
+            <p className="text-xs text-muted">{t(locale, "maj.submitHint")}</p>
           </form>
 
           <section className="flex flex-col gap-3">
-            <h2 className="text-lg font-semibold">Datakällor</h2>
+            <h2 className="text-lg font-semibold">{t(locale, "maj.sources")}</h2>
             <p className="text-sm text-ink-soft">
               {capabilities
-                .map((cap) => `${cap.label} ${cap.configured ? "på" : "av"}`)
+                .map(
+                  (cap) =>
+                    `${t(locale, `maj.cap.${cap.id}` as MessageKey)} ${t(locale, cap.configured ? "maj.cap.on" : "maj.cap.off")}`,
+                )
                 .join(" · ")}
             </p>
-            <p className="text-xs text-muted">
-              Källor utan uppgifter är avstängda och hittar aldrig på siffror. Leverantörer är
-              kanaler — du behöver aldrig förstå dem.
-            </p>
+            <p className="text-xs text-muted">{t(locale, "maj.sourcesHint")}</p>
           </section>
 
           <section className="flex flex-col gap-3">
-            <h2 className="text-lg font-semibold">Projekt</h2>
+            <h2 className="text-lg font-semibold">{t(locale, "maj.projects")}</h2>
             {projects.length === 0 ? (
-              <EmptyState>Inga projekt ännu. Lägg till en webbplats ovan.</EmptyState>
+              <EmptyState>{t(locale, "maj.noProjects")}</EmptyState>
             ) : (
               <ul className="flex flex-col gap-3">
                 {projects.map((project) => (
@@ -128,10 +143,10 @@ export default async function MajPage() {
                       </Link>
                     </p>
                     <p className="mt-1 text-sm text-ink-soft">
-                      {project.market} · {project.language} · {MAJ_GOAL_LABELS[project.goal]}
+                      {project.market} · {project.language} · {t(locale, GOAL_KEY[project.goal])}
                     </p>
                     <p className="mt-2 text-xs text-faint">
-                      {formatSwedishDateTime(project.createdAt)}
+                      {formatDateTime(project.createdAt, locale)}
                     </p>
                   </li>
                 ))}

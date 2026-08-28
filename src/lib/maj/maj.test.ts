@@ -13,6 +13,29 @@ import { createProject, listProjects, parseGoal, parsePosture, setPosture } from
 import { completeAction, decideAction, listReleases } from "./releases.ts";
 import { usageTotals } from "./usage.ts";
 
+function mockWebintel(url: string | URL | Request): Promise<Response> {
+  const type = new URL(String(url)).searchParams.get("type");
+  if (type === "domain_organic") {
+    return Promise.resolve(
+      new Response(
+        "Keyword;Position;Search Volume;Keyword Difficulty Index;Traffic\ndäckhotell umeå;3;480;28;120",
+        { status: 200 },
+      ),
+    );
+  }
+  if (type === "backlinks_overview") {
+    return Promise.resolve(
+      new Response("ascore;total;domains_num;urls_num\n42;1880;310;940", { status: 200 }),
+    );
+  }
+  return Promise.resolve(
+    new Response(
+      "Domain;Rank;Organic Keywords;Organic Traffic;Adwords Keywords\nexempel.se;2751;1483;12400;0",
+      { status: 200 },
+    ),
+  );
+}
+
 describe("MAJ domain", () => {
   it("parses goals and postures strictly", () => {
     expect(parseGoal("all")).toBe("all");
@@ -35,6 +58,8 @@ describe("MAJ domain", () => {
         updatedAt: "",
       },
       overview: null,
+      keywords: null,
+      backlinks: null,
       capabilities: capabilityStatuses({}),
     });
     const kinds = proposals.map((proposal) => proposal.kind);
@@ -64,12 +89,42 @@ describe("MAJ domain", () => {
         organicTraffic: "12400",
         adwordsKeywords: "0",
       },
+      keywords: {
+        ok: true,
+        domain: "exempel.se",
+        keywords: [
+          {
+            phrase: "däckhotell umeå",
+            position: "3",
+            volume: "480",
+            difficulty: "28",
+            traffic: "120",
+          },
+        ],
+      },
+      backlinks: {
+        ok: true,
+        domain: "exempel.se",
+        ascore: "42",
+        total: "1880",
+        referringDomains: "310",
+        urls: "940",
+      },
       capabilities: capabilityStatuses({}),
     });
     const competitive = proposals.find((proposal) => proposal.kind === "competitive");
     expect(competitive).toBeDefined();
     expect(competitive!.why).toContain("1483");
     expect(competitive!.evidence[0]).toHaveProperty("capability", "webintel");
+    expect(proposals.map((item) => item.title)).toEqual(
+      expect.arrayContaining([
+        "Confirm the competitor set",
+        "Protect the brand search",
+        "Publish pages for the keyword gaps",
+        "Review the backlink baseline",
+        "Close the lawful competitive gap",
+      ]),
+    );
   });
 
   it("compiles a stack-agnostic implementation prompt that inspects before it changes", () => {
@@ -88,8 +143,8 @@ describe("MAJ domain", () => {
       action: {
         id: "a1",
         kind: "content",
-        title: "Skydda varumärkes-sökningen",
-        why: "Testskäl.",
+        title: "Protect the brand search",
+        why: "Test reason.",
         risk: "low",
         expectedImpact: "medium",
         confidence: 70,
@@ -99,9 +154,9 @@ describe("MAJ domain", () => {
         decidedAt: null,
       },
     });
-    expect(prompt.startsWith("IMPLEMENTATIONSUPPDRAG — MAJ")).toBe(true);
-    expect(prompt).toContain("Inspektera först den faktiska kodbasen");
-    expect(prompt).toContain("ACCEPTANSKRITERIER");
+    expect(prompt.startsWith("IMPLEMENTATION BRIEF — MAJ")).toBe(true);
+    expect(prompt).toContain("Inspect the actual codebase");
+    expect(prompt).toContain("ACCEPTANCE");
     expect(prompt).toContain("release.v1");
     // Capability-named, never vendor-named.
     expect(prompt.toLowerCase()).not.toContain("semrush");
@@ -145,17 +200,13 @@ live("maj (live Postgres)", () => {
       project,
       requestId: "req-maj-2",
       env: { SEMRUSH_API_KEY: "sm-secret-not-real" },
-      fetchImpl: async () =>
-        new Response(
-          "Domain;Rank;Organic Keywords;Organic Traffic;Adwords Keywords\nexempel.se;2751;1483;12400;0",
-          { status: 200 },
-        ),
+      fetchImpl: mockWebintel,
     });
-    expect(run.signals).toBe(1);
+    expect(run.signals).toBe(3);
     expect(run.proposed).toBeGreaterThanOrEqual(3);
 
     const usage = await usageTotals(pool, orgRef, project.id);
-    expect(usage.vendor_units).toBe(10);
+    expect(usage.vendor_units).toBe(100);
 
     const signals = await listSignals(pool, orgRef, project.id);
     expect(signals[0]!.source).toBe("webintel");
@@ -170,11 +221,7 @@ live("maj (live Postgres)", () => {
       project,
       requestId: "req-maj-3",
       env: { SEMRUSH_API_KEY: "sm-secret-not-real" },
-      fetchImpl: async () =>
-        new Response(
-          "Domain;Rank;Organic Keywords;Organic Traffic;Adwords Keywords\nexempel.se;2751;1483;12400;0",
-          { status: 200 },
-        ),
+      fetchImpl: mockWebintel,
     });
     expect(rerun.proposed).toBe(0);
 
@@ -192,7 +239,7 @@ live("maj (live Postgres)", () => {
         actionId: competitive.id,
         requestId: "req-maj-4",
       }),
-    ).rejects.toThrow(/godkända/i);
+    ).rejects.toThrow(/approved/i);
 
     await decideAction({
       pool,

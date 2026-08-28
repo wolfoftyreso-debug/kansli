@@ -30,6 +30,7 @@ Källa: `packages/systems/src/catalog.ts`.
 | tyra | TYRA | pilot | `tyra` | `/tyra` | `/api/tyra` |
 | alva | ALVA | deferred | `alva` | `/alva` | `/api/alva` |
 | creditae | CREDITAE | pilot | `creditae` | `/creditae` | `/api/creditae` |
+| maj | MAJ | pilot | `maj` | `/maj` | `/api/maj` |
 
 Publik katalog (`src/lib/pixdrift/systems.ts`) saknar `kansli` medvetet.
 Den har inte NORA, MOVA eller SAGA.
@@ -50,6 +51,7 @@ Den har inte NORA, MOVA eller SAGA.
 | tyra | PASS | PARTIAL | PARTIAL | MISSING | MISSING | PARTIAL | MISSING | PARTIAL | PARTIAL | PARTIAL | PARTIAL |
 | alva | PASS | PARTIAL | PARTIAL | MISSING | MISSING | PARTIAL | MISSING | PARTIAL | PARTIAL | PARTIAL | PARTIAL |
 | creditae | PASS | PARTIAL | PARTIAL | MISSING | MISSING | PARTIAL | MISSING | PARTIAL | PARTIAL | PARTIAL | PARTIAL |
+| maj | PASS | PARTIAL | PARTIAL | MISSING | MISSING | PARTIAL | MISSING | MISSING | PARTIAL | PARTIAL | PARTIAL |
 | nora | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
 | mova | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
 | saga | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
@@ -68,7 +70,7 @@ Ingen OpenAPI. Ingen publik `api.pixdrift.com/v1`.
 Flera skrivvägar saknar MCP-par (se §4).
 
 **MCP — PARTIAL.**
-`POST /mcp`, protokoll `2026-07-28`, 14 verktyg i
+`POST /mcp`, protokoll `2026-07-28`, 18 verktyg i
 `src/lib/mcp/tools.ts`. Alla anropar befintliga tjänster.
 Inte alla REST-operationer har verktyg. Ingen L4-kö.
 Rate limit och idempotens är per process.
@@ -164,6 +166,11 @@ REST som **finns** men **inte** sitter i grafen än:
 | GET `/api/tyra/cron/reminders` | tyra | Cron, inte agentyta |
 | GET `/api/alva/cases` | alva | Lista utan MCP |
 | GET/POST `/api/creditae/inquiries` | creditae | Lista/skapa. MCP `register_credit_inquiry` |
+| GET/POST `/api/maj/projects` | maj | Lista/skapa. MCP `list_search_projects` |
+| GET `/api/maj/projects/:id` | maj | Detalj utan MCP — lista+kö räcker |
+| POST `/api/maj/projects/:id/analyze` | maj | MCP `run_search_analysis` |
+| GET `/api/maj/projects/:id/actions` | maj | MCP `list_search_actions` |
+| POST `/api/maj/actions/:id/decide` | maj | MCP `decide_search_action` |
 | GET `/api/platform/health` | platform | Publik health |
 | GET `/api/platform/ai` | platform | Gateway-ping, inferens |
 | `/api/auth/*` | identity | Browser-BFF, inte agent |
@@ -196,6 +203,7 @@ Ingen hreflang. Canonical är implicit via `metadataBase`.
 | tyra | kund, bil, hjul | däckhotell-kaos | verkstad | däck / verkstad | ärende, hubb | leverantörssök `NOT_CONFIGURED` | en | `/systems/tyra` | däckhotell-kunskap, kalkylator | PARTIAL | svag | ärlig om vad som saknas |
 | alva | ärende, fel, mätvärde | “vad sa kunden?” | verkstad | fordon | registrera fall | diagnosmotor **inte här** | en | `/systems/alva` | guided diagnostics **nej** förrän motorn finns | PARTIAL | svag | får inte sälja diagnos |
 | creditae | förfrågan, bedömning | “vågar vi ge kredit?” | ekonomi, vd | tvärgående | registrera motpart, spara slutsats | Creditsafe via `credit.ts` | en | `/systems/creditae` | byråkoppling kanal, inte betyg | PARTIAL | svag | får inte sälja kreditbetyg |
+| maj | projekt, beslut, release | “vad har hänt i sök?” | huset (alfa) | tvärgående | analysera, godkänn, publicera | Semrush via `webintel.ts` | en | ingen `/systems/maj` | intern alfa, inte säljbar sida | MISSING | — | rum, inte katalogblad |
 | nora | — | — | — | — | — | — | — | — | — | N/A | — | inte i repot |
 | mova | — | — | — | — | — | — | — | — | — | N/A | — | inte i repot |
 | saga | — | — | — | — | — | — | — | — | — | N/A | — | inte i repot |
@@ -282,6 +290,7 @@ MCP-health och `server/discover` är inte samma sak som
 | 46elks | PARTIAL | Tunn kanal `src/lib/platform/sms.ts`. Ekonomi-sälj-SMS går där. Inte en Notifications Core. |
 | ElevenLabs | PARTIAL | Tunn kanal `src/lib/platform/tts.ts`. IRMA-uppläsning går där. |
 | Creditsafe | PARTIAL | Tunn kanal `src/lib/platform/credit.ts`. CREDITAE hämtar rapport där. Inte ett betyg. |
+| Semrush | PARTIAL | Tunn kanal `src/lib/platform/webintel.ts`. MAJ hämtar översikt, keywords och backlinks där. CREDITAE webbnärvaro på knapp. Inte en dashboard. |
 | Resend / Mapbox | secrets namngivna | `docs/INTEGRATIONS.md` — kärna inte byggd |
 | Apollo.io | planned | BRITT-connector namngiven, inte driftad |
 | ChatGPT Apps | missing | — |
