@@ -12,7 +12,7 @@ describe("capability graph seed", () => {
       tools.map((tool) => tool.name).sort(),
     );
     expect(graph.capabilities).toHaveLength(tools.length);
-    expect(graph.capabilities.length).toBe(21);
+    expect(graph.capabilities.length).toBe(23);
   });
 
   it("keeps REST bindings on every registered tool", () => {
@@ -65,6 +65,18 @@ describe("capability graph seed", () => {
     expect(byId.list_vehicle_cases.interfaces.rest).toEqual({
       method: "GET",
       path: "/api/tyra/cases",
+    });
+    expect(byId.list_diagnostic_cases.product).toBe("alva");
+    expect(byId.list_diagnostic_cases.interfaces.event).toBeNull();
+    expect(byId.list_diagnostic_cases.interfaces.rest).toEqual({
+      method: "GET",
+      path: "/api/alva/cases",
+    });
+    expect(byId.list_credit_inquiries.product).toBe("creditae");
+    expect(byId.list_credit_inquiries.interfaces.event).toBeNull();
+    expect(byId.list_credit_inquiries.interfaces.rest).toEqual({
+      method: "GET",
+      path: "/api/creditae/inquiries",
     });
   });
 });

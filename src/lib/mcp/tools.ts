@@ -14,8 +14,11 @@ import {
   parseIntent,
   parseOperations,
 } from "@/lib/tyra/cases";
-import { createCase as createAlvaCase } from "@/lib/alva/cases";
-import { createInquiry as createCreditaeInquiry } from "@/lib/creditae/inquiries";
+import { createCase as createAlvaCase, listCases as listAlvaCases } from "@/lib/alva/cases";
+import {
+  createInquiry as createCreditaeInquiry,
+  listInquiries as listCreditaeInquiries,
+} from "@/lib/creditae/inquiries";
 import { majIsOpen } from "@/lib/maj/access";
 import { listActions, runAnalysis } from "@/lib/maj/engine";
 import { getProject, listProjects } from "@/lib/maj/projects";
@@ -746,6 +749,52 @@ export function buildPixdriftRegistry(): ToolRegistry {
 
   registry.registerTool(
     base({
+      name: "list_diagnostic_cases",
+      title: "List diagnostic cases",
+      description:
+        "Lists ALVA cases for the authenticated organisation. Returns identity fields only, not technician notes. Same listCases service as GET /api/alva/cases. Does not diagnose.",
+      system: "alva",
+      domain: "diagnostics",
+      inputSchema: {
+        type: "object",
+        properties: { limit: { type: "integer" }, cursor: { type: "string" } },
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need existing diagnostic cases.",
+      whenNotToUse: "You want a diagnosis — ALVA does not invent one.",
+      rest: { method: "GET", path: "/api/alva/cases" },
+      flags: { ...readFlags(true), pii: true },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const rows = await listAlvaCases(pool, actor.orgRef);
+        return page(
+          rows.map((item) => ({
+            id: item.id,
+            complaint: item.complaint,
+            vehicleRef: item.vehicleRef,
+            area: item.area,
+            mileageKm: item.mileageKm,
+            status: item.status,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
+          })),
+          input,
+        );
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
       name: "register_diagnostic_case",
       title: "Register diagnostic case",
       description:
@@ -798,6 +847,54 @@ export function buildPixdriftRegistry(): ToolRegistry {
           status: created.status,
           complaint: created.complaint,
         };
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "list_credit_inquiries",
+      title: "List credit inquiries",
+      description:
+        "Lists CREDITAE counterpart inquiries for the authenticated organisation. Returns identity and status fields only — not bureau scores, traffic numbers or notes. Same listInquiries service as GET /api/creditae/inquiries. Does not invent a score.",
+      system: "creditae",
+      domain: "credit",
+      inputSchema: {
+        type: "object",
+        properties: { limit: { type: "integer" }, cursor: { type: "string" } },
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need existing counterpart inquiries.",
+      whenNotToUse:
+        "You want CREDITAE to decide Kör/Bevaka/Stanna — that is the user's assessment, not a list field.",
+      rest: { method: "GET", path: "/api/creditae/inquiries" },
+      flags: { ...readFlags(true), pii: true },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const rows = await listCreditaeInquiries(pool, actor.orgRef);
+        return page(
+          rows.map((item) => ({
+            id: item.id,
+            subjectOrgNumber: item.subjectOrgNumber,
+            subjectName: item.subjectName,
+            status: item.status,
+            assessment: item.assessment,
+            vendorStatus: item.vendorStatus,
+            webStatus: item.webStatus,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
+          })),
+          input,
+        );
       },
     }),
   );

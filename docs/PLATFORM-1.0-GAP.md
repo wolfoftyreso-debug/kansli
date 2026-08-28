@@ -70,7 +70,7 @@ Ingen OpenAPI. Ingen publik `api.pixdrift.com/v1`.
 Flera skrivvägar saknar MCP-par (se §4).
 
 **MCP — PARTIAL.**
-`POST /mcp`, protokoll `2026-07-28`, 21 verktyg i
+`POST /mcp`, protokoll `2026-07-28`, 23 verktyg i
 `src/lib/mcp/tools.ts`. Alla anropar befintliga tjänster.
 Inte alla REST-operationer har verktyg. Ingen L4-kö.
 Rate limit och idempotens är per process.
@@ -138,7 +138,7 @@ ingen syntetisk bevakning av login/MCP/docs. Hemligheter dumpas inte.
 
 ## 4. Capability Graph — frö mot full täckning
 
-Grafen i kod är **bara** de 21 MCP-verktygen.
+Grafen i kod är **bara** de 23 MCP-verktygen.
 Varje verktyg har redan `rest.method` + `rest.path`.
 Det är medvetet: ingen parallell lista.
 
@@ -164,8 +164,8 @@ REST som **finns** men **inte** sitter i grafen än:
 | GET `/api/tyra/reminders` | tyra | Outbox utan MCP |
 | POST `/api/tyra/suppliers/search` | tyra | Returnerar `NOT_CONFIGURED` |
 | GET `/api/tyra/cron/reminders` | tyra | Cron, inte agentyta |
-| GET `/api/alva/cases` | alva | Lista utan MCP |
-| GET/POST `/api/creditae/inquiries` | creditae | Lista/skapa. MCP `register_credit_inquiry` |
+| GET `/api/alva/cases` | alva | Lista. MCP `list_diagnostic_cases` |
+| GET/POST `/api/creditae/inquiries` | creditae | Lista/skapa. MCP `list_credit_inquiries` / `register_credit_inquiry` |
 | GET/POST `/api/maj/projects` | maj | Lista/skapa. MCP `list_search_projects` |
 | GET `/api/maj/projects/:id` | maj | Detalj utan MCP — lista+kö räcker |
 | POST `/api/maj/projects/:id/analyze` | maj | MCP `run_search_analysis` |
