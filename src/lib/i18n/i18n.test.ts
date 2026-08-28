@@ -170,6 +170,11 @@ describe("locale registry", () => {
     expect(catalogSection("sv", "identity", "01", "")).toBe(
       "En inloggning till alla system, så ni inte loggar in om och om igen.",
     );
+    expect(t("en", "hold.title", { number: "INV-2026-0010" })).toBe(
+      "Invoice INV-2026-0010 is overdue",
+    );
+    expect(t("sv", "hold.paused")).toBe("Pausat");
+    expect(t("sv", "hold.openInvoice")).toBe("Öppna fakturan i Ekonomi");
     expect(t("sv", "site.catalog.forthcoming")).toBe("Kommer");
     expect(t("sv", "chrome.signIn")).toBe("Logga in");
     expect(t("pl", "chrome.language")).toBe("Język");

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import type { AppSession } from "@/lib/auth/session";
+import { t } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
 import { isHouseSession } from "@/lib/kansli/intakes";
 import { kronor } from "@/lib/kansli/pricing";
@@ -41,21 +42,22 @@ export async function AppShell({
     if (hold) {
       content = (
         <>
-          <p className="pd-label text-faint">Pausat</p>
+          <p className="pd-label text-faint">{t(locale, "hold.paused")}</p>
           <h1 className="text-2xl font-semibold tracking-tight">
-            Fakturan {hold.invoiceNumber} har förfallit
+            {t(locale, "hold.title", { number: hold.invoiceNumber })}
           </h1>
           <p className="pd-banner-blocked max-w-xl px-3 py-3 text-sm">
-            Abonnemangsfakturan på {kronor(hold.grossOre)} inkl. moms förföll{" "}
-            {formatSwedishDateTime(hold.dueAt)}. Rummen är pausade tills den är betald — inget är
-            raderat, allt finns kvar.
+            {t(locale, "hold.body", {
+              amount: kronor(hold.grossOre),
+              when: formatSwedishDateTime(hold.dueAt),
+            })}
           </p>
           <p>
             <Link
               href="/ekonomi/fakturor"
               className="inline-flex bg-ink px-4 py-2 text-sm font-medium text-paper hover:bg-ink-soft"
             >
-              Öppna fakturan i Ekonomi
+              {t(locale, "hold.openInvoice")}
             </Link>
           </p>
         </>

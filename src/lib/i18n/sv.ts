@@ -1648,4 +1648,10 @@ export const SV: Record<MessageKey, string> = {
   "site.catalog.creditae.s09": "Kör {name} i navet för att se hur det fungerar.",
   "site.catalog.creditae.s10":
     "På väg. Europa. Kreditrapport via Creditsafe när kanalen är kopplad.",
+
+  "hold.paused": "Pausat",
+  "hold.title": "Fakturan {number} har förfallit",
+  "hold.body":
+    "Abonnemangsfakturan på {amount} inkl. moms förföll {when}. Rummen är pausade tills den är betald — inget är raderat, allt finns kvar.",
+  "hold.openInvoice": "Öppna fakturan i Ekonomi",
 };

@@ -1653,4 +1653,10 @@ export const PL: Record<MessageKey, string> = {
   "site.catalog.creditae.s09": "Run {name} in the hub to see how it works.",
   "site.catalog.creditae.s10":
     "On the way. Europe. Credit report through Creditsafe when the channel is wired.",
+
+  "hold.paused": "Paused",
+  "hold.title": "Invoice {number} is overdue",
+  "hold.body":
+    "The subscription invoice of {amount} incl. VAT fell due {when}. The rooms are paused until it is paid — nothing is deleted, everything is still there.",
+  "hold.openInvoice": "Open the invoice in Ekonomi",
 };
