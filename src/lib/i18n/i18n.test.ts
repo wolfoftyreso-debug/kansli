@@ -150,6 +150,8 @@ describe("locale registry", () => {
     expect(t("sv", "alva.saveStatus")).toBe("Spara status");
     expect(alvaOutcome("en", "yes")).toBe("Yes");
     expect(alvaOutcome("sv", "unknown")).toBe("Okänt");
+    expect(t("en", "creditae.saveAssessment")).toBe("Save assessment");
+    expect(t("sv", "creditae.choose")).toBe("Välj");
     expect(t("sv", "chrome.signIn")).toBe("Logga in");
     expect(t("pl", "chrome.language")).toBe("Język");
     expect(t("de", "chrome.signIn")).toBe("Anmelden");

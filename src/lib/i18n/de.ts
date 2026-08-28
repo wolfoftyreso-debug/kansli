@@ -1504,4 +1504,7 @@ export const DE: Record<MessageKey, string> = {
   "alva.factsJsonLead":
     "Export of what you filled in. `diagnosis` is null. No conclusion is added.",
   "alva.downloadFacts": "Download protocol facts",
+
+  "creditae.choose": "Choose",
+  "creditae.saveAssessment": "Save assessment",
 };

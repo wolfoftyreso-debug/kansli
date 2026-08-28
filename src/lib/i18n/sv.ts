@@ -1483,4 +1483,7 @@ export const SV: Record<MessageKey, string> = {
   "alva.factsJson": "Fakta som JSON",
   "alva.factsJsonLead": "Export av det ni fyllt i. `diagnosis` är null. Ingen slutsats läggs till.",
   "alva.downloadFacts": "Ladda ner protokollfakta",
+
+  "creditae.choose": "Välj",
+  "creditae.saveAssessment": "Spara bedömning",
 };

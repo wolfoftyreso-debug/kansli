@@ -196,7 +196,7 @@ export default async function CreditaeInquiryPage({ params }: { params: Promise<
             <SelectField
               name="assessment"
               label={t(locale, "creditae.conclusion")}
-              placeholder="Välj"
+              placeholder={t(locale, "creditae.choose")}
               required
               defaultValue={item.assessment ?? ""}
               options={ASSESSMENTS.map((value) => ({
@@ -205,14 +205,14 @@ export default async function CreditaeInquiryPage({ params }: { params: Promise<
               }))}
             />
             <label className="flex flex-col gap-1">
-              <span className="text-sm text-ink-soft">Anteckning</span>
+              <span className="text-sm text-ink-soft">{t(locale, "creditae.notes")}</span>
               <textarea
                 name="notes"
                 defaultValue={item.notes}
                 className="min-h-24 border border-line bg-paper px-3 py-2 text-sm"
               />
             </label>
-            <Submit>Spara bedömning</Submit>
+            <Submit>{t(locale, "creditae.saveAssessment")}</Submit>
           </form>
         </>
       ) : null}
