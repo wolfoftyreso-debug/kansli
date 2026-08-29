@@ -9,6 +9,7 @@ export async function generateMetadata() {
   const locale = await readLocale();
   return {
     title: t(locale, "site.doc.mcp.errors.metaTitle"),
+    description: t(locale, "site.doc.mcp.errors.intro"),
     ...publicShareMeta("/documentation/mcp/errors"),
   };
 }

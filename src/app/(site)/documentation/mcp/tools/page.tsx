@@ -10,6 +10,7 @@ export async function generateMetadata() {
   const locale = await readLocale();
   return {
     title: t(locale, "site.doc.mcp.tools.metaTitle"),
+    description: t(locale, "site.doc.mcp.tools.intro"),
     ...publicShareMeta("/documentation/mcp/tools"),
   };
 }
