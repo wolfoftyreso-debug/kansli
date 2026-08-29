@@ -53,7 +53,7 @@ export async function POST(request: Request, context: { params: Promise<{ token:
       return noStore({ agreement, signed: agreement.status === "signed" });
     }
     const signerName = body?.signerName?.trim() ?? "";
-    if (!signerName) throw new ApiError("invalid_request", "signerName krävs.");
+    if (!signerName) throw new ApiError("invalid_request", "signerName is required.");
     const agreement = await acknowledgeAgreement({
       pool,
       events,
@@ -67,7 +67,7 @@ export async function POST(request: Request, context: { params: Promise<{ token:
       throw new ApiError("not_found", "The link is invalid or has expired.");
     }
     if (agreement.verificationLevel === 0) {
-      throw new ApiError("invalid_request", "Underlaget kräver ingen bekräftelse.");
+      throw new ApiError("invalid_request", "The record does not require acknowledgement.");
     }
     noteIrmaTokenSuccess(key);
     return noStore({ agreement, signed: agreement.status === "signed" });

@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     ) {
       throw new ApiError(
         "invalid_request",
-        "customerName, registrationNumber och operations krävs.",
+        "customerName, registrationNumber and operations are required.",
       );
     }
     const created = await createCase({

@@ -51,6 +51,6 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
         }),
       });
     }
-    throw new ApiError("invalid_request", "action måste vara issue eller record_payment.");
+    throw new ApiError("invalid_request", "action must be issue or record_payment.");
   });
 }

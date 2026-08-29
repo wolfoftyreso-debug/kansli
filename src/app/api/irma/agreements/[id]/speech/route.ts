@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export async function GET(_request: Request, context: { params: Promise<{ id: string }> }) {
   return handleApi(async ({ actor, pool }) => {
     if (!ttsConfigured()) {
-      throw new ApiError("not_ready", "Uppläsning är inte kopplad.");
+      throw new ApiError("not_ready", "Speech is not connected.");
     }
     const org = requireOrg(actor);
     const { id } = await context.params;

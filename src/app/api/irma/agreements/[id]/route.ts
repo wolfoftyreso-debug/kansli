@@ -22,7 +22,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     const { id } = await context.params;
     const body = (await request.json().catch(() => null)) as { action?: string } | null;
     if (body?.action !== "revoke") {
-      throw new ApiError("invalid_request", "action=revoke krävs.");
+      throw new ApiError("invalid_request", "action=revoke is required.");
     }
     const agreement = await revokeAgreement({
       pool,

@@ -16,7 +16,7 @@ export async function POST(request: Request) {
       title?: string;
       owner?: string;
     } | null;
-    if (!body?.title?.trim()) throw new ApiError("invalid_request", "Titeln får inte vara tom.");
+    if (!body?.title?.trim()) throw new ApiError("invalid_request", "The title must not be empty.");
     const task = await addTask(pool, {
       orgRef: present.orgRef,
       title: body.title,

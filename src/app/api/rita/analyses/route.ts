@@ -19,7 +19,7 @@ export async function POST(request: Request) {
       useDemoDocument?: boolean;
     } | null;
     if (!body?.companyName?.trim() || !body.orgNumber?.trim()) {
-      throw new ApiError("invalid_request", "companyName och orgNumber krävs.");
+      throw new ApiError("invalid_request", "companyName and orgNumber are required.");
     }
     const numberIssue = orgNumberError(body.orgNumber);
     if (numberIssue) throw new ApiError("invalid_request", numberIssue);

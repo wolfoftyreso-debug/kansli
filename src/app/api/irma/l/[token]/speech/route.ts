@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic";
 export async function GET(_request: Request, context: { params: Promise<{ token: string }> }) {
   return handleApi(async ({ pool }) => {
     if (!ttsConfigured()) {
-      throw new ApiError("not_ready", "Uppläsning är inte kopplad.");
+      throw new ApiError("not_ready", "Speech is not connected.");
     }
     const { token } = await context.params;
     const key = irmaThrottleKey(token);

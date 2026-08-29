@@ -23,7 +23,7 @@ export async function POST(request: Request) {
       mileageKm?: number;
       desiredOutcome?: string;
     } | null;
-    if (!body?.complaint?.trim()) throw new ApiError("invalid_request", "complaint krävs.");
+    if (!body?.complaint?.trim()) throw new ApiError("invalid_request", "complaint is required.");
     const item = await createCase({
       pool,
       events,

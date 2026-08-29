@@ -21,6 +21,7 @@ describe("ApiError", () => {
   it("never leaks an unknown error as a stack", () => {
     const body = problemBody(new Error("secret internals"), "req-1");
     expect(body.status).toBe(500);
+    expect(body.title).toBe("An unexpected error occurred.");
     expect(body.title).not.toMatch(/secret/);
     expect(body.requestId).toBe("req-1");
   });
