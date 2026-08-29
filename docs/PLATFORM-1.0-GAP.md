@@ -71,7 +71,7 @@ OpenAPI 3.1 genereras ur Capability Graph:
 Ingen publik `api.pixdrift.com/v1`. Inte alla REST-ytor sitter i grafen (se §4).
 
 **MCP — PARTIAL.**
-`POST /mcp`, protokoll `2026-07-28`, 27 verktyg i
+`POST /mcp`, protokoll `2026-07-28`, 28 verktyg i
 `src/lib/mcp/tools.ts`. Alla anropar befintliga tjänster.
 Inte alla REST-operationer har verktyg. Ingen L4-kö.
 Rate limit och idempotens är per process.
@@ -148,7 +148,6 @@ REST som **finns** men **inte** sitter i grafen än:
 | REST | Produkt | Varför den saknas i grafen |
 | --- | --- | --- |
 | PATCH/DELETE `/api/kansli/tasks/:id` | kansli | MCP `toggle_office_task` / `delete_office_task` |
-| GET `/api/ekonomi/invoices/:id` | ekonomi | Bara listan är verktyg |
 | GET/POST `/api/ekonomi/connectors` | ekonomi | Connector-yta, inte MCP |
 | GET `/api/ekonomi/reports` | ekonomi | Rapport-yta, inte MCP |
 | Revolut connect/callback | ekonomi | OAuth-flöde, inte domänverktyg |

@@ -14,6 +14,7 @@ describe("MCP catalog contract", () => {
     expect(names).toContain("toggle_office_task");
     expect(names).toContain("delete_office_task");
     expect(names).toContain("list_ledger_invoices");
+    expect(names).toContain("get_ledger_invoice");
     expect(names).toContain("list_agreements");
     expect(names).toContain("list_vehicle_cases");
     expect(names).toContain("list_diagnostic_cases");

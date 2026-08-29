@@ -2,7 +2,8 @@ import { requireOrg, type Actor } from "@pixdrift/api-core";
 import { SYSTEM_MODULES } from "@pixdrift/systems";
 import { ToolRegistry, type McpRuntime, type ToolDefinition, page } from "@pixdrift/mcp-core";
 import { addTask, deleteTask, listTasks, toggleTask } from "@/lib/kansli/tasks";
-import { listInvoices } from "@/lib/ekonomi/invoices";
+import { getInvoice, listInvoices } from "@/lib/ekonomi/invoices";
+import { listPayments } from "@/lib/ekonomi/payments";
 import { evaluateMarket, persistSnapshot } from "@/lib/tora/persist";
 import { resolveCompany } from "@/lib/tora/profile";
 import { listAnalyses, requestAnalysis } from "@/lib/rita/analyses";
@@ -405,6 +406,78 @@ export function buildPixdriftRegistry(): ToolRegistry {
           })),
           input,
         );
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "get_ledger_invoice",
+      title: "Get invoice",
+      description:
+        "Returns one invoice and its payments for the authenticated organisation. Identity fields and line amounts only — not the journal.",
+      system: "ekonomi",
+      domain: "ledger",
+      inputSchema: {
+        type: "object",
+        properties: { id: { type: "string" } },
+        required: ["id"],
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need one invoice and its received payments.",
+      whenNotToUse: "You need to issue or pay an invoice.",
+      rest: { method: "GET", path: "/api/ekonomi/invoices/:id" },
+      flags: { ...readFlags(true), pii: true },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const id = typeof input.id === "string" ? input.id.trim() : "";
+        const invoice = id ? await getInvoice(pool, actor.orgRef, id) : null;
+        if (!invoice) return { error: "not_found" };
+        const payments = await listPayments(pool, actor.orgRef, invoice.id);
+        return {
+          invoice: {
+            id: invoice.id,
+            number: invoice.number,
+            status: invoice.status,
+            customerName: invoice.customerName,
+            currency: invoice.currency,
+            netOre: invoice.netOre,
+            vatOre: invoice.vatOre,
+            grossOre: invoice.grossOre,
+            paidOre: invoice.paidOre,
+            dueAt: invoice.dueAt,
+            issuedAt: invoice.issuedAt,
+            createdAt: invoice.createdAt,
+            lines: invoice.lines.map((line) => ({
+              id: line.id,
+              description: line.description,
+              quantity: line.quantity,
+              unitNetOre: line.unitNetOre,
+              vatRateBps: line.vatRateBps,
+              kind: line.kind,
+              netOre: line.netOre,
+              vatOre: line.vatOre,
+              grossOre: line.grossOre,
+            })),
+          },
+          payments: payments.map((item) => ({
+            id: item.id,
+            rail: item.rail,
+            status: item.status,
+            amountOre: item.amountOre,
+            currency: item.currency,
+            receivedAt: item.receivedAt,
+          })),
+        };
       },
     }),
   );

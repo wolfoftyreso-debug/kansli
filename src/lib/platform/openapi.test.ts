@@ -27,6 +27,7 @@ describe("OpenAPI seed", () => {
     expect(spec.paths["/api/kansli/tasks/{id}"]?.patch?.operationId).toBe("toggle_office_task");
     expect(spec.paths["/api/kansli/tasks/{id}"]?.delete?.operationId).toBe("delete_office_task");
     expect(spec.paths["/api/kansli/tasks/{id}"]?.delete?.["x-event"]).toBe("kansli.task.updated");
+    expect(spec.paths["/api/ekonomi/invoices/{id}"]?.get?.operationId).toBe("get_ledger_invoice");
     expect(spec.paths["/api/irma/agreements"]?.get?.operationId).toBe("list_agreements");
     expect(spec.paths["/api/britt/findings"]?.post?.operationId).toBe("run_operational_analysis");
   });
