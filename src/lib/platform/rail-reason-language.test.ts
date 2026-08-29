@@ -22,21 +22,29 @@ describe("payment-rail reason language", () => {
   });
 
   it("keeps connected-state reasons English-canonical", () => {
-    const stripe = railSnapshot({ STRIPE_SECRET_KEY: "sk_test_x" } as NodeJS.ProcessEnv);
+    const stripe = railSnapshot({
+      NODE_ENV: "test",
+      STRIPE_SECRET_KEY: "sk_test_x",
+    } as NodeJS.ProcessEnv);
     expect(stripe.stripe.reason).toBe(
       "Stripe is connected. Payments are real — nothing is simulated.",
     );
     const merchant = railSnapshot({
+      NODE_ENV: "test",
       REVOLUT_MERCHANT_SECRET: "merch",
     } as NodeJS.ProcessEnv);
     expect(merchant.revolut.reason).toBe(
       "The Merchant connection is there. Statements are missing.",
     );
     const business = railSnapshot({
+      NODE_ENV: "test",
       REVOLUT_BUSINESS_TOKEN: "oa_x",
     } as NodeJS.ProcessEnv);
     expect(business.revolut.reason).toMatch(/Statements and matching work/);
-    const swish = railSnapshot({ SWISH_PAYEE_ALIAS: "123" } as NodeJS.ProcessEnv);
+    const swish = railSnapshot({
+      NODE_ENV: "test",
+      SWISH_PAYEE_ALIAS: "123",
+    } as NodeJS.ProcessEnv);
     expect(swish.swish.reason).toMatch(/Swish Handel connection is not ready/);
   });
 
