@@ -15,25 +15,25 @@ export interface RitaFinding {
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
-  tax: "Skatt",
-  vat: "Moms",
-  payroll: "Löner",
-  corporate: "Bolag",
+  tax: "Tax",
+  vat: "VAT",
+  payroll: "Payroll",
+  corporate: "Company",
   risk: "Risk",
   k10: "K10",
 };
 
 const STATUS_LABELS: Record<string, string> = {
-  identified: "Identifierat",
-  verify: "Verifiera",
-  warning: "Varning",
-  rejected: "Avvisat",
-  cleared: "Avfört",
+  identified: "Identified",
+  verify: "Verify",
+  warning: "Warning",
+  rejected: "Rejected",
+  cleared: "Cleared",
 };
 
 export function categoryLabel(category: string): string {
   const key = category.trim().toLowerCase();
-  return CATEGORY_LABELS[key] ?? (category.trim() || "Okategoriserat");
+  return CATEGORY_LABELS[key] ?? (category.trim() || "Uncategorised");
 }
 
 export function findingStatusLabel(status: string): string {

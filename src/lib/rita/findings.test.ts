@@ -81,7 +81,7 @@ describe("findingsFromAnalysis", () => {
     const [finding] = findingsFromAnalysis(result);
     expect(finding?.ruleId).toBe("se.tax.k10.lonekrav");
     expect(finding?.ruleTitle).toMatch(/57 kap/);
-    expect(categoryLabel(finding?.category ?? "")).toBe("Skatt");
+    expect(categoryLabel(finding?.category ?? "")).toBe("Tax");
     expect(analysisDisclaimer(result)).toMatch(/Ingen garanti/);
     expect(analysisLimitations(result)[0]).toMatch(/rådgivare/);
     expect(estimatedTotalHint(result)).toMatch(/ingen garanti/);
