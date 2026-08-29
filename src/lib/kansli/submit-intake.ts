@@ -78,7 +78,7 @@ export async function submitIntake(input: {
   });
 
   if (!input.ownerUrl) {
-    blocked.push("PIXDRIFT_DB_OWNER_URL saknas. Kontot skapas inte här.");
+    blocked.push("PIXDRIFT_DB_OWNER_URL is missing. The account is not created here.");
   } else {
     try {
       provision = await provisionWorkshopAccount({
@@ -104,7 +104,7 @@ export async function submitIntake(input: {
         },
       });
     } catch (error) {
-      blocked.push(error instanceof Error ? error.message : "kontot kunde inte skapas.");
+      blocked.push(error instanceof Error ? error.message : "The account could not be created.");
     }
   }
 
@@ -153,7 +153,7 @@ export async function submitIntake(input: {
       );
     }
   } catch (error) {
-    blocked.push(error instanceof Error ? error.message : "fakturorna kunde inte utfärdas.");
+    blocked.push(error instanceof Error ? error.message : "The invoices could not be issued.");
   }
 
   const first = invoices[0] ?? null;
