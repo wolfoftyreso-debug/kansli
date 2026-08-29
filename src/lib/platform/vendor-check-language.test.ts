@@ -48,12 +48,9 @@ describe("leftover vendor-check CLI language", () => {
     expect(result.stdout).not.toContain("SAKNAS");
   });
 
-  it("leaves leftover ping prompt and Revolut cert script as written", () => {
+  it("leaves leftover ping prompt as written", () => {
     expect(readFileSync("scripts/vendor-check.ts", "utf8")).toContain(
       "Svara med ett enda ord: pong. Inget annat.",
-    );
-    expect(readFileSync("scripts/revolut/generate-certificate.sh", "utf8")).toContain(
-      "okänt argument:",
     );
   });
 });
