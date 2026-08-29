@@ -67,7 +67,7 @@ export function ritaEngineSnapshot(
 
 export function ritaEngineUnavailableReason(): string {
   if (process.env.RITA_ENGINE_BINARY?.trim()) {
-    return "Analysen är fel inställd. Be den som sköter driften kontrollera inställningarna.";
+    return "The analysis is misconfigured. Ask whoever runs operations to check the settings.";
   }
-  return "Analysen är inte inkopplad än. Be den som sköter driften koppla in den.";
+  return "The analysis is not connected yet. Ask whoever runs operations to connect it.";
 }

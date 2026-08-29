@@ -8,12 +8,11 @@ export const DEMO_ORG_NUMBER = "556016-0680";
 export const DEMO_FISCAL_YEAR_START = "2025-01-01";
 export const DEMO_FISCAL_YEAR_END = "2025-12-31";
 
-export const NO_DOCUMENTS_REASON =
-  "Inget underlag skickades med. Analysen behöver minst ett dokument.";
+export const NO_DOCUMENTS_REASON = "No record was sent. The analysis needs at least one document.";
 export const DEMO_DOCUMENT_HTTP_REASON =
-  "Exempelbokslutet går inte att använda i den här driftmiljön.";
+  "The sample annual report cannot be used in this environment.";
 export const DEMO_DOCUMENT_MISSING_REASON =
-  "Exempelbokslutet saknas. Kontakta den som sköter driften.";
+  "The sample annual report is missing. Contact whoever runs operations.";
 
 export function demoBokslutPath(): string {
   return join(process.cwd(), "src/lib/rita/fixtures/exempel-bokslut.txt");
