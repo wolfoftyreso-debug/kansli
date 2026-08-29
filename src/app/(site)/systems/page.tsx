@@ -3,7 +3,7 @@ import { SectionHeading } from "@/components/site/SectionHeading";
 import { SystemCard } from "@/components/site/SystemCard";
 import { t } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
-import { publicCanonical } from "@/lib/platform/canonical";
+import { publicShareMeta } from "@/lib/platform/canonical";
 import { systems } from "@/lib/pixdrift/systems";
 
 export async function generateMetadata() {
@@ -11,7 +11,7 @@ export async function generateMetadata() {
   return {
     title: t(locale, "site.systems.metaTitle"),
     description: t(locale, "site.systems.metaDescription"),
-    alternates: { canonical: publicCanonical("/systems") },
+    ...publicShareMeta("/systems"),
   };
 }
 

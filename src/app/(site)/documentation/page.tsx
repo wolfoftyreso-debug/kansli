@@ -5,7 +5,7 @@ import { Container } from "@/components/site/Container";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { t, type MessageKey } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
-import { publicCanonical } from "@/lib/platform/canonical";
+import { publicShareMeta } from "@/lib/platform/canonical";
 
 const DOC_AREAS = [
   "overview",
@@ -23,7 +23,7 @@ export async function generateMetadata() {
   return {
     title: t(locale, "site.doc.metaTitle"),
     description: t(locale, "site.doc.metaDescription"),
-    alternates: { canonical: publicCanonical("/documentation") },
+    ...publicShareMeta("/documentation"),
   };
 }
 

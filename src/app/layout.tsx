@@ -29,9 +29,6 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       type: "website",
       siteName: "PIXDRIFT",
-      title: "PIXDRIFT",
-      description,
-      url: "https://pixdrift.com",
     },
     twitter: { card: "summary" },
   };

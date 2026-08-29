@@ -4,7 +4,7 @@ import { SectionHeading } from "@/components/site/SectionHeading";
 import { SpecTable } from "@/components/site/SpecTable";
 import { t } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
-import { publicCanonical } from "@/lib/platform/canonical";
+import { publicShareMeta } from "@/lib/platform/canonical";
 
 const character = [
   ["Precision", "Nothing arbitrary."],
@@ -23,7 +23,7 @@ export async function generateMetadata() {
       name: brand.name,
       company: brand.company.name,
     }),
-    alternates: { canonical: publicCanonical("/company") },
+    ...publicShareMeta("/company"),
   };
 }
 

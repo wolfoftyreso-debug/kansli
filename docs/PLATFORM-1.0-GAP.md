@@ -254,7 +254,7 @@ MCP-health och `server/discover` är inte samma sak som
 | Sitemap | PARTIAL | MCP-docsidor ur `MCP_DOC_LINKS` plus `/systems/{slug}` |
 | Robots | PASS | `src/app/robots.ts` |
 | Structured data | PARTIAL | Organization + WebSite ur brand, SoftwareApplication ur `/systems/{slug}` |
-| Metadata / OG | PARTIAL | root layout. Få unika per produktsida |
+| Metadata / OG | PARTIAL | per-sida title/description/url ur samma publika ytor. Ingen OG-bild |
 | Interna länkar | PARTIAL | nav + systems. Ingen intent-graf |
 | HTTP-status | PARTIAL | inte syntetiskt bevakat |
 | Prestanda | MISSING | ingen Lighthouse-gate |
