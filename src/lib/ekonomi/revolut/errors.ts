@@ -104,36 +104,36 @@ export function tokenErrorCategory(
 export function describeCategory(category: RevolutErrorCategory): string {
   switch (category) {
     case "configuration":
-      return "Revolut-konfigurationen är inte klar.";
+      return "The Revolut configuration is not ready.";
     case "state_invalid":
-      return "Något gick fel i anslutningen. Börja om från Anslut.";
+      return "Something went wrong in the connection. Start again from Connect.";
     case "state_expired":
-      return "Anslutningen tog för lång tid. Börja om från Anslut.";
+      return "The connection took too long. Start again from Connect.";
     case "state_replayed":
-      return "Anslutningen var redan använd. Börja om från Anslut.";
+      return "The connection was already used. Start again from Connect.";
     case "authorization_denied":
-      return "Åtkomsten nekades i Revolut.";
+      return "Access was denied in Revolut.";
     case "code_rejected":
-      return "Revolut sa nej. Prova att ansluta igen.";
+      return "Revolut said no. Try connecting again.";
     case "assertion_rejected":
-      return "Revolut kände inte igen oss. Be den som sköter driften kontrollera id och certifikat.";
+      return "Revolut did not recognise us. Ask operations to check the id and certificate.";
     case "authentication_expired":
-      return "Anslutningen behövde förnyas. Det sker automatiskt.";
+      return "The connection needed to be renewed. That happens automatically.";
     case "refresh_rejected":
-      return "Anslutningen gäller inte längre. Anslut Revolut igen.";
+      return "The connection is no longer valid. Connect Revolut again.";
     case "forbidden":
-      return "Anslutningen får inte göra det här i Revolut.";
+      return "The connection is not allowed to do this in Revolut.";
     case "rate_limited":
-      return "Revolut tar emot för många anrop just nu. Vänta en stund.";
+      return "Revolut is receiving too many calls right now. Wait a moment.";
     case "server_error":
-      return "Revolut svarade med ett serverfel.";
+      return "Revolut answered with a server error.";
     case "timeout":
-      return "Revolut svarade inte inom tidsgränsen.";
+      return "Revolut did not answer within the time limit.";
     case "network":
-      return "Nätverksfel mot Revolut.";
+      return "Network error toward Revolut.";
     case "malformed_response":
-      return "Revolut svarade med något vi inte kunde tolka.";
+      return "Revolut answered with something we could not parse.";
     default:
-      return "Okänt fel mot Revolut.";
+      return "Unknown error toward Revolut.";
   }
 }

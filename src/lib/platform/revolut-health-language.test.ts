@@ -21,15 +21,12 @@ describe("Revolut health language", () => {
     expect(health).not.toContain("Ansluten. Förnyas automatiskt.");
   });
 
-  it("leaves vendor fail reasons and event headlines as written", () => {
-    expect(readFileSync("src/lib/ekonomi/revolut/errors.ts", "utf8")).toContain(
-      "Revolut-konfigurationen är inte klar.",
-    );
+  it("leaves event headlines as written", () => {
     expect(readFileSync("src/lib/ekonomi/revolut/health.ts", "utf8")).toContain(
       "Revolut-certifikatet behöver bytas",
     );
     expect(readFileSync("src/lib/ekonomi/revolut/tokens.ts", "utf8")).toContain(
-      "Nätverksfel mot Revolut.",
+      "Revolut behöver anslutas om",
     );
   });
 });

@@ -106,7 +106,7 @@ export class RevolutClient {
       const timedOut = error instanceof Error && error.name === "TimeoutError";
       const failure = new RevolutError(
         timedOut ? "timeout" : "network",
-        timedOut ? "Revolut svarade inte i tid." : "Nätverksfel mot Revolut.",
+        timedOut ? "Revolut did not answer in time." : "Network error toward Revolut.",
         { cause: error },
       );
       logRevolutError("api.request_failed", failure, {
@@ -138,7 +138,7 @@ export class RevolutClient {
     if (!response.ok) {
       const failure = new RevolutError(
         categoryFromStatus(response.status),
-        "Revolut avvisade anropet.",
+        "Revolut rejected the call.",
         { status: response.status },
       );
       logRevolutError("api.request_failed", failure, {
@@ -159,7 +159,7 @@ export class RevolutClient {
     try {
       body = (await response.json()) as T;
     } catch (error) {
-      throw new RevolutError("malformed_response", "Revolut svarade utan giltig JSON.", {
+      throw new RevolutError("malformed_response", "Revolut answered without valid JSON.", {
         status: response.status,
         cause: error,
       });

@@ -69,8 +69,12 @@ describe("Revolut config language", () => {
     ).rejects.toThrow(/missing sub/);
   });
 
-  it("leaves vendor fail reasons as written", () => {
-    const errors = readFileSync("src/lib/ekonomi/revolut/errors.ts", "utf8");
-    expect(errors).toContain("Revolut-konfigurationen är inte klar.");
+  it("leaves rail reasons and event headlines as written", () => {
+    expect(readFileSync("src/lib/ekonomi/rails.ts", "utf8")).toContain(
+      "Revolut är inte anslutet. Anslut under Anslutningar",
+    );
+    expect(readFileSync("src/lib/ekonomi/revolut/tokens.ts", "utf8")).toContain(
+      "Revolut behöver anslutas om",
+    );
   });
 });

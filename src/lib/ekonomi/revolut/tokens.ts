@@ -120,7 +120,7 @@ async function postToken(
     const timedOut = error instanceof Error && error.name === "TimeoutError";
     throw new RevolutError(
       timedOut ? "timeout" : "network",
-      timedOut ? "Revolut svarade inte i tid." : "Nätverksfel mot Revolut.",
+      timedOut ? "Revolut did not answer in time." : "Network error toward Revolut.",
       { cause: error },
     );
   }
@@ -129,17 +129,21 @@ async function postToken(
   try {
     payload = (await response.json()) as TokenResponse;
   } catch (error) {
-    throw new RevolutError("malformed_response", "Revolut svarade med något vi inte kunde tolka.", {
-      status: response.status,
-      cause: error,
-    });
+    throw new RevolutError(
+      "malformed_response",
+      "Revolut answered with something we could not parse.",
+      {
+        status: response.status,
+        cause: error,
+      },
+    );
   }
 
   if (!response.ok) {
     const providerCode = typeof payload.error === "string" ? payload.error : null;
     throw new RevolutError(
       tokenErrorCategory(response.status, providerCode, grant),
-      "Revolut godkände inte anslutningen.",
+      "Revolut did not approve the connection.",
       { status: response.status, providerCode },
     );
   }
@@ -147,7 +151,7 @@ async function postToken(
   const accessToken = payload.access_token;
   const expiresIn = Number(payload.expires_in);
   if (typeof accessToken !== "string" || !accessToken) {
-    throw new RevolutError("malformed_response", "Svaret från Revolut var inte komplett.", {
+    throw new RevolutError("malformed_response", "The response from Revolut was not complete.", {
       status: response.status,
     });
   }
@@ -193,7 +197,7 @@ function tokenIsFresh(loaded: LoadedConnection, now: Date, marginMs = REFRESH_MA
 
 export class ReauthorizationRequired extends Error {
   constructor(readonly code: string) {
-    super("Revolut-anslutningen måste göras om.");
+    super("The Revolut connection must be done again.");
     this.name = "ReauthorizationRequired";
   }
 }
@@ -336,7 +340,7 @@ async function refreshWithLock(
 
   throw new RevolutError(
     "timeout",
-    "En annan förnyelse av Revolut-anslutningen blev inte klar i tid.",
+    "Another renewal of the Revolut connection did not finish in time.",
   );
 }
 
