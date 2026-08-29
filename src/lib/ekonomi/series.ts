@@ -3,10 +3,10 @@ import type { Invoice } from "./invoices.ts";
 import type { Payment } from "./payments.ts";
 
 export const PERIODS = [
-  { id: "1W", days: 7, label: "1V" },
+  { id: "1W", days: 7, label: "1W" },
   { id: "1M", days: 30, label: "1M" },
   { id: "3M", days: 90, label: "3M" },
-  { id: "1Y", days: 365, label: "1Å" },
+  { id: "1Y", days: 365, label: "1Y" },
   { id: "MAX", days: null, label: "Max" },
 ] as const;
 
