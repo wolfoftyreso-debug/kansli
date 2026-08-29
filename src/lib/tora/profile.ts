@@ -99,7 +99,7 @@ export async function upsertCompanyProfile(input: {
     ],
   );
   const saved = await getCompanyProfile(input.pool, input.orgRef);
-  if (!saved) throw new Error("Profilen kunde inte sparas.");
+  if (!saved) throw new Error("The profile could not be saved.");
   return saved;
 }
 
