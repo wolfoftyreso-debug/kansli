@@ -10,6 +10,7 @@ import { formatSwedishDateTime } from "@/lib/format/datetime";
 import { facadeRuntimeMark } from "@/lib/platform/facade";
 import { tryRuntime } from "@/lib/platform/page";
 import { Facade } from "./Facade";
+import { SkipToContent } from "./SkipToContent";
 
 /** Rooms pause when the registration invoice is overdue. Ekonomi stays open so it can be paid. */
 const HOLD_GATED = new Set([
@@ -66,8 +67,11 @@ export async function AppShell({
   }
 
   return (
-    <Facade session={session} runtime={facadeRuntimeMark()} locale={locale}>
-      {content}
-    </Facade>
+    <>
+      <SkipToContent locale={locale} />
+      <Facade session={session} runtime={facadeRuntimeMark()} locale={locale}>
+        {content}
+      </Facade>
+    </>
   );
 }

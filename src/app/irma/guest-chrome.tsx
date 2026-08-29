@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import { SkipToContent } from "@/components/app/SkipToContent";
+import { readLocale } from "@/lib/i18n/request";
 
 export function GuestProgress({
   step,
@@ -71,10 +73,15 @@ export function GuestReceipt({
   );
 }
 
-export function GuestFrame({ children }: { children: ReactNode }) {
+export async function GuestFrame({ children }: { children: ReactNode }) {
+  const locale = await readLocale();
   return (
     <div className="min-h-full bg-paper text-ink">
-      <main className="mx-auto flex w-full max-w-lg flex-col gap-8 px-5 py-10 sm:px-6 sm:py-16">
+      <SkipToContent locale={locale} />
+      <main
+        id="main"
+        className="mx-auto flex w-full max-w-lg flex-col gap-8 px-5 py-10 sm:px-6 sm:py-16"
+      >
         {children}
       </main>
     </div>

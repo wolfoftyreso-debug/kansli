@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { StatusBanner } from "@/components/tyra/Status";
 import { TaskRow } from "@/components/tyra/Rows";
+import { SkipToContent } from "@/components/app/SkipToContent";
 import { t } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
 import { appRoomRobots } from "@/lib/platform/app-robots";
@@ -33,65 +34,71 @@ export default async function TyraHubPage({ params }: { params: Promise<{ token:
     : t(locale, "tyra.hub.noVehicle");
 
   return (
-    <main className="mx-auto flex min-h-full w-full max-w-xl flex-col gap-8 bg-paper px-6 py-12 text-ink">
-      <p className="pd-label text-faint">{t(locale, "tyra.hub.kicker")}</p>
-      <header className="flex flex-col gap-3">
-        <h1 className="text-3xl font-semibold tracking-tight">{view.customerName}</h1>
-        <p className="text-ink-soft">{vehicleLabel}</p>
-      </header>
+    <>
+      <SkipToContent locale={locale} />
+      <main
+        id="main"
+        className="mx-auto flex min-h-full w-full max-w-xl flex-col gap-8 bg-paper px-6 py-12 text-ink"
+      >
+        <p className="pd-label text-faint">{t(locale, "tyra.hub.kicker")}</p>
+        <header className="flex flex-col gap-3">
+          <h1 className="text-3xl font-semibold tracking-tight">{view.customerName}</h1>
+          <p className="text-ink-soft">{vehicleLabel}</p>
+        </header>
 
-      <StatusBanner tone="neutral">{view.commercialNote}</StatusBanner>
+        <StatusBanner tone="neutral">{view.commercialNote}</StatusBanner>
 
-      {view.storageCode ? (
-        <p className="text-sm text-ink-soft">
-          {t(locale, "tyra.hub.storage", { code: view.storageCode })}
-          {view.wheelStatus ? ` · ${view.wheelStatus}` : ""}
-        </p>
-      ) : (
-        <p className="text-sm text-muted">{t(locale, "tyra.hub.noStorage")}</p>
-      )}
+        {view.storageCode ? (
+          <p className="text-sm text-ink-soft">
+            {t(locale, "tyra.hub.storage", { code: view.storageCode })}
+            {view.wheelStatus ? ` · ${view.wheelStatus}` : ""}
+          </p>
+        ) : (
+          <p className="text-sm text-muted">{t(locale, "tyra.hub.noStorage")}</p>
+        )}
 
-      {view.setWarnings.length > 0 ? (
-        <ul className="flex flex-col gap-2">
-          {view.setWarnings.map((warning) => (
-            <li key={warning.code} className="text-sm text-ink-soft">
-              {warning.title}
-              {warning.detail ? ` — ${warning.detail}` : ""}
-            </li>
-          ))}
-        </ul>
-      ) : null}
-
-      {view.positions.length > 0 ? (
-        <ul className="flex flex-col gap-3">
-          {view.positions.map((position) => {
-            const tread =
-              position.health.treadDepthMm != null
-                ? t(locale, "tyra.hub.tread", { mm: position.health.treadDepthMm.toFixed(1) })
-                : null;
-            return (
-              <li key={position.position}>
-                <TaskRow
-                  headline={
-                    [position.tyre.brand, position.tyre.model, position.tyre.dimension]
-                      .filter(Boolean)
-                      .join(" ") ||
-                    tread ||
-                    `${position.position} · ${position.health.label}`
-                  }
-                  subtitle={tread ?? position.health.label}
-                  status={{
-                    tone: "neutral",
-                    label: `${position.position} · ${position.health.label}`,
-                  }}
-                />
+        {view.setWarnings.length > 0 ? (
+          <ul className="flex flex-col gap-2">
+            {view.setWarnings.map((warning) => (
+              <li key={warning.code} className="text-sm text-ink-soft">
+                {warning.title}
+                {warning.detail ? ` — ${warning.detail}` : ""}
               </li>
-            );
-          })}
-        </ul>
-      ) : null}
+            ))}
+          </ul>
+        ) : null}
 
-      <p className="text-sm text-muted">{t(locale, "tyra.hub.footer")}</p>
-    </main>
+        {view.positions.length > 0 ? (
+          <ul className="flex flex-col gap-3">
+            {view.positions.map((position) => {
+              const tread =
+                position.health.treadDepthMm != null
+                  ? t(locale, "tyra.hub.tread", { mm: position.health.treadDepthMm.toFixed(1) })
+                  : null;
+              return (
+                <li key={position.position}>
+                  <TaskRow
+                    headline={
+                      [position.tyre.brand, position.tyre.model, position.tyre.dimension]
+                        .filter(Boolean)
+                        .join(" ") ||
+                      tread ||
+                      `${position.position} · ${position.health.label}`
+                    }
+                    subtitle={tread ?? position.health.label}
+                    status={{
+                      tone: "neutral",
+                      label: `${position.position} · ${position.health.label}`,
+                    }}
+                  />
+                </li>
+              );
+            })}
+          </ul>
+        ) : null}
+
+        <p className="text-sm text-muted">{t(locale, "tyra.hub.footer")}</p>
+      </main>
+    </>
   );
 }
