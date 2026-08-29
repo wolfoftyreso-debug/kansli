@@ -44,7 +44,12 @@ describe("migrate language", () => {
     expect(quoteIdent("pixdrift_identity")).toBe('"pixdrift_identity"');
 
     await expect(
-      grantSchemaAccess({} as never, "pixdrift_identity", "pixdrift_app; drop table users", "readwrite"),
+      grantSchemaAccess(
+        {} as never,
+        "pixdrift_identity",
+        "pixdrift_app; drop table users",
+        "readwrite",
+      ),
     ).rejects.toThrow(
       /Invalid appRole \(must be a SQL identifier\): pixdrift_app; drop table users/,
     );
