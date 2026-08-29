@@ -1566,6 +1566,40 @@ export const SV: Record<MessageKey, string> = {
   "site.doc.mcp.toolCatalog": "Verktygskatalog",
   "site.doc.mcp.explorer": "Inloggad utforskare",
   "site.doc.mcp.health": "Health",
+  "site.doc.mcp.tools.metaTitle": "MCP-verktyg — PIXDRIFT",
+  "site.doc.mcp.tools.title": "Genererad från registret",
+  "site.doc.mcp.tools.intro":
+    "Den här sidan är inte handkopierad. Saknas ett verktyg här är det inte registrerat.",
+  "site.doc.mcp.systems.metaTitle": "MCP-system — PIXDRIFT",
+  "site.doc.mcp.systems.title": "Vad som faktiskt är registrerat",
+  "site.doc.mcp.systems.intro":
+    "NORA, Mova och SAGA finns inte i det här arkivet, så de listas inte som MCP-redo.",
+  "site.doc.mcp.authPage.metaTitle": "MCP-autentisering — PIXDRIFT",
+  "site.doc.mcp.authPage.title": "En identitet. Inget annat inloggningssystem.",
+  "site.doc.mcp.authPage.intro":
+    "MCP validerar åtkomsttoken mot samma IdP-JWKS som REST-resursservrarna. Webbläsarverktyg kan använda den befintliga Kansli-sessionen.",
+  "site.doc.mcp.clients.metaTitle": "MCP-klienter — PIXDRIFT",
+  "site.doc.mcp.clients.eyebrow": "Klienter",
+  "site.doc.mcp.clients.title": "Cursor, Claude och generiska MCP-klienter",
+  "site.doc.mcp.clients.intro": "Använd plattformens tokenmönster. Hårdkoda aldrig en hemlighet.",
+  "site.doc.mcp.errors.metaTitle": "MCP-fel — PIXDRIFT",
+  "site.doc.mcp.errors.title": "Säkra namn. Ingen SQL. Inga hemligheter.",
+  "site.doc.mcp.errors.intro":
+    "JSON-RPC-fel bär ett namn och ett request-id. Stackspår stannar i processen.",
+  "site.doc.rest.metaTitle": "REST — PIXDRIFT",
+  "site.doc.rest.metaDescription":
+    "REST-operationer genererade från Capability Graph. Samma domäntjänster som MCP. Inte en handskriven katalog.",
+  "site.doc.rest.title": "En graf. Två gränssnitt.",
+  "site.doc.rest.intro":
+    "Den här sidan genereras från Capability Graph. Varje operation är ett MCP-verktyg. Saknas en sökväg här är den inte registrerad.",
+  "site.doc.rest.operations": "{count} operationer · OpenAPI",
+  "site.doc.graph.metaTitle": "Capability Graph — PIXDRIFT",
+  "site.doc.graph.metaDescription":
+    "Maskinläsbart register över Pixdrift-kapabiliteter. Genererat från MCP-registret, inte kopierat för hand.",
+  "site.doc.graph.title": "En lista. Flera gränssnitt.",
+  "site.doc.graph.intro":
+    "Den här sidan genereras från MCP-registret. Saknas en kapabilitet här är den inte registrerad. NORA, MOVA och SAGA finns inte i det här arkivet.",
+  "site.doc.graph.source": "Källa {source} · {count} kapabiliteter · JSON",
 
   "site.catalog.identity.purpose": "En inloggning till alla system.",
   "site.catalog.identity.category": "Inloggning",

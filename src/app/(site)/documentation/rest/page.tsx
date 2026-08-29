@@ -1,17 +1,21 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { listOpenApiOperations } from "@/lib/platform/openapi";
 import { McpDocNav } from "@/components/site/McpDocNav";
 import { Container } from "@/components/site/Container";
 import { SectionHeading } from "@/components/site/SectionHeading";
+import { t } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 
-export const metadata: Metadata = {
-  title: "REST — PIXDRIFT",
-  description:
-    "REST operations generated from the Capability Graph. Same domain services as MCP. Not a handwritten catalog.",
-};
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "site.doc.rest.metaTitle"),
+    description: t(locale, "site.doc.rest.metaDescription"),
+  };
+}
 
-export default function RestDocumentationPage() {
+export default async function RestDocumentationPage() {
+  const locale = await readLocale();
   const operations = listOpenApiOperations();
   return (
     <Container>
@@ -19,13 +23,13 @@ export default function RestDocumentationPage() {
       <div className="mt-10">
         <SectionHeading
           as="h1"
-          eyebrow="REST"
-          title="One graph. Two interfaces."
-          intro="This page is generated from the Capability Graph. Each operation is an MCP tool. If a path is missing here, it is not registered."
+          eyebrow={t(locale, "site.doc.rest")}
+          title={t(locale, "site.doc.rest.title")}
+          intro={t(locale, "site.doc.rest.intro")}
         />
       </div>
       <p className="mt-8 text-sm text-muted">
-        {operations.length} operations · OpenAPI{" "}
+        {t(locale, "site.doc.rest.operations", { count: operations.length })}{" "}
         <Link href="/api/platform/openapi" className="underline decoration-line underline-offset-4">
           /api/platform/openapi
         </Link>

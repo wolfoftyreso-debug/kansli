@@ -1,13 +1,16 @@
-import type { Metadata } from "next";
 import { McpDocNav } from "@/components/site/McpDocNav";
 import { Container } from "@/components/site/Container";
 import { SectionHeading } from "@/components/site/SectionHeading";
+import { t } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 
-export const metadata: Metadata = {
-  title: "MCP clients — PIXDRIFT",
-};
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return { title: t(locale, "site.doc.mcp.clients.metaTitle") };
+}
 
-export default function McpClientsPage() {
+export default async function McpClientsPage() {
+  const locale = await readLocale();
   const example = `{
   "mcpServers": {
     "pixdrift": {
@@ -25,9 +28,9 @@ export default function McpClientsPage() {
       <div className="mt-10">
         <SectionHeading
           as="h1"
-          eyebrow="Clients"
-          title="Cursor, Claude, and generic MCP clients"
-          intro="Use the platform token pattern. Never hard-code a secret."
+          eyebrow={t(locale, "site.doc.mcp.clients.eyebrow")}
+          title={t(locale, "site.doc.mcp.clients.title")}
+          intro={t(locale, "site.doc.mcp.clients.intro")}
         />
       </div>
       <pre className="mt-10 overflow-x-auto border border-line bg-surface p-5 text-sm">

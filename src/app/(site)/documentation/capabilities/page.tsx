@@ -1,17 +1,21 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { buildCapabilityGraph } from "@/lib/platform/capability-graph";
 import { McpDocNav } from "@/components/site/McpDocNav";
 import { Container } from "@/components/site/Container";
 import { SectionHeading } from "@/components/site/SectionHeading";
+import { t } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 
-export const metadata: Metadata = {
-  title: "Capability Graph — PIXDRIFT",
-  description:
-    "Machine-readable registry of Pixdrift capabilities. Generated from the MCP registry, not copied by hand.",
-};
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "site.doc.graph.metaTitle"),
+    description: t(locale, "site.doc.graph.metaDescription"),
+  };
+}
 
-export default function CapabilityGraphPage() {
+export default async function CapabilityGraphPage() {
+  const locale = await readLocale();
   const graph = buildCapabilityGraph();
   return (
     <Container>
@@ -19,13 +23,16 @@ export default function CapabilityGraphPage() {
       <div className="mt-10">
         <SectionHeading
           as="h1"
-          eyebrow="Capability Graph"
-          title="One list. Several interfaces."
-          intro="This page is generated from the MCP registry. If a capability is missing here, it is not registered. NORA, MOVA and SAGA are not in this repository."
+          eyebrow={t(locale, "site.doc.capabilityGraph")}
+          title={t(locale, "site.doc.graph.title")}
+          intro={t(locale, "site.doc.graph.intro")}
         />
       </div>
       <p className="mt-8 text-sm text-muted">
-        Source {graph.source} · {graph.capabilities.length} capabilities · JSON{" "}
+        {t(locale, "site.doc.graph.source", {
+          source: graph.source,
+          count: graph.capabilities.length,
+        })}{" "}
         <Link
           href="/api/platform/capabilities"
           className="underline decoration-line underline-offset-4"

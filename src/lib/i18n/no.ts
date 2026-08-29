@@ -1567,6 +1567,40 @@ export const NO: Record<MessageKey, string> = {
   "site.doc.mcp.toolCatalog": "Tool catalog",
   "site.doc.mcp.explorer": "Signed-in explorer",
   "site.doc.mcp.health": "Health",
+  "site.doc.mcp.tools.metaTitle": "MCP tools — PIXDRIFT",
+  "site.doc.mcp.tools.title": "Generated from the registry",
+  "site.doc.mcp.tools.intro":
+    "This page is not hand-copied. If a tool is missing here, it is not registered.",
+  "site.doc.mcp.systems.metaTitle": "MCP systems — PIXDRIFT",
+  "site.doc.mcp.systems.title": "What is actually registered",
+  "site.doc.mcp.systems.intro":
+    "NORA, Mova and SAGA are not in this repository, so they are not listed as MCP-ready.",
+  "site.doc.mcp.authPage.metaTitle": "MCP authentication — PIXDRIFT",
+  "site.doc.mcp.authPage.title": "One identity. No second login system.",
+  "site.doc.mcp.authPage.intro":
+    "MCP validates access tokens against the same IdP JWKS that REST resource servers use. Browser tools can use the existing Kansli session cookie.",
+  "site.doc.mcp.clients.metaTitle": "MCP clients — PIXDRIFT",
+  "site.doc.mcp.clients.eyebrow": "Clients",
+  "site.doc.mcp.clients.title": "Cursor, Claude, and generic MCP clients",
+  "site.doc.mcp.clients.intro": "Use the platform token pattern. Never hard-code a secret.",
+  "site.doc.mcp.errors.metaTitle": "MCP errors — PIXDRIFT",
+  "site.doc.mcp.errors.title": "Safe names. No SQL. No secrets.",
+  "site.doc.mcp.errors.intro":
+    "JSON-RPC errors carry a name and request id. Stack traces stay inside the process.",
+  "site.doc.rest.metaTitle": "REST — PIXDRIFT",
+  "site.doc.rest.metaDescription":
+    "REST operations generated from the Capability Graph. Same domain services as MCP. Not a handwritten catalog.",
+  "site.doc.rest.title": "One graph. Two interfaces.",
+  "site.doc.rest.intro":
+    "This page is generated from the Capability Graph. Each operation is an MCP tool. If a path is missing here, it is not registered.",
+  "site.doc.rest.operations": "{count} operations · OpenAPI",
+  "site.doc.graph.metaTitle": "Capability Graph — PIXDRIFT",
+  "site.doc.graph.metaDescription":
+    "Machine-readable registry of Pixdrift capabilities. Generated from the MCP registry, not copied by hand.",
+  "site.doc.graph.title": "One list. Several interfaces.",
+  "site.doc.graph.intro":
+    "This page is generated from the MCP registry. If a capability is missing here, it is not registered. NORA, MOVA and SAGA are not in this repository.",
+  "site.doc.graph.source": "Source {source} · {count} capabilities · JSON",
 
   "site.catalog.identity.purpose": "One sign-in for every system.",
   "site.catalog.identity.category": "Sign-in",
