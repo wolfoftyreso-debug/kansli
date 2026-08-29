@@ -4,6 +4,7 @@ import {
   COLOR_SCHEME,
   leftoverColorSchemeMeta,
   leftoverFormatDetectionMeta,
+  leftoverThemeColorMeta,
   PAPER_HEX,
 } from "./theme-chrome.ts";
 
@@ -12,6 +13,7 @@ describe("leftover theme chrome", () => {
     expect(PAPER_HEX).toBe("#fbfbf9");
     expect(COLOR_SCHEME).toBe("light");
     expect(leftoverColorSchemeMeta()).toBe('<meta name="color-scheme" content="light">');
+    expect(leftoverThemeColorMeta()).toBe(`<meta name="theme-color" content="${PAPER_HEX}">`);
     expect(readFileSync("src/app/globals.css", "utf8")).toContain("--color-paper: #fbfbf9");
     expect(readFileSync("src/app/globals.css", "utf8")).toContain("color-scheme: light");
     expect(readFileSync("src/app/layout.tsx", "utf8")).toContain("export const viewport");
@@ -22,6 +24,12 @@ describe("leftover theme chrome", () => {
     );
     expect(readFileSync("src/app/api/auth/login/route.ts", "utf8")).toContain(
       "leftoverColorSchemeMeta",
+    );
+    expect(readFileSync("packages/identity/src/server.ts", "utf8")).toContain(
+      leftoverThemeColorMeta(),
+    );
+    expect(readFileSync("src/app/api/auth/login/route.ts", "utf8")).toContain(
+      "leftoverThemeColorMeta",
     );
     expect(leftoverFormatDetectionMeta()).toContain("telephone=no");
     expect(readFileSync("src/app/layout.tsx", "utf8")).toContain(

@@ -132,7 +132,7 @@ ingen syntetisk bevakning av login/MCP/docs. Hemligheter dumpas inte.
 | 3. Developer Platform | PARTIAL | `/documentation`, MCP-docs, MCP-explorer | Sandbox, Try-it, recipes, changelog-data, status, request replay |
 | 4. App / Agent | PARTIAL | MCP + klientinstruktioner i docs | ChatGPT Apps, Apps SDK-UI, produktappar |
 | 5. Knowledge & Search | PARTIAL | `/systems`, `/documentation`, sitemap, robots, `llms.txt` ur `@pixdrift/systems` plus `MCP_DOC_LINKS`, JSON-LD ur brand plus `/systems/{slug}`, OG per publik HTML-sida, HTML noindex plus `X-Robots-Tag` på apprum plus Identity-HTML | Locale-URL, hreflang, knowledge, verktyg, intent-graf |
-| 6. Design System | PARTIAL | CSS-tokens, gemensam sajtmall, leftover skip-to-content på sajt, apprum och gäst, leftover 404 och error ur IdP-nycklar, leftover loading ur `common.loading`, leftover ljust läge som theme-color ur paper-token | Tokenpaket, komponentbibliotek, produkt-DNA-regler, a11y-svit |
+| 6. Design System | PARTIAL | CSS-tokens, gemensam sajtmall, leftover skip-to-content på sajt, apprum och gäst, leftover 404 och error ur IdP-nycklar, leftover loading ur `common.loading`, leftover ljust läge som theme-color ur paper-token, inklusive leftover Identity-HTML | Tokenpaket, komponentbibliotek, produkt-DNA-regler, a11y-svit |
 | 7. Reliability | PARTIAL | CI, restore-drill, health | Reliability contract, Neon-restore-kvitto, syntetiska tester, incident |
 
 ---
@@ -258,7 +258,7 @@ MCP-health och `server/discover` är inte samma sak som
 | Interna länkar | PARTIAL | nav + systems. Ingen intent-graf |
 | HTTP-status | PARTIAL | inte syntetiskt bevakat |
 | Prestanda | MISSING | ingen Lighthouse-gate |
-| Mobil | PARTIAL | layout finns, leftover Identity-HTML har viewport, leftover format-detection av. Ingen bevakad svit |
+| Mobil | PARTIAL | layout finns, leftover Identity-HTML har viewport och leftover paper theme-color, leftover format-detection av. Ingen bevakad svit |
 | Locale | PARTIAL | `html lang` från `pd_locale`, inklusive leftover Identity-logout. Leftover dokumentationstermer ur godkända översättningar. Inga locale-URL:er |
 
 ---

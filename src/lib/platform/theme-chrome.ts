@@ -11,6 +11,10 @@ export function leftoverColorSchemeMeta(): string {
   return `<meta name="color-scheme" content="${COLOR_SCHEME}">`;
 }
 
+export function leftoverThemeColorMeta(): string {
+  return `<meta name="theme-color" content="${PAPER_HEX}">`;
+}
+
 export function leftoverFormatDetectionMeta(): string {
   return '<meta name="format-detection" content="telephone=no, email=no, address=no">';
 }
