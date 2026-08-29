@@ -19,7 +19,7 @@ describe("observationHref", () => {
   });
 
   it("labels sources by mission", () => {
-    expect(sourceLabel("rita")).toMatch(/skattefynd/i);
-    expect(sourceLabel("tyra")).toMatch(/däckhotell/i);
+    expect(sourceLabel("rita")).toMatch(/tax findings/i);
+    expect(sourceLabel("tyra")).toMatch(/tire hotel/i);
   });
 });

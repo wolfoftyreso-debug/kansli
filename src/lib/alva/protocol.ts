@@ -210,7 +210,7 @@ export function buildProtocolFacts(input: {
 }
 
 export function observationValueLabel(value: string): string {
-  if (value === "yes") return "Ja";
-  if (value === "no") return "Nej";
-  return "Okänt";
+  if (value === "yes") return "Yes";
+  if (value === "no") return "No";
+  return "Unknown";
 }

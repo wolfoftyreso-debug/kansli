@@ -29,9 +29,14 @@ describe("leftover status-label language", () => {
     expect(rita).not.toContain('requested: "Begärd"');
     expect(readFileSync("src/lib/irma/status.ts", "utf8")).not.toContain("Bekräftat");
     expect(readFileSync("src/lib/rita/findings.ts", "utf8")).not.toContain('tax: "Skatt"');
+    expect(readFileSync("src/lib/britt/links.ts", "utf8")).toContain("RITA — tax findings");
+    expect(readFileSync("src/lib/britt/links.ts", "utf8")).not.toContain("skattefynd");
+    expect(readFileSync("src/lib/alva/protocol.ts", "utf8")).toContain('return "Yes"');
+    expect(readFileSync("src/lib/alva/protocol.ts", "utf8")).not.toContain('return "Ja"');
   });
 
-  it("leaves leftover invoice-book status words as written", () => {
+  it("leaves leftover invoice-book and TORA requirement fallbacks as written", () => {
     expect(readFileSync("src/lib/ekonomi/invoices.ts", "utf8")).toContain('draft: "Utkast"');
+    expect(readFileSync("src/lib/tora/labels.ts", "utf8")).toContain('remediable: "Går att fixa"');
   });
 });
