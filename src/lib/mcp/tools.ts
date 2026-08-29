@@ -1067,7 +1067,7 @@ export function buildPixdriftRegistry(): ToolRegistry {
       rateClass: "read",
       whenToUse: "You need existing counterpart inquiries.",
       whenNotToUse:
-        "You want CREDITAE to decide Kör/Bevaka/Stanna — that is the user's assessment, not a list field.",
+        "You want CREDITAE to decide Go/Watch/Stop — that is the user's assessment, not a list field.",
       rest: { method: "GET", path: "/api/creditae/inquiries" },
       flags: { ...readFlags(true), pii: true },
       handler: async (ctx, input) => {
@@ -1121,7 +1121,7 @@ export function buildPixdriftRegistry(): ToolRegistry {
       rateClass: "write",
       whenToUse: "A counterpart should be assessed before credit or an agreement.",
       whenNotToUse:
-        "You want CREDITAE to decide Kör/Bevaka/Stanna — that is the user's assessment, not the bureau field.",
+        "You want CREDITAE to decide Go/Watch/Stop — that is the user's assessment, not the bureau field.",
       rest: { method: "POST", path: "/api/creditae/inquiries" },
       flags: { ...readFlags(false), pii: true },
       handler: async (ctx, input) => {
