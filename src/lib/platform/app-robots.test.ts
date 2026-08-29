@@ -6,8 +6,12 @@ import {
   APP_ROOM_ROBOTS,
   APP_ROOM_ROBOTS_CONTENT,
   APP_ROOM_VIEWPORT_META,
+  APP_ROOM_X_ROBOTS_EXTRA,
+  APP_ROOM_X_ROBOTS_PATHS,
   appRoomRobots,
   appRoomRobotsMeta,
+  appRoomXRobotsHeaders,
+  leftoverXRobotsSource,
 } from "./app-robots.ts";
 
 const HTML_ROOMS = SYSTEM_MODULES.filter((system) => system.id !== "identity").map(
@@ -54,5 +58,34 @@ describe("leftover app-room robots lock", () => {
     expect(readFileSync("src/app/upphandling/page.tsx", "utf8")).not.toContain("noindex");
     expect(APP_ROBOTS_DISALLOW).not.toContain("/upphandling");
     expect(APP_ROBOTS_DISALLOW).not.toContain("/documentation");
+  });
+
+  it("puts leftover X-Robots-Tag on leftover rooms, not leftover public HTML", () => {
+    expect([...APP_ROOM_X_ROBOTS_PATHS]).toEqual([
+      ...APP_ROBOTS_DISALLOW,
+      ...APP_ROOM_X_ROBOTS_EXTRA,
+    ]);
+    const headers = appRoomXRobotsHeaders();
+    const sources = headers.map((entry) => entry.source);
+    for (const path of APP_ROBOTS_DISALLOW) {
+      expect(sources, path).toContain(leftoverXRobotsSource(path));
+    }
+    expect(APP_ROOM_X_ROBOTS_EXTRA).toEqual(["/upphandling/bekraftelse"]);
+    expect(sources).toContain("/upphandling/bekraftelse/:path*");
+    expect(sources).toContain("/ekonomi/:path*");
+    expect(sources).toContain("/idp/:path*");
+    expect(sources).toContain("/api/:path*");
+    expect(sources).not.toContain("/upphandling/:path*");
+    expect(sources).not.toContain("/documentation/:path*");
+    expect(sources).not.toContain("/systems/:path*");
+    expect(sources).not.toContain("/why/:path*");
+    expect(sources).not.toContain("/company/:path*");
+    expect(sources).not.toContain("/:path*");
+    for (const entry of headers) {
+      expect(entry.headers).toEqual([{ key: "X-Robots-Tag", value: APP_ROOM_ROBOTS_CONTENT }]);
+    }
+    const nextConfig = readFileSync("next.config.ts", "utf8");
+    expect(nextConfig).toContain("appRoomXRobotsHeaders");
+    expect(nextConfig).not.toMatch(/source:\s*"\/:path\*"[^]*X-Robots-Tag/);
   });
 });

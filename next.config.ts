@@ -1,10 +1,11 @@
 import type { NextConfig } from "next";
+import { appRoomXRobotsHeaders } from "./src/lib/platform/app-robots";
 import { securityHeaders } from "./src/lib/platform/security-headers";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   async headers() {
-    return [{ source: "/:path*", headers: [...securityHeaders()] }];
+    return [{ source: "/:path*", headers: [...securityHeaders()] }, ...appRoomXRobotsHeaders()];
   },
   transpilePackages: [
     "@pixdrift/contracts",
