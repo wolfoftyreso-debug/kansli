@@ -82,14 +82,14 @@ function createPixdriftOidc(config) {
 
   async function verifyIdToken(idToken, nonce) {
     const parts = String(idToken || "").split(".");
-    if (parts.length !== 3) throw new Error("ogiltig id_token");
+    if (parts.length !== 3) throw new Error("invalid id_token");
     const [head, body, signature] = parts;
     const header = decodeJson(head);
-    if (header.alg !== "ES256") throw new Error("oväntad alg: " + header.alg);
+    if (header.alg !== "ES256") throw new Error("unexpected alg: " + header.alg);
     const doc = await discover();
     const keys = await jwks(doc.jwks_uri);
     const jwk = keys.find((k) => k.kid === header.kid) || keys[0];
-    if (!jwk) throw new Error("ingen matchande nyckel");
+    if (!jwk) throw new Error("no matching key");
     const key = await importEcKey(jwk);
     const ok = await subtle.verify(
       { name: "ECDSA", hash: "SHA-256" },
@@ -97,13 +97,13 @@ function createPixdriftOidc(config) {
       fromB64url(signature),
       new TextEncoder().encode(`${head}.${body}`),
     );
-    if (!ok) throw new Error("ogiltig signatur");
+    if (!ok) throw new Error("invalid signature");
     const claims = decodeJson(body);
     const now = Math.floor(Date.now() / 1000);
-    if (typeof claims.exp !== "number" || claims.exp < now) throw new Error("utgången id_token");
-    if (claims.iss !== doc.issuer) throw new Error("fel utfärdare");
+    if (typeof claims.exp !== "number" || claims.exp < now) throw new Error("expired id_token");
+    if (claims.iss !== doc.issuer) throw new Error("wrong issuer");
     const aud = Array.isArray(claims.aud) ? claims.aud : [claims.aud];
-    if (!aud.includes(config.clientId)) throw new Error("fel audience");
+    if (!aud.includes(config.clientId)) throw new Error("wrong audience");
     if (nonce && claims.nonce !== nonce) throw new Error("nonce does not match");
     return claims;
   }

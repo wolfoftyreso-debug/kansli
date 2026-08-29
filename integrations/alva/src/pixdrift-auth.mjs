@@ -56,7 +56,7 @@ export function skapaPixdriftVerifierare(opts) {
   async function hamtaNycklar() {
     if (cache.keys && Date.now() < cache.expires) return cache.keys;
     const res = await doFetch(opts.jwksUri);
-    if (!res.ok) throw new Error(`kunde inte hämta JWKS: ${res.status}`);
+    if (!res.ok) throw new Error(`could not fetch JWKS: ${res.status}`);
     const body = await res.json();
     cache = { keys: body.keys ?? [], expires: Date.now() + cacheTid };
     return cache.keys;
@@ -70,15 +70,15 @@ export function skapaPixdriftVerifierare(opts) {
      */
     async verifiera(token) {
       const delar = String(token || "").split(".");
-      if (delar.length !== 3) throw new Error("ogiltig token: fel format");
+      if (delar.length !== 3) throw new Error("invalid token: wrong format");
       const [huvudB64, kroppB64, signaturB64] = delar;
 
       const huvud = decodeJson(huvudB64);
-      if (huvud.alg !== "ES256") throw new Error(`oväntad alg: ${huvud.alg}`);
+      if (huvud.alg !== "ES256") throw new Error(`unexpected alg: ${huvud.alg}`);
 
       const nycklar = await hamtaNycklar();
       const jwk = nycklar.find((k) => k.kid === huvud.kid) ?? nycklar[0];
-      if (!jwk) throw new Error("ingen matchande signeringsnyckel");
+      if (!jwk) throw new Error("no matching signing key");
 
       const nyckel = await importeraEcNyckel(jwk);
       const data = new TextEncoder().encode(`${huvudB64}.${kroppB64}`);
@@ -89,14 +89,14 @@ export function skapaPixdriftVerifierare(opts) {
         signatur,
         data,
       );
-      if (!giltig) throw new Error("ogiltig signatur");
+      if (!giltig) throw new Error("invalid signature");
 
       const anspr = decodeJson(kroppB64);
       const nu = Math.floor(Date.now() / 1000);
-      if (typeof anspr.exp !== "number" || anspr.exp < nu) throw new Error("utgången token");
-      if (opts.issuer && anspr.iss !== opts.issuer) throw new Error("fel utfärdare");
+      if (typeof anspr.exp !== "number" || anspr.exp < nu) throw new Error("expired token");
+      if (opts.issuer && anspr.iss !== opts.issuer) throw new Error("wrong issuer");
       const aud = Array.isArray(anspr.aud) ? anspr.aud : [anspr.aud];
-      if (opts.audience && !aud.includes(opts.audience)) throw new Error("fel audience");
+      if (opts.audience && !aud.includes(opts.audience)) throw new Error("wrong audience");
 
       return anspr;
     },

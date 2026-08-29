@@ -123,7 +123,7 @@ describe("ALVA zero-dependency Pixdrift verifier", () => {
     const tamperedPayload = Buffer.from(p, "base64url");
     tamperedPayload[0] ^= 0x01;
     const tampered = `${h}.${tamperedPayload.toString("base64url")}.${s}`;
-    await expect(verifier.verifiera(tampered)).rejects.toThrow(/signatur/);
+    await expect(verifier.verifiera(tampered)).rejects.toThrow(/invalid signature/);
   });
 
   it("rejects a malformed token", async () => {
