@@ -34,6 +34,7 @@ describe("OpenAPI seed", () => {
     expect(spec.paths["/api/tora/opportunities/{id}"]?.get?.operationId).toBe(
       "get_procurement_opportunity",
     );
+    expect(spec.paths["/api/tora/calendar"]?.get?.operationId).toBe("list_procurement_calendar");
     expect(spec.paths["/api/irma/agreements"]?.get?.operationId).toBe("list_agreements");
     expect(spec.paths["/api/britt/findings"]?.post?.operationId).toBe("run_operational_analysis");
   });

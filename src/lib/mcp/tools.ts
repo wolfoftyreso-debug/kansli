@@ -5,7 +5,7 @@ import { addTask, deleteTask, listTasks, toggleTask } from "@/lib/kansli/tasks";
 import { getInvoice, listInvoices } from "@/lib/ekonomi/invoices";
 import { listPayments } from "@/lib/ekonomi/payments";
 import { evaluateMarket, persistSnapshot } from "@/lib/tora/persist";
-import { loadToraOpportunity, parseTier } from "@/lib/tora/market";
+import { loadToraCalendar, loadToraOpportunity, parseTier } from "@/lib/tora/market";
 import { resolveCompany } from "@/lib/tora/profile";
 import { getAnalysis, listAnalyses, requestAnalysis } from "@/lib/rita/analyses";
 import { findingsFromAnalysis } from "@/lib/rita/findings";
@@ -574,6 +574,68 @@ export function buildPixdriftRegistry(): ToolRegistry {
             title: lockedPick(view.title),
             deadlineAt: lockedPick(view.deadlineAt),
             daysUntilDeadline: lockedPick(view.daysUntilDeadline),
+          },
+        };
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "list_procurement_calendar",
+      title: "List procurement calendar",
+      description:
+        "Returns the TORA calendar for the authenticated organisation. Identity fields and locked teasers only — not remedies, walkthrough, prices or alert bodies.",
+      system: "tora",
+      domain: "procurement",
+      inputSchema: { type: "object", properties: {}, additionalProperties: false },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need upcoming procurement dates for this company.",
+      whenNotToUse: "You want to store a snapshot — use persist_procurement_snapshot.",
+      rest: { method: "GET", path: "/api/tora/calendar" },
+      handler: async (ctx) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const company = await resolveCompany(pool, actor.orgRef);
+        const calendar = loadToraCalendar(parseTier(actor.tier), company);
+        const entry = (item: (typeof calendar.thisWeek)[number]) => ({
+          date: item.date,
+          kind: item.kind,
+          predicted: item.predicted,
+          daysAway: item.daysAway,
+          identified: item.identified,
+          organizationName: item.organizationName,
+          title: item.title,
+          ...(item.opportunityId ? { opportunityId: item.opportunityId } : {}),
+        });
+        const alerts =
+          calendar.alerts.state === "locked"
+            ? { state: "locked" as const, teaser: calendar.alerts.teaser }
+            : {
+                state: calendar.alerts.state,
+                value: calendar.alerts.value.map((alert) => ({
+                  id: alert.id,
+                  type: alert.type,
+                  severity: alert.severity,
+                  occurredAt: alert.occurredAt,
+                  ...(alert.opportunityId ? { opportunityId: alert.opportunityId } : {}),
+                })),
+              };
+        return {
+          calendar: {
+            alertCount: calendar.alertCount,
+            alerts,
+            thisWeek: calendar.thisWeek.map(entry),
+            next30Days: calendar.next30Days.map(entry),
+            next90Days: calendar.next90Days.map(entry),
+            next12Months: calendar.next12Months.map(entry),
           },
         };
       },
