@@ -47,5 +47,11 @@ describe("leftover documentation-index language", () => {
       "A product developed and operated under PIXDRIFT.",
     );
     expect(readFileSync("src/lib/pixdrift/systems.ts", "utf8")).toContain('status: "Operational"');
+    expect(readFileSync("src/app/(site)/documentation/page.tsx", "utf8")).toContain(
+      "StatusIndicator",
+    );
+    expect(readFileSync("src/app/(site)/documentation/page.tsx", "utf8")).not.toContain(
+      'pd-label">{s.status}',
+    );
   });
 });

@@ -3,6 +3,7 @@ import { systems } from "@/lib/pixdrift/systems";
 import { terminology, terminologyTerm } from "@/lib/pixdrift/terminology";
 import { Container } from "@/components/site/Container";
 import { SectionHeading } from "@/components/site/SectionHeading";
+import { StatusIndicator } from "@/components/site/indicators";
 import { t, type MessageKey } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
 import { publicShareMeta } from "@/lib/platform/canonical";
@@ -79,7 +80,7 @@ export default async function DocumentationPage() {
                 className="flex items-baseline justify-between gap-4 bg-surface p-5 hover:bg-paper"
               >
                 <span className="font-medium text-ink">{s.name}</span>
-                <span className="pd-label">{s.status}</span>
+                <StatusIndicator status={s.status} />
               </Link>
             ))}
           </div>
