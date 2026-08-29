@@ -214,8 +214,8 @@ export async function processDueOutbox(input: {
   requestId: string;
 }): Promise<{ blocked: number; skipped: number }> {
   const reason = deliveryVendorConfigured()
-    ? "Leverantörsnyckel finns, men utskicket är inte inkopplat än. Raden skickas inte."
-    : "Ingen SMS- eller e-postleverantör är kopplad. Raden skickas inte.";
+    ? "A vendor key is present, but sending is not wired yet. The row is not sent."
+    : "No SMS or email vendor is connected. The row is not sent.";
   const { rows } = await input.pool.query<{ id: string; org_ref: string }>(
     input.orgRef
       ? `select id, org_ref from tyra.reminder_outbox

@@ -109,7 +109,7 @@ live("TYRA outbox (live Postgres)", () => {
     expect(processed.blocked).toBe(1);
     const rows = await listOutbox(pool, orgRef);
     expect(rows[0]?.status).toBe("BLOCKED");
-    expect(rows[0]?.lastError).toMatch(/skickas inte/);
+    expect(rows[0]?.lastError).toMatch(/is not sent/);
     expect(await events.list({ orgRef, kind: "tyra.reminder.enqueued" })).toHaveLength(1);
     expect(await events.list({ orgRef, kind: "tyra.reminder.blocked" })).toHaveLength(1);
   });
