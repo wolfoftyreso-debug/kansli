@@ -10,7 +10,8 @@ import { getAnalysis, listAnalyses, requestAnalysis } from "@/lib/rita/analyses"
 import { findingsFromAnalysis } from "@/lib/rita/findings";
 import { listObservations } from "@/lib/britt/observations";
 import { canRunDemoIntel, listFindings, runIntel } from "@/lib/britt/intel";
-import { createAgreement, listAgreements } from "@/lib/irma/agreements";
+import { createAgreement, getAgreement, listAgreements } from "@/lib/irma/agreements";
+import { verifyAgreementIntegrity } from "@/lib/irma/integrity";
 import {
   createCase as createTyraCase,
   getCaseWorkCard,
@@ -910,6 +911,57 @@ export function buildPixdriftRegistry(): ToolRegistry {
           })),
           input,
         );
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "get_agreement",
+      title: "Get agreement",
+      description:
+        "Returns one IRMA agreement for the authenticated organisation. Identity fields and integrity flags only — not body, clauses or the guest link.",
+      system: "irma",
+      domain: "agreements",
+      inputSchema: {
+        type: "object",
+        properties: { id: { type: "string" } },
+        required: ["id"],
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need one existing agreement and whether its hashes still match.",
+      whenNotToUse: "You want to create or revoke an agreement.",
+      rest: { method: "GET", path: "/api/irma/agreements/:id" },
+      flags: { ...readFlags(true), pii: true },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const id = typeof input.id === "string" ? input.id.trim() : "";
+        const agreement = id ? await getAgreement(pool, actor.orgRef, id) : null;
+        if (!agreement) return { error: "not_found" };
+        const integrity = verifyAgreementIntegrity(agreement);
+        return {
+          agreement: {
+            id: agreement.id,
+            title: agreement.title,
+            counterparty: agreement.counterparty,
+            status: agreement.status,
+            createdAt: agreement.createdAt,
+            viewedAt: agreement.viewedAt,
+            signedAt: agreement.signedAt,
+            verificationLevel: agreement.verificationLevel,
+            tokenExpiresAt: agreement.tokenExpiresAt,
+          },
+          integrity,
+        };
       },
     }),
   );

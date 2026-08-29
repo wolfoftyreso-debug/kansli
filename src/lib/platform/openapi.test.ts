@@ -30,6 +30,7 @@ describe("OpenAPI seed", () => {
     expect(spec.paths["/api/ekonomi/invoices/{id}"]?.get?.operationId).toBe("get_ledger_invoice");
     expect(spec.paths["/api/tyra/cases/{id}"]?.get?.operationId).toBe("get_vehicle_case");
     expect(spec.paths["/api/rita/analyses/{id}"]?.get?.operationId).toBe("get_tax_analysis");
+    expect(spec.paths["/api/irma/agreements/{id}"]?.get?.operationId).toBe("get_agreement");
     expect(spec.paths["/api/irma/agreements"]?.get?.operationId).toBe("list_agreements");
     expect(spec.paths["/api/britt/findings"]?.post?.operationId).toBe("run_operational_analysis");
   });

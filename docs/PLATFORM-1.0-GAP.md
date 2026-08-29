@@ -71,7 +71,7 @@ OpenAPI 3.1 genereras ur Capability Graph:
 Ingen publik `api.pixdrift.com/v1`. Inte alla REST-ytor sitter i grafen (se §4).
 
 **MCP — PARTIAL.**
-`POST /mcp`, protokoll `2026-07-28`, 30 verktyg i
+`POST /mcp`, protokoll `2026-07-28`, 31 verktyg i
 `src/lib/mcp/tools.ts`. Alla anropar befintliga tjänster.
 Inte alla REST-operationer har verktyg. Ingen L4-kö.
 Rate limit och idempotens är per process.
@@ -155,7 +155,7 @@ REST som **finns** men **inte** sitter i grafen än:
 | GET `/api/tora/calendar` | tora | Kalender utan MCP |
 | GET/POST `/api/britt/findings` | britt | Lista/kör. MCP `list_findings` / `run_operational_analysis` |
 | GET `/api/irma/agreements` | irma | Lista. MCP `list_agreements` |
-| GET/POST `/api/irma/agreements/:id` | irma | Detalj/revoke utan MCP |
+| POST `/api/irma/agreements/:id` | irma | Revoke utan MCP |
 | GET/POST `/api/irma/l/:token` | irma | Gästlänk, medvetet utan agent |
 | GET `/api/tyra/cases` | tyra | Lista. MCP `list_vehicle_cases` |
 | POST `/api/tyra/hub/link` | tyra | Hubblänk utan MCP |

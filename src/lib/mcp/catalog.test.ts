@@ -19,6 +19,7 @@ describe("MCP catalog contract", () => {
     expect(names).toContain("list_vehicle_cases");
     expect(names).toContain("get_vehicle_case");
     expect(names).toContain("get_tax_analysis");
+    expect(names).toContain("get_agreement");
     expect(names).toContain("list_diagnostic_cases");
     expect(names).toContain("list_credit_inquiries");
     expect(names).toContain("list_findings");
