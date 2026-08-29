@@ -19,8 +19,8 @@ describe("ops debug sanitize", () => {
       }),
     ).toEqual({
       title: "Förfallen faktura",
-      token: "[dold]",
-      nested: { authorization: "[dold]", reason: "saknas" },
+      token: "[hidden]",
+      nested: { authorization: "[hidden]", reason: "saknas" },
     });
   });
 
@@ -89,7 +89,7 @@ live("ops debug (live Postgres)", () => {
     expect(found.events[0]?.requestId).toBe(requestId);
     expect(found.events[0]?.payload).toMatchObject({
       reason: "no_delivery_adapter",
-      token: "[dold]",
+      token: "[hidden]",
     });
 
     const byOutbox = await lookupOpsDebug(boundA, { q: outboxId, scope: "org", orgRef: shopA });
