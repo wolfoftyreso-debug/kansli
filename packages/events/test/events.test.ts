@@ -9,7 +9,7 @@ const live = OWNER && APP ? describe : describe.skip;
 describe("EventLog.list", () => {
   it("refuses to list the whole book", async () => {
     const log = new EventLog({ query: async () => ({ rows: [] }) } as never);
-    await expect(log.list({} as never)).rejects.toThrow(/orgRef krävs/);
+    await expect(log.list({} as never)).rejects.toThrow(/orgRef is required/);
   });
 });
 
