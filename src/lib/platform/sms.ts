@@ -51,16 +51,16 @@ export async function sendSms(
     return {
       ok: false,
       providerRef: null,
-      reason: "Ingen telefonleverantör är kopplad. Meddelandet skickas inte.",
+      reason: "No phone vendor is connected. The message is not sent.",
     };
   }
   const to = normalizeSwedishMobile(input.to);
   if (!to) {
-    return { ok: false, providerRef: null, reason: "Telefonnumret går inte att använda." };
+    return { ok: false, providerRef: null, reason: "The phone number cannot be used." };
   }
   const body = input.body.trim();
   if (!body || body.length > 300) {
-    return { ok: false, providerRef: null, reason: "Meddelandet är tomt eller för långt." };
+    return { ok: false, providerRef: null, reason: "The message is empty or too long." };
   }
   const from = (input.from || process.env.ELKS_FROM || "Pixdrift").slice(0, 11);
   const payload = new URLSearchParams({ from, to, message: body });
@@ -79,7 +79,7 @@ export async function sendSms(
       return {
         ok: false,
         providerRef: null,
-        reason: `Telefonleverantören svarade ${response.status}.`,
+        reason: `The phone vendor responded ${response.status}.`,
       };
     }
     let id: string | null = null;
@@ -91,6 +91,6 @@ export async function sendSms(
     }
     return { ok: true, providerRef: id, reason: null };
   } catch {
-    return { ok: false, providerRef: null, reason: "Telefonleverantören gick inte att nå." };
+    return { ok: false, providerRef: null, reason: "The phone vendor could not be reached." };
   }
 }

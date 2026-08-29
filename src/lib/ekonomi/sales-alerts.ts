@@ -125,7 +125,7 @@ export async function notifySaleIssued(input: {
     : {
         ok: false,
         providerRef: null,
-        reason: "Ingen telefonleverantör är kopplad. Meddelandet skickas inte.",
+        reason: "No phone vendor is connected. The message is not sent.",
       };
   const status: AlertStatus = delivered.ok ? "SENT" : smsConfigured() ? "FAILED" : "BLOCKED";
   await input.pool.query(

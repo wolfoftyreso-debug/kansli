@@ -598,7 +598,7 @@ export async function raiseOpsAlarms(input: {
       : {
           ok: false,
           providerRef: null,
-          reason: "Ingen telefonleverantör är kopplad. Meddelandet skickas inte.",
+          reason: "No phone vendor is connected. The message is not sent.",
         };
     const status = delivered.ok ? "SENT" : input.facts.vendor ? "FAILED" : "BLOCKED";
     await input.pool.query(

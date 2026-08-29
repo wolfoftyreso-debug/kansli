@@ -23,7 +23,7 @@ describe("SMS channel", () => {
       throw new Error("should not fetch");
     });
     expect(result.ok).toBe(false);
-    expect(result.reason).toMatch(/kopplad/);
+    expect(result.reason).toMatch(/No phone vendor is connected/);
     if (username) process.env.ELKS_API_USERNAME = username;
     if (password) process.env.ELKS_API_PASSWORD = password;
     if (user) process.env.ELKS_API_USER = user;
