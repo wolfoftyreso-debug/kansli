@@ -11,7 +11,9 @@ export function SystemCard({ system, locale }: { system: PixSystem; locale: Loca
     >
       <div className="flex flex-col gap-4">
         <div className="flex items-baseline justify-between">
-          <span className="pd-label">System {system.index}</span>
+          <span className="pd-label">
+            {t(locale, "site.catalog.systemIndex", { index: system.index })}
+          </span>
           <StatusIndicator status={system.status} />
         </div>
         <h3 className="text-xl font-semibold tracking-tight text-ink">{system.name}</h3>
@@ -21,7 +23,7 @@ export function SystemCard({ system, locale }: { system: PixSystem; locale: Loca
         <hr className="pd-hr" />
         <div className="flex items-center justify-between">
           <span className="pd-label">{catalogField(locale, system.slug, "category")}</span>
-          <RegionIndicator regions={system.regions} />
+          <RegionIndicator regions={system.regions} locale={locale} />
         </div>
         <span className="text-sm font-medium text-ink">{t(locale, "site.systems.open")}</span>
       </div>

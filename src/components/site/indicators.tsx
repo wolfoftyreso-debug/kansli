@@ -1,3 +1,4 @@
+import { catalogRegion, type Locale } from "@/lib/i18n";
 import { STATUS_COLOR_VAR, type Region, type SystemStatus } from "@/lib/pixdrift/systems";
 
 export function StatusIndicator({ status }: { status: SystemStatus }) {
@@ -15,6 +16,10 @@ export function StatusIndicator({ status }: { status: SystemStatus }) {
   );
 }
 
-export function RegionIndicator({ regions }: { regions: Region[] }) {
-  return <span className="pd-label">{regions.join(" · ")}</span>;
+export function RegionIndicator({ regions, locale }: { regions: Region[]; locale: Locale }) {
+  return (
+    <span className="pd-label">
+      {regions.map((region) => catalogRegion(locale, region)).join(" · ")}
+    </span>
+  );
 }

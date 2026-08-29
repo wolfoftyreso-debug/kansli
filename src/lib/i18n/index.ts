@@ -23,6 +23,7 @@ export {
   catalogSection,
   catalogSectionTitle,
   catalogSteward,
+  catalogRegion,
   brittObsStatus,
   brittSource,
   ekonomiConnSlot,

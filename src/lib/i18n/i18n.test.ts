@@ -13,6 +13,7 @@ import {
   catalogField,
   catalogSection,
   catalogSectionTitle,
+  catalogRegion,
   brittObsStatus,
   brittSource,
   ekonomiConnSlot,
@@ -179,6 +180,8 @@ describe("locale registry", () => {
     expect(t("sv", "site.catalog.documentation")).toBe("Dokumentation");
     expect(t("en", "chrome.breadcrumb")).toBe("Breadcrumb");
     expect(t("sv", "chrome.breadcrumb")).toBe("Sökväg");
+    expect(catalogRegion("sv", "Europe")).toBe("Europa");
+    expect(catalogRegion("en", "United States")).toBe("United States");
     expect(t("en", "site.doc.title")).toBe("Documentation is part of the product.");
     expect(t("sv", "site.doc.eyebrow")).toBe("Dokumentation");
     expect(t("sv", "site.doc.mcp.title")).toBe(

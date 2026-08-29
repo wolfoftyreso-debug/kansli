@@ -90,7 +90,7 @@ export default async function SystemPage({ params }: { params: Promise<{ slug: s
                 },
                 {
                   label: t(locale, "site.catalog.spec.region"),
-                  value: <RegionIndicator regions={system.regions} />,
+                  value: <RegionIndicator regions={system.regions} locale={locale} />,
                 },
                 {
                   label: t(locale, "site.catalog.spec.rest"),

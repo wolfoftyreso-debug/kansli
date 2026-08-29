@@ -249,3 +249,9 @@ export function catalogSteward(locale: Locale, stewardship: string): string {
   const key = `site.catalog.steward.${stewardship}` as MessageKey;
   return key in catalogs.en ? t(locale, key) : stewardship;
 }
+
+export function catalogRegion(locale: Locale, region: string): string {
+  const slug = region === "United States" ? "UnitedStates" : region;
+  const key = `site.catalog.region.${slug}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : region;
+}

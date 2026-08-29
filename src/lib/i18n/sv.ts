@@ -1687,6 +1687,9 @@ export const SV: Record<MessageKey, string> = {
   "site.catalog.steward.INTERNAL": "Internt",
   "site.catalog.steward.OPEN_SOURCE": "Öppen källkod",
   "site.catalog.steward.MANAGED_PRODUCT": "Förvaltad produkt",
+  "site.catalog.region.Europe": "Europa",
+  "site.catalog.region.UnitedStates": "Förenta staterna",
+  "site.catalog.region.Global": "Globalt",
   "site.catalog.identity.s01":
     "En inloggning till alla system, så ni inte loggar in om och om igen.",
   "site.catalog.identity.s02":

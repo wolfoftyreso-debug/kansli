@@ -1703,6 +1703,9 @@ export const EN = {
   "site.catalog.steward.INTERNAL": "Internal",
   "site.catalog.steward.OPEN_SOURCE": "Open source",
   "site.catalog.steward.MANAGED_PRODUCT": "Managed product",
+  "site.catalog.region.Europe": "Europe",
+  "site.catalog.region.UnitedStates": "United States",
+  "site.catalog.region.Global": "Global",
   "site.catalog.identity.s01":
     "One sign-in for every system, so you do not sign in again and again.",
   "site.catalog.identity.s02":
