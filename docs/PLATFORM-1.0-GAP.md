@@ -171,7 +171,7 @@ Publika sidor i dag: `/`, `/systems`, `/systems/{slug}`,
 `/how-it-works`, `/applications`, `/documentation`,
 `/documentation/mcp/*`, `/documentation/capabilities`,
 `/why`, `/company`.
-Sitemap: `src/app/sitemap.ts` (saknade tidigare MCP-URL:er).
+Sitemap: `src/app/sitemap.ts` (MCP-docsidor ur `MCP_DOC_LINKS` plus `/systems/{slug}`).
 Robots: tillåt `/`, blockera apprummen ur `@pixdrift/systems` plus `/platform` och `/api/`.
 Locale: `html lang` från `pd_locale` (kanonisk `en`). Inga `/en/` `/sv/` `/de/`.
 Ingen hreflang. Canonical är implicit via `metadataBase`.
