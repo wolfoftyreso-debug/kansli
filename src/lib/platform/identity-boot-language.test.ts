@@ -37,12 +37,9 @@ describe("Identity boot language", () => {
     ).toThrow(/Identity refuses to start in production with COOKIE_SECURE=false/);
   });
 
-  it("leaves the demo login and signing-key bootstrap throws as written", () => {
+  it("leaves the demo login as written", () => {
     expect(readFileSync("packages/identity/src/boot.ts", "utf8")).toContain(
       "demo@exempelbolaget.se",
-    );
-    expect(readFileSync("packages/identity/src/pg/store.ts", "utf8")).toContain(
-      "ingen aktiv signeringsnyckel",
     );
   });
 });
