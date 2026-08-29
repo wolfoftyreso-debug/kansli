@@ -9,8 +9,8 @@ describe("leftover robots app-room lock", () => {
     const rule = Array.isArray(rules) ? rules[0] : rules;
     const disallow = [...(rule?.disallow ?? [])];
     expect(disallow).toEqual([...APP_ROBOTS_DISALLOW]);
-    for (const module of SYSTEM_MODULES) {
-      expect(disallow, module.basePath).toContain(module.basePath);
+    for (const system of SYSTEM_MODULES) {
+      expect(disallow, system.basePath).toContain(system.basePath);
     }
     expect(disallow).toContain("/kansli");
     expect(disallow).toContain("/idp");
