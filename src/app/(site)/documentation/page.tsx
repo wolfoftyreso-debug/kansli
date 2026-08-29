@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { systems } from "@/lib/pixdrift/systems";
-import { terminology } from "@/lib/pixdrift/terminology";
+import { terminology, terminologyTerm } from "@/lib/pixdrift/terminology";
 import { Container } from "@/components/site/Container";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { t, type MessageKey } from "@/lib/i18n";
@@ -97,7 +97,7 @@ export default async function DocumentationPage() {
               key={item.term}
               className="grid grid-cols-1 gap-2 border-b border-line py-5 md:grid-cols-[12rem_1fr] md:gap-10"
             >
-              <dt className="font-medium text-ink">{item.term}</dt>
+              <dt className="font-medium text-ink">{terminologyTerm(locale, item)}</dt>
               <dd className="max-w-2xl text-ink-soft">
                 {item.definition} <span className="text-muted">{item.context}</span>
               </dd>

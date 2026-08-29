@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { t } from "../i18n/index.ts";
+import { terminology, terminologyTerm } from "../pixdrift/terminology.ts";
 
 describe("leftover documentation-index language", () => {
   it("uses English-canonical leftover documentation chrome like leftover catalog titles", () => {
@@ -19,6 +20,25 @@ describe("leftover documentation-index language", () => {
     expect(page).toContain('t(locale, "site.doc.eyebrow")');
     expect(page).not.toContain('eyebrow="Documentation"');
     expect(page).not.toContain("Documentation is part of the product.");
+  });
+
+  it("uses leftover approved terminology translations for leftover term labels", () => {
+    const system = terminology.find((item) => item.term === "System");
+    const operator = terminology.find((item) => item.term === "Operator");
+    expect(system).toBeDefined();
+    expect(operator).toBeDefined();
+    expect(terminologyTerm("en", system!)).toBe("System");
+    expect(terminologyTerm("sv", system!)).toBe("System");
+    expect(terminologyTerm("es", system!)).toBe("Sistema");
+    expect(terminologyTerm("fi", system!)).toBe("Järjestelmä");
+    expect(terminologyTerm("en", operator!)).toBe("Operator");
+    expect(terminologyTerm("es", operator!)).toBe("Operator");
+    expect(readFileSync("src/app/(site)/documentation/page.tsx", "utf8")).toContain(
+      "terminologyTerm(locale, item)",
+    );
+    expect(readFileSync("src/app/(site)/documentation/page.tsx", "utf8")).toContain(
+      "{item.definition}",
+    );
   });
 
   it("leaves leftover terminology terms and StatusIndicator words as written", () => {
