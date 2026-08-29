@@ -82,11 +82,11 @@ export function analysisSummaryText(result: unknown, locale?: Locale): string | 
   const high = Number(row.high_priority_count ?? 0);
   const nothing = Boolean(row.found_nothing);
   if (nothing) {
-    return locale ? t(locale, "rita.doc.foundNothing") : "Analysen hittade inget att rapportera.";
+    return locale ? t(locale, "rita.doc.foundNothing") : "The analysis found nothing to report.";
   }
   return locale
     ? t(locale, "rita.doc.summaryCounts", { identified, high })
-    : `${identified} fynd, varav ${high} med hög prioritet.`;
+    : `${identified} findings, of which ${high} high priority.`;
 }
 
 export function analysisDisclaimer(result: unknown): string | null {
@@ -124,7 +124,7 @@ export function estimatedTotalHintText(result: unknown, locale?: Locale): string
   const high = formatOre(impact.high);
   return locale
     ? t(locale, "rita.doc.totalHint", { low, high })
-    : `Ungefär ${low}–${high} (ingen garanti). Stäm av med er rådgivare innan ni agerar.`;
+    : `About ${low}–${high} (no guarantee). Check with your adviser before you act.`;
 }
 
 export function formatOre(ore: number): string {
