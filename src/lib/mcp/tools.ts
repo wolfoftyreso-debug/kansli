@@ -5,6 +5,7 @@ import { addTask, deleteTask, listTasks, toggleTask } from "@/lib/kansli/tasks";
 import { getInvoice, listInvoices } from "@/lib/ekonomi/invoices";
 import { listPayments } from "@/lib/ekonomi/payments";
 import { evaluateMarket, persistSnapshot } from "@/lib/tora/persist";
+import { loadToraOpportunity, parseTier } from "@/lib/tora/market";
 import { resolveCompany } from "@/lib/tora/profile";
 import { getAnalysis, listAnalyses, requestAnalysis } from "@/lib/rita/analyses";
 import { findingsFromAnalysis } from "@/lib/rita/findings";
@@ -32,6 +33,12 @@ import { needStore } from "./runtime";
 
 function orgOf(ctx: McpRuntime): Actor & { orgRef: string } {
   return requireOrg(ctx.actor);
+}
+
+function lockedPick(field: { state: string; value?: unknown; teaser?: string }) {
+  return field.state === "locked"
+    ? { state: "locked" as const, teaser: field.teaser }
+    : { state: field.state, value: field.value };
 }
 
 function readFlags(readOnly: boolean) {
@@ -516,6 +523,58 @@ export function buildPixdriftRegistry(): ToolRegistry {
           openNow: result.market.summary.openNowCount,
           upcoming: result.market.summary.upcomingCount,
           headline: result.market.summary.headline,
+        };
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "get_procurement_opportunity",
+      title: "Get procurement opportunity",
+      description:
+        "Returns one TORA opportunity for the authenticated organisation. Identity fields and locked teasers only — not remedies, walkthrough or prices.",
+      system: "tora",
+      domain: "procurement",
+      inputSchema: {
+        type: "object",
+        properties: { id: { type: "string" } },
+        required: ["id"],
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need one procurement and whether this company can bid.",
+      whenNotToUse: "You want to store a snapshot — use persist_procurement_snapshot.",
+      rest: { method: "GET", path: "/api/tora/opportunities/:id" },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const id = typeof input.id === "string" ? input.id.trim() : "";
+        if (!id) return { error: "not_found" };
+        const company = await resolveCompany(pool, actor.orgRef);
+        const detail = loadToraOpportunity(parseTier(actor.tier), id, company);
+        if (!detail) return { error: "not_found" };
+        const view = detail.view;
+        return {
+          opportunity: {
+            id: view.id,
+            verdict: view.verdict,
+            signal: view.signal,
+            timing: view.timing,
+            scoreBand: view.scoreBand,
+            organizationKindHint: view.organizationKindHint,
+            organizationName: lockedPick(view.organizationName),
+            title: lockedPick(view.title),
+            deadlineAt: lockedPick(view.deadlineAt),
+            daysUntilDeadline: lockedPick(view.daysUntilDeadline),
+          },
         };
       },
     }),
