@@ -72,7 +72,7 @@ export async function upsertCompanyProfile(input: {
   registrations: string[];
 }): Promise<CompanyProfile> {
   const name = input.name.trim();
-  if (!name) throw new Error("Bolagsnamn krävs.");
+  if (!name) throw new Error("Company name is required.");
   await input.pool.query(
     `insert into tora.company_profiles
        (org_ref, name, employees, annual_revenue_sek, serves_areas, capabilities,

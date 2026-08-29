@@ -169,9 +169,9 @@ export async function createCase(input: {
   const registrationNumber = normalizeRegistration(input.registrationNumber);
   const operations = parseOperations(input.operations);
   const intent = parseIntent(input.intent);
-  if (!customerName) throw new Error("Kundnamn krävs.");
-  if (!registrationNumber) throw new Error("Registreringsnummer krävs.");
-  if (operations.length === 0) throw new Error("Minst en åtgärd krävs.");
+  if (!customerName) throw new Error("Customer name is required.");
+  if (!registrationNumber) throw new Error("Registration number is required.");
+  if (operations.length === 0) throw new Error("At least one operation is required.");
 
   const client = await input.pool.connect();
   let id = "";
@@ -675,7 +675,7 @@ export async function updateCustomerContact(input: {
   email?: string;
 }): Promise<void> {
   const name = input.name.trim();
-  if (!name) throw new Error("Kundnamn krävs.");
+  if (!name) throw new Error("Customer name is required.");
   const updated = await input.pool.query(
     `update tyra.customers
         set name = $3, phone = $4, email = $5
@@ -727,7 +727,7 @@ export async function assignStorageCode(input: {
   storageCode: string;
 }): Promise<void> {
   const code = input.storageCode.trim().toUpperCase();
-  if (!code) throw new Error("Lagerplats krävs.");
+  if (!code) throw new Error("Storage code is required.");
   const client = await input.pool.connect();
   try {
     await client.query("begin");

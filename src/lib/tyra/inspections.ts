@@ -105,7 +105,7 @@ export function parseTreadReadings(formData: FormData): TreadReading[] {
     readings.push({ position, treadDepthMm });
   }
   if (readings.length !== INSPECTION_POSITIONS.length) {
-    throw new Error("Alla fyra positioner krävs (LF, RF, LR, RR).");
+    throw new Error("All four positions are required (LF, RF, LR, RR).");
   }
   return readings;
 }

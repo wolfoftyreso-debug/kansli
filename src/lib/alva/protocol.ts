@@ -74,7 +74,7 @@ export async function recordProtocolObservation(input: {
   );
   if (!owned.rows[0]) throw new Error("The case does not exist.");
   const label = input.label.trim();
-  if (!label) throw new Error("Observation kräver en etikett.");
+  if (!label) throw new Error("Observation requires a label.");
   const value = parseObservationValue(input.value);
   const id = randomUUID();
   const recordedAt = new Date().toISOString();
@@ -142,8 +142,8 @@ export async function recordProtocolMeasurement(input: {
   if (!owned.rows[0]) throw new Error("The case does not exist.");
   const name = input.name.trim();
   const unit = input.unit.trim();
-  if (!name || !unit) throw new Error("Mätning kräver namn och enhet.");
-  if (!Number.isFinite(input.value)) throw new Error("Mätvärde krävs.");
+  if (!name || !unit) throw new Error("Measurement requires a name and a unit.");
+  if (!Number.isFinite(input.value)) throw new Error("A measurement value is required.");
   const id = randomUUID();
   const recordedAt = new Date().toISOString();
   await input.pool.query(

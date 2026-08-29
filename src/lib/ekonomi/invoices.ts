@@ -192,7 +192,7 @@ export async function createDraftInvoice(input: {
   requestId: string;
 }): Promise<Invoice> {
   const customerName = input.customerName.trim();
-  if (!customerName) throw new Error("kundnamn krävs.");
+  if (!customerName) throw new Error("Customer name is required.");
   const lines = buildLines(input.lines);
   const totals = invoiceTotals(lines);
   const id = randomUUID();
