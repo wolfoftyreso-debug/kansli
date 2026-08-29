@@ -14,9 +14,9 @@ describe("TORA unknown-remedy language", () => {
     expect(remedy("review_procurement").key).toBe("review_procurement");
   });
 
-  it("leaves leftover contracts throws and TORA remedy copy as written", () => {
-    expect(readFileSync("packages/contracts/src/index.ts", "utf8")).toContain(
-      "får inte ha behörighet till kunddata:",
+  it("leaves leftover invoice-book throws and TORA remedy copy as written", () => {
+    expect(readFileSync("src/lib/ekonomi/invoices.ts", "utf8")).toContain(
+      "bara utkast kan utfärdas.",
     );
     expect(readFileSync("packages/tora/src/domain/remedies.ts", "utf8")).toContain(
       "skickats i tid räcker inte",

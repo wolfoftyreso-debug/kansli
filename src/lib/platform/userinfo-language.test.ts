@@ -41,7 +41,9 @@ describe("OIDC userinfo language", () => {
     await expect(oidc.fetchUserinfo("not-a-token")).rejects.toThrow(/Userinfo failed: 401/);
   });
 
-  it("leaves leftover contracts throws as written", () => {
-    expect(readFileSync("packages/contracts/src/index.ts", "utf8")).toContain("kunddata:");
+  it("leaves leftover invoice-book throws as written", () => {
+    expect(readFileSync("src/lib/ekonomi/invoices.ts", "utf8")).toContain(
+      "bara utkast kan utfärdas.",
+    );
   });
 });

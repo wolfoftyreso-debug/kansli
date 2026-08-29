@@ -23,7 +23,9 @@ describe("OIDC token-exchange language", () => {
     expect(britt).not.toContain("token-utbyte");
   });
 
-  it("leaves leftover contracts throws as written", () => {
-    expect(readFileSync("packages/contracts/src/index.ts", "utf8")).toContain("kunddata:");
+  it("leaves leftover invoice-book throws as written", () => {
+    expect(readFileSync("src/lib/ekonomi/invoices.ts", "utf8")).toContain(
+      "bara utkast kan utfärdas.",
+    );
   });
 });

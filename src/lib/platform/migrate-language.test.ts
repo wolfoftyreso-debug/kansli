@@ -61,9 +61,9 @@ describe("migrate language", () => {
     await expect(loadMigrations(dir)).rejects.toThrow(/Two migration files share version 0001/);
   });
 
-  it("leaves leftover contracts throws as written", () => {
-    expect(readFileSync("packages/contracts/src/index.ts", "utf8")).toContain(
-      "får inte ha behörighet till kunddata:",
+  it("leaves leftover invoice-book throws as written", () => {
+    expect(readFileSync("src/lib/ekonomi/invoices.ts", "utf8")).toContain(
+      "bara utkast kan utfärdas.",
     );
   });
 });
