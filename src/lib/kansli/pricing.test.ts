@@ -57,8 +57,8 @@ describe("self-service pricing", () => {
     expect(instalmentDueDays(1)).toBe(10);
     expect(instalmentDueDays(2)).toBe(40);
     expect(instalmentDueDays(10)).toBe(280);
-    expect(() => instalmentDueDays(0)).toThrow(/del/);
-    expect(() => instalmentDueDays(11)).toThrow(/del/);
+    expect(() => instalmentDueDays(0)).toThrow(/The instalment must be 1–10/);
+    expect(() => instalmentDueDays(11)).toThrow(/The instalment must be 1–10/);
     expect(yearNetOre(priceOrder(["tyra"]))).toBe(34_900 * 10);
   });
 

@@ -14,6 +14,8 @@ describe("intake form language", () => {
     expect(intakes).toContain("Pick at least one module.");
     expect(intakes).toContain("The terms box must be checked. Registration creates an invoice.");
     expect(pricing).toContain("Pick at least one module.");
+    expect(pricing).toContain("The instalment must be 1–");
+    expect(pricing).not.toContain("del måste vara 1–");
     expect(route).toContain("minst en modul|at least one module");
     expect(intakes).not.toContain("bolagsnamn krävs.");
     expect(intakes).not.toContain("kontaktperson krävs.");
@@ -45,8 +47,10 @@ describe("intake form language", () => {
     expect(() => priceOrder([])).toThrow(/at least one module/);
   });
 
-  it("leaves the Swedish UI catalog and invoice module lines as written", () => {
+  it("leaves the Swedish UI catalog and invoice instalment lines as written", () => {
     expect(readFileSync("src/lib/i18n/sv.ts", "utf8")).toContain("Välj minst en modul.");
-    expect(readFileSync("src/lib/kansli/pricing.ts", "utf8")).toContain("del måste vara 1–");
+    expect(readFileSync("src/lib/kansli/pricing.ts", "utf8")).toContain(
+      "Del ${part} av ${YEAR_INSTALMENTS}",
+    );
   });
 });

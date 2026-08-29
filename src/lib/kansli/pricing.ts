@@ -51,7 +51,7 @@ export const INSTALMENT_INTERVAL_DAYS = 30;
 
 export function instalmentDueDays(part: number): number {
   if (!Number.isInteger(part) || part < 1 || part > YEAR_INSTALMENTS) {
-    throw new Error(`del måste vara 1–${YEAR_INSTALMENTS}.`);
+    throw new Error(`The instalment must be 1–${YEAR_INSTALMENTS}.`);
   }
   return PAYMENT_DAYS + (part - 1) * INSTALMENT_INTERVAL_DAYS;
 }
