@@ -131,7 +131,7 @@ ingen syntetisk bevakning av login/MCP/docs. Hemligheter dumpas inte.
 | 2. Universal Integration | PARTIAL | REST + MCP mot samma `src/lib/{produkt}`. OpenAPI ur grafen. Revolut OAuth. | Publik `api.`-host, webhooks, SDK, service accounts, OAuth-appar för tredje part |
 | 3. Developer Platform | PARTIAL | `/documentation`, MCP-docs, MCP-explorer | Sandbox, Try-it, recipes, changelog-data, status, request replay |
 | 4. App / Agent | PARTIAL | MCP + klientinstruktioner i docs | ChatGPT Apps, Apps SDK-UI, produktappar |
-| 5. Knowledge & Search | PARTIAL | `/systems`, `/documentation`, sitemap, robots, `llms.txt` ur `@pixdrift/systems` plus `MCP_DOC_LINKS`, OG i root layout | Locale-URL, hreflang, knowledge, verktyg, intent-graf |
+| 5. Knowledge & Search | PARTIAL | `/systems`, `/documentation`, sitemap, robots, `llms.txt` ur `@pixdrift/systems` plus `MCP_DOC_LINKS`, JSON-LD ur brand plus `/systems/{slug}`, OG i root layout | Locale-URL, hreflang, knowledge, verktyg, intent-graf |
 | 6. Design System | PARTIAL | CSS-tokens, gemensam sajtmall | Tokenpaket, komponentbibliotek, produkt-DNA-regler, a11y-svit |
 | 7. Reliability | PARTIAL | CI, restore-drill, health | Reliability contract, Neon-restore-kvitto, syntetiska tester, incident |
 
@@ -203,7 +203,7 @@ Skapa inte ALVA “guided diagnostics” förrän motorn är inkopplad.
 
 - ingen hreflang, inga locale-URL:er
 - sitemap saknade MCP-dokumentation (rättas i samma ändring)
-- ingen structured data-generator
+- JSON-LD ur brand plus `/systems/{slug}`. Ingen knowledge- eller FAQ-generator
 - `/llms.txt` är ärlig maskintext ur `@pixdrift/systems` plus `MCP_DOC_LINKS`, inte ett sökhack
 - ingen knowledge-, tools-, comparisons-yta
 - `/company` har bolagsnamn och städer, inte org.nr, DPA, privacy, terms
@@ -251,9 +251,9 @@ MCP-health och `server/discover` är inte samma sak som
 | Indexerbar | PARTIAL | robots tillåter sajt, blockerar apprum + `/platform` + `/api/` |
 | Canonical | PARTIAL | `metadataBase` + implicit URL. Ingen per-sida canonical-policy |
 | hreflang | MISSING | — |
-| Sitemap | PARTIAL | statiska rutter + `/systems/{slug}` |
+| Sitemap | PARTIAL | MCP-docsidor ur `MCP_DOC_LINKS` plus `/systems/{slug}` |
 | Robots | PASS | `src/app/robots.ts` |
-| Structured data | MISSING | ingen JSON-LD-generator |
+| Structured data | PARTIAL | Organization + WebSite ur brand, SoftwareApplication ur `/systems/{slug}` |
 | Metadata / OG | PARTIAL | root layout. Få unika per produktsida |
 | Interna länkar | PARTIAL | nav + systems. Ingen intent-graf |
 | HTTP-status | PARTIAL | inte syntetiskt bevakat |

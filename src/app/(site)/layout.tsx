@@ -4,24 +4,7 @@ import { readSession } from "@/lib/auth/session";
 import { t } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
 import { facadeRuntimeMark } from "@/lib/platform/facade";
-import { brand } from "@/lib/pixdrift/brand";
-
-const organizationLd = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: brand.name,
-  url: brand.url,
-  description: brand.statement,
-  parentOrganization: {
-    "@type": "Organization",
-    name: brand.company.name,
-  },
-  address: brand.company.offices.map((o) => ({
-    "@type": "PostalAddress",
-    addressLocality: o.city,
-    addressCountry: o.country,
-  })),
-};
+import { organizationJsonLd, websiteJsonLd } from "@/lib/platform/jsonld";
 
 export default async function SiteLayout({ children }: { children: ReactNode }) {
   const session = await readSession();
@@ -30,7 +13,11 @@ export default async function SiteLayout({ children }: { children: ReactNode }) 
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd()) }}
       />
       <a
         href="#main"

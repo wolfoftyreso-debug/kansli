@@ -7,6 +7,7 @@ import { RegionIndicator, StatusIndicator } from "@/components/site/indicators";
 import { catalogField, catalogSection, catalogSectionTitle, catalogSteward, t } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
 import { toolsForSystem } from "@/lib/mcp/catalog";
+import { systemJsonLd } from "@/lib/platform/jsonld";
 import { getSystem, systems } from "@/lib/pixdrift/systems";
 
 export function generateStaticParams() {
@@ -36,6 +37,10 @@ export default async function SystemPage({ params }: { params: Promise<{ slug: s
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(systemJsonLd(system)) }}
+      />
       {/* Breadcrumb */}
       <div className="border-b border-line">
         <Container className="py-4">
