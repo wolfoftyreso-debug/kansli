@@ -1677,4 +1677,6 @@ export const FI: Record<MessageKey, string> = {
   "tora.eval.lowest_price": "Lowest price",
   "tora.eval.best_price_quality_ratio": "Best price-quality ratio",
   "tora.eval.fixed_price_best_quality": "Fixed price, best quality",
+
+  "tora.doc.whyBidDefault": "The record does not say that you in particular should get the job.",
 };

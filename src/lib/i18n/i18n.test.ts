@@ -175,6 +175,12 @@ describe("locale registry", () => {
     );
     expect(t("en", "tyra.case.workCard")).toBe("Work card");
     expect(t("sv", "tyra.case.next")).toBe("Nästa");
+    expect(t("en", "tora.doc.whyBidDefault")).toBe(
+      "The record does not say that you in particular should get the job.",
+    );
+    expect(t("sv", "tora.doc.whyBidDefault")).toBe(
+      "Underlaget säger inte att just ni ska få jobbet.",
+    );
     expect(toraTiming("en", "open_now")).toBe("Open now");
     expect(toraTiming("sv", "closed")).toBe("Stängd");
     expect(toraEvalKind("en", "lowest_price")).toBe("Lowest price");

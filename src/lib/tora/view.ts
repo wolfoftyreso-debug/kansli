@@ -52,11 +52,13 @@ export function legalBasisText(field: Locked<{ contractId: string; reason: strin
   locked: boolean;
   reason: string;
   contractId?: string;
+  fallback?: boolean;
 } {
   if (field.state === "locked") return { locked: true, reason: field.teaser };
   if (!field.value)
     return {
       locked: false,
+      fallback: true,
       reason: "Underlaget säger inte att just ni ska få jobbet.",
     };
   return { locked: false, reason: field.value.reason, contractId: field.value.contractId };

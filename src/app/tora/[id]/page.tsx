@@ -48,7 +48,9 @@ export default async function ToraOpportunityPage({ params }: { params: Promise<
 
       <section className="rounded-xl border border-line bg-surface p-4">
         <h2 className="text-lg font-semibold">{t(locale, "tora.doc.whyBid")}</h2>
-        <p className="mt-2 text-sm text-ink-soft">{basis.reason}</p>
+        <p className="mt-2 text-sm text-ink-soft">
+          {basis.fallback ? t(locale, "tora.doc.whyBidDefault") : basis.reason}
+        </p>
         {basis.contractId ? (
           <p className="mt-2 font-mono text-xs text-faint">{basis.contractId}</p>
         ) : null}
