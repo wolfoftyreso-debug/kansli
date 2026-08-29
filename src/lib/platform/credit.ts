@@ -121,11 +121,11 @@ export async function requestCompanyCredit(
 ): Promise<CreditReport> {
   const creds = creditCredentials(env);
   if (!creds) {
-    return failed("Ingen kreditbyrå är kopplad. Rapporten hämtas inte.");
+    return failed("No credit bureau is connected. The report is not fetched.");
   }
   const regNo = digitsOfOrgNumber(input.orgNumber);
   if (regNo.length !== 10) {
-    return failed("Organisationsnumret går inte att använda.");
+    return failed("The organisation number cannot be used.");
   }
   const base = creditBaseUrl(env);
   try {
@@ -135,12 +135,12 @@ export async function requestCompanyCredit(
       body: JSON.stringify({ username: creds.username, password: creds.password }),
     });
     if (!authResponse.ok) {
-      return failed(`Kreditbyrån svarade ${authResponse.status}.`);
+      return failed(`The credit bureau responded ${authResponse.status}.`);
     }
     const authBody = await readJson(authResponse);
     const token = asString(authBody?.token);
     if (!token) {
-      return failed("Kreditbyrån gav ingen nyckel.");
+      return failed("The credit bureau did not return a key.");
     }
 
     const searchResponse = await fetchImpl(
@@ -150,14 +150,14 @@ export async function requestCompanyCredit(
       },
     );
     if (!searchResponse.ok) {
-      return failed(`Kreditbyrån svarade ${searchResponse.status}.`);
+      return failed(`The credit bureau responded ${searchResponse.status}.`);
     }
     const searchBody = await readJson(searchResponse);
     const companies = Array.isArray(searchBody?.companies) ? searchBody.companies : [];
     const first = asRecord(companies[0]);
     const connectId = asString(first?.id);
     if (!connectId) {
-      return failed("Bolaget hittades inte hos kreditbyrån.");
+      return failed("The company was not found at the credit bureau.");
     }
     const searchName = asString(first?.name);
 
@@ -165,7 +165,7 @@ export async function requestCompanyCredit(
       headers: { authorization: `Bearer ${token}`, accept: "application/json" },
     });
     if (!reportResponse.ok) {
-      return failed(`Kreditbyrån svarade ${reportResponse.status}.`, connectId);
+      return failed(`The credit bureau responded ${reportResponse.status}.`, connectId);
     }
     const reportBody = await readJson(reportResponse);
     const report = asRecord(reportBody?.report);
@@ -177,6 +177,6 @@ export async function requestCompanyCredit(
       vendorLimit: extractVendorLimit(report),
     };
   } catch {
-    return failed("Kreditbyrån gick inte att nå.");
+    return failed("The credit bureau could not be reached.");
   }
 }

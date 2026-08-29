@@ -191,7 +191,7 @@ export async function createInquiry(input: {
           vendorName: null,
           vendorScore: null,
           vendorLimit: null,
-          reason: "Ingen kreditbyrå är kopplad. Rapporten hämtas inte.",
+          reason: "No credit bureau is connected. The report is not fetched.",
         };
   } catch {
     report = {
@@ -200,7 +200,7 @@ export async function createInquiry(input: {
       vendorName: null,
       vendorScore: null,
       vendorLimit: null,
-      reason: "Kreditbyrån gick inte att nå.",
+      reason: "The credit bureau could not be reached.",
     };
   }
 

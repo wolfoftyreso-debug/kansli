@@ -35,7 +35,7 @@ describe("credit channel", () => {
       throw new Error("should not fetch");
     });
     expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.reason).toMatch(/kopplad/);
+    if (!result.ok) expect(result.reason).toMatch(/No credit bureau is connected/);
   });
 
   it("uses sandbox or an explicit base when asked", () => {
@@ -137,7 +137,7 @@ describe("credit channel", () => {
       return new Response(JSON.stringify({ companies: [] }), { status: 200 });
     });
     expect(missing.ok).toBe(false);
-    if (!missing.ok) expect(missing.reason).toMatch(/hittades inte/);
+    if (!missing.ok) expect(missing.reason).toMatch(/not found at the credit bureau/);
 
     const denied = await requestCompanyCredit({ orgNumber: "556016-0680" }, async () => {
       return new Response("no", { status: 401 });
@@ -154,6 +154,6 @@ describe("credit channel", () => {
       throw new Error("should not fetch");
     });
     expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.reason).toMatch(/Organisationsnumret/);
+    if (!result.ok) expect(result.reason).toMatch(/cannot be used/);
   });
 });
