@@ -6,7 +6,8 @@ import { getInvoice, listInvoices } from "@/lib/ekonomi/invoices";
 import { listPayments } from "@/lib/ekonomi/payments";
 import { evaluateMarket, persistSnapshot } from "@/lib/tora/persist";
 import { resolveCompany } from "@/lib/tora/profile";
-import { listAnalyses, requestAnalysis } from "@/lib/rita/analyses";
+import { getAnalysis, listAnalyses, requestAnalysis } from "@/lib/rita/analyses";
+import { findingsFromAnalysis } from "@/lib/rita/findings";
 import { listObservations } from "@/lib/britt/observations";
 import { canRunDemoIntel, listFindings, runIntel } from "@/lib/britt/intel";
 import { createAgreement, listAgreements } from "@/lib/irma/agreements";
@@ -602,6 +603,59 @@ export function buildPixdriftRegistry(): ToolRegistry {
           })),
           input,
         );
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "get_tax_analysis",
+      title: "Get tax analysis",
+      description:
+        "Returns one RITA analysis for the authenticated organisation. Identity fields and finding titles only — not the raw engine result.",
+      system: "rita",
+      domain: "tax",
+      inputSchema: {
+        type: "object",
+        properties: { id: { type: "string" } },
+        required: ["id"],
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need one existing tax analysis and its findings.",
+      whenNotToUse: "You want to start a new analysis — use request_tax_analysis.",
+      rest: { method: "GET", path: "/api/rita/analyses/:id" },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const id = typeof input.id === "string" ? input.id.trim() : "";
+        const analysis = id ? await getAnalysis(pool, actor.orgRef, id) : null;
+        if (!analysis) return { error: "not_found" };
+        return {
+          analysis: {
+            id: analysis.id,
+            companyName: analysis.companyName,
+            orgNumber: analysis.orgNumber,
+            status: analysis.status,
+            blockedReason: analysis.blockedReason,
+            createdAt: analysis.createdAt,
+            findings: findingsFromAnalysis(analysis.result).map((item) => ({
+              id: item.id,
+              title: item.title,
+              status: item.status,
+              category: item.category,
+              impactLowOre: item.impactLowOre,
+              impactHighOre: item.impactHighOre,
+            })),
+          },
+        };
       },
     }),
   );
