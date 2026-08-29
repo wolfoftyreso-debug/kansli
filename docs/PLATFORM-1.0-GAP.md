@@ -143,38 +143,25 @@ Grafen i kod är **bara** de 37 MCP-verktygen.
 Varje verktyg har redan `rest.method` + `rest.path`.
 Det är medvetet: ingen parallell lista.
 
-REST som **finns** men **inte** sitter i grafen än:
+REST som **finns** men **inte** sitter i grafen — medvetet:
 
 | REST | Produkt | Varför den saknas i grafen |
 | --- | --- | --- |
-| PATCH/DELETE `/api/kansli/tasks/:id` | kansli | MCP `toggle_office_task` / `delete_office_task` |
 | GET/POST `/api/ekonomi/connectors` | ekonomi | Connector-yta, inte MCP |
 | GET `/api/ekonomi/reports` | ekonomi | Rapport-yta, inte MCP |
 | Revolut connect/callback | ekonomi | OAuth-flöde, inte domänverktyg |
-| GET/POST `/api/britt/findings` | britt | Lista/kör. MCP `list_findings` / `run_operational_analysis` |
-| GET `/api/irma/agreements` | irma | Lista. MCP `list_agreements` |
-| POST `/api/irma/agreements/:id` | irma | Revoke. MCP `revoke_agreement` |
 | GET/POST `/api/irma/l/:token` | irma | Gästlänk, medvetet utan agent |
-| GET `/api/tyra/cases` | tyra | Lista. MCP `list_vehicle_cases` |
-| POST `/api/tyra/hub/link` | tyra | Hubblänk utan MCP |
-| GET `/api/tyra/reminders` | tyra | Outbox. MCP `list_vehicle_reminders` |
+| POST `/api/tyra/hub/link` | tyra | Hubblänk, gästtoken |
 | POST `/api/tyra/suppliers/search` | tyra | Returnerar `NOT_CONFIGURED` |
 | GET `/api/tyra/cron/reminders` | tyra | Cron, inte agentyta |
-| GET `/api/alva/cases` | alva | Lista. MCP `list_diagnostic_cases` |
-| GET/POST `/api/creditae/inquiries` | creditae | Lista/skapa. MCP `list_credit_inquiries` / `register_credit_inquiry` |
-| GET/POST `/api/maj/projects` | maj | Lista/skapa. MCP `list_search_projects` |
 | GET `/api/maj/projects/:id` | maj | Detalj utan MCP — lista+kö räcker |
-| POST `/api/maj/projects/:id/analyze` | maj | MCP `run_search_analysis` |
-| GET `/api/maj/projects/:id/actions` | maj | MCP `list_search_actions` |
-| POST `/api/maj/actions/:id/decide` | maj | MCP `decide_search_action` |
-| GET `/api/platform/ops/debug` | platform | Request-id-sök. MCP `lookup_ops_debug` |
 | GET `/api/platform/ops/alarms` | platform | Cron SMS, inte agentyta |
 | GET `/api/platform/health` | platform | Publik health |
 | GET `/api/platform/ai` | platform | Gateway-ping, inferens |
 | `/api/auth/*` | identity | Browser-BFF, inte agent |
 
-Nästa kodflytt i grafen: bind de REST-ytor som *ska* vara
-agentbara. Inte alla ska det (gästlänk, cron, OAuth-callback).
+Agentbara GET-ytor och IRMA-revoke sitter i grafen.
+Kvar är medvetet utan agent (gästlänk, cron, OAuth, connectors, rapporter).
 
 ---
 
