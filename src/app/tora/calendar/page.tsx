@@ -15,6 +15,7 @@ export async function generateMetadata() {
   const locale = await readLocale();
   return {
     title: t(locale, "tora.cal.metaTitle"),
+    description: t(locale, "tora.metaDescription"),
   };
 }
 

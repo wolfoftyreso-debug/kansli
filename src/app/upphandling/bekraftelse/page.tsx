@@ -24,6 +24,7 @@ export async function generateMetadata() {
   const locale = await readLocale();
   return {
     title: t(locale, "intake.confirm.metaTitle"),
+    description: t(locale, "intake.metaDescription"),
     ...appRoomRobots(),
   };
 }

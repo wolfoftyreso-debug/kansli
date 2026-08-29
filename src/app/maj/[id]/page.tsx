@@ -17,6 +17,14 @@ import { completeMajAction, decideMajAction, runMajAnalysis, setMajPosture } fro
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "maj.metaTitle"),
+    description: t(locale, "maj.metaDescription"),
+  };
+}
+
 const IMPACT_KEY = {
   low: "maj.impact.low",
   medium: "maj.impact.medium",

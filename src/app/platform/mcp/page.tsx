@@ -11,7 +11,10 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata() {
   const locale = await readLocale();
-  return { title: t(locale, "mcp.metaTitle") };
+  return {
+    title: t(locale, "mcp.metaTitle"),
+    description: t(locale, "mcp.lead"),
+  };
 }
 
 export default async function PlatformMcpPage() {

@@ -22,7 +22,10 @@ import {
 
 export async function generateMetadata() {
   const locale = await readLocale();
-  return { title: t(locale, "alva.detailMetaTitle") };
+  return {
+    title: t(locale, "alva.detailMetaTitle"),
+    description: t(locale, "alva.metaDescription"),
+  };
 }
 
 export default async function AlvaCasePage({ params }: { params: Promise<{ id: string }> }) {

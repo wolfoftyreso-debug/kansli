@@ -21,6 +21,7 @@ export async function generateMetadata() {
   const locale = await readLocale();
   return {
     title: t(locale, "rita.doc.metaTitle"),
+    description: t(locale, "rita.metaDescription"),
   };
 }
 

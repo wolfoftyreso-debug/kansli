@@ -21,7 +21,10 @@ import { fetchCreditaeWebPresence, saveCreditaeAssessment } from "../actions";
 
 export async function generateMetadata() {
   const locale = await readLocale();
-  return { title: t(locale, "creditae.detailMetaTitle") };
+  return {
+    title: t(locale, "creditae.detailMetaTitle"),
+    description: t(locale, "creditae.metaDescription"),
+  };
 }
 
 export default async function CreditaeInquiryPage({ params }: { params: Promise<{ id: string }> }) {
