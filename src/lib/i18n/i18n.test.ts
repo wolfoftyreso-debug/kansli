@@ -28,6 +28,7 @@ import {
   ritaFindingStatus,
   t,
   toraCalKind,
+  toraReqStatus,
   tyraCaseStatus,
   tyraIntentLabel,
   tyraStepStatus,
@@ -170,6 +171,8 @@ describe("locale registry", () => {
     expect(catalogSection("sv", "identity", "01", "")).toBe(
       "En inloggning till alla system, så ni inte loggar in om och om igen.",
     );
+    expect(toraReqStatus("en", "met")).toBe("Met");
+    expect(toraReqStatus("sv", "remediable")).toBe("Går att fixa");
     expect(t("en", "platform.rita.rulesModel")).toBe("RITA · rules + model");
     expect(t("sv", "platform.rita.rulesOnly")).toBe("RITA · bara fasta regler");
     expect(t("en", "hold.title", { number: "INV-2026-0010" })).toBe(

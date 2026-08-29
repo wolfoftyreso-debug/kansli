@@ -174,6 +174,11 @@ export function toraCalKind(locale: Locale, kind: string): string {
   return key in catalogs.en ? t(locale, key) : kind;
 }
 
+export function toraReqStatus(locale: Locale, status: string): string {
+  const key = `tora.req.${status}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : status;
+}
+
 export function ritaAnalysisStatus(locale: Locale, status: string): string {
   const key = `rita.status.${status}` as MessageKey;
   return key in catalogs.en ? t(locale, key) : status;

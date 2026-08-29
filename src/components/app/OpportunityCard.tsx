@@ -1,7 +1,6 @@
 import Link from "next/link";
 import type { OpportunityView } from "@pixdrift/tora";
-import { t, type Locale } from "@/lib/i18n";
-import { requirementStatusText } from "@/lib/tora/labels";
+import { t, toraReqStatus, type Locale } from "@/lib/i18n";
 import { displayField, opportunityHref, sek, verdictText } from "@/lib/tora/view";
 
 export function OpportunityCard({ item, locale }: { item: OpportunityView; locale: Locale }) {
@@ -47,7 +46,7 @@ export function OpportunityCard({ item, locale }: { item: OpportunityView; local
         <ul className="mt-3 flex flex-col gap-1">
           {checks.map((check) => (
             <li key={check.requirementId} className="text-sm">
-              <span className="font-medium">{requirementStatusText(check.status)}</span>
+              <span className="font-medium">{toraReqStatus(locale, check.status)}</span>
               <span className="text-ink-soft"> — {check.label}</span>
             </li>
           ))}

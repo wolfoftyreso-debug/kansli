@@ -1661,4 +1661,9 @@ export const FI: Record<MessageKey, string> = {
   "platform.rita.missing": "RITA analysis is missing. New analyses are stopped.",
   "platform.rita.rulesModel": "RITA · rules + model",
   "platform.rita.rulesOnly": "RITA · fixed rules only",
+
+  "tora.req.met": "Met",
+  "tora.req.unmet": "Missing",
+  "tora.req.remediable": "Can be fixed",
+  "tora.req.unknown": "We do not know",
 };

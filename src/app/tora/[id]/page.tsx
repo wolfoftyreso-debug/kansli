@@ -4,10 +4,9 @@ import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { Notice } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
-import { t, type Locale } from "@/lib/i18n";
+import { t, toraReqStatus, type Locale } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
 import { tryRuntime } from "@/lib/platform/page";
-import { requirementStatusText } from "@/lib/tora/labels";
 import { loadToraOpportunity, resolveViewTier } from "@/lib/tora/market";
 import { resolveCompany } from "@/lib/tora/profile";
 import {
@@ -139,7 +138,7 @@ function QualificationBlock({ view, locale }: { view: OpportunityView; locale: L
             key={item.requirementId}
             className="rounded-xl border border-line bg-surface px-4 py-3"
           >
-            <p className="text-xs font-medium text-accent">{requirementStatusText(item.status)}</p>
+            <p className="text-xs font-medium text-accent">{toraReqStatus(locale, item.status)}</p>
             <p className="mt-1 font-medium">{item.label}</p>
             <p className="mt-1 text-sm text-ink-soft">{item.explanation}</p>
             {item.remediation ? (

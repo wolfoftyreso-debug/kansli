@@ -1658,4 +1658,9 @@ export const SV: Record<MessageKey, string> = {
   "platform.rita.missing": "RITA:s analys saknas. Nya analyser stoppas.",
   "platform.rita.rulesModel": "RITA · regler + modell",
   "platform.rita.rulesOnly": "RITA · bara fasta regler",
+
+  "tora.req.met": "Uppfyllt",
+  "tora.req.unmet": "Saknas",
+  "tora.req.remediable": "Går att fixa",
+  "tora.req.unknown": "Vi vet inte",
 };
