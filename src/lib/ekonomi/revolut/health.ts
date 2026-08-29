@@ -41,7 +41,7 @@ export interface RevolutHealth {
     keyMatch: KeyMatch;
   };
   actionRequired: boolean;
-  /** One Swedish line for a non-developer. */
+  /** One English-canonical line for a non-developer. */
   summary: string;
 }
 
@@ -70,19 +70,20 @@ function summarise(input: {
   // Checked before anything else: a mismatched pair cannot authenticate, and
   // every other symptom downstream of it would be a red herring.
   if (input.keyMatch.state === "mismatch") {
-    return "Nyckeln i miljön hör inte till certifikatet hos Revolut.";
+    return "The key in the environment does not belong to the certificate at Revolut.";
   }
-  if (input.status === "revoked") return "Inte ansluten. Anslutningen togs bort.";
-  if (input.status === "action_required") return "Anslutningen måste göras om i Revolut.";
-  if (!input.configured) return "Inte konfigurerad. Certifikat och id saknas.";
-  if (input.status === "pending_authorization") return "Väntar på godkännande i Revolut.";
+  if (input.status === "revoked") return "Not connected. The connection was removed.";
+  if (input.status === "action_required") return "The connection must be done again in Revolut.";
+  if (!input.configured) return "Not configured. Certificate and id are missing.";
+  if (input.status === "pending_authorization") return "Waiting for approval in Revolut.";
   if (input.status === "active") {
-    if (input.certificate === "expired") return "Ansluten, men certifikatet har gått ut.";
-    if (input.certificate === "expiring") return "Ansluten. Certifikatet behöver bytas snart.";
-    if (input.refreshAvailable) return "Ansluten. Förnyas automatiskt.";
-    return "Ansluten, men kan inte förnyas automatiskt. Anslut om.";
+    if (input.certificate === "expired") return "Connected, but the certificate has expired.";
+    if (input.certificate === "expiring")
+      return "Connected. The certificate needs to be replaced soon.";
+    if (input.refreshAvailable) return "Connected. Renews automatically.";
+    return "Connected, but cannot renew automatically. Reconnect.";
   }
-  return "Inte ansluten.";
+  return "Not connected.";
 }
 
 const WARNING_COOLDOWN_MS = 24 * 60 * 60 * 1000;
@@ -166,7 +167,7 @@ export async function revolutHealth(
   const stored = connection?.status ?? "not_configured";
   const keyMatch = config.keyMatch;
   // A mismatched pair outranks the stored status: the grant may well still be
-  // good in Revolut, but this deployment cannot use it, so calling it "Ansluten"
+  // good in Revolut, but this deployment cannot use it, so calling it "Connected"
   // would send the owner looking in the wrong place.
   const status: ConnectionStatus =
     keyMatch.state === "mismatch"

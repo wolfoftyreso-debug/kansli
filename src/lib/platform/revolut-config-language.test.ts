@@ -69,10 +69,8 @@ describe("Revolut config language", () => {
     ).rejects.toThrow(/missing sub/);
   });
 
-  it("leaves health summaries and vendor fail reasons as written", () => {
-    const health = readFileSync("src/lib/ekonomi/revolut/health.ts", "utf8");
+  it("leaves vendor fail reasons as written", () => {
     const errors = readFileSync("src/lib/ekonomi/revolut/errors.ts", "utf8");
-    expect(health).toContain("Nyckeln i miljön hör inte till certifikatet hos Revolut.");
     expect(errors).toContain("Revolut-konfigurationen är inte klar.");
   });
 });

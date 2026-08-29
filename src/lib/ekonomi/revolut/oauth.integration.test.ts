@@ -532,7 +532,7 @@ live("revolut connection (live Postgres, mocked Revolut)", () => {
     expect(health.automaticRenewal).toBe(true);
     expect(health.actionRequired).toBe(false);
     expect(health.certificate.health).toBe("valid");
-    expect(health.summary).toContain("Ansluten");
+    expect(health.summary).toContain("Connected");
     expect(JSON.stringify(health)).not.toContain("at_live_value");
     expect(JSON.stringify(health)).not.toContain("BEGIN PRIVATE KEY");
   });
@@ -563,7 +563,7 @@ live("revolut connection (live Postgres, mocked Revolut)", () => {
     expect(health.automaticRenewal).toBe(false);
     // Reconnecting in Revolut would not fix a wrong key, so it must not be asked for.
     expect(health.actionRequired).toBe(false);
-    expect(health.summary).toContain("hör inte till certifikatet");
+    expect(health.summary).toContain("does not belong to the certificate");
   });
 
   it("warns about an expiring certificate once a day, not on every read", async () => {
