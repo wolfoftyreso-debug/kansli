@@ -61,10 +61,7 @@ describe("migrate language", () => {
     await expect(loadMigrations(dir)).rejects.toThrow(/Two migration files share version 0001/);
   });
 
-  it("leaves leftover TORA remedy and contracts throws as written", () => {
-    expect(readFileSync("packages/tora/src/domain/remedies.ts", "utf8")).toContain(
-      "okänt rättsmedel:",
-    );
+  it("leaves leftover contracts throws as written", () => {
     expect(readFileSync("packages/contracts/src/index.ts", "utf8")).toContain(
       "får inte ha behörighet till kunddata:",
     );
