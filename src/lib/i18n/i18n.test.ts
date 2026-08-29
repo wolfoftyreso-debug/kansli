@@ -177,6 +177,8 @@ describe("locale registry", () => {
     expect(catalogSectionTitle("en", "04")).toBe("How it works");
     expect(catalogSectionTitle("sv", "04")).toBe("Så fungerar det");
     expect(t("sv", "site.catalog.documentation")).toBe("Dokumentation");
+    expect(t("en", "chrome.breadcrumb")).toBe("Breadcrumb");
+    expect(t("sv", "chrome.breadcrumb")).toBe("Sökväg");
     expect(t("en", "site.doc.title")).toBe("Documentation is part of the product.");
     expect(t("sv", "site.doc.eyebrow")).toBe("Dokumentation");
     expect(t("sv", "site.doc.mcp.title")).toBe(

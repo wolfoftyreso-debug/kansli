@@ -12,6 +12,7 @@ export const NO: Record<MessageKey, string> = {
   "chrome.orgs": "Selskaper",
   "chrome.skipToContent": "Hopp til innholdet",
   "chrome.roomsMobile": "Rom, mobil",
+  "chrome.breadcrumb": "Breadcrumb",
 
   "runtime.production": "produksjon",
   "runtime.preview": "forhåndsvisning",

@@ -12,6 +12,7 @@ export const FI: Record<MessageKey, string> = {
   "chrome.orgs": "Yritykset",
   "chrome.skipToContent": "Siirry sisältöön",
   "chrome.roomsMobile": "Huoneet, mobiili",
+  "chrome.breadcrumb": "Breadcrumb",
 
   "runtime.production": "tuotanto",
   "runtime.preview": "esikatselu",

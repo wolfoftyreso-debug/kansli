@@ -12,6 +12,7 @@ export const PL: Record<MessageKey, string> = {
   "chrome.orgs": "Firmy",
   "chrome.skipToContent": "Przejdź do treści",
   "chrome.roomsMobile": "Pokoje, telefon",
+  "chrome.breadcrumb": "Breadcrumb",
 
   "runtime.production": "produkcja",
   "runtime.preview": "podgląd",

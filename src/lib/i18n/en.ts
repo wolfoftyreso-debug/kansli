@@ -11,6 +11,7 @@ export const EN = {
   "chrome.orgs": "Companies",
   "chrome.skipToContent": "Skip to content",
   "chrome.roomsMobile": "Rooms, mobile",
+  "chrome.breadcrumb": "Breadcrumb",
 
   "runtime.production": "production",
   "runtime.preview": "preview",

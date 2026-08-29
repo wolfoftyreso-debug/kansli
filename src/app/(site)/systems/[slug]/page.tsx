@@ -46,7 +46,10 @@ export default async function SystemPage({ params }: { params: Promise<{ slug: s
       {/* Breadcrumb */}
       <div className="border-b border-line">
         <Container className="py-4">
-          <nav aria-label="Breadcrumb" className="pd-label flex items-center gap-2">
+          <nav
+            aria-label={t(locale, "chrome.breadcrumb")}
+            className="pd-label flex items-center gap-2"
+          >
             <Link href="/" className="hover:text-ink">
               PIXDRIFT
             </Link>

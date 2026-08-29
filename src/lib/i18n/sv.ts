@@ -12,6 +12,7 @@ export const SV: Record<MessageKey, string> = {
   "chrome.orgs": "Bolag",
   "chrome.skipToContent": "Hoppa till innehållet",
   "chrome.roomsMobile": "Rum, mobil",
+  "chrome.breadcrumb": "Sökväg",
 
   "runtime.production": "produktion",
   "runtime.preview": "förhandsvisning",
