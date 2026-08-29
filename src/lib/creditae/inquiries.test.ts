@@ -45,7 +45,7 @@ describe("creditae inquiries", () => {
         subjectOrgNumber: "123456-7890",
         requestId: "req-bad",
       }),
-    ).rejects.toThrow(/Organisationsnumret/);
+    ).rejects.toThrow(/organisation number/);
   });
 });
 

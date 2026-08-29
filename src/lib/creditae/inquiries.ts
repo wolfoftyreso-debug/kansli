@@ -148,7 +148,10 @@ export async function createInquiry(input: {
 }): Promise<CreditInquiry> {
   const subjectOrgNumber = normalizeOrgNumber(input.subjectOrgNumber);
   if (!subjectOrgNumber) {
-    throw new Error(orgNumberError(input.subjectOrgNumber) ?? "Organisationsnumret stämmer inte.");
+    throw new Error(
+      orgNumberError(input.subjectOrgNumber) ??
+        "The organisation number does not check out. Check the digits.",
+    );
   }
   const subjectName = input.subjectName?.trim() || null;
   const subjectDomain = input.subjectDomain ? normalizeDomain(input.subjectDomain) : null;

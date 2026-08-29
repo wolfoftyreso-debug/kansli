@@ -25,7 +25,9 @@ describe("self-service registration domain", () => {
     form.set("termsAccepted", "on");
     form.append("modules", "tyra");
     form.set("orgNumber", "556000-0000");
-    expect(() => parseIntakeForm(form, "pixdrift:org:org-exempelbolaget")).toThrow(/stämmer inte/);
+    expect(() => parseIntakeForm(form, "pixdrift:org:org-exempelbolaget")).toThrow(
+      /does not check out/,
+    );
   });
 
   it("refuses a form that skips the terms box", () => {

@@ -38,7 +38,7 @@ export async function POST(request: Request) {
     if (/minst en modul/.test(message)) {
       return NextResponse.redirect(new URL("/upphandling?fel=moduler", requestBase(request)), 303);
     }
-    if (/stämmer inte|tio siffror|saknas/.test(message)) {
+    if (/stämmer inte|tio siffror|saknas|does not check out|ten digits|is missing/.test(message)) {
       return NextResponse.redirect(new URL("/upphandling?fel=orgnr", requestBase(request)), 303);
     }
     throw error;

@@ -37,7 +37,7 @@ describe("API list note language", () => {
       "Förfrågan är registrerad. CREDITAE sätter inget kreditbetyg.",
     );
     expect(readFileSync("src/app/api/kansli/intake/route.ts", "utf8")).toContain(
-      "stämmer inte|tio siffror|saknas",
+      "does not check out|ten digits|is missing",
     );
   });
 });
