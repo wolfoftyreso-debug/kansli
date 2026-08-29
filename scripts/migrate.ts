@@ -3,7 +3,7 @@ import { migrateWorkspace } from "../packages/db/src/index.ts";
 async function main(): Promise<void> {
   const ownerUrl = process.env.PIXDRIFT_DB_OWNER_URL ?? process.env.PIXDRIFT_TEST_OWNER_URL;
   if (!ownerUrl) {
-    console.error("Sätt PIXDRIFT_DB_OWNER_URL (eller PIXDRIFT_TEST_OWNER_URL i test).");
+    console.error("Set PIXDRIFT_DB_OWNER_URL (or PIXDRIFT_TEST_OWNER_URL in test).");
     process.exit(1);
   }
 
