@@ -61,10 +61,7 @@ describe("migrate language", () => {
     await expect(loadMigrations(dir)).rejects.toThrow(/Two migration files share version 0001/);
   });
 
-  it("leaves leftover userinfo, TORA remedy and contracts throws as written", () => {
-    expect(readFileSync("packages/auth-client/src/index.ts", "utf8")).toContain(
-      "userinfo misslyckades:",
-    );
+  it("leaves leftover TORA remedy and contracts throws as written", () => {
     expect(readFileSync("packages/tora/src/domain/remedies.ts", "utf8")).toContain(
       "okänt rättsmedel:",
     );

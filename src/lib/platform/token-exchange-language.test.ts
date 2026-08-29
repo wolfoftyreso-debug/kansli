@@ -9,6 +9,7 @@ describe("OIDC token-exchange language", () => {
     expect(client).toContain("Discovery failed:");
     expect(client).toContain("JWKS is not initialised");
     expect(client).toContain("Token exchange failed:");
+    expect(client).toContain("Userinfo failed:");
     expect(client).toContain("nonce does not match");
     expect(irma).toContain("pixdrift token exchange");
     expect(irma).toContain("JWKS is not initialised");
@@ -17,14 +18,12 @@ describe("OIDC token-exchange language", () => {
     expect(britt).toContain("nonce does not match");
     expect(client).not.toContain("token-utbyte misslyckades");
     expect(client).not.toContain("discovery misslyckades");
+    expect(client).not.toContain("userinfo misslyckades");
     expect(irma).not.toContain("token-utbyte");
     expect(britt).not.toContain("token-utbyte");
   });
 
-  it("leaves leftover userinfo, TORA remedy and contracts throws as written", () => {
-    expect(readFileSync("packages/auth-client/src/index.ts", "utf8")).toContain(
-      "userinfo misslyckades:",
-    );
+  it("leaves leftover TORA remedy and contracts throws as written", () => {
     expect(readFileSync("packages/tora/src/domain/remedies.ts", "utf8")).toContain(
       "okänt rättsmedel:",
     );

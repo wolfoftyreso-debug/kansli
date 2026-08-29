@@ -163,7 +163,7 @@ export function createOidcClient(config: OidcClientConfig): OidcClient {
       const res = await doFetch(doc.userinfo_endpoint, {
         headers: { authorization: `Bearer ${accessToken}` },
       });
-      if (!res.ok) throw new Error(`userinfo misslyckades: ${res.status}`);
+      if (!res.ok) throw new Error(`Userinfo failed: ${res.status}`);
       return (await res.json()) as Record<string, unknown>;
     },
 
