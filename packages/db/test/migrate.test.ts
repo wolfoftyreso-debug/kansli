@@ -28,7 +28,9 @@ describe("parseMigrationFilename", () => {
   it("rejects a renamed or unnumbered file", () => {
     expect(() => parseMigrationFilename("foundation.sql")).toThrow(MigrationError);
     expect(() => parseMigrationFilename("1_foundation.sql")).toThrow(MigrationError);
-    expect(() => parseMigrationFilename("0001_Foundation.sql")).toThrow(MigrationError);
+    expect(() => parseMigrationFilename("0001_Foundation.sql")).toThrow(
+      /is not a migration file \(expected NNNN_name.sql, lowercase\)/,
+    );
   });
 });
 
@@ -76,7 +78,7 @@ describe("loadMigrations", () => {
     const dir = await scratch();
     await writeFile(path.join(dir, "0001_a.sql"), "select 1;\n");
     await writeFile(path.join(dir, "0001_b.sql"), "select 2;\n");
-    await expect(loadMigrations(dir)).rejects.toThrow(/delar version/);
+    await expect(loadMigrations(dir)).rejects.toThrow(/Two migration files share version/);
   });
 });
 
@@ -124,7 +126,7 @@ live("migrate (live Postgres)", () => {
       "create table widget (id text primary key, name text);\n",
     );
     await expect(migrate({ connectionString: OWNER_URL!, dir, schema })).rejects.toThrow(
-      /ändrats efter att den applicerades/,
+      /has changed after it was applied/,
     );
   });
 });

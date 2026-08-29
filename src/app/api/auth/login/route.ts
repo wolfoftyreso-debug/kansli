@@ -11,6 +11,12 @@ import { safeNextPath } from "@/lib/auth/next";
 import { authPublicUrlsFromRequest } from "@/lib/auth/origin";
 import { localeTag, t } from "@/lib/i18n";
 import { localeFromRequest } from "@/lib/i18n/request";
+import { APP_ROOM_VIEWPORT_META, appRoomRobotsMeta } from "@/lib/platform/app-robots";
+import {
+  leftoverColorSchemeMeta,
+  leftoverFormatDetectionMeta,
+  leftoverThemeColorMeta,
+} from "@/lib/platform/theme-chrome";
 
 export async function GET(request: NextRequest) {
   const urls = authPublicUrlsFromRequest({
@@ -38,8 +44,11 @@ export async function GET(request: NextRequest) {
     const locale = localeFromRequest(request);
     const home = t(locale, "idp.home");
     return new NextResponse(
-      `<!doctype html><html lang="${localeTag(locale)}"><meta charset="utf-8"><title>${t(locale, "idp.loginUnavailable")}</title><body style="font-family:system-ui;max-width:36rem;margin:3rem auto;padding:0 1rem"><h1>${t(locale, "idp.loginUnavailable")}</h1><p>${t(locale, "idp.loginUnavailableBody", { home: `<a href="/">${home}</a>` })}</p></body></html>`,
-      { status: 503, headers: { "content-type": "text/html; charset=utf-8" } },
+      `<!doctype html><html lang="${localeTag(locale)}"><meta charset="utf-8">${APP_ROOM_VIEWPORT_META}${leftoverColorSchemeMeta()}${leftoverThemeColorMeta()}${leftoverFormatDetectionMeta()}${appRoomRobotsMeta()}<title>${t(locale, "idp.loginUnavailable")}</title><body style="font-family:system-ui;max-width:36rem;margin:3rem auto;padding:0 1rem"><h1>${t(locale, "idp.loginUnavailable")}</h1><p>${t(locale, "idp.loginUnavailableBody", { home: `<a href="/">${home}</a>` })}</p></body></html>`,
+      {
+        status: 503,
+        headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" },
+      },
     );
   }
 

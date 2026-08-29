@@ -6,8 +6,9 @@ describe("swedish org number", () => {
   it("accepts the RITA demo number and rejects a broken checksum", () => {
     expect(orgNumberError(DEMO_ORG_NUMBER)).toBeNull();
     expect(normalizeOrgNumber("5560160680")).toBe(DEMO_ORG_NUMBER);
-    expect(orgNumberError("556000-0000")).toMatch(/stämmer inte/);
-    expect(orgNumberError("5561")).toMatch(/tio siffror/);
+    expect(orgNumberError("556000-0000")).toMatch(/does not check out/);
+    expect(orgNumberError("5561")).toMatch(/ten digits/);
+    expect(orgNumberError("")).toMatch(/is missing/);
   });
 
   it("builds unique valid numbers for a fleet", () => {

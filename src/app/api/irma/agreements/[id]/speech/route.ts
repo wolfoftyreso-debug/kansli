@@ -9,12 +9,12 @@ export const dynamic = "force-dynamic";
 export async function GET(_request: Request, context: { params: Promise<{ id: string }> }) {
   return handleApi(async ({ actor, pool }) => {
     if (!ttsConfigured()) {
-      throw new ApiError("not_ready", "Uppläsning är inte kopplad.");
+      throw new ApiError("not_ready", "Speech is not connected.");
     }
     const org = requireOrg(actor);
     const { id } = await context.params;
     const agreement = await getAgreement(pool, org.orgRef, id);
-    if (!agreement) throw new ApiError("not_found", "Avtalet finns inte.");
+    if (!agreement) throw new ApiError("not_found", "The agreement does not exist.");
     const spoken = await synthesizeSpeech({ text: agreementSpeechText(agreement) });
     if (!spoken.ok) throw new ApiError("not_ready", spoken.reason);
     return new Response(Buffer.from(spoken.audio), {

@@ -7,6 +7,8 @@
  * per locale over time without changing meaning.
  */
 
+import type { Locale } from "../i18n/locales.ts";
+
 export interface Term {
   /** Canonical English term. */
   term: string;
@@ -16,6 +18,10 @@ export interface Term {
   translations?: Record<string, string>;
   /** Terms that must not be used for this concept. */
   prohibited?: string[];
+}
+
+export function terminologyTerm(locale: Locale, item: Term): string {
+  return item.translations?.[locale] ?? item.term;
 }
 
 export const terminology: Term[] = [

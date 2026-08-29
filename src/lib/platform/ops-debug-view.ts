@@ -24,7 +24,7 @@ export type OpsErrorRow = {
 };
 
 export type OpsRuntimeDebug = {
-  mark: "produktion" | "förhandsvisning" | "lokal";
+  mark: "production" | "preview" | "local";
   hardened: boolean;
   vercelEnv: string | null;
   appEnv: string | null;
@@ -81,7 +81,7 @@ export function sanitizePayload(value: unknown, depth = 0): unknown {
     return value.slice(0, 20).map((item) => sanitizePayload(item, depth + 1));
   const out: Record<string, unknown> = {};
   for (const [key, item] of Object.entries(value as Record<string, unknown>)) {
-    out[key] = isSecretKey(key) ? "[dold]" : sanitizePayload(item, depth + 1);
+    out[key] = isSecretKey(key) ? "[hidden]" : sanitizePayload(item, depth + 1);
   }
   return out;
 }

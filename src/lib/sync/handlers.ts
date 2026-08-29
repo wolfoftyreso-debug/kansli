@@ -15,7 +15,7 @@ export function ritaCompletedObservationBody(payload: Record<string, unknown>): 
   const findings = Number.isFinite(count) ? `${count} fynd` : "fyndunderlag klart";
   const head = company ? `${company}: ${findings}` : findings;
   const model =
-    payload.modelConfigured === true ? "Med AI-stöd." : "Utan AI-stöd — bara fasta regler.";
+    payload.modelConfigured === true ? "Med modellstöd." : "Utan modellstöd — bara fasta regler.";
   return `${head}. ${model}`;
 }
 
@@ -237,8 +237,10 @@ export function registerSyncHandlers(events: EventLog, pool: pg.Pool): void {
     await record(
       event.orgRef,
       "kansli",
-      "Ny anmälan om upphandling",
-      String(event.payload["title"] ?? "En ny anmälan väntar. Möte om 10 dagar."),
+      "Ny registrering",
+      String(
+        event.payload["title"] ?? "En kund registrerade sig. Faktura med 10 dagars betalning.",
+      ),
       event.subjectRef,
     );
   });
@@ -247,8 +249,18 @@ export function registerSyncHandlers(events: EventLog, pool: pg.Pool): void {
     await record(
       event.orgRef,
       "kansli",
-      "Verkstadskonto skapat för demo",
+      "Verkstadskonto skapat",
       String(event.payload["title"] ?? "Kontot finns. Lösenordet visades en gång."),
+      event.subjectRef,
+    );
+  });
+
+  events.subscribe("maj.release.published", async (event) => {
+    await record(
+      event.orgRef,
+      "maj",
+      "Search Update publicerad",
+      String(event.payload["title"] ?? "En sökförbättring är utförd och versionerad."),
       event.subjectRef,
     );
   });

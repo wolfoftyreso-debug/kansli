@@ -1,20 +1,53 @@
 import { requireOrg, type Actor } from "@pixdrift/api-core";
 import { SYSTEM_MODULES } from "@pixdrift/systems";
 import { ToolRegistry, type McpRuntime, type ToolDefinition, page } from "@pixdrift/mcp-core";
-import { addTask, listTasks } from "@/lib/kansli/tasks";
-import { listInvoices } from "@/lib/ekonomi/invoices";
+import { addTask, deleteTask, listTasks, toggleTask } from "@/lib/kansli/tasks";
+import { getInvoice, listInvoices } from "@/lib/ekonomi/invoices";
+import { listPayments } from "@/lib/ekonomi/payments";
 import { evaluateMarket, persistSnapshot } from "@/lib/tora/persist";
+import { loadToraCalendar, loadToraOpportunity, parseTier } from "@/lib/tora/market";
 import { resolveCompany } from "@/lib/tora/profile";
-import { listAnalyses, requestAnalysis } from "@/lib/rita/analyses";
+import { getAnalysis, listAnalyses, requestAnalysis } from "@/lib/rita/analyses";
+import { findingsFromAnalysis } from "@/lib/rita/findings";
 import { listObservations } from "@/lib/britt/observations";
-import { createAgreement } from "@/lib/irma/agreements";
-import { createCase as createTyraCase, parseIntent, parseOperations } from "@/lib/tyra/cases";
-import { createCase as createAlvaCase } from "@/lib/alva/cases";
-import { createInquiry as createCreditaeInquiry } from "@/lib/creditae/inquiries";
+import { canRunDemoIntel, listFindings, runIntel } from "@/lib/britt/intel";
+import {
+  createAgreement,
+  getAgreement,
+  listAgreements,
+  revokeAgreement,
+} from "@/lib/irma/agreements";
+import { verifyAgreementIntegrity } from "@/lib/irma/integrity";
+import {
+  createCase as createTyraCase,
+  getCaseWorkCard,
+  listCases as listTyraCases,
+  parseIntent,
+  parseOperations,
+} from "@/lib/tyra/cases";
+import { listOutbox } from "@/lib/tyra/reminders";
+import { createCase as createAlvaCase, listCases as listAlvaCases } from "@/lib/alva/cases";
+import {
+  createInquiry as createCreditaeInquiry,
+  listInquiries as listCreditaeInquiries,
+} from "@/lib/creditae/inquiries";
+import { majIsOpen } from "@/lib/maj/access";
+import { listActions, runAnalysis } from "@/lib/maj/engine";
+import { getProject, listProjects } from "@/lib/maj/projects";
+import { decideAction } from "@/lib/maj/releases";
+import { lookupOpsDebug } from "@/lib/platform/ops-debug";
+import { loadOpsSnapshot, opsScopeFor } from "@/lib/platform/ops";
+import { getRuntime } from "@/lib/platform/runtime";
 import { needStore } from "./runtime";
 
 function orgOf(ctx: McpRuntime): Actor & { orgRef: string } {
   return requireOrg(ctx.actor);
+}
+
+function lockedPick(field: { state: string; value?: unknown; teaser?: string }) {
+  return field.state === "locked"
+    ? { state: "locked" as const, teaser: field.teaser }
+    : { state: field.state, value: field.value };
 }
 
 function readFlags(readOnly: boolean) {
@@ -218,6 +251,99 @@ export function buildPixdriftRegistry(): ToolRegistry {
 
   registry.registerTool(
     base({
+      name: "toggle_office_task",
+      title: "Toggle office task",
+      description:
+        "Toggles a Kansli task done/open. Same toggleTask service as PATCH /api/kansli/tasks/:id.",
+      system: "kansli",
+      domain: "office",
+      inputSchema: {
+        type: "object",
+        properties: { id: { type: "string" }, idempotency_key: { type: "string" } },
+        required: ["id"],
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: "task:write",
+      tenantScope: "org",
+      sideEffects: "write",
+      risk: 2,
+      approvalRequired: false,
+      idempotent: false,
+      rateClass: "write",
+      whenToUse: "An existing office task should be marked done or reopened.",
+      whenNotToUse: "You want to create a task — use create_office_task. Do not delete here.",
+      rest: { method: "PATCH", path: "/api/kansli/tasks/:id" },
+      flags: readFlags(false),
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool, events } = needStore(ctx);
+        const task = await toggleTask(pool, actor.orgRef, String(input.id));
+        if (!task) return { error: "not_found" };
+        await events.publish({
+          system: "kansli",
+          kind: "kansli.task.updated",
+          orgRef: actor.orgRef,
+          actorKind: "integration",
+          actorRef: actor.sub,
+          subjectRef: `kansli:task:${task.id}`,
+          requestId: ctx.requestId,
+          payload: { done: task.done, via: "mcp" },
+        });
+        return { id: task.id, title: task.title, owner: task.owner, done: task.done };
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "delete_office_task",
+      title: "Delete office task",
+      description:
+        "Deletes a Kansli task. Same deleteTask service as DELETE /api/kansli/tasks/:id. This removes the row.",
+      system: "kansli",
+      domain: "office",
+      inputSchema: {
+        type: "object",
+        properties: { id: { type: "string" }, idempotency_key: { type: "string" } },
+        required: ["id"],
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: "task:write",
+      tenantScope: "org",
+      sideEffects: "write",
+      risk: 2,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "write",
+      whenToUse: "An office task should be removed, not just marked done.",
+      whenNotToUse: "You only want to mark the task done — use toggle_office_task.",
+      rest: { method: "DELETE", path: "/api/kansli/tasks/:id" },
+      flags: { ...readFlags(false), destructive: true },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool, events } = needStore(ctx);
+        const id = String(input.id);
+        const ok = await deleteTask(pool, actor.orgRef, id);
+        if (!ok) return { error: "not_found" };
+        await events.publish({
+          system: "kansli",
+          kind: "kansli.task.updated",
+          orgRef: actor.orgRef,
+          actorKind: "integration",
+          actorRef: actor.sub,
+          subjectRef: `kansli:task:${id}`,
+          requestId: ctx.requestId,
+          payload: { deleted: true, via: "mcp" },
+        });
+        return { ok: true, id };
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
       name: "list_family_events",
       title: "List family events",
       description: "Lists recent append-only platform events for the authenticated organisation.",
@@ -254,6 +380,147 @@ export function buildPixdriftRegistry(): ToolRegistry {
           })),
           input,
         );
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "get_ops_snapshot",
+      title: "Get operations snapshot",
+      description:
+        "Returns the operations snapshot for the authenticated organisation. Identity counts and health flags only — not SMS routes, outbox bodies or debug dumps.",
+      system: "kansli",
+      domain: "platform",
+      inputSchema: { type: "object", properties: {}, additionalProperties: false },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need whether this organisation is healthy and what is open.",
+      whenNotToUse:
+        "You have a request id — use lookup_ops_debug. You need an audit trail — use list_family_events.",
+      rest: { method: "GET", path: "/api/platform/ops" },
+      handler: async (ctx) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const scope = opsScopeFor(actor.orgRef);
+        const db = scope === "house" ? getRuntime().pool : pool;
+        const snapshot = await loadOpsSnapshot(db, {
+          orgRef: actor.orgRef,
+          orgName: actor.orgName,
+          scope,
+        });
+        return {
+          snapshot: {
+            takenAt: snapshot.takenAt,
+            scope: snapshot.scope,
+            orgRef: snapshot.orgRef,
+            orgName: snapshot.orgName,
+            runtime: snapshot.runtime,
+            hardened: snapshot.hardened,
+            health: {
+              database: snapshot.health.database,
+              gatewayConfigured: snapshot.health.gateway.configured,
+              ritaAvailable: snapshot.health.rita.available,
+              sms: snapshot.health.sms,
+              tts: snapshot.health.tts,
+              credit: snapshot.health.credit,
+              webintel: snapshot.health.webintel,
+              revolutConfigured: snapshot.health.revolut.configured,
+              mcp: {
+                requests: snapshot.health.mcp.mcp_requests_total,
+                toolCalls: snapshot.health.mcp.mcp_tool_calls_total,
+                toolErrors: snapshot.health.mcp.mcp_tool_errors_total,
+              },
+            },
+            identity: snapshot.identity,
+            events: snapshot.events.map((item) => ({
+              system: item.system,
+              count: item.count,
+              lastAt: item.lastAt,
+            })),
+            readiness: {
+              pilotOfferable: snapshot.readiness.pilotOfferable,
+              allSystemsReady: snapshot.readiness.allSystemsReady,
+              blockedGates: snapshot.readiness.gates.filter((gate) => gate.state === "blocked")
+                .length,
+            },
+            ledger: {
+              openCount: snapshot.ledger.openCount,
+              overdueCount: snapshot.ledger.overdueCount,
+              notDueOre: snapshot.ledger.notDueOre,
+              overdueOre: snapshot.ledger.overdueOre,
+            },
+            support: {
+              open: snapshot.support.open,
+              observations: snapshot.support.observations,
+              tasks: snapshot.support.tasks,
+              cases: snapshot.support.cases,
+              intakes: snapshot.support.intakes,
+            },
+            sms: { vendor: snapshot.sms.vendor, routeCount: snapshot.sms.routes.length },
+            queues: snapshot.queues,
+          },
+        };
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "lookup_ops_debug",
+      title: "Lookup operations debug",
+      description:
+        "Looks up one request-id or subject in the operations log. Identity fields only — not event payloads or outbox bodies.",
+      system: "kansli",
+      domain: "platform",
+      inputSchema: {
+        type: "object",
+        properties: { q: { type: "string" } },
+        required: ["q"],
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You have a request id and need whether it landed.",
+      whenNotToUse: "You need the snapshot — use get_ops_snapshot.",
+      rest: { method: "GET", path: "/api/platform/ops/debug" },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const scope = opsScopeFor(actor.orgRef);
+        const db = scope === "house" ? getRuntime().pool : pool;
+        const q = typeof input.q === "string" ? input.q.trim() : "";
+        const found = await lookupOpsDebug(db, { q, scope, orgRef: actor.orgRef });
+        return {
+          q: found.q,
+          note: found.note,
+          events: found.events.map((item) => ({
+            id: item.id,
+            at: item.at,
+            system: item.system,
+            kind: item.kind,
+            requestId: item.requestId,
+            subjectRef: item.subjectRef,
+          })),
+          outbox: found.outbox.map((item) => ({
+            source: item.source,
+            id: item.id,
+            status: item.status,
+            createdAt: item.createdAt,
+          })),
+        };
       },
     }),
   );
@@ -305,6 +572,78 @@ export function buildPixdriftRegistry(): ToolRegistry {
 
   registry.registerTool(
     base({
+      name: "get_ledger_invoice",
+      title: "Get invoice",
+      description:
+        "Returns one invoice and its payments for the authenticated organisation. Identity fields and line amounts only — not the journal.",
+      system: "ekonomi",
+      domain: "ledger",
+      inputSchema: {
+        type: "object",
+        properties: { id: { type: "string" } },
+        required: ["id"],
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need one invoice and its received payments.",
+      whenNotToUse: "You need to issue or pay an invoice.",
+      rest: { method: "GET", path: "/api/ekonomi/invoices/:id" },
+      flags: { ...readFlags(true), pii: true },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const id = typeof input.id === "string" ? input.id.trim() : "";
+        const invoice = id ? await getInvoice(pool, actor.orgRef, id) : null;
+        if (!invoice) return { error: "not_found" };
+        const payments = await listPayments(pool, actor.orgRef, invoice.id);
+        return {
+          invoice: {
+            id: invoice.id,
+            number: invoice.number,
+            status: invoice.status,
+            customerName: invoice.customerName,
+            currency: invoice.currency,
+            netOre: invoice.netOre,
+            vatOre: invoice.vatOre,
+            grossOre: invoice.grossOre,
+            paidOre: invoice.paidOre,
+            dueAt: invoice.dueAt,
+            issuedAt: invoice.issuedAt,
+            createdAt: invoice.createdAt,
+            lines: invoice.lines.map((line) => ({
+              id: line.id,
+              description: line.description,
+              quantity: line.quantity,
+              unitNetOre: line.unitNetOre,
+              vatRateBps: line.vatRateBps,
+              kind: line.kind,
+              netOre: line.netOre,
+              vatOre: line.vatOre,
+              grossOre: line.grossOre,
+            })),
+          },
+          payments: payments.map((item) => ({
+            id: item.id,
+            rail: item.rail,
+            status: item.status,
+            amountOre: item.amountOre,
+            currency: item.currency,
+            receivedAt: item.receivedAt,
+          })),
+        };
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
       name: "evaluate_procurement_market",
       title: "Evaluate procurement market",
       description:
@@ -334,6 +673,120 @@ export function buildPixdriftRegistry(): ToolRegistry {
           openNow: result.market.summary.openNowCount,
           upcoming: result.market.summary.upcomingCount,
           headline: result.market.summary.headline,
+        };
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "get_procurement_opportunity",
+      title: "Get procurement opportunity",
+      description:
+        "Returns one TORA opportunity for the authenticated organisation. Identity fields and locked teasers only — not remedies, walkthrough or prices.",
+      system: "tora",
+      domain: "procurement",
+      inputSchema: {
+        type: "object",
+        properties: { id: { type: "string" } },
+        required: ["id"],
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need one procurement and whether this company can bid.",
+      whenNotToUse: "You want to store a snapshot — use persist_procurement_snapshot.",
+      rest: { method: "GET", path: "/api/tora/opportunities/:id" },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const id = typeof input.id === "string" ? input.id.trim() : "";
+        if (!id) return { error: "not_found" };
+        const company = await resolveCompany(pool, actor.orgRef);
+        const detail = loadToraOpportunity(parseTier(actor.tier), id, company);
+        if (!detail) return { error: "not_found" };
+        const view = detail.view;
+        return {
+          opportunity: {
+            id: view.id,
+            verdict: view.verdict,
+            signal: view.signal,
+            timing: view.timing,
+            scoreBand: view.scoreBand,
+            organizationKindHint: view.organizationKindHint,
+            organizationName: lockedPick(view.organizationName),
+            title: lockedPick(view.title),
+            deadlineAt: lockedPick(view.deadlineAt),
+            daysUntilDeadline: lockedPick(view.daysUntilDeadline),
+          },
+        };
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "list_procurement_calendar",
+      title: "List procurement calendar",
+      description:
+        "Returns the TORA calendar for the authenticated organisation. Identity fields and locked teasers only — not remedies, walkthrough, prices or alert bodies.",
+      system: "tora",
+      domain: "procurement",
+      inputSchema: { type: "object", properties: {}, additionalProperties: false },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need upcoming procurement dates for this company.",
+      whenNotToUse: "You want to store a snapshot — use persist_procurement_snapshot.",
+      rest: { method: "GET", path: "/api/tora/calendar" },
+      handler: async (ctx) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const company = await resolveCompany(pool, actor.orgRef);
+        const calendar = loadToraCalendar(parseTier(actor.tier), company);
+        const entry = (item: (typeof calendar.thisWeek)[number]) => ({
+          date: item.date,
+          kind: item.kind,
+          predicted: item.predicted,
+          daysAway: item.daysAway,
+          identified: item.identified,
+          organizationName: item.organizationName,
+          title: item.title,
+          ...(item.opportunityId ? { opportunityId: item.opportunityId } : {}),
+        });
+        const alerts =
+          calendar.alerts.state === "locked"
+            ? { state: "locked" as const, teaser: calendar.alerts.teaser }
+            : {
+                state: calendar.alerts.state,
+                value: calendar.alerts.value.map((alert) => ({
+                  id: alert.id,
+                  type: alert.type,
+                  severity: alert.severity,
+                  occurredAt: alert.occurredAt,
+                  ...(alert.opportunityId ? { opportunityId: alert.opportunityId } : {}),
+                })),
+              };
+        return {
+          calendar: {
+            alertCount: calendar.alertCount,
+            alerts,
+            thisWeek: calendar.thisWeek.map(entry),
+            next30Days: calendar.next30Days.map(entry),
+            next90Days: calendar.next90Days.map(entry),
+            next12Months: calendar.next12Months.map(entry),
+          },
         };
       },
     }),
@@ -422,6 +875,59 @@ export function buildPixdriftRegistry(): ToolRegistry {
           })),
           input,
         );
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "get_tax_analysis",
+      title: "Get tax analysis",
+      description:
+        "Returns one RITA analysis for the authenticated organisation. Identity fields and finding titles only — not the raw engine result.",
+      system: "rita",
+      domain: "tax",
+      inputSchema: {
+        type: "object",
+        properties: { id: { type: "string" } },
+        required: ["id"],
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need one existing tax analysis and its findings.",
+      whenNotToUse: "You want to start a new analysis — use request_tax_analysis.",
+      rest: { method: "GET", path: "/api/rita/analyses/:id" },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const id = typeof input.id === "string" ? input.id.trim() : "";
+        const analysis = id ? await getAnalysis(pool, actor.orgRef, id) : null;
+        if (!analysis) return { error: "not_found" };
+        return {
+          analysis: {
+            id: analysis.id,
+            companyName: analysis.companyName,
+            orgNumber: analysis.orgNumber,
+            status: analysis.status,
+            blockedReason: analysis.blockedReason,
+            createdAt: analysis.createdAt,
+            findings: findingsFromAnalysis(analysis.result).map((item) => ({
+              id: item.id,
+              title: item.title,
+              status: item.status,
+              category: item.category,
+              impactLowOre: item.impactLowOre,
+              impactHighOre: item.impactHighOre,
+            })),
+          },
+        };
       },
     }),
   );
@@ -533,6 +1039,207 @@ export function buildPixdriftRegistry(): ToolRegistry {
 
   registry.registerTool(
     base({
+      name: "list_findings",
+      title: "List findings",
+      description:
+        "Lists BRITT findings for the authenticated organisation. Returns identity fields only, not body or evidence. Same listFindings service as GET /api/britt/findings.",
+      system: "britt",
+      domain: "followup",
+      inputSchema: {
+        type: "object",
+        properties: { limit: { type: "integer" }, cursor: { type: "string" } },
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need what BRITT has already found.",
+      whenNotToUse: "You need the follow-up inbox — use list_followups. Do not invent a finding.",
+      rest: { method: "GET", path: "/api/britt/findings" },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const rows = await listFindings(pool, actor.orgRef);
+        return page(
+          rows.map((item) => ({
+            id: item.id,
+            runId: item.runId,
+            fingerprint: item.fingerprint,
+            severity: item.severity,
+            category: item.category,
+            title: item.title,
+            createdAt: item.createdAt,
+          })),
+          input,
+        );
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "run_operational_analysis",
+      title: "Run operational analysis",
+      description:
+        "Runs BRITT demo-metrics analysis for the house organisation. Same runIntel service as POST /api/britt/findings. Workshops are blocked. Does not invent a finding.",
+      system: "britt",
+      domain: "followup",
+      inputSchema: {
+        type: "object",
+        properties: { idempotency_key: { type: "string" } },
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: "finding:read",
+      tenantScope: "org",
+      sideEffects: "write",
+      risk: 2,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "heavy",
+      whenToUse: "The house needs a fresh demo analysis.",
+      whenNotToUse: "You are on a workshop, or you want to invent a finding.",
+      rest: { method: "POST", path: "/api/britt/findings" },
+      flags: readFlags(false),
+      handler: async (ctx) => {
+        const actor = orgOf(ctx);
+        if (!canRunDemoIntel(actor.orgRef)) {
+          return { blocked: true, reason: "Demo metrics run on the house only." };
+        }
+        const { pool, events } = needStore(ctx);
+        const result = await runIntel({
+          pool,
+          events,
+          orgRef: actor.orgRef,
+          actorRef: actor.sub,
+          requestId: ctx.requestId,
+        });
+        return {
+          runId: result.run.id,
+          status: result.run.status,
+          findingCount: result.run.findingCount,
+          period: result.snapshot.period,
+          findings: result.findings.map((item) => ({
+            id: item.id,
+            fingerprint: item.fingerprint,
+            severity: item.severity,
+            category: item.category,
+            title: item.title,
+          })),
+        };
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "list_agreements",
+      title: "List agreements",
+      description:
+        "Lists IRMA agreements for the authenticated organisation. Returns identity fields only, not body or clauses. Same listAgreements service as GET /api/irma/agreements.",
+      system: "irma",
+      domain: "agreements",
+      inputSchema: {
+        type: "object",
+        properties: {
+          query: { type: "string" },
+          limit: { type: "integer" },
+          cursor: { type: "string" },
+        },
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need existing agreements.",
+      whenNotToUse: "You want to create an agreement — use create_agreement.",
+      rest: { method: "GET", path: "/api/irma/agreements" },
+      flags: { ...readFlags(true), pii: true },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const query = typeof input.query === "string" ? input.query : undefined;
+        const rows = await listAgreements(pool, actor.orgRef, query);
+        return page(
+          rows.map((item) => ({
+            id: item.id,
+            title: item.title,
+            counterparty: item.counterparty,
+            status: item.status,
+            createdAt: item.createdAt,
+            viewedAt: item.viewedAt,
+            signedAt: item.signedAt,
+          })),
+          input,
+        );
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "get_agreement",
+      title: "Get agreement",
+      description:
+        "Returns one IRMA agreement for the authenticated organisation. Identity fields and integrity flags only — not body, clauses or the guest link.",
+      system: "irma",
+      domain: "agreements",
+      inputSchema: {
+        type: "object",
+        properties: { id: { type: "string" } },
+        required: ["id"],
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need one existing agreement and whether its hashes still match.",
+      whenNotToUse:
+        "You want to create an agreement — use create_agreement. You want to cancel one — use revoke_agreement.",
+      rest: { method: "GET", path: "/api/irma/agreements/:id" },
+      flags: { ...readFlags(true), pii: true },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const id = typeof input.id === "string" ? input.id.trim() : "";
+        const agreement = id ? await getAgreement(pool, actor.orgRef, id) : null;
+        if (!agreement) return { error: "not_found" };
+        const integrity = verifyAgreementIntegrity(agreement);
+        return {
+          agreement: {
+            id: agreement.id,
+            title: agreement.title,
+            counterparty: agreement.counterparty,
+            status: agreement.status,
+            createdAt: agreement.createdAt,
+            viewedAt: agreement.viewedAt,
+            signedAt: agreement.signedAt,
+            verificationLevel: agreement.verificationLevel,
+            tokenExpiresAt: agreement.tokenExpiresAt,
+          },
+          integrity,
+        };
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
       name: "create_agreement",
       title: "Create agreement",
       description:
@@ -581,6 +1288,207 @@ export function buildPixdriftRegistry(): ToolRegistry {
           counterparty: created.counterparty,
           status: created.status,
         };
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "revoke_agreement",
+      title: "Revoke agreement",
+      description:
+        "Cancels an unsigned IRMA agreement using revokeAgreement — the same service as POST /api/irma/agreements/:id. Does not start speech or reissue a token.",
+      system: "irma",
+      domain: "agreements",
+      inputSchema: {
+        type: "object",
+        properties: { id: { type: "string" } },
+        required: ["id"],
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: "document:upload",
+      tenantScope: "org",
+      sideEffects: "write",
+      risk: 3,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "heavy",
+      whenToUse: "An unsigned agreement should be cancelled.",
+      whenNotToUse: "You only want to inspect an agreement — use get_agreement.",
+      rest: { method: "POST", path: "/api/irma/agreements/:id" },
+      flags: { ...readFlags(false), pii: true },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool, events } = needStore(ctx);
+        const id = typeof input.id === "string" ? input.id.trim() : "";
+        if (!id) return { error: "not_found" };
+        const agreement = await revokeAgreement({
+          pool,
+          events,
+          orgRef: actor.orgRef,
+          id,
+          actorRef: actor.sub,
+          requestId: ctx.requestId,
+        });
+        if (!agreement) return { error: "not_found" };
+        return {
+          agreement: {
+            id: agreement.id,
+            title: agreement.title,
+            counterparty: agreement.counterparty,
+            status: agreement.status,
+            createdAt: agreement.createdAt,
+            viewedAt: agreement.viewedAt,
+            signedAt: agreement.signedAt,
+          },
+        };
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "list_vehicle_cases",
+      title: "List vehicle cases",
+      description:
+        "Lists TYRA workshop cases for the authenticated organisation. Returns identity fields only. Same listCases service as GET /api/tyra/cases.",
+      system: "tyra",
+      domain: "workshop",
+      inputSchema: {
+        type: "object",
+        properties: { limit: { type: "integer" }, cursor: { type: "string" } },
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need existing workshop cases.",
+      whenNotToUse: "You want to store a case — use create_vehicle_case.",
+      rest: { method: "GET", path: "/api/tyra/cases" },
+      flags: { ...readFlags(true), pii: true },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const rows = await listTyraCases(pool, actor.orgRef);
+        return page(
+          rows.map((item) => ({
+            id: item.id,
+            intent: item.intent,
+            caseStatus: item.caseStatus,
+            updatedAt: item.updatedAt,
+            customerId: item.customerId,
+            registrationNumber: item.registrationNumber,
+            customerName: item.customerName,
+          })),
+          input,
+        );
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "get_vehicle_case",
+      title: "Get vehicle case",
+      description:
+        "Returns one TYRA workshop case for the authenticated organisation. Identity fields and step status only — not advisor notes or customer contact.",
+      system: "tyra",
+      domain: "workshop",
+      inputSchema: {
+        type: "object",
+        properties: { id: { type: "string" } },
+        required: ["id"],
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need one workshop case and its steps.",
+      whenNotToUse: "You want to store a case — use create_vehicle_case.",
+      rest: { method: "GET", path: "/api/tyra/cases/:id" },
+      flags: { ...readFlags(true), pii: true },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const id = typeof input.id === "string" ? input.id.trim() : "";
+        const card = id ? await getCaseWorkCard(pool, actor.orgRef, id) : null;
+        if (!card) return { error: "not_found" };
+        return {
+          case: {
+            caseId: card.caseId,
+            customerId: card.customerId,
+            customerName: card.customerName,
+            vehicleId: card.vehicleId,
+            registrationNumber: card.registrationNumber,
+            make: card.make,
+            model: card.model,
+            caseStatus: card.caseStatus,
+            storageCode: card.storageCode,
+            wheelSetId: card.wheelSetId,
+            headline: card.headline,
+            summary: card.summary,
+            nextBestAction: card.nextBestAction,
+            steps: card.steps.map((step) => ({
+              kind: step.kind,
+              title: step.title,
+              status: step.status,
+              required: step.required,
+            })),
+          },
+        };
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "list_vehicle_reminders",
+      title: "List vehicle reminders",
+      description:
+        "Lists TYRA reminder outbox rows for the authenticated organisation. Identity fields only — not recipient, subject or SMS body. Does not queue or send.",
+      system: "tyra",
+      domain: "workshop",
+      inputSchema: {
+        type: "object",
+        properties: { limit: { type: "integer" }, cursor: { type: "string" } },
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need queued workshop reminders.",
+      whenNotToUse: "You want to store a case — use create_vehicle_case.",
+      rest: { method: "GET", path: "/api/tyra/reminders" },
+      flags: readFlags(true),
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const rows = await listOutbox(pool, actor.orgRef);
+        return page(
+          rows.map((item) => ({
+            id: item.id,
+            channel: item.channel,
+            status: item.status,
+            createdAt: item.createdAt,
+          })),
+          input,
+        );
       },
     }),
   );
@@ -636,6 +1544,52 @@ export function buildPixdriftRegistry(): ToolRegistry {
           requestId: ctx.requestId,
         });
         return created;
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "list_diagnostic_cases",
+      title: "List diagnostic cases",
+      description:
+        "Lists ALVA cases for the authenticated organisation. Returns identity fields only, not technician notes. Same listCases service as GET /api/alva/cases. Does not diagnose.",
+      system: "alva",
+      domain: "diagnostics",
+      inputSchema: {
+        type: "object",
+        properties: { limit: { type: "integer" }, cursor: { type: "string" } },
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need existing diagnostic cases.",
+      whenNotToUse: "You want a diagnosis — ALVA does not invent one.",
+      rest: { method: "GET", path: "/api/alva/cases" },
+      flags: { ...readFlags(true), pii: true },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const rows = await listAlvaCases(pool, actor.orgRef);
+        return page(
+          rows.map((item) => ({
+            id: item.id,
+            complaint: item.complaint,
+            vehicleRef: item.vehicleRef,
+            area: item.area,
+            mileageKm: item.mileageKm,
+            status: item.status,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
+          })),
+          input,
+        );
       },
     }),
   );
@@ -700,6 +1654,54 @@ export function buildPixdriftRegistry(): ToolRegistry {
 
   registry.registerTool(
     base({
+      name: "list_credit_inquiries",
+      title: "List credit inquiries",
+      description:
+        "Lists CREDITAE counterpart inquiries for the authenticated organisation. Returns identity and status fields only — not bureau scores, traffic numbers or notes. Same listInquiries service as GET /api/creditae/inquiries. Does not invent a score.",
+      system: "creditae",
+      domain: "credit",
+      inputSchema: {
+        type: "object",
+        properties: { limit: { type: "integer" }, cursor: { type: "string" } },
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need existing counterpart inquiries.",
+      whenNotToUse:
+        "You want CREDITAE to decide Go/Watch/Stop — that is the user's assessment, not a list field.",
+      rest: { method: "GET", path: "/api/creditae/inquiries" },
+      flags: { ...readFlags(true), pii: true },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const rows = await listCreditaeInquiries(pool, actor.orgRef);
+        return page(
+          rows.map((item) => ({
+            id: item.id,
+            subjectOrgNumber: item.subjectOrgNumber,
+            subjectName: item.subjectName,
+            status: item.status,
+            assessment: item.assessment,
+            vendorStatus: item.vendorStatus,
+            webStatus: item.webStatus,
+            createdAt: item.createdAt,
+            updatedAt: item.updatedAt,
+          })),
+          input,
+        );
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
       name: "register_credit_inquiry",
       title: "Register credit inquiry",
       description:
@@ -727,7 +1729,7 @@ export function buildPixdriftRegistry(): ToolRegistry {
       rateClass: "write",
       whenToUse: "A counterpart should be assessed before credit or an agreement.",
       whenNotToUse:
-        "You want CREDITAE to decide Kör/Bevaka/Stanna — that is the user's assessment, not the bureau field.",
+        "You want CREDITAE to decide Go/Watch/Stop — that is the user's assessment, not the bureau field.",
       rest: { method: "POST", path: "/api/creditae/inquiries" },
       flags: { ...readFlags(false), pii: true },
       handler: async (ctx, input) => {
@@ -748,6 +1750,200 @@ export function buildPixdriftRegistry(): ToolRegistry {
           status: created.status,
           subjectOrgNumber: created.subjectOrgNumber,
         };
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "list_search_projects",
+      title: "List search projects",
+      description:
+        "Lists MAJ search projects for the house organisation. House alpha only. Same listProjects service as GET /api/maj/projects.",
+      system: "maj",
+      domain: "search",
+      inputSchema: {
+        type: "object",
+        properties: { limit: { type: "integer" }, cursor: { type: "string" } },
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need the current MAJ project list.",
+      whenNotToUse: "You want vendor metrics — MAJ shows decisions, not dashboards.",
+      rest: { method: "GET", path: "/api/maj/projects" },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        if (!majIsOpen(actor.orgRef)) return { blocked: true, reason: "MAJ is house alpha." };
+        const { pool } = needStore(ctx);
+        const projects = await listProjects(pool, actor.orgRef);
+        return page(
+          projects.map((item) => ({
+            id: item.id,
+            domain: item.domain,
+            market: item.market,
+            language: item.language,
+            goal: item.goal,
+            posture: item.posture,
+            status: item.status,
+          })),
+          input,
+        );
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "list_search_actions",
+      title: "List search actions",
+      description:
+        "Lists the MAJ action queue for one project. Evidence sits on each decision. Same listActions service as GET /api/maj/projects/:id/actions.",
+      system: "maj",
+      domain: "search",
+      inputSchema: {
+        type: "object",
+        properties: {
+          projectId: { type: "string" },
+          limit: { type: "integer" },
+          cursor: { type: "string" },
+        },
+        required: ["projectId"],
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need the open and settled decisions for a search project.",
+      whenNotToUse: "You want to approve a decision — use decide_search_action.",
+      rest: { method: "GET", path: "/api/maj/projects/:id/actions" },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        if (!majIsOpen(actor.orgRef)) return { blocked: true, reason: "MAJ is house alpha." };
+        const { pool } = needStore(ctx);
+        const projectId = String(input.projectId);
+        const project = await getProject(pool, actor.orgRef, projectId);
+        if (!project) return { projectId, actions: [] };
+        const actions = await listActions(pool, actor.orgRef, project.id);
+        return page(
+          actions.map((item) => ({
+            id: item.id,
+            kind: item.kind,
+            title: item.title,
+            state: item.state,
+            risk: item.risk,
+            expectedImpact: item.expectedImpact,
+            confidence: item.confidence,
+          })),
+          input,
+        );
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "run_search_analysis",
+      title: "Run search analysis",
+      description:
+        "Runs one MAJ analysis for a project. Books usage before every vendor call. Same runAnalysis service as POST /api/maj/projects/:id/analyze. Does not execute changes.",
+      system: "maj",
+      domain: "search",
+      inputSchema: {
+        type: "object",
+        properties: { projectId: { type: "string" }, idempotency_key: { type: "string" } },
+        required: ["projectId"],
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: "arende:write",
+      tenantScope: "org",
+      sideEffects: "write",
+      risk: 2,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "write",
+      whenToUse: "The project needs a fresh measurement and a short decision queue.",
+      whenNotToUse: "You want to approve or complete a decision — that is a separate tool.",
+      rest: { method: "POST", path: "/api/maj/projects/:id/analyze" },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        if (!majIsOpen(actor.orgRef)) return { blocked: true, reason: "MAJ is house alpha." };
+        const { pool, events } = needStore(ctx);
+        const project = await getProject(pool, actor.orgRef, String(input.projectId));
+        if (!project) return { error: "not_found" };
+        const analysis = await runAnalysis({
+          pool,
+          events,
+          orgRef: actor.orgRef,
+          actorRef: actor.sub,
+          project,
+          requestId: ctx.requestId,
+        });
+        return { projectId: project.id, ...analysis };
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "decide_search_action",
+      title: "Decide search action",
+      description:
+        "Approves or declines a proposed MAJ decision. Nothing executes without this. Same decideAction service as POST /api/maj/actions/:id/decide.",
+      system: "maj",
+      domain: "search",
+      inputSchema: {
+        type: "object",
+        properties: {
+          actionId: { type: "string" },
+          decision: { type: "string" },
+          idempotency_key: { type: "string" },
+        },
+        required: ["actionId", "decision"],
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: "arende:write",
+      tenantScope: "org",
+      sideEffects: "write",
+      risk: 2,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "write",
+      whenToUse: "A human has accepted or declined a proposed search decision.",
+      whenNotToUse: "You want the system to execute the change — MAJ never does that itself.",
+      rest: { method: "POST", path: "/api/maj/actions/:id/decide" },
+      flags: { ...readFlags(false), pii: false },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        if (!majIsOpen(actor.orgRef)) return { blocked: true, reason: "MAJ is house alpha." };
+        const { pool, events } = needStore(ctx);
+        const decision = String(input.decision);
+        if (decision !== "approved" && decision !== "declined") {
+          return { error: "invalid_decision" };
+        }
+        await decideAction({
+          pool,
+          events,
+          orgRef: actor.orgRef,
+          actorRef: actor.sub,
+          actionId: String(input.actionId),
+          decision,
+          requestId: ctx.requestId,
+        });
+        return { actionId: String(input.actionId), decision };
       },
     }),
   );

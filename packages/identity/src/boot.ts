@@ -29,13 +29,13 @@ const MIN_HARDENED_SECRET_LENGTH = 32;
 export function assertHardenedIdentityBoot(env: NodeJS.ProcessEnv = process.env): void {
   if (!isHardenedIdentityRuntime(env)) return;
   if (!env.DATABASE_URL?.trim()) {
-    throw new Error("Identity vägrar starta i produktion utan DATABASE_URL.");
+    throw new Error("Identity refuses to start in production without DATABASE_URL.");
   }
   if (env.PIXDRIFT_SEED_DEMO === "true") {
-    throw new Error("Identity vägrar starta i produktion med PIXDRIFT_SEED_DEMO=true.");
+    throw new Error("Identity refuses to start in production with PIXDRIFT_SEED_DEMO=true.");
   }
   if (env.COOKIE_SECURE === "false") {
-    throw new Error("Identity vägrar starta i produktion med COOKIE_SECURE=false.");
+    throw new Error("Identity refuses to start in production with COOKIE_SECURE=false.");
   }
 }
 
@@ -188,7 +188,7 @@ export async function bootIdentityFromEnv(opts: BootOptions = {}): Promise<Fasti
       sessionSecret === DEV_SESSION_SECRET ||
       sessionSecret.length < MIN_HARDENED_SECRET_LENGTH)
   ) {
-    throw new Error("SESSION_SECRET måste sättas till ett starkt, unikt värde i produktion");
+    throw new Error("SESSION_SECRET must be set to a strong, unique value in production");
   }
   // Secure cookies by default over HTTPS; overridable with COOKIE_SECURE.
   // Hardened runtime always sets the Secure flag.
@@ -240,7 +240,7 @@ export async function bootIdentityFromEnv(opts: BootOptions = {}): Promise<Fasti
   }
 
   if (isProd) {
-    throw new Error("Identity vägrar starta i produktion utan DATABASE_URL.");
+    throw new Error("Identity refuses to start in production without DATABASE_URL.");
   }
 
   const { store } = await seededStore();

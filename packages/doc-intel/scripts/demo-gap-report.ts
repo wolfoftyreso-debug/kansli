@@ -29,9 +29,9 @@ mkdirSync(outDir, { recursive: true });
 writeFileSync(new URL("ALVA-DEMO-GAP-REPORT.md", outDir), markdown, "utf8");
 
 const t = gaps.totals;
-console.log("ALVA Product Demo gap report skriven till docs/product-demo/ALVA-DEMO-GAP-REPORT.md");
+console.log("ALVA Product Demo gap report written to docs/product-demo/ALVA-DEMO-GAP-REPORT.md");
 console.log(
-  `Scener: ${t.scenes} (VERIFIED ${t.verified}, CAPTURED ${t.captured}, ` +
+  `Scenes: ${t.scenes} (VERIFIED ${t.verified}, CAPTURED ${t.captured}, ` +
     `PLANNED ${t.planned}, BLOCKED_NO_APP ${t.blocked}, QA_REJECTED ${t.qaRejected})`,
 );
-console.log(`Kan inte demonstreras härifrån: ${gaps.cannotDemonstrate.length}`);
+console.log(`Cannot be demonstrated from here: ${gaps.cannotDemonstrate.length}`);

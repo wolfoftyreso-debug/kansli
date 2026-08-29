@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   RevolutError,
   categoryFromStatus,
+  describeCategory,
   isAuthenticationFailure,
   isTransient,
   requiresReauthorization,
@@ -62,5 +63,17 @@ describe("who has to do something", () => {
   it("does not classify a plain Error as anything actionable", () => {
     expect(requiresReauthorization(new Error("boom"))).toBe(false);
     expect(isTransient(new Error("boom"))).toBe(false);
+  });
+});
+
+describe("describeCategory", () => {
+  it("uses English-canonical sentences like the UI catalog", () => {
+    expect(describeCategory("configuration")).toBe("The Revolut configuration is not ready.");
+    expect(describeCategory("timeout")).toBe("Revolut did not answer within the time limit.");
+    expect(describeCategory("network")).toBe("Network error toward Revolut.");
+    expect(describeCategory("malformed_response")).toBe(
+      "Revolut answered with something we could not parse.",
+    );
+    expect(describeCategory("unknown")).toBe("Unknown error toward Revolut.");
   });
 });

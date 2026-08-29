@@ -9,7 +9,7 @@ export async function GET() {
     return json({
       inquiries: await listInquiries(pool, present.orgRef),
       credit: { configured: creditConfigured() },
-      note: "CREDITAE sätter inget kreditbetyg. Byråns rapport är inte er slutsats.",
+      note: "CREDITAE does not set a credit rating. The bureau report is not your conclusion.",
     });
   });
 }
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
       reason?: string;
     } | null;
     if (!body?.subjectOrgNumber?.trim()) {
-      throw new ApiError("invalid_request", "subjectOrgNumber krävs.");
+      throw new ApiError("invalid_request", "subjectOrgNumber is required.");
     }
     try {
       const item = await createInquiry({
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     } catch (error) {
       throw new ApiError(
         "invalid_request",
-        error instanceof Error ? error.message : "Förfrågan gick inte att spara.",
+        error instanceof Error ? error.message : "The inquiry could not be saved.",
       );
     }
   });

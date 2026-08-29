@@ -167,7 +167,7 @@ describe("certificate and key pairing", () => {
     const state = revolutConfigState(env);
     expect(state.missing).toEqual([]);
     expect(state.ready).toBe(false);
-    expect(() => assertProductionRevolutConfig(env)).toThrow(/hör inte till certifikatet/);
+    expect(() => assertProductionRevolutConfig(env)).toThrow(/does not belong to the certificate/);
   });
 
   it("tolerates the prefixed and wrapped forms a secret store hands back", () => {

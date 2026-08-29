@@ -1,20 +1,36 @@
 import { AppShell } from "@/components/app/AppShell";
 import { CheckField, Field, Notice, Submit } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
-import { DEMO_MODULE_LABELS, DEMO_MODULES } from "@/lib/kansli/intakes";
+import { t, type Locale, type MessageKey } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
+import {
+  ALL_MODULES_MONTHLY_NET_ORE,
+  INSTALMENT_INTERVAL_DAYS,
+  kronor,
+  MODULE_PRICING,
+  PAYMENT_DAYS,
+  SELLABLE_MODULES,
+  YEAR_INSTALMENTS,
+  type SellableModule,
+} from "@/lib/kansli/pricing";
 
-export const metadata = {
-  title: "Koncernupphandling — Pixdrift",
-  description:
-    "Underlag för demo och uppföljningsmöte. Anpassning sker mot er miljö när stacken är känd.",
-};
+export const dynamic = "force-dynamic";
+
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "intake.metaTitle"),
+    description: t(locale, "intake.metaDescription"),
+  };
+}
+
+function moduleBlurb(locale: Locale, id: SellableModule): string {
+  return t(locale, `intake.module.${id}` as MessageKey);
+}
 
 /**
- * Layout from Sana AI “Book an intro”
- * https://mobbin.com/flows/b579b13d-0b90-4ca4-9b77-e03c42a7c851
- * Two columns: trust left, form right. CTA is a held meeting, not a calendar picker.
- * Login pattern (email + password, error under field, no fake Google SSO):
- * https://mobbin.com/flows/4e3afa58-8eac-4166-bfbf-e606b061e637
+ * Self-service, like buying a desktop-software subscription but simpler:
+ * pick modules, register, pay the invoice. No demos, no meetings, no sales.
  */
 export default async function UpphandlingPage({
   searchParams,
@@ -22,28 +38,49 @@ export default async function UpphandlingPage({
   searchParams: Promise<{ fel?: string }>;
 }) {
   const session = await readSession();
-  const orgNumberWrong = (await searchParams).fel === "orgnr";
+  const locale = await readLocale();
+  const fel = (await searchParams).fel;
+  const orgNumberWrong = fel === "orgnr";
+  const noModules = fel === "moduler";
+  const vars = {
+    instalments: YEAR_INSTALMENTS,
+    paymentDays: PAYMENT_DAYS,
+    interval: INSTALMENT_INTERVAL_DAYS,
+  };
   return (
     <AppShell current="upphandling" session={session}>
       <div className="grid gap-8 lg:grid-cols-[1fr_1.15fr] lg:items-start">
         <aside className="flex flex-col gap-4">
-          <p className="pd-label text-faint">Koncernupphandling</p>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Underlag för demo och uppföljningsmöte
-          </h1>
-          <p className="text-ink-soft">
-            Fyll i hur ni arbetar idag: system, anläggningar och identitet. Vi använder svaret till
-            att förbereda en demonstration och ett möte tio dagar senare. Anpassningen gör vi när vi
-            vet vilka system ni har.
-          </p>
+          <p className="pd-label text-faint">{t(locale, "intake.kicker")}</p>
+          <h1 className="text-2xl font-semibold tracking-tight">{t(locale, "intake.heading")}</h1>
+          <p className="text-ink-soft">{t(locale, "intake.lead", vars)}</p>
           <ul className="flex flex-col gap-2 text-sm text-ink-soft">
-            <li>Inloggning med arbets-e-post och lösenord i Pixdrift Identity.</li>
-            <li>Startfaktura med tio dagars betalning i Ekonomi.</li>
-            <li>Pilot kan erbjudas med avgränsad omfattning. Avtal tecknas efter demot.</li>
+            <li>{t(locale, "intake.bullet.kansli")}</li>
+            <li>{t(locale, "intake.bullet.pick")}</li>
+            <li>
+              {t(locale, "intake.bullet.cap", { price: kronor(ALL_MODULES_MONTHLY_NET_ORE) })}
+            </li>
+            <li>{t(locale, "intake.bullet.year", { instalments: YEAR_INSTALMENTS })}</li>
           </ul>
-          <p className="text-sm text-muted">
-            När du skickar in bokas mötet automatiskt: klockan 10.00, tio dagar från idag.
-          </p>
+          <div className="border border-line bg-surface">
+            {SELLABLE_MODULES.map((id) => (
+              <p
+                key={id}
+                className="flex items-baseline justify-between gap-3 border-b border-line px-3 py-2 text-sm last:border-b-0"
+              >
+                <span>
+                  <span className="font-medium">{MODULE_PRICING[id].label}</span>
+                  <span className="text-ink-soft"> — {moduleBlurb(locale, id)}</span>
+                </span>
+                <span className="shrink-0 tabular-nums text-ink-soft">
+                  {t(locale, "intake.perMonth", {
+                    price: kronor(MODULE_PRICING[id].monthlyNetOre),
+                  })}
+                </span>
+              </p>
+            ))}
+          </div>
+          <p className="text-sm text-muted">{t(locale, "intake.pricesNote")}</p>
         </aside>
 
         <form
@@ -51,93 +88,63 @@ export default async function UpphandlingPage({
           method="post"
           className="flex flex-col gap-4 border border-line bg-surface p-4"
         >
-          {orgNumberWrong ? (
-            <Notice>Organisationsnumret stämmer inte. Kontrollera siffrorna.</Notice>
-          ) : null}
-          <Field name="contactEmail" label="Arbets-e-post" type="email" required />
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field name="contactName" label="Kontaktperson" required placeholder="Anna Andersson" />
-            <Field name="contactTitle" label="Roll" placeholder="IT-inköp" />
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field name="companyName" label="Bolag" required placeholder="Bilia Personbilar AB" />
-            <Field name="orgNumber" label="Organisationsnummer" placeholder="556xxx-xxxx" />
-          </div>
-          <Field name="sites" label="Anläggningar" placeholder="Göteborg, Stockholm…" />
-          <Field name="brands" label="Märken" placeholder="Volkswagen, Audi, Seat" />
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field name="dms" label="DMS / verkstadssystem" />
-            <Field name="economySystem" label="Ekonomisystem" placeholder="Fortnox, Visma, annat" />
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field name="tireHotel" label="Däckhotell idag" />
-            <Field name="smsProvider" label="SMS-leverantör" />
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="flex flex-col gap-1">
-              <span className="text-sm text-ink-soft">Identitet idag</span>
-              <select
-                name="identitySystem"
-                className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
-                defaultValue=""
-              >
-                <option value="">Välj</option>
-                <option value="entra">Microsoft Entra</option>
-                <option value="okta">Okta</option>
-                <option value="local">Lokala konton</option>
-                <option value="other">Annat</option>
-              </select>
-            </label>
-            <label className="flex flex-col gap-1">
-              <span className="text-sm text-ink-soft">Miljö</span>
-              <select
-                name="environment"
-                className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
-                defaultValue=""
-              >
-                <option value="">Välj</option>
-                <option value="cloud">Moln</option>
-                <option value="onprem">On-prem</option>
-                <option value="hybrid">Hybrid</option>
-              </select>
-            </label>
-          </div>
-          <Field
-            name="oidcNotes"
-            label="OIDC / brandvägg / allowlist"
-            multiline
-            placeholder="Vilka originer ska in? Vilket IdP ska vi samexistera med?"
-          />
-          <fieldset className="flex flex-col gap-2">
-            <legend className="text-sm text-ink-soft">Vad ska demot visa</legend>
-            {DEMO_MODULES.map((id) => (
+          {orgNumberWrong ? <Notice>{t(locale, "intake.errorOrg")}</Notice> : null}
+          {noModules ? <Notice>{t(locale, "intake.errorModules")}</Notice> : null}
+          <fieldset className="flex flex-col gap-1">
+            <legend className="text-sm text-ink-soft">{t(locale, "intake.modulesLegend")}</legend>
+            {SELLABLE_MODULES.map((id) => (
               <CheckField
                 key={id}
-                name="demoModules"
+                name="modules"
                 value={id}
-                label={DEMO_MODULE_LABELS[id]}
-                defaultChecked={id === "tyra" || id === "ekonomi" || id === "irma"}
+                large
+                label={t(locale, "intake.moduleLine", {
+                  label: MODULE_PRICING[id].label,
+                  blurb: moduleBlurb(locale, id),
+                  price: kronor(MODULE_PRICING[id].monthlyNetOre),
+                })}
               />
             ))}
           </fieldset>
-          <Field name="notes" label="Övrigt vi måste veta" multiline />
-          <CheckField
-            name="honestyAccepted"
+          <Field
+            name="contactEmail"
+            label={t(locale, "intake.email")}
+            type="email"
             required
-            label="Jag bekräftar att det här är underlag för demo och möte. Live-leverantörspriser, Visma, Fortnox och kvalificerad e-signatur ingår inte. SMS vid sälj går bara när telefonen är kopplad och ni sagt ja."
+            large
           />
-          <CheckField
-            name="provisionAccount"
-            defaultChecked
-            label="Skapa inloggning med arbets-e-post och tillfälligt lösenord."
-          />
-          <CheckField
-            name="issueInvoice"
-            defaultChecked
-            label="Utfärda startfaktura med tio dagars betalning."
-          />
-          <Field name="invoiceKronor" label="Fakturabelopp exkl. moms (kr)" defaultValue="2500" />
-          <Submit large>Boka möte om 10 dagar</Submit>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field
+              name="contactName"
+              label={t(locale, "intake.contact")}
+              required
+              large
+              placeholder={t(locale, "intake.placeholder.contact")}
+            />
+            <Field
+              name="contactTitle"
+              label={t(locale, "intake.role")}
+              large
+              placeholder={t(locale, "intake.placeholder.role")}
+            />
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field
+              name="companyName"
+              label={t(locale, "intake.company")}
+              required
+              large
+              placeholder={t(locale, "intake.placeholder.company")}
+            />
+            <Field
+              name="orgNumber"
+              label={t(locale, "intake.orgNumber")}
+              large
+              placeholder="556xxx-xxxx"
+            />
+          </div>
+          <CheckField name="termsAccepted" required large label={t(locale, "intake.terms", vars)} />
+          <Submit large>{t(locale, "intake.submit")}</Submit>
         </form>
       </div>
     </AppShell>

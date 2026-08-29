@@ -129,11 +129,21 @@ export const OPS_SMS_KINDS: readonly OpsSmsKind[] = [
   "readiness",
 ];
 
+/** Canonical English fallback. UI uses `opsSmsKindLabel(locale, kind)`. */
 export const OPS_SMS_KIND_LABEL: Record<OpsSmsKind, string> = {
-  overdue: "Förfallen reskontra",
-  support: "Öppna ärenden",
-  sms_failed: "Misslyckat SMS",
-  readiness: "Blockerad beredskap",
+  overdue: "Overdue ledger",
+  support: "Open cases",
+  sms_failed: "Failed SMS",
+  readiness: "Blocked readiness",
+};
+
+export type OpsChannel = {
+  id: string;
+  label: string;
+  vendor: string;
+  env: string[];
+  configured: boolean;
+  note: string | null;
 };
 
 export type OpsSnapshot = {
@@ -141,7 +151,7 @@ export type OpsSnapshot = {
   scope: OpsScope;
   orgRef: string;
   orgName: string | null;
-  runtime: "produktion" | "förhandsvisning" | "lokal";
+  runtime: "production" | "preview" | "local";
   hardened: boolean;
   contract: {
     engines: number;
@@ -157,7 +167,9 @@ export type OpsSnapshot = {
     sms: boolean;
     tts: boolean;
     credit: boolean;
+    webintel: boolean;
     revolut: { configured: boolean; environment: string };
+    channels: OpsChannel[];
     mcp: {
       mcp_requests_total: number;
       mcp_tool_calls_total: number;

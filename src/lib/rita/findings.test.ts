@@ -3,8 +3,10 @@ import {
   analysisDisclaimer,
   analysisLimitations,
   analysisSummary,
+  analysisSummaryText,
   categoryLabel,
   estimatedTotalHint,
+  estimatedTotalHintText,
   findingsFromAnalysis,
 } from "./findings.ts";
 
@@ -48,13 +50,15 @@ describe("findingsFromAnalysis", () => {
           summary: { identified_opportunities: 1, high_priority_count: 1, found_nothing: false },
         },
       }),
-    ).toMatch(/1 fynd/);
+    ).toMatch(/1 findings/);
   });
 
   it("returns nothing for blocked or empty results", () => {
     expect(findingsFromAnalysis(null)).toEqual([]);
     expect(findingsFromAnalysis({ status: "blocked" })).toEqual([]);
-    expect(analysisSummary({ result: { summary: { found_nothing: true } } })).toMatch(/inget/);
+    expect(analysisSummary({ result: { summary: { found_nothing: true } } })).toMatch(
+      /nothing to report/,
+    );
   });
 
   it("surfaces rule, disclaimer and interval without promising a refund", () => {
@@ -79,10 +83,18 @@ describe("findingsFromAnalysis", () => {
     const [finding] = findingsFromAnalysis(result);
     expect(finding?.ruleId).toBe("se.tax.k10.lonekrav");
     expect(finding?.ruleTitle).toMatch(/57 kap/);
-    expect(categoryLabel(finding?.category ?? "")).toBe("Skatt");
+    expect(categoryLabel(finding?.category ?? "")).toBe("Tax");
     expect(analysisDisclaimer(result)).toMatch(/Ingen garanti/);
     expect(analysisLimitations(result)[0]).toMatch(/rådgivare/);
-    expect(estimatedTotalHint(result)).toMatch(/ingen garanti/);
+    expect(estimatedTotalHint(result)).toMatch(/no guarantee/);
     expect(estimatedTotalHint(result)).not.toMatch(/Du sparar/);
+    expect(estimatedTotalHintText(result, "en")).toMatch(/no guarantee/);
+    expect(estimatedTotalHintText(result, "sv")).toMatch(/ingen garanti/);
+    expect(analysisSummaryText({ result: { summary: { found_nothing: true } } }, "en")).toMatch(
+      /nothing to report/,
+    );
+    expect(analysisSummaryText({ result: { summary: { found_nothing: true } } }, "sv")).toMatch(
+      /inget/,
+    );
   });
 });

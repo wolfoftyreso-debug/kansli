@@ -43,7 +43,7 @@ export async function synthesizeSpeech(
       audio: null,
       contentType: null,
       providerRef: null,
-      reason: "Ingen röstleverantör är kopplad. Uppläsningen spelas inte.",
+      reason: "No speech vendor is connected. Speech is not played.",
     };
   }
   const text = clipSpeechText(input.text);
@@ -53,7 +53,7 @@ export async function synthesizeSpeech(
       audio: null,
       contentType: null,
       providerRef: null,
-      reason: "Det finns ingen text att läsa upp.",
+      reason: "There is no text to read.",
     };
   }
   const voiceId = input.voiceId?.trim() || ttsVoiceId(env);
@@ -78,7 +78,7 @@ export async function synthesizeSpeech(
         audio: null,
         contentType: null,
         providerRef: null,
-        reason: `Röstleverantören svarade ${response.status}.`,
+        reason: `The speech vendor responded ${response.status}.`,
       };
     }
     const audio = new Uint8Array(await response.arrayBuffer());
@@ -94,7 +94,7 @@ export async function synthesizeSpeech(
       audio: null,
       contentType: null,
       providerRef: null,
-      reason: "Röstleverantören gick inte att nå.",
+      reason: "The speech vendor could not be reached.",
     };
   }
 }

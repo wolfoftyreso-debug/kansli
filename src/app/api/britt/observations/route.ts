@@ -16,7 +16,7 @@ export async function POST(request: Request) {
       title?: string;
       body?: string;
     } | null;
-    if (!body?.title?.trim()) throw new ApiError("invalid_request", "title krävs.");
+    if (!body?.title?.trim()) throw new ApiError("invalid_request", "title is required.");
     const observation = await addObservation({
       pool,
       events,

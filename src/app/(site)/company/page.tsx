@@ -1,13 +1,10 @@
-import type { Metadata } from "next";
 import { brand } from "@/lib/pixdrift/brand";
 import { Container } from "@/components/site/Container";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { SpecTable } from "@/components/site/SpecTable";
-
-export const metadata: Metadata = {
-  title: "Company — PIXDRIFT",
-  description: `${brand.name} is developed by ${brand.company.name}, operating from Stockholm, Sweden and Houston, Texas.`,
-};
+import { t } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
+import { publicShareMeta } from "@/lib/platform/canonical";
 
 const character = [
   ["Precision", "Nothing arbitrary."],
@@ -18,21 +15,40 @@ const character = [
   ["Interoperability", "Existing infrastructure is respected rather than replaced."],
 ];
 
-export default function CompanyPage() {
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "site.company.metaTitle"),
+    description: t(locale, "site.company.metaDescription", {
+      name: brand.name,
+      company: brand.company.name,
+    }),
+    ...publicShareMeta("/company"),
+  };
+}
+
+export default async function CompanyPage() {
+  const locale = await readLocale();
   return (
     <Container>
       <SectionHeading
         as="h1"
-        eyebrow="Company"
-        title={`${brand.name} is developed by ${brand.company.name}.`}
-        intro={`${brand.company.name} develops software around practical problems affecting organizations, infrastructure and society.`}
+        eyebrow={t(locale, "site.company.eyebrow")}
+        title={t(locale, "site.company.title", {
+          name: brand.name,
+          company: brand.company.name,
+        })}
+        intro={t(locale, "site.company.intro", { company: brand.company.name })}
       />
 
       <div className="mt-14 max-w-2xl">
         <SpecTable
           rows={[
-            { label: "Product", value: `${brand.name} — ${brand.tagline}` },
-            { label: "Developed by", value: brand.company.name },
+            {
+              label: t(locale, "site.company.spec.product"),
+              value: `${brand.name} — ${brand.tagline}`,
+            },
+            { label: t(locale, "site.company.spec.developedBy"), value: brand.company.name },
             ...brand.company.offices.map((o) => ({
               label: o.entity,
               value: `${o.city}, ${o.country}`,

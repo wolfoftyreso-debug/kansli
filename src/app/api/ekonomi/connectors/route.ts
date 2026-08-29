@@ -45,10 +45,10 @@ export async function POST(request: Request) {
       );
     }
     if (!body?.provider || !(CONNECTORS as readonly string[]).includes(body.provider)) {
-      throw new ApiError("invalid_request", "provider krävs.");
+      throw new ApiError("invalid_request", "provider is required.");
     }
     if (!body.secret)
-      throw new ApiError("invalid_request", "secret krävs. Den ekas inte tillbaka.");
+      throw new ApiError("invalid_request", "secret is required. It is not echoed back.");
     const slot = await saveConnectorSecret({
       pool,
       events,

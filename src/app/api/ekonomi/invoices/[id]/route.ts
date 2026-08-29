@@ -8,7 +8,7 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
   return handleApi(async ({ actor, pool }) => {
     const present = requireOrg(actor);
     const invoice = await getInvoice(pool, present.orgRef, id);
-    if (!invoice) throw new ApiError("not_found", "fakturan finns inte.");
+    if (!invoice) throw new ApiError("not_found", "The invoice does not exist.");
     return json({ invoice, payments: await listPayments(pool, present.orgRef, id) });
   });
 }
@@ -51,6 +51,6 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
         }),
       });
     }
-    throw new ApiError("invalid_request", "action måste vara issue eller record_payment.");
+    throw new ApiError("invalid_request", "action must be issue or record_payment.");
   });
 }

@@ -4,6 +4,7 @@ import { readSession } from "@/lib/auth/session";
 import { localeTag, t } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
 import { LauncherMark } from "@/components/app/LauncherMark";
+import { publicShareMeta } from "@/lib/platform/canonical";
 import { launcherTiles } from "@/lib/platform/launcher";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -11,6 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "PIXDRIFT",
     description: t(locale, "home.metaDescription"),
+    ...publicShareMeta("/"),
   };
 }
 

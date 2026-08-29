@@ -12,7 +12,7 @@ export async function POST(request: Request) {
       season?: string;
     } | null;
     if (!body?.width || !body.aspectRatio || !body.rimDiameter) {
-      throw new ApiError("invalid_request", "width, aspectRatio och rimDiameter krävs.");
+      throw new ApiError("invalid_request", "width, aspectRatio and rimDiameter are required.");
     }
     const result = await searchSupplierProducts({
       pool,

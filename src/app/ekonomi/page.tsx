@@ -15,7 +15,7 @@ import { listUnbookedTyraQuotes } from "@/lib/ekonomi/tyra-sales";
 import { smsConfigured } from "@/lib/platform/sms";
 import { readSession } from "@/lib/auth/session";
 import { formatDateTime } from "@/lib/format/datetime";
-import { t } from "@/lib/i18n";
+import { ekonomiRailLabel, ekonomiSmsStatus, t } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
 import { tryRuntime } from "@/lib/platform/page";
 import { saveSalesAlertAction } from "./actions";
@@ -29,13 +29,6 @@ export async function generateMetadata() {
     description: t(locale, "ekonomi.metaDescription"),
   };
 }
-
-const ALERT_STATUS: Record<string, string> = {
-  PENDING: "Väntar",
-  SENT: "Skickat",
-  FAILED: "Misslyckades",
-  BLOCKED: "Stoppat",
-};
 
 export default async function EkonomiPage() {
   const session = await readSession();
@@ -92,25 +85,36 @@ export default async function EkonomiPage() {
             open={aged.notDue}
             overdue={aged.overdue}
             quotes={quotes}
+            locale={locale}
           />
 
-          <SalesBoard points={points} />
+          <SalesBoard points={points} locale={locale} />
 
           <section className="grid gap-3 sm:grid-cols-3">
             <article className="rounded-xl border border-line bg-surface px-4 py-4">
-              <p className="text-xs uppercase tracking-wide text-muted">Öppna fordringar</p>
+              <p className="text-xs uppercase tracking-wide text-muted">
+                {t(locale, "ekonomi.metric.open")}
+              </p>
               <p className="mt-2 text-2xl font-semibold">
                 {formatSek(aged.notDueOre + aged.overdueOre)}
               </p>
-              <p className="mt-1 text-sm text-ink-soft">{aged.openCount} fakturor</p>
+              <p className="mt-1 text-sm text-ink-soft">
+                {t(locale, "ekonomi.metric.invoices", { count: aged.openCount })}
+              </p>
             </article>
             <article className="rounded-xl border border-line bg-surface px-4 py-4">
-              <p className="text-xs uppercase tracking-wide text-muted">Förfallet</p>
+              <p className="text-xs uppercase tracking-wide text-muted">
+                {t(locale, "ekonomi.metric.overdue")}
+              </p>
               <p className="mt-2 text-2xl font-semibold">{formatSek(aged.overdueOre)}</p>
-              <p className="mt-1 text-sm text-ink-soft">{aged.overdue.length} poster</p>
+              <p className="mt-1 text-sm text-ink-soft">
+                {t(locale, "ekonomi.metric.items", { count: aged.overdue.length })}
+              </p>
             </article>
             <article className="rounded-xl border border-line bg-surface px-4 py-4">
-              <p className="text-xs uppercase tracking-wide text-muted">Inbetalningar</p>
+              <p className="text-xs uppercase tracking-wide text-muted">
+                {t(locale, "ekonomi.metric.payments")}
+              </p>
               <p className="mt-2 text-2xl font-semibold">
                 {formatSek(
                   payments
@@ -119,7 +123,9 @@ export default async function EkonomiPage() {
                 )}
               </p>
               <p className="mt-1 text-sm text-ink-soft">
-                {payments.filter((item) => item.status === "received").length} bokade
+                {t(locale, "ekonomi.metric.booked", {
+                  count: payments.filter((item) => item.status === "received").length,
+                })}
               </p>
             </article>
           </section>
@@ -129,16 +135,16 @@ export default async function EkonomiPage() {
               action={saveSalesAlertAction}
               className="flex flex-col gap-3 rounded-xl border border-line bg-surface px-4 py-4"
             >
-              <h2 className="text-lg font-semibold">SMS när ni säljer</h2>
+              <h2 className="text-lg font-semibold">{t(locale, "ekonomi.sms.heading")}</h2>
               <p className="text-sm text-ink-soft">
-                Ett kort meddelande går ut när en faktura utfärdas. Inte när ett utkast sparas.
+                {t(locale, "ekonomi.sms.leadIssued")}{" "}
                 {vendorReady
-                  ? " Telefonen är kopplad."
-                  : " Numret sparas nu. SMS går inte ut förrän telefonen är kopplad i drift."}
+                  ? t(locale, "ekonomi.sms.vendorOn")
+                  : t(locale, "ekonomi.sms.vendorOff")}
               </p>
               <Field
                 name="phone"
-                label="Mobilnummer"
+                label={t(locale, "ekonomi.field.phone")}
                 type="tel"
                 required
                 defaultValue={alertSettings?.phone ?? ""}
@@ -146,21 +152,21 @@ export default async function EkonomiPage() {
               />
               <CheckField
                 name="enabled"
-                label="Skicka SMS vid sälj"
+                label={t(locale, "ekonomi.field.sendSms")}
                 defaultChecked={alertSettings?.enabled ?? true}
               />
-              <Submit>Spara SMS</Submit>
+              <Submit>{t(locale, "ekonomi.sms.save")}</Submit>
             </form>
             <div className="rounded-xl border border-line bg-surface px-4 py-4">
-              <h2 className="text-lg font-semibold">Senaste SMS</h2>
+              <h2 className="text-lg font-semibold">{t(locale, "ekonomi.sms.recent")}</h2>
               {alerts.length === 0 ? (
-                <p className="mt-2 text-sm text-muted">Inga säljnotiser ännu.</p>
+                <p className="mt-2 text-sm text-muted">{t(locale, "ekonomi.sms.empty")}</p>
               ) : (
                 <ul className="mt-3 flex flex-col gap-3">
                   {alerts.slice(0, 5).map((alert) => (
                     <li key={alert.id} className="text-sm">
                       <p className="text-xs uppercase tracking-wide text-muted">
-                        {ALERT_STATUS[alert.status] ?? alert.status}
+                        {ekonomiSmsStatus(locale, alert.status)}
                       </p>
                       <p className="mt-1 text-ink-soft">{alert.body}</p>
                       <p className="mt-1 text-xs text-muted">
@@ -205,15 +211,17 @@ export default async function EkonomiPage() {
           </nav>
 
           <section className="flex flex-col gap-2">
-            <h2 className="text-lg font-semibold">Betalspår</h2>
+            <h2 className="text-lg font-semibold">{t(locale, "ekonomi.rails.heading")}</h2>
             {Object.values(rails).map((rail) => (
               <p
                 key={rail.id}
                 className="rounded-md border border-line bg-surface px-3 py-2 text-sm"
               >
-                <span className="font-medium">{rail.label}</span>
+                <span className="font-medium">{ekonomiRailLabel(locale, rail.id)}</span>
                 {" — "}
-                {rail.offerable ? "kan erbjudas" : "blockerat"}
+                {rail.offerable
+                  ? t(locale, "ekonomi.rails.offerable")
+                  : t(locale, "ekonomi.rails.blocked")}
                 {". "}
                 {rail.reason}
               </p>

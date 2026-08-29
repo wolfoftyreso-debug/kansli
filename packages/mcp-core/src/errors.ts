@@ -84,10 +84,10 @@ export function normalizeError(error: unknown, requestId: string): McpError {
   if (error instanceof Error && /krävs|required|tom/i.test(error.message)) {
     return new McpError("VALIDATION_ERROR", error.message, requestId);
   }
-  return new McpError("INTERNAL_ERROR", "Ett oväntat fel uppstod.", requestId);
+  return new McpError("INTERNAL_ERROR", "An unexpected error occurred.", requestId);
 }
 
 export function safeErrorMessage(error: unknown): string {
   if (error instanceof McpError || error instanceof ApiError) return error.message;
-  return "Ett oväntat fel uppstod.";
+  return "An unexpected error occurred.";
 }

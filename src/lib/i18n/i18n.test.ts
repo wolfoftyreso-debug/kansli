@@ -7,7 +7,36 @@ import {
   localeFromAcceptLanguage,
   parseLocale,
 } from "./locales.ts";
-import { catalogs, messageKeys, t } from "./t.ts";
+import {
+  catalogs,
+  alvaOutcome,
+  catalogField,
+  catalogSection,
+  catalogSectionTitle,
+  catalogRegion,
+  brittObsStatus,
+  brittSource,
+  ekonomiConnSlot,
+  ekonomiInvoiceStatus,
+  ekonomiPayStatus,
+  ekonomiRevolutError,
+  ekonomiRevolutStatus,
+  ekonomiSmsStatus,
+  irmaStatus,
+  irmaVerification,
+  messageKeys,
+  ritaAnalysisStatus,
+  ritaCategory,
+  ritaFindingStatus,
+  t,
+  toraCalKind,
+  toraEvalKind,
+  toraReqStatus,
+  toraTiming,
+  tyraCaseStatus,
+  tyraIntentLabel,
+  tyraStepStatus,
+} from "./t.ts";
 
 describe("locale registry", () => {
   it("ships English as the system language plus the decided set", () => {
@@ -46,6 +75,147 @@ describe("locale registry", () => {
 
   it("falls back to English and fills placeholders", () => {
     expect(t("en", "home.helloNamed", { name: "Landvex" })).toBe("Hello, Landvex");
+    expect(t("en", "ops.kicker")).toBe("Ops desk");
+    expect(t("sv", "ops.kicker")).toBe("Sambandscentral");
+    expect(t("en", "ready.heading")).toBe("First customer");
+    expect(t("sv", "ready.heading")).toBe("Första kunden");
+    expect(t("en", "events.heading")).toBe("Event log");
+    expect(t("sv", "events.heading")).toBe("Händelselogg");
+    expect(t("en", "intake.heading")).toBe("Pick modules and sign a year");
+    expect(t("sv", "intake.submit")).toBe("Teckna året och få fakturorna");
+    expect(t("en", "intake.inbox.heading")).toBe("Registrations");
+    expect(t("sv", "intake.inbox.heading")).toBe("Registreringar");
+    expect(t("en", "tyra.openCase")).toBe("Open case");
+    expect(t("sv", "tyra.openCase")).toBe("Öppna ärende");
+    expect(tyraIntentLabel("en", "TIRE_SWAP_APPOINTMENT")).toBe("Wheel change");
+    expect(tyraIntentLabel("sv", "TIRE_SWAP_APPOINTMENT")).toBe("Hjulskifte");
+    expect(tyraCaseStatus("en", "OPEN")).toBe("Open");
+    expect(tyraCaseStatus("sv", "OPEN")).toBe("Öppet");
+    expect(t("en", "tyra.case.bookSale")).toBe("Book sale");
+    expect(t("sv", "tyra.case.bookSale")).toBe("Boka sälj");
+    expect(tyraStepStatus("en", "TODO")).toBe("To do");
+    expect(tyraStepStatus("sv", "TODO")).toBe("Att göra");
+    expect(t("en", "ekonomi.desk.newSale")).toBe("New sale");
+    expect(t("sv", "ekonomi.desk.newSale")).toBe("Nytt sälj");
+    expect(ekonomiInvoiceStatus("en", "draft")).toBe("Draft");
+    expect(ekonomiInvoiceStatus("sv", "draft")).toBe("Utkast");
+    expect(ekonomiSmsStatus("en", "SENT")).toBe("Sent");
+    expect(ekonomiSmsStatus("sv", "SENT")).toBe("Skickat");
+    expect(t("en", "ekonomi.doc.lines")).toBe("Lines");
+    expect(t("sv", "ekonomi.doc.lines")).toBe("Rader");
+    expect(ekonomiPayStatus("en", "received")).toBe("Received");
+    expect(ekonomiPayStatus("sv", "received")).toBe("Mottagen");
+    expect(t("en", "ekonomi.stmt.heading")).toBe("Statements");
+    expect(t("sv", "ekonomi.stmt.heading")).toBe("Kontoutdrag");
+    expect(t("en", "ekonomi.rep.heading")).toBe("VAT and receivables");
+    expect(t("sv", "ekonomi.vouch.heading")).toBe("Verifikat");
+    expect(ekonomiConnSlot("en", "revolut_business")).toBe("Revolut Business (statements)");
+    expect(ekonomiConnSlot("sv", "revolut_business")).toBe("Revolut Business (kontoutdrag)");
+    expect(t("en", "ekonomi.rev.heading")).toBe("Revolut Business");
+    expect(t("sv", "ekonomi.rev.signInTitle")).toBe("Logga in för att ansluta Revolut");
+    expect(ekonomiRevolutStatus("en", "not_configured")).toBe("Not configured");
+    expect(ekonomiRevolutStatus("sv", "not_configured")).toBe("Inte konfigurerad");
+    expect(ekonomiRevolutError("en", "configuration")).toBe(
+      "The Revolut configuration is not ready.",
+    );
+    expect(ekonomiRevolutError("sv", "configuration")).toBe(
+      "Revolut-konfigurationen är inte klar.",
+    );
+    expect(t("en", "irma.create")).toBe("Create and show link");
+    expect(t("sv", "irma.create")).toBe("Skapa och visa länk");
+    expect(irmaStatus("en", "signed")).toBe("Confirmed");
+    expect(irmaStatus("sv", "signed")).toBe("Bekräftat");
+    expect(irmaVerification("en", 1)).toBe("Digital confirmation (level 1)");
+    expect(irmaVerification("sv", 0)).toBe("Ingen bekräftelse (informationsunderlag)");
+    expect(t("en", "irma.guest.opened")).toBe("I have opened the document");
+    expect(t("sv", "irma.guest.readHeading")).toBe("Det här ska du läsa");
+    expect(t("en", "tora.saveProfile")).toBe("Save company profile");
+    expect(t("sv", "tora.share")).toBe("Dela läget");
+    expect(t("en", "tora.cal.heading")).toBe("Calendar");
+    expect(t("sv", "tora.cal.thisWeek")).toBe("Den här veckan");
+    expect(toraCalKind("en", "deadline")).toBe("Bid deadline");
+    expect(toraCalKind("sv", "deadline")).toBe("Sista anbudsdag");
+    expect(t("en", "tora.doc.whyBid")).toBe("Why you may bid");
+    expect(t("sv", "tora.doc.requirements")).toBe("Krav mot ert bolag");
+    expect(t("en", "tora.brief.size")).toBe("Size");
+    expect(t("sv", "tyra.hub.kicker")).toBe("Kundhub");
+    expect(t("en", "rita.request")).toBe("Request analysis");
+    expect(t("sv", "rita.formTitle")).toBe("Ny analys");
+    expect(ritaAnalysisStatus("en", "completed")).toBe("Done");
+    expect(ritaAnalysisStatus("sv", "requested")).toBe("Begärd");
+    expect(ritaCategory("en", "tax")).toBe("Tax");
+    expect(ritaCategory("sv", "vat")).toBe("Moms");
+    expect(ritaFindingStatus("en", "warning")).toBe("Warning");
+    expect(ritaFindingStatus("sv", "identified")).toBe("Identifierat");
+    expect(t("en", "britt.demoTitle")).toBe("Demonstration analysis");
+    expect(t("sv", "britt.demoRun")).toBe("Kör analys");
+    expect(brittSource("en", "rita")).toBe("RITA — tax findings");
+    expect(brittSource("sv", "tyra")).toBe("TYRA — däckhotell");
+    expect(brittObsStatus("en", "open")).toBe("Open");
+    expect(brittObsStatus("sv", "done")).toBe("Klar");
+    expect(t("en", "alva.workflow")).toBe("Workflow");
+    expect(t("sv", "alva.saveStatus")).toBe("Spara status");
+    expect(alvaOutcome("en", "yes")).toBe("Yes");
+    expect(alvaOutcome("sv", "unknown")).toBe("Okänt");
+    expect(t("en", "creditae.saveAssessment")).toBe("Save assessment");
+    expect(t("sv", "creditae.choose")).toBe("Välj");
+    expect(t("en", "mcp.signInTitle")).toBe("Sign in to try MCP");
+    expect(t("sv", "mcp.toolCount", { count: 12 })).toBe("12 verktyg i registret.");
+    expect(t("en", "platform.gatewayPing")).toBe("Ping the gateway");
+    expect(t("sv", "platform.gatewayPinging")).toBe("Anropar…");
+    expect(t("en", "site.systems.title")).toBe("What each system does.");
+    expect(t("sv", "site.systems.open")).toBe("Öppna");
+    expect(catalogField("en", "identity", "purpose")).toBe("One sign-in for every system.");
+    expect(catalogField("sv", "rita", "purpose")).toBe("Letar skattebesparingar i era böcker.");
+    expect(catalogField("en", "tyra", "category")).toBe("Tyre hotel");
+    expect(catalogField("sv", "alva", "category")).toBe("Verkstad");
+    expect(catalogSection("en", "identity", "01", "")).toBe(
+      "One sign-in for every system, so you do not sign in again and again.",
+    );
+    expect(catalogSection("sv", "identity", "01", "")).toBe(
+      "En inloggning till alla system, så ni inte loggar in om och om igen.",
+    );
+    expect(catalogSectionTitle("en", "04")).toBe("How it works");
+    expect(catalogSectionTitle("sv", "04")).toBe("Så fungerar det");
+    expect(t("sv", "site.catalog.documentation")).toBe("Dokumentation");
+    expect(t("en", "chrome.breadcrumb")).toBe("Breadcrumb");
+    expect(t("sv", "chrome.breadcrumb")).toBe("Sökväg");
+    expect(t("en", "chrome.tryAgain")).toBe("Try again");
+    expect(t("sv", "chrome.tryAgain")).toBe("Försök igen");
+    expect(catalogRegion("sv", "Europe")).toBe("Europa");
+    expect(catalogRegion("en", "United States")).toBe("United States");
+    expect(t("sv", "site.company.spec.product")).toBe("Produkt");
+    expect(t("en", "site.doc.title")).toBe("Documentation is part of the product.");
+    expect(t("sv", "site.doc.eyebrow")).toBe("Dokumentation");
+    expect(t("sv", "site.doc.mcp.title")).toBe(
+      "REST är maskingränssnittet. MCP är agentgränssnittet.",
+    );
+    expect(t("sv", "site.doc.mcp.tools.title")).toBe("Genererad från registret");
+    expect(t("sv", "site.doc.rest.title")).toBe("En graf. Två gränssnitt.");
+    expect(t("sv", "site.why.title")).toBe("Varför PIXDRIFT finns");
+    expect(t("sv", "site.how.title")).toBe("En metod, inte en plattform.");
+    expect(t("sv", "site.doc.graph.notRegistered")).toBe("inte registrerat");
+    expect(t("en", "tyra.case.workCard")).toBe("Work card");
+    expect(t("sv", "tyra.case.next")).toBe("Nästa");
+    expect(t("en", "tora.doc.whyBidDefault")).toBe(
+      "The record does not say that you in particular should get the job.",
+    );
+    expect(t("sv", "tora.doc.whyBidDefault")).toBe(
+      "Underlaget säger inte att just ni ska få jobbet.",
+    );
+    expect(toraTiming("en", "open_now")).toBe("Open now");
+    expect(toraTiming("sv", "closed")).toBe("Stängd");
+    expect(toraEvalKind("en", "lowest_price")).toBe("Lowest price");
+    expect(toraReqStatus("en", "met")).toBe("Met");
+    expect(toraReqStatus("sv", "remediable")).toBe("Går att fixa");
+    expect(t("en", "platform.rita.rulesModel")).toBe("RITA · rules + model");
+    expect(t("sv", "platform.rita.rulesOnly")).toBe("RITA · bara fasta regler");
+    expect(t("en", "hold.title", { number: "INV-2026-0010" })).toBe(
+      "Invoice INV-2026-0010 is overdue",
+    );
+    expect(t("sv", "hold.paused")).toBe("Pausat");
+    expect(t("sv", "hold.openInvoice")).toBe("Öppna fakturan i Ekonomi");
+    expect(t("sv", "site.catalog.forthcoming")).toBe("Kommer");
     expect(t("sv", "chrome.signIn")).toBe("Logga in");
     expect(t("pl", "chrome.language")).toBe("Język");
     expect(t("de", "chrome.signIn")).toBe("Anmelden");

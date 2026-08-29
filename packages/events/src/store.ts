@@ -57,8 +57,8 @@ export class EventLog {
   }
 
   async publish(input: PublishInput): Promise<StoredEvent> {
-    if (!isSystemId(input.system)) throw new Error(`okänt system: ${input.system}`);
-    if (!isEventKind(input.kind)) throw new Error(`okänd händelse: ${input.kind}`);
+    if (!isSystemId(input.system)) throw new Error(`unknown system: ${input.system}`);
+    if (!isEventKind(input.kind)) throw new Error(`unknown event: ${input.kind}`);
 
     const { rows } = await this.db.query<{
       id: string;
@@ -97,7 +97,7 @@ export class EventLog {
 
   async list(filter: ListFilter): Promise<StoredEvent[]> {
     const orgRef = filter.orgRef?.trim();
-    if (!orgRef) throw new Error("orgRef krävs. EventLog listar inte hela boken.");
+    if (!orgRef) throw new Error("orgRef is required. EventLog does not list the whole book.");
     const clauses = ["true"];
     const values: unknown[] = [];
     const add = (sql: string, value: unknown) => {

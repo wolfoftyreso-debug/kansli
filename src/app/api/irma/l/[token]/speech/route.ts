@@ -15,17 +15,17 @@ export const dynamic = "force-dynamic";
 export async function GET(_request: Request, context: { params: Promise<{ token: string }> }) {
   return handleApi(async ({ pool }) => {
     if (!ttsConfigured()) {
-      throw new ApiError("not_ready", "Uppläsning är inte kopplad.");
+      throw new ApiError("not_ready", "Speech is not connected.");
     }
     const { token } = await context.params;
     const key = irmaThrottleKey(token);
     if (irmaTokenBlocked(key)) {
-      throw new ApiError("not_found", "Länken är ogiltig eller har gått ut.");
+      throw new ApiError("not_found", "The link is invalid or has expired.");
     }
     const agreement = await peekAgreementByToken(pool, token);
     if (!agreement) {
       noteIrmaTokenFailure(key);
-      throw new ApiError("not_found", "Länken är ogiltig eller har gått ut.");
+      throw new ApiError("not_found", "The link is invalid or has expired.");
     }
     noteIrmaTokenSuccess(key);
     const spoken = await synthesizeSpeech({ text: agreementSpeechText(agreement) });

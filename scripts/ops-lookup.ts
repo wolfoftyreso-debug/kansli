@@ -21,13 +21,13 @@ function parseArgs(argv: string[]): { q: string | null; orgRef: string } {
 async function main(): Promise<void> {
   const { q, orgRef } = parseArgs(process.argv);
   if (!q || q.startsWith("--")) {
-    console.error("Användning: pnpm ops:lookup -- <request-id> [--org pixdrift:org:…]");
+    console.error("Usage: pnpm ops:lookup -- <request-id> [--org pixdrift:org:…]");
     process.exit(1);
   }
 
   const url = process.env.DATABASE_URL ?? process.env.PIXDRIFT_TEST_DATABASE_URL;
   if (!url) {
-    console.error("Sätt DATABASE_URL (app-rollen, inte ägaren).");
+    console.error("Set DATABASE_URL (the app role, not the owner).");
     process.exit(1);
   }
 

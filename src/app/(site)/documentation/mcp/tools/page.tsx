@@ -1,14 +1,22 @@
-import type { Metadata } from "next";
 import { mcpCatalog } from "@/lib/mcp/handle";
 import { McpDocNav } from "@/components/site/McpDocNav";
 import { Container } from "@/components/site/Container";
 import { SectionHeading } from "@/components/site/SectionHeading";
+import { t } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
+import { publicShareMeta } from "@/lib/platform/canonical";
 
-export const metadata: Metadata = {
-  title: "MCP tools — PIXDRIFT",
-};
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "site.doc.mcp.tools.metaTitle"),
+    description: t(locale, "site.doc.mcp.tools.intro"),
+    ...publicShareMeta("/documentation/mcp/tools"),
+  };
+}
 
-export default function McpToolsPage() {
+export default async function McpToolsPage() {
+  const locale = await readLocale();
   const catalog = mcpCatalog();
   return (
     <Container>
@@ -16,9 +24,9 @@ export default function McpToolsPage() {
       <div className="mt-10">
         <SectionHeading
           as="h1"
-          eyebrow="Tools"
-          title="Generated from the registry"
-          intro="This page is not hand-copied. If a tool is missing here, it is not registered."
+          eyebrow={t(locale, "site.doc.nav.tools")}
+          title={t(locale, "site.doc.mcp.tools.title")}
+          intro={t(locale, "site.doc.mcp.tools.intro")}
         />
       </div>
       <div className="mt-12 flex flex-col border-t border-line">
@@ -35,7 +43,9 @@ export default function McpToolsPage() {
               </p>
             ) : null}
             {tool.deprecated ? (
-              <p className="mt-2 text-sm">Deprecated. Use {tool.replacement}.</p>
+              <p className="mt-2 text-sm">
+                {t(locale, "site.doc.mcp.deprecated", { name: tool.replacement ?? "" })}
+              </p>
             ) : null}
           </article>
         ))}

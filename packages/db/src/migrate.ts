@@ -52,7 +52,7 @@ export function parseMigrationFilename(filename: string): { version: number; nam
   const match = MIGRATION_FILENAME.exec(filename);
   if (!match) {
     throw new MigrationError(
-      `${filename} är inte en migrationsfil (förväntat NNNN_namn.sql, gemener)`,
+      `${filename} is not a migration file (expected NNNN_name.sql, lowercase)`,
     );
   }
   return { version: Number(match[1]), name: match[2]! };
@@ -72,7 +72,7 @@ export async function loadMigrations(dir: string): Promise<MigrationFile[]> {
     const { version, name } = parseMigrationFilename(filename);
     if (seen.has(version)) {
       throw new MigrationError(
-        `två migrationsfiler delar version ${String(version).padStart(4, "0")}`,
+        `Two migration files share version ${String(version).padStart(4, "0")}`,
       );
     }
     seen.add(version);
@@ -89,7 +89,7 @@ function migrationsTable(schema?: string): string {
 
 export function quoteIdent(ident: string): string {
   if (!/^[a-z_][a-z0-9_]*$/.test(ident)) {
-    throw new MigrationError(`ogiltigt schemanamn: ${ident}`);
+    throw new MigrationError(`Invalid schema name (must be a SQL identifier): ${ident}`);
   }
   return `"${ident}"`;
 }
@@ -134,9 +134,9 @@ export async function migrate(opts: MigrateOptions): Promise<MigrateResult> {
       if (existing) {
         if (existing !== file.checksum) {
           throw new MigrationError(
-            `${file.filename} har ändrats efter att den applicerades ` +
+            `${file.filename} has changed after it was applied ` +
               `(checksum ${existing.slice(0, 8)}… → ${file.checksum.slice(0, 8)}…). ` +
-              `Lägg en ny fil i stället för att skriva om en applicerad migration.`,
+              `Add a new file instead of rewriting an applied migration.`,
           );
         }
         already.push(file.filename);
@@ -160,7 +160,7 @@ export async function migrate(opts: MigrateOptions): Promise<MigrateResult> {
       } catch (error) {
         await client.query("rollback").catch(() => undefined);
         const detail = error instanceof Error ? error.message : String(error);
-        throw new MigrationError(`${file.filename} misslyckades: ${detail}`);
+        throw new MigrationError(`${file.filename} failed: ${detail}`);
       } finally {
         client.release();
       }
@@ -185,7 +185,7 @@ export async function grantSchemaAccess(
   mode: SchemaGrant,
 ): Promise<void> {
   if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(appRole)) {
-    throw new MigrationError(`ogiltigt appRole: ${appRole}`);
+    throw new MigrationError(`Invalid appRole (must be a SQL identifier): ${appRole}`);
   }
   const s = quoteIdent(schema);
   const dml = mode === "append" ? "select, insert" : "select, insert, update, delete";

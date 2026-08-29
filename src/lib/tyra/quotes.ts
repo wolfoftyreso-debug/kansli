@@ -27,7 +27,7 @@ export async function saveQuoteDraft(input: {
     `select id from tyra.tire_cases where org_ref = $1 and id = $2 limit 1`,
     [input.orgRef, input.tireCaseId],
   );
-  if (!owned.rows[0]) throw new Error("Ärendet saknas.");
+  if (!owned.rows[0]) throw new Error("The case does not exist.");
 
   const now = new Date().toISOString();
   const snapshot = computeInstalledPrice({

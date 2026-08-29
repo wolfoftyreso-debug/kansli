@@ -27,26 +27,26 @@ export interface TireCaseListItem {
 }
 
 export const INTENT_LABELS: Record<TireCaseIntent, string> = {
-  TIRE_SWAP_APPOINTMENT: "Hjulskifte",
-  STORE_ONLY: "Inlagring",
-  PICKUP_ONLY: "Utlämning",
-  QUOTE_ONLY: "Däck",
-  MIXED: "Blandat",
+  TIRE_SWAP_APPOINTMENT: "Wheel change",
+  STORE_ONLY: "Storage in",
+  PICKUP_ONLY: "Pickup",
+  QUOTE_ONLY: "Quote",
+  MIXED: "Mixed",
 };
 
 export const CASE_STATUS_LABELS: Record<string, string> = {
-  OPEN: "Öppet",
-  IN_PROGRESS: "Pågår",
-  BLOCKED: "Blockerat",
-  DONE: "Klart",
-  CANCELLED: "Avbrutet",
+  OPEN: "Open",
+  IN_PROGRESS: "In progress",
+  BLOCKED: "Blocked",
+  DONE: "Done",
+  CANCELLED: "Cancelled",
 };
 
 export const STEP_STATUS_LABELS: Record<StepStatus, string> = {
-  TODO: "Att göra",
-  DOING: "Pågår",
-  DONE: "Klart",
-  BLOCKED: "Blockerat",
+  TODO: "To do",
+  DOING: "In progress",
+  DONE: "Done",
+  BLOCKED: "Blocked",
 };
 
 const CANONICAL_OPS: readonly CanonicalOperation[] = [
@@ -169,9 +169,9 @@ export async function createCase(input: {
   const registrationNumber = normalizeRegistration(input.registrationNumber);
   const operations = parseOperations(input.operations);
   const intent = parseIntent(input.intent);
-  if (!customerName) throw new Error("Kundnamn krävs.");
-  if (!registrationNumber) throw new Error("Registreringsnummer krävs.");
-  if (operations.length === 0) throw new Error("Minst en åtgärd krävs.");
+  if (!customerName) throw new Error("Customer name is required.");
+  if (!registrationNumber) throw new Error("Registration number is required.");
+  if (operations.length === 0) throw new Error("At least one operation is required.");
 
   const client = await input.pool.connect();
   let id = "";
@@ -464,7 +464,7 @@ export async function setStepStatus(input: {
         limit 1`,
       [input.orgRef, input.tireCaseId, input.stepKind],
     );
-    if (!prev.rows[0]) throw new Error("Steg saknas.");
+    if (!prev.rows[0]) throw new Error("The step does not exist.");
 
     await client.query(
       `update tyra.tire_case_steps
@@ -675,7 +675,7 @@ export async function updateCustomerContact(input: {
   email?: string;
 }): Promise<void> {
   const name = input.name.trim();
-  if (!name) throw new Error("Kundnamn krävs.");
+  if (!name) throw new Error("Customer name is required.");
   const updated = await input.pool.query(
     `update tyra.customers
         set name = $3, phone = $4, email = $5
@@ -688,7 +688,7 @@ export async function updateCustomerContact(input: {
       input.email?.trim() || null,
     ],
   );
-  if ((updated.rowCount ?? 0) === 0) throw new Error("Kunden saknas.");
+  if ((updated.rowCount ?? 0) === 0) throw new Error("The customer does not exist.");
 }
 
 export async function setCaseNotes(input: {
@@ -703,7 +703,7 @@ export async function setCaseNotes(input: {
       where org_ref = $1 and id = $2`,
     [input.orgRef, input.tireCaseId, input.notes.trim() || null],
   );
-  if ((updated.rowCount ?? 0) === 0) throw new Error("Ärendet saknas.");
+  if ((updated.rowCount ?? 0) === 0) throw new Error("The case does not exist.");
 }
 
 export async function cancelCase(input: {
@@ -727,7 +727,7 @@ export async function assignStorageCode(input: {
   storageCode: string;
 }): Promise<void> {
   const code = input.storageCode.trim().toUpperCase();
-  if (!code) throw new Error("Lagerplats krävs.");
+  if (!code) throw new Error("Storage code is required.");
   const client = await input.pool.connect();
   try {
     await client.query("begin");
@@ -738,7 +738,7 @@ export async function assignStorageCode(input: {
       input.orgRef,
       input.tireCaseId,
     ]);
-    if (!owner.rows[0]?.vehicle_id) throw new Error("Ärendet saknar fordon.");
+    if (!owner.rows[0]?.vehicle_id) throw new Error("The case has no vehicle.");
     await upsertWheelSet(client, {
       orgRef: input.orgRef,
       customerId: owner.rows[0].customer_id,

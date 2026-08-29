@@ -83,7 +83,7 @@ export function createOidcClient(config: OidcClientConfig): OidcClient {
     const res = await doFetch(
       `${config.issuer.replace(/\/$/, "")}/.well-known/openid-configuration`,
     );
-    if (!res.ok) throw new Error(`discovery misslyckades: ${res.status}`);
+    if (!res.ok) throw new Error(`Discovery failed: ${res.status}`);
     discovery = (await res.json()) as DiscoveryDocument;
     jwkSet = createRemoteJWKSet(new URL(discovery.jwks_uri));
     return discovery;
@@ -91,7 +91,7 @@ export function createOidcClient(config: OidcClientConfig): OidcClient {
 
   async function jwks(): Promise<ReturnType<typeof createRemoteJWKSet>> {
     await discover();
-    if (!jwkSet) throw new Error("JWKS ej initierad");
+    if (!jwkSet) throw new Error("JWKS is not initialised");
     return jwkSet;
   }
 
@@ -131,7 +131,7 @@ export function createOidcClient(config: OidcClientConfig): OidcClient {
       });
       if (!res.ok) {
         const detail = await res.text().catch(() => "");
-        throw new Error(`token-utbyte misslyckades: ${res.status} ${detail}`);
+        throw new Error(`Token exchange failed: ${res.status} ${detail}`);
       }
       const json = (await res.json()) as {
         access_token: string;
@@ -145,7 +145,7 @@ export function createOidcClient(config: OidcClientConfig): OidcClient {
         issuer: doc.issuer,
         audience: config.clientId,
       });
-      if (nonce && payload.nonce !== nonce) throw new Error("nonce matchar inte");
+      if (nonce && payload.nonce !== nonce) throw new Error("nonce does not match");
       const claims = IdTokenClaims.parse(payload);
 
       return {
@@ -163,7 +163,7 @@ export function createOidcClient(config: OidcClientConfig): OidcClient {
       const res = await doFetch(doc.userinfo_endpoint, {
         headers: { authorization: `Bearer ${accessToken}` },
       });
-      if (!res.ok) throw new Error(`userinfo misslyckades: ${res.status}`);
+      if (!res.ok) throw new Error(`Userinfo failed: ${res.status}`);
       return (await res.json()) as Record<string, unknown>;
     },
 

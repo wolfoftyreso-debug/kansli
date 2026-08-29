@@ -93,7 +93,7 @@ export function grantsSql(appRole: string): string {
   // The role name is interpolated (GRANT cannot be parameterised), so it must be
   // a plain SQL identifier — never attacker-controlled free text.
   if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(appRole)) {
-    throw new Error(`ogiltigt appRole (måste vara en SQL-identifierare): ${appRole}`);
+    throw new Error(`Invalid appRole (must be a SQL identifier): ${appRole}`);
   }
   return `
 grant usage on schema public to ${appRole};

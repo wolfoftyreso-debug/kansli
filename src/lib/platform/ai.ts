@@ -34,7 +34,7 @@ export function gatewaySnapshot(
 
 export async function listGatewayModels(): Promise<string[]> {
   const provider = gatewayFromEnv();
-  if (!provider?.listModels) throw new Error("AI Gateway är inte konfigurerad.");
+  if (!provider?.listModels) throw new Error("Vercel Gateway is not configured.");
   return provider.listModels();
 }
 
@@ -47,7 +47,7 @@ export async function pingGateway(): Promise<{
   latencyMs: number;
 }> {
   const provider = gatewayFromEnv();
-  if (!provider) throw new Error("AI Gateway är inte konfigurerad.");
+  if (!provider) throw new Error("Vercel Gateway is not configured.");
   const result = await provider.complete({
     purpose: "platform.gateway.ping",
     promptVersion: "2026-08-24",

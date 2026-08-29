@@ -16,7 +16,7 @@ import {
 function guardToken(token: string): string {
   const key = irmaThrottleKey(token);
   if (irmaTokenBlocked(key)) {
-    throw new ApiError("not_found", "Länken är ogiltig eller har gått ut.");
+    throw new ApiError("not_found", "The link is invalid or has expired.");
   }
   return key;
 }
@@ -28,7 +28,7 @@ export async function GET(_request: Request, context: { params: Promise<{ token:
     const agreement = await peekAgreementByToken(pool, token);
     if (!agreement) {
       noteIrmaTokenFailure(key);
-      throw new ApiError("not_found", "Länken är ogiltig eller har gått ut.");
+      throw new ApiError("not_found", "The link is invalid or has expired.");
     }
     noteIrmaTokenSuccess(key);
     return noStore({ agreement, signed: agreement.status === "signed" });
@@ -47,13 +47,13 @@ export async function POST(request: Request, context: { params: Promise<{ token:
       const agreement = await openAgreementByToken({ pool, events, token, requestId });
       if (!agreement) {
         noteIrmaTokenFailure(key);
-        throw new ApiError("not_found", "Länken är ogiltig eller har gått ut.");
+        throw new ApiError("not_found", "The link is invalid or has expired.");
       }
       noteIrmaTokenSuccess(key);
       return noStore({ agreement, signed: agreement.status === "signed" });
     }
     const signerName = body?.signerName?.trim() ?? "";
-    if (!signerName) throw new ApiError("invalid_request", "signerName krävs.");
+    if (!signerName) throw new ApiError("invalid_request", "signerName is required.");
     const agreement = await acknowledgeAgreement({
       pool,
       events,
@@ -64,10 +64,10 @@ export async function POST(request: Request, context: { params: Promise<{ token:
     });
     if (!agreement) {
       noteIrmaTokenFailure(key);
-      throw new ApiError("not_found", "Länken är ogiltig eller har gått ut.");
+      throw new ApiError("not_found", "The link is invalid or has expired.");
     }
     if (agreement.verificationLevel === 0) {
-      throw new ApiError("invalid_request", "Underlaget kräver ingen bekräftelse.");
+      throw new ApiError("invalid_request", "The record does not require acknowledgement.");
     }
     noteIrmaTokenSuccess(key);
     return noStore({ agreement, signed: agreement.status === "signed" });

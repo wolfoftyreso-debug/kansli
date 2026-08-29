@@ -10,8 +10,26 @@ describe("MCP catalog contract", () => {
   it("registers task-oriented tools with required metadata", () => {
     expect(catalog.tools.length).toBeGreaterThanOrEqual(10);
     const names = catalog.tools.map((tool) => tool.name);
+    expect(names).toContain("get_ops_snapshot");
+    expect(names).toContain("lookup_ops_debug");
     expect(names).toContain("create_office_task");
+    expect(names).toContain("toggle_office_task");
+    expect(names).toContain("delete_office_task");
     expect(names).toContain("list_ledger_invoices");
+    expect(names).toContain("get_ledger_invoice");
+    expect(names).toContain("list_agreements");
+    expect(names).toContain("list_vehicle_cases");
+    expect(names).toContain("get_vehicle_case");
+    expect(names).toContain("list_vehicle_reminders");
+    expect(names).toContain("get_tax_analysis");
+    expect(names).toContain("get_agreement");
+    expect(names).toContain("revoke_agreement");
+    expect(names).toContain("get_procurement_opportunity");
+    expect(names).toContain("list_procurement_calendar");
+    expect(names).toContain("list_diagnostic_cases");
+    expect(names).toContain("list_credit_inquiries");
+    expect(names).toContain("list_findings");
+    expect(names).toContain("run_operational_analysis");
     expect(names).not.toContain("query_database");
     expect(names).not.toContain("execute_sql");
     for (const tool of catalog.tools) {

@@ -34,7 +34,7 @@ describe("tts channel", () => {
       throw new Error("should not fetch");
     });
     expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.reason).toMatch(/kopplad/);
+    if (!result.ok) expect(result.reason).toMatch(/No speech vendor is connected/);
   });
 
   it("posts to ElevenLabs when a key exists and never echoes the key", async () => {

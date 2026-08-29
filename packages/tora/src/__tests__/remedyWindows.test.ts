@@ -237,6 +237,6 @@ describe("katalogen över rättsmedel", () => {
   });
 
   it("kastar på en okänd nyckel i stället för att svara tomt", () => {
-    expect(() => remedy("hittepå" as never)).toThrow(/okänt rättsmedel/);
+    expect(() => remedy("hittepå" as never)).toThrow(/unknown remedy: hittepå/);
   });
 });

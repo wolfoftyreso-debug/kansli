@@ -34,6 +34,7 @@ function invoice(
     sourceSystem: null,
     sourceRef: null,
     issueTransactionId: null,
+    attachmentText: null,
     createdAt: issuedAt,
     lines: [],
   };
@@ -107,13 +108,14 @@ describe("sales series", () => {
     expect(month.at(-1)?.salesCumOre).toBe(5_000);
   });
 
-  it("formats compact krona and short Swedish chart dates", () => {
+  it("formats compact krona and short chart dates in the chrome locale", () => {
     expect(formatSekCompact(12_500_00)).toBe("12,5 tkr");
     expect(stockholmDay("2026-08-25T23:30:00+02:00")).toBe("2026-08-25");
     expect(formatChartDay("2026-08-25")).toMatch(/25/);
     expect(formatChartDay("2026-08-25")).toMatch(/aug/i);
-    expect(formatChartRange("2026-07-27", "2026-08-25")).toMatch(/jul/);
-    expect(formatChartRange("2025-08-26", "2026-08-25")).toMatch(/2025/);
+    expect(formatChartDay("2026-08-25", false, "sv")).toMatch(/aug/i);
+    expect(formatChartRange("2026-07-27", "2026-08-25")).toMatch(/jul/i);
+    expect(formatChartRange("2025-08-26", "2026-08-25", "sv")).toMatch(/2025/);
     expect(formatChartRange("2025-08-26", "2026-08-25")).toMatch(/2026/);
   });
 });

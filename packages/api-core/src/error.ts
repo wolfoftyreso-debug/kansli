@@ -53,7 +53,7 @@ export function problemBody(error: unknown, requestId: string): ProblemBody {
   }
   return {
     type: "about:blank",
-    title: "Ett oväntat fel uppstod.",
+    title: "An unexpected error occurred.",
     status: 500,
     code: "internal",
     requestId,

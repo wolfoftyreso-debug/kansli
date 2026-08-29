@@ -8,6 +8,10 @@ describe("identity chrome", () => {
     expect(source).toContain("background:#101317");
     expect(source).toContain("border-radius:0");
     expect(source).toContain("PIXDRIFT");
+    expect(source).toContain('name="color-scheme" content="light"');
+    expect(source).toContain('name="theme-color" content="#fbfbf9"');
+    expect(source).toContain('IDP_HTML_CACHE_CONTROL = "no-store"');
+    expect(source).toContain("function sendHtml");
     expect(source).not.toContain("#f6f3ee");
     expect(source).not.toContain("border-radius:16px");
     expect(source).not.toContain('class="mark"');

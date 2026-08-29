@@ -27,7 +27,7 @@ function sameOrigin(request: Request): boolean {
 
 export async function POST(request: Request) {
   if (!sameOrigin(request)) {
-    return new NextResponse("Fel avsändare.", { status: 403 });
+    return new NextResponse("Wrong sender.", { status: 403 });
   }
   const form = await request.formData();
   let result: Awaited<ReturnType<typeof completeIntakeSubmit>>;
@@ -35,7 +35,10 @@ export async function POST(request: Request) {
     result = await completeIntakeSubmit(form);
   } catch (error) {
     const message = error instanceof Error ? error.message : "";
-    if (/stämmer inte|tio siffror|saknas/.test(message)) {
+    if (/minst en modul|at least one module/.test(message)) {
+      return NextResponse.redirect(new URL("/upphandling?fel=moduler", requestBase(request)), 303);
+    }
+    if (/stämmer inte|tio siffror|saknas|does not check out|ten digits|is missing/.test(message)) {
       return NextResponse.redirect(new URL("/upphandling?fel=orgnr", requestBase(request)), 303);
     }
     throw error;

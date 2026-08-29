@@ -31,7 +31,7 @@ export async function POST() {
     requireActor(actor);
     requireOrg(actor);
     if (!gatewaySnapshot().configured) {
-      throw new ApiError("invalid_request", "AI_GATEWAY_API_KEY eller VERCEL_OIDC_TOKEN saknas.");
+      throw new ApiError("invalid_request", "AI_GATEWAY_API_KEY or VERCEL_OIDC_TOKEN is missing.");
     }
     try {
       return json({ ping: await pingGateway() });

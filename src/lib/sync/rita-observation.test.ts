@@ -9,12 +9,12 @@ describe("ritaCompletedObservationBody", () => {
         findingCount: 7,
         modelConfigured: true,
       }),
-    ).toBe("Exempelbolaget AB: 7 fynd. Med AI-stöd.");
+    ).toBe("Exempelbolaget AB: 7 fynd. Med modellstöd.");
   });
 
   it("does not invent a count or a model when the event omitted them", () => {
     expect(ritaCompletedObservationBody({ companyName: "Bolaget" })).toBe(
-      "Bolaget: fyndunderlag klart. Utan AI-stöd — bara fasta regler.",
+      "Bolaget: fyndunderlag klart. Utan modellstöd — bara fasta regler.",
     );
   });
 });

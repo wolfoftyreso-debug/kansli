@@ -21,7 +21,8 @@
     "db:migrate": "tsx scripts/migrate.ts",
     "db:backup": "bash scripts/backup-postgres.sh",
     "db:restore-drill": "bash scripts/restore-drill.sh",
-    "ops:lookup": "tsx scripts/ops-lookup.ts"
+    "ops:lookup": "tsx scripts/ops-lookup.ts",
+    "ops:vendors": "tsx scripts/vendor-check.ts"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",

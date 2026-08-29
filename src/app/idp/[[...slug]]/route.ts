@@ -6,6 +6,14 @@
  * backed by Vercel Postgres. Every `/idp/*` request is delegated to the exact
  * same Fastify server exercised by the identity test-suite, via Fastify's
  * lightweight `inject()` (no socket needed — ideal for serverless functions).
+ * Leftover HTML robots (`noindex, nofollow`) live on the Fastify pages.
+ * Leftover logout `html lang` follows `pd_locale`. The signed-out sentence stays.
+ * Leftover Identity HTML viewport matches leftover login.
+ * Leftover Identity HTML color-scheme stays light.
+ * Leftover Identity HTML theme-color matches leftover paper token.
+ * Leftover Identity HTML format-detection stays off.
+ * Leftover Identity HTML Cache-Control stays no-store.
+ * Leftover logout title is the leftover signed-out sentence.
  *
  * The OIDC issuer is `${origin}/idp`; discovery therefore advertises
  * `${origin}/idp/authorize`, `/idp/token`, `/idp/jwks.json`, etc. On Vercel,

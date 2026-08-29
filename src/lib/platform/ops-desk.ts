@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type pg from "pg";
 import { formatSek } from "../ekonomi/money.ts";
+import { DEFAULT_LOCALE, t, type Locale } from "../i18n/index.ts";
 import { countBlockedReminders } from "./ops-debug.ts";
 import {
   OPS_SMS_KIND_LABEL,
@@ -121,6 +122,7 @@ export async function loadOpsSupport(
   pool: pg.Pool,
   scope: OpsScope,
   orgRef: string,
+  locale: Locale = DEFAULT_LOCALE,
 ): Promise<OpsSupport> {
   const where = orgWhere(scope);
   const params = orgParams(scope, orgRef);
@@ -150,7 +152,8 @@ export async function loadOpsSupport(
         id: row.id,
         kind: "observation",
         title: row.title,
-        detail: row.severity === "high" ? "BRITT · hög" : "BRITT",
+        detail:
+          row.severity === "high" ? t(locale, "ops.item.brittHigh") : t(locale, "ops.item.britt"),
         href: "/britt",
         at: new Date(row.created_at).toISOString(),
       });
@@ -179,7 +182,9 @@ export async function loadOpsSupport(
         id: row.id,
         kind: "task",
         title: row.title,
-        detail: row.owner ? `Kansli · ${row.owner}` : "Kansli",
+        detail: row.owner
+          ? t(locale, "ops.item.kansliOwner", { owner: row.owner })
+          : t(locale, "ops.item.kansli"),
         href: "/kansli",
         at: new Date(row.created_at).toISOString(),
       });
@@ -206,8 +211,8 @@ export async function loadOpsSupport(
       items.push({
         id: row.id,
         kind: "case",
-        title: "Däckärende",
-        detail: `TYRA · ${row.case_status}`,
+        title: t(locale, "ops.item.tyreCase"),
+        detail: t(locale, "ops.item.tyra", { status: row.case_status }),
         href: `/tyra/cases/${row.id}`,
         at: new Date(row.updated_at).toISOString(),
       });
@@ -235,7 +240,7 @@ export async function loadOpsSupport(
           id: row.id,
           kind: "intake",
           title: row.company_name,
-          detail: "Ny kund",
+          detail: t(locale, "ops.item.newCustomer"),
           href: `/kansli/upphandling/${row.id}`,
           at: new Date(row.created_at).toISOString(),
         });
@@ -295,63 +300,76 @@ export async function countFailedSms(
 export function buildOpsNotices(input: {
   facts: OpsDeskFacts;
   routes: OpsSmsRoute[];
+  locale?: Locale;
 }): OpsNotice[] {
   const notices: OpsNotice[] = [];
   const { facts } = input;
+  const locale = input.locale ?? DEFAULT_LOCALE;
 
   if (facts.databaseDown) {
     notices.push({
       id: "database",
       level: "larm",
-      title: "Databasen svarar inte",
-      detail: "Ingen mätning kan göras förrän Postgres svarar.",
+      title: t(locale, "ops.notice.database.title"),
+      detail: t(locale, "ops.notice.database.detail"),
       href: "/api/platform/health",
-      hrefLabel: "Hälsa",
+      hrefLabel: t(locale, "ops.notice.database.href"),
     });
   }
   if (facts.ledger.overdueOre > 0) {
     notices.push({
       id: "overdue",
       level: "larm",
-      title: `${formatSek(facts.ledger.overdueOre)} förfallet`,
-      detail: `${facts.ledger.overdueCount} ${facts.ledger.overdueCount === 1 ? "faktura" : "fakturor"} i reskontran har gått över tiden.`,
+      title: t(locale, "ops.notice.overdue.title", { amount: formatSek(facts.ledger.overdueOre) }),
+      detail:
+        facts.ledger.overdueCount === 1
+          ? t(locale, "ops.notice.overdue.detailOne")
+          : t(locale, "ops.notice.overdue.detailMany", { count: facts.ledger.overdueCount }),
       href: "/ekonomi",
-      hrefLabel: "Öppna boken",
+      hrefLabel: t(locale, "ops.notice.overdue.href"),
     });
   }
   if (facts.support.open > 0) {
     notices.push({
       id: "support",
       level: facts.support.observations > 0 ? "varning" : "info",
-      title: `${facts.support.open} öppna ärenden`,
+      title: t(locale, "ops.notice.support.title", { count: facts.support.open }),
       detail: [
-        facts.support.observations ? `${facts.support.observations} i BRITT` : null,
-        facts.support.cases ? `${facts.support.cases} i TYRA` : null,
-        facts.support.tasks ? `${facts.support.tasks} i Kansli` : null,
-        facts.support.intakes ? `${facts.support.intakes} nya kunder` : null,
+        facts.support.observations
+          ? t(locale, "ops.notice.support.britt", { count: facts.support.observations })
+          : null,
+        facts.support.cases
+          ? t(locale, "ops.notice.support.tyra", { count: facts.support.cases })
+          : null,
+        facts.support.tasks
+          ? t(locale, "ops.notice.support.kansli", { count: facts.support.tasks })
+          : null,
+        facts.support.intakes
+          ? t(locale, "ops.notice.support.intakes", { count: facts.support.intakes })
+          : null,
       ]
         .filter(Boolean)
         .join(" · "),
       href: facts.support.observations ? "/britt" : "/kansli",
-      hrefLabel: "Visa ärenden",
+      hrefLabel: t(locale, "ops.notice.support.href"),
     });
   }
   if (facts.smsFailed > 0) {
     notices.push({
       id: "sms_failed",
       level: "varning",
-      title: "SMS gick inte fram",
-      detail: `${facts.smsFailed} meddelanden är stoppade eller misslyckade de senaste sju dagarna.`,
+      title: t(locale, "ops.notice.smsFailed.title"),
+      detail: t(locale, "ops.notice.smsFailed.detail", { count: facts.smsFailed }),
       href: "/ekonomi",
-      hrefLabel: "Sälj-SMS",
+      hrefLabel: t(locale, "ops.notice.smsFailed.href"),
     });
   }
   if (facts.remindersBlocked > 0) {
     notices.push({
       id: "reminders_blocked",
       level: "varning",
-      title: "Däckpåminnelser stoppade",
-      detail: `${facts.remindersBlocked} påminnelser är stoppade eller misslyckade de senaste sju dagarna.`,
+      title: t(locale, "ops.notice.reminders.title"),
+      detail: t(locale, "ops.notice.reminders.detail", { count: facts.remindersBlocked }),
       href: "/tyra",
       hrefLabel: "TYRA",
     });
@@ -360,18 +378,18 @@ export function buildOpsNotices(input: {
     notices.push({
       id: "readiness",
       level: "varning",
-      title: `${facts.blockedGates} beredskap blockerad`,
-      detail: "Första kunden kan inte tas förrän det är löst.",
+      title: t(locale, "ops.notice.readiness.title", { count: facts.blockedGates }),
+      detail: t(locale, "ops.notice.readiness.detail"),
       href: "/kansli/beredskap",
-      hrefLabel: "Beredskap",
+      hrefLabel: t(locale, "ops.notice.readiness.href"),
     });
   }
   if (!facts.vendor && input.routes.some((route) => route.enabled)) {
     notices.push({
       id: "sms_vendor",
       level: "info",
-      title: "Larm är på men telefonen saknas",
-      detail: "Numret sparas. SMS går inte ut förrän leverantören är kopplad.",
+      title: t(locale, "ops.notice.vendor.title"),
+      detail: t(locale, "ops.notice.vendor.detail"),
       href: null,
       hrefLabel: null,
     });
@@ -380,8 +398,8 @@ export function buildOpsNotices(input: {
     notices.push({
       id: "sms_phone",
       level: "info",
-      title: "Larm saknar nummer",
-      detail: "Skriv ett svenskt mobilnummer under SMS-rutter.",
+      title: t(locale, "ops.notice.phone.title"),
+      detail: t(locale, "ops.notice.phone.detail"),
       href: null,
       hrefLabel: null,
     });
@@ -513,7 +531,7 @@ export async function saveOpsSmsRoutes(input: {
   enabled: readonly OpsSmsKind[];
 }): Promise<OpsSmsRoute[]> {
   const phone = normalizeSwedishMobile(input.phone);
-  if (!phone) throw new Error("Skriv ett svenskt mobilnummer, till exempel 070-123 45 67.");
+  if (!phone) throw new Error("Enter a Swedish mobile number, for example 070-123 45 67.");
   const on = new Set(input.enabled);
   for (const kind of OPS_SMS_KINDS) {
     await input.pool.query(
@@ -580,7 +598,7 @@ export async function raiseOpsAlarms(input: {
       : {
           ok: false,
           providerRef: null,
-          reason: "Ingen telefonleverantör är kopplad. Meddelandet skickas inte.",
+          reason: "No phone vendor is connected. The message is not sent.",
         };
     const status = delivered.ok ? "SENT" : input.facts.vendor ? "FAILED" : "BLOCKED";
     await input.pool.query(
@@ -611,6 +629,7 @@ export async function loadOpsDesk(
     scope: OpsScope;
     blockedGates: number;
     databaseDown: boolean;
+    locale?: Locale;
   },
 ): Promise<{
   facts: OpsDeskFacts;
@@ -619,9 +638,10 @@ export async function loadOpsDesk(
   support: OpsSupport;
   sms: OpsSmsDesk;
 }> {
+  const locale = input.locale ?? DEFAULT_LOCALE;
   const [ledger, support, smsFailed, remindersBlocked, sms] = await Promise.all([
     loadOpsLedger(pool, input.scope, input.orgRef),
-    loadOpsSupport(pool, input.scope, input.orgRef),
+    loadOpsSupport(pool, input.scope, input.orgRef, locale),
     countFailedSms(pool, input.scope, input.orgRef),
     countBlockedReminders(pool, input.scope, input.orgRef),
     loadOpsSmsDesk(pool, input.scope, input.orgRef),
@@ -637,7 +657,7 @@ export async function loadOpsDesk(
   };
   return {
     facts,
-    notices: buildOpsNotices({ facts, routes: sms.routes }),
+    notices: buildOpsNotices({ facts, routes: sms.routes, locale }),
     ledger,
     support,
     sms,

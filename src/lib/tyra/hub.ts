@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import type pg from "pg";
 import type { EventLog } from "@pixdrift/events";
+import { DEFAULT_LOCALE, t, type Locale } from "../i18n/index.ts";
 import { computeTireHealth } from "./tireHealth.ts";
 import { computeTireWarnings, type TireWarning } from "./tireWarnings.ts";
 import { generateOpaqueToken, hashTyraToken, tyraHubPath } from "./tokens.ts";
@@ -46,7 +47,7 @@ export async function issueHubLink(input: {
     `select id from tyra.customers where org_ref = $1 and id = $2 limit 1`,
     [input.orgRef, input.customerId],
   );
-  if (!owned.rows[0]) throw new Error("Kunden saknas.");
+  if (!owned.rows[0]) throw new Error("The customer does not exist.");
 
   const token = generateOpaqueToken(24);
   const tokenHash = hashTyraToken(token);
@@ -75,7 +76,18 @@ export async function issueHubLink(input: {
   return { token, path: tyraHubPath(token) };
 }
 
-export async function getHubViewByToken(pool: pg.Pool, token: string): Promise<HubView | null> {
+export function hubCommercialNote(
+  kind: "noVehicle" | "actionNeeded" | "followUp" | "noInspection" | "clear",
+  locale: Locale = DEFAULT_LOCALE,
+): string {
+  return t(locale, `tyra.hub.note.${kind}`);
+}
+
+export async function getHubViewByToken(
+  pool: pg.Pool,
+  token: string,
+  locale: Locale = DEFAULT_LOCALE,
+): Promise<HubView | null> {
   const tokenHash = hashTyraToken(token);
   const linkRes = await pool.query<{ org_ref: string; customer_id: string }>(
     `select org_ref, customer_id from tyra.customer_hub_links
@@ -117,7 +129,7 @@ export async function getHubViewByToken(pool: pg.Pool, token: string): Promise<H
       vehicle: null,
       positions: [],
       setWarnings: [],
-      commercialNote: "Inget fordon är kopplat ännu.",
+      commercialNote: hubCommercialNote("noVehicle", locale),
       storageCode: null,
       wheelStatus: null,
     };
@@ -255,11 +267,11 @@ export async function getHubViewByToken(pool: pg.Pool, token: string): Promise<H
     storageCode,
     wheelStatus,
     commercialNote: blocked
-      ? "Åtgärd behövs — verkstaden har markerat att däcken inte är i gott skick."
+      ? hubCommercialNote("actionNeeded", locale)
       : attention
-        ? "Något behöver följas upp vid nästa besök."
+        ? hubCommercialNote("followUp", locale)
         : positions.length === 0
-          ? "Ingen verifierad inspektion finns ännu. Inga mätvärden visas."
-          : "Inga varningar från den senaste verifierade inspektionen.",
+          ? hubCommercialNote("noInspection", locale)
+          : hubCommercialNote("clear", locale),
   };
 }

@@ -19,8 +19,8 @@ describe("ops debug sanitize", () => {
       }),
     ).toEqual({
       title: "Förfallen faktura",
-      token: "[dold]",
-      nested: { authorization: "[dold]", reason: "saknas" },
+      token: "[hidden]",
+      nested: { authorization: "[hidden]", reason: "saknas" },
     });
   });
 
@@ -33,7 +33,7 @@ describe("ops debug sanitize", () => {
       APP_SESSION_SECRET: "set",
       COOKIE_SECURE: "false",
     });
-    expect(marks.mark).toBe("förhandsvisning");
+    expect(marks.mark).toBe("preview");
     expect(marks.hardened).toBe(false);
     expect(marks.seedDemo).toBe(true);
     expect(marks.cronSet).toBe(true);
@@ -89,7 +89,7 @@ live("ops debug (live Postgres)", () => {
     expect(found.events[0]?.requestId).toBe(requestId);
     expect(found.events[0]?.payload).toMatchObject({
       reason: "no_delivery_adapter",
-      token: "[dold]",
+      token: "[hidden]",
     });
 
     const byOutbox = await lookupOpsDebug(boundA, { q: outboxId, scope: "org", orgRef: shopA });
@@ -109,7 +109,7 @@ live("ops debug (live Postgres)", () => {
     const snapshot = await loadOpsSnapshot(boundA, { orgRef: shopA, scope: "org" });
     expect(snapshot.queues.sales.failed).toBeGreaterThanOrEqual(1);
     expect(snapshot.lastErrors.some((row) => row.requestId === requestId)).toBe(true);
-    expect(snapshot.runtimeDebug.mark).toMatch(/produktion|förhandsvisning|lokal/);
+    expect(snapshot.runtimeDebug.mark).toMatch(/production|preview|local/);
     expect(snapshot.notices.some((item) => item.id === "reminders_blocked")).toBe(false);
 
     const queues = await loadOpsQueues(boundA, "org", shopA);

@@ -20,7 +20,7 @@ export async function POST(request: Request) {
       verificationLevel?: 0 | 1;
     } | null;
     if (!body?.title?.trim() || !body.counterparty?.trim()) {
-      throw new ApiError("invalid_request", "title och counterparty krävs.");
+      throw new ApiError("invalid_request", "title and counterparty are required.");
     }
     const agreement = await createAgreement({
       pool,

@@ -48,9 +48,9 @@ describe("effectiveStatus", () => {
 
 describe("labels", () => {
   it("uses product language, not raw enums", () => {
-    expect(statusLabel("signed")).toBe("Bekräftat");
-    expect(verificationLabel(0)).toContain("informationsunderlag");
-    expect(verificationLabel(1)).toContain("nivå 1");
+    expect(statusLabel("signed")).toBe("Confirmed");
+    expect(verificationLabel(0)).toContain("information note");
+    expect(verificationLabel(1)).toContain("level 1");
   });
 });
 

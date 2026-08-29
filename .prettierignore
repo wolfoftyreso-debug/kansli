@@ -10,6 +10,9 @@ next-env.d.ts
 tsconfig.tsbuildinfo
 # Markdown docs are hand-formatted (Swedish prose); don't reflow.
 **/*.md
+# Locked design proofs: vendored HTML/JS, not app code.
+docs/design/referens/**
+docs/design/alva/**/*.html
 # Upstream Rust ledger — do not reformat Galoy Cala.
 vendor/
 crates/**/target/

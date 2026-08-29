@@ -1,22 +1,30 @@
-import type { Metadata } from "next";
 import { McpDocNav } from "@/components/site/McpDocNav";
 import { Container } from "@/components/site/Container";
 import { SectionHeading } from "@/components/site/SectionHeading";
+import { t } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
+import { publicShareMeta } from "@/lib/platform/canonical";
 
-export const metadata: Metadata = {
-  title: "MCP authentication — PIXDRIFT",
-};
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "site.doc.mcp.authPage.metaTitle"),
+    description: t(locale, "site.doc.mcp.authPage.intro"),
+    ...publicShareMeta("/documentation/mcp/authentication"),
+  };
+}
 
-export default function McpAuthPage() {
+export default async function McpAuthPage() {
+  const locale = await readLocale();
   return (
     <Container>
       <McpDocNav current="/documentation/mcp/authentication" />
       <div className="mt-10">
         <SectionHeading
           as="h1"
-          eyebrow="Authentication"
-          title="One identity. No second login system."
-          intro="MCP validates access tokens against the same IdP JWKS that REST resource servers use. Browser tools can use the existing Kansli session cookie."
+          eyebrow={t(locale, "site.doc.nav.auth")}
+          title={t(locale, "site.doc.mcp.authPage.title")}
+          intro={t(locale, "site.doc.mcp.authPage.intro")}
         />
       </div>
       <ol className="mt-10 max-w-2xl list-decimal space-y-4 pl-5 text-ink-soft">

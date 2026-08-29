@@ -15,7 +15,7 @@ export function attachRuntime(base: Omit<McpRuntime, "pool" | "events">): McpRun
 
 export function needStore(ctx: McpRuntime): { pool: pg.Pool; events: EventLog } {
   if (!ctx.pool || !ctx.events) {
-    throw new McpError("DEPENDENCY_UNAVAILABLE", "Databasen är inte tillgänglig.", ctx.requestId);
+    throw new McpError("DEPENDENCY_UNAVAILABLE", "The database is not available.", ctx.requestId);
   }
   return { pool: ctx.pool as pg.Pool, events: ctx.events as EventLog };
 }

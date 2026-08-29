@@ -51,7 +51,7 @@ export function formatRef(ref: GlobalRef): string {
 export function parseRef(value: string): GlobalRef {
   const parts = value.split(":");
   if (parts.length !== 3) {
-    throw new TypeError(`${value} är inte en global referens (system:kind:id)`);
+    throw new TypeError(`${value} is not a global reference (system:kind:id)`);
   }
   return GlobalRef.parse({ system: parts[0], kind: parts[1], id: parts[2] });
 }
@@ -182,7 +182,7 @@ export function assertPlatformRoleIsSafe(role: Role): void {
   );
   if (offending.length > 0) {
     throw new Error(
-      `plattformsrollen ${role.key} får inte ha behörighet till kunddata: ${offending.join(", ")}`,
+      `The platform role ${role.key} cannot hold customer-data permissions: ${offending.join(", ")}`,
     );
   }
 }
@@ -369,7 +369,7 @@ export type ContractEnvelope = z.infer<typeof ContractEnvelope>;
 
 export function majorOf(version: string): number {
   const major = Number(version.split(".")[0]);
-  if (!Number.isInteger(major)) throw new TypeError(`${version} är inte en semver`);
+  if (!Number.isInteger(major)) throw new TypeError(`${version} is not a semver`);
   return major;
 }
 

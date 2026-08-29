@@ -48,15 +48,13 @@ function headlineFrom(payload: Record<string, unknown>, fallback: string | null)
   return fallback;
 }
 
-function runtimeMark(
-  env: Record<string, string | undefined>,
-): "produktion" | "förhandsvisning" | "lokal" {
-  if (env.VERCEL_ENV === "preview") return "förhandsvisning";
-  if (env.VERCEL_ENV === "development") return "lokal";
+function runtimeMark(env: Record<string, string | undefined>): "production" | "preview" | "local" {
+  if (env.VERCEL_ENV === "preview") return "preview";
+  if (env.VERCEL_ENV === "development") return "local";
   if (env.VERCEL_ENV === "production" || env.APP_ENV === "prod" || env.APP_ENV === "production") {
-    return "produktion";
+    return "production";
   }
-  return "lokal";
+  return "local";
 }
 
 async function countOutbox(
@@ -235,7 +233,7 @@ export async function lookupOpsDebug(
 ): Promise<OpsDebugLookup> {
   const q = input.q.trim();
   if (q.length < MIN_QUERY) {
-    return { q, events: [], outbox: [], note: "Skriv minst tre tecken." };
+    return { q, events: [], outbox: [], note: "Enter at least three characters." };
   }
 
   const events = await lookupEvents(pool, input.scope, input.orgRef, q);
@@ -265,7 +263,7 @@ export async function lookupOpsDebug(
 
   const note =
     events.length === 0 && outbox.length === 0
-      ? "Inget träffade. Prova request-id, händelse-id eller ett ärende."
+      ? "Nothing matched. Try a request id, an event id or a case."
       : null;
   return {
     q,

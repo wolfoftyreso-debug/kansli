@@ -102,6 +102,17 @@ async function login(
   };
 }
 
+describe("leftover Identity HTML cache", () => {
+  it("does not store leftover authorize or leftover logout HTML", async () => {
+    const error = await fetch(`${issuer}/authorize`);
+    expect(error.status).toBe(400);
+    expect(error.headers.get("cache-control")).toBe("no-store");
+    const logout = await fetch(`${issuer}/logout`);
+    expect(logout.status).toBe(200);
+    expect(logout.headers.get("cache-control")).toBe("no-store");
+  });
+});
+
 describe("OIDC discovery + JWKS", () => {
   it("publishes a discovery document and a signing key", async () => {
     const disc = (await (await fetch(`${issuer}/.well-known/openid-configuration`)).json()) as {
@@ -172,7 +183,7 @@ describe("Authorization Code + PKCE flow", () => {
     const code = new URL(result.location!).searchParams.get("code")!;
     await expect(
       oidc.exchangeCode({ code, codeVerifier: generateCodeVerifier(), nonce }),
-    ).rejects.toThrow(/token-utbyte misslyckades/);
+    ).rejects.toThrow(/Token exchange failed/);
   });
 
   it("does not allow an authorization code to be used twice", async () => {
@@ -296,6 +307,28 @@ describe("Logout open-redirect guard", () => {
     );
     expect(res.status).toBe(200);
     expect(res.headers.get("location")).toBeNull();
+  });
+});
+
+describe("Authorize leftover-error language", () => {
+  it("returns English-canonical client and redirect errors without signing in", async () => {
+    const unknown = await fetch(
+      `${issuer}/authorize?client_id=nope&redirect_uri=http://127.0.0.1:9/cb`,
+    );
+    expect(unknown.status).toBe(400);
+    expect(await unknown.text()).toContain("unknown client_id");
+
+    const mismatch = await fetch(
+      `${issuer}/authorize?client_id=${CLIENT_ID}&redirect_uri=http://evil.test/cb`,
+    );
+    expect(mismatch.status).toBe(400);
+    expect(await mismatch.text()).toContain("redirect_uri does not match");
+
+    const logout = await fetch(`${issuer}/logout`);
+    expect(logout.status).toBe(200);
+    const logoutHtml = await logout.text();
+    expect(logoutHtml).toContain("<title>You are signed out.</title>");
+    expect(logoutHtml).toContain("<p>You are signed out.</p>");
   });
 });
 

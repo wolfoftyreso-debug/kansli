@@ -19,7 +19,7 @@ export function requireActor(actor: Actor | null): Actor {
 export function requireOrg(actor: Actor | null): Actor & { orgRef: string } {
   const present = requireActor(actor);
   if (!present.orgRef) {
-    throw new ApiError("forbidden", "Ingen aktiv organisation i sessionen.");
+    throw new ApiError("forbidden", "No active organisation in the session.");
   }
   return present as Actor & { orgRef: string };
 }
@@ -30,7 +30,7 @@ export function requirePermission(
 ): Actor & { orgRef: string } {
   const present = requireOrg(actor);
   if (!hasPermission(present.permissions, permission)) {
-    throw new ApiError("forbidden", `Saknar behörighet ${permission}.`);
+    throw new ApiError("forbidden", `Missing permission ${permission}.`);
   }
   return present;
 }

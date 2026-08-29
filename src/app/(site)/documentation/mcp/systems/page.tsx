@@ -1,15 +1,23 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { mcpSystemMatrix } from "@/lib/mcp/catalog";
 import { McpDocNav } from "@/components/site/McpDocNav";
 import { Container } from "@/components/site/Container";
 import { SectionHeading } from "@/components/site/SectionHeading";
+import { t } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
+import { publicShareMeta } from "@/lib/platform/canonical";
 
-export const metadata: Metadata = {
-  title: "MCP systems — PIXDRIFT",
-};
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "site.doc.mcp.systems.metaTitle"),
+    description: t(locale, "site.doc.mcp.systems.intro"),
+    ...publicShareMeta("/documentation/mcp/systems"),
+  };
+}
 
-export default function McpSystemsPage() {
+export default async function McpSystemsPage() {
+  const locale = await readLocale();
   const rows = mcpSystemMatrix();
   return (
     <Container>
@@ -17,18 +25,18 @@ export default function McpSystemsPage() {
       <div className="mt-10">
         <SectionHeading
           as="h1"
-          eyebrow="Systems"
-          title="What is actually registered"
-          intro="NORA, Mova and SAGA are not in this repository, so they are not listed as MCP-ready."
+          eyebrow={t(locale, "site.doc.systems")}
+          title={t(locale, "site.doc.mcp.systems.title")}
+          intro={t(locale, "site.doc.mcp.systems.intro")}
         />
       </div>
       <table className="mt-12 w-full border-t border-line text-left text-sm">
         <thead>
           <tr className="border-b border-line text-muted">
-            <th className="py-3 font-medium">System</th>
-            <th className="py-3 font-medium">MCP</th>
-            <th className="py-3 font-medium">Tools</th>
-            <th className="py-3 font-medium">Status</th>
+            <th className="py-3 font-medium">{t(locale, "site.doc.systems")}</th>
+            <th className="py-3 font-medium">{t(locale, "site.catalog.spec.mcp")}</th>
+            <th className="py-3 font-medium">{t(locale, "site.doc.nav.tools")}</th>
+            <th className="py-3 font-medium">{t(locale, "site.catalog.spec.status")}</th>
           </tr>
         </thead>
         <tbody>
@@ -39,7 +47,11 @@ export default function McpSystemsPage() {
                   {row.name}
                 </Link>
               </td>
-              <td className="py-3">{row.mcp ? "Available" : "Not exposed"}</td>
+              <td className="py-3">
+                {row.mcp
+                  ? t(locale, "site.catalog.spec.available")
+                  : t(locale, "site.catalog.spec.notExposed")}
+              </td>
               <td className="py-3">{row.tools}</td>
               <td className="py-3">{row.status}</td>
             </tr>

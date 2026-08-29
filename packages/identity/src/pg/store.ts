@@ -163,7 +163,7 @@ export class PgStore implements IdentityStore {
     const { rows } = await this.pool.query<KeyRow>(
       `select kid, private_pkcs8, public_jwk from signing_keys where status = 'active' order by created_at desc limit 1`,
     );
-    if (!rows[0]) throw new Error("ingen aktiv signeringsnyckel — kör pgBootstrap först");
+    if (!rows[0]) throw new Error("No active signing key — run pgBootstrap first.");
     return signingKeyFromPkcs8(rows[0].private_pkcs8, { ...rows[0].public_jwk, kid: rows[0].kid });
   }
 

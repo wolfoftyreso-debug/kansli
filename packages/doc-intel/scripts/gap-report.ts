@@ -21,9 +21,9 @@ const out = new URL("../../../docs/ALVA-DOCUMENTATION-GAP-REPORT.md", import.met
 writeFileSync(out, markdown, "utf8");
 
 const s = gaps.totals.byStatus;
-console.log("ALVA Documentation Gap Report skriven till docs/ALVA-DOCUMENTATION-GAP-REPORT.md");
+console.log("ALVA Documentation Gap Report written to docs/ALVA-DOCUMENTATION-GAP-REPORT.md");
 console.log(
-  `Kapabiliteter: ${gaps.totals.capabilities} ` +
+  `Capabilities: ${gaps.totals.capabilities} ` +
     `(IN_REPO ${gaps.totals.inRepo}, EXTERNAL ${gaps.totals.externalRepo}, NOT_PRESENT ${gaps.totals.notPresent})`,
 );
 console.log(
@@ -31,8 +31,8 @@ console.log(
     `DRAFT ${s.DRAFT}, UNDOCUMENTED ${s.UNDOCUMENTED}, ` +
     `VERIFICATION_REQUIRED ${s.VERIFICATION_REQUIRED}, OUTDATED ${s.OUTDATED}`,
 );
-console.log(`Odokumenterat (headline): ${gaps.undocumented.length}`);
-console.log(`Ej verifierbart härifrån (NOT_PRESENT): ${gaps.notPresent.length}`);
+console.log(`Undocumented (headline): ${gaps.undocumented.length}`);
+console.log(`Not verifiable from here (NOT_PRESENT): ${gaps.notPresent.length}`);
 if (gaps.orphanCoverage.length) {
-  console.error(`VARNING: ${gaps.orphanCoverage.length} föräldralösa täckningsposter`);
+  console.error(`WARNING: ${gaps.orphanCoverage.length} orphan coverage entries`);
 }

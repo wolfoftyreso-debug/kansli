@@ -22,14 +22,14 @@ export function observationHref(subjectRef: string | null | undefined): string |
 }
 
 export const SOURCE_LABELS: Record<string, string> = {
-  tora: "TORA — upphandlingar",
-  rita: "RITA — skattefynd",
-  irma: "IRMA — avtal",
-  tyra: "TYRA — däckhotell",
-  alva: "ALVA — nya ärenden",
-  kansli: "Kansli — intern uppgift",
-  ekonomi: "Ekonomi — bok och betalning",
-  britt: "BRITT — egen anteckning",
+  tora: "TORA — procurements",
+  rita: "RITA — tax findings",
+  irma: "IRMA — agreements",
+  tyra: "TYRA — tire hotel",
+  alva: "ALVA — new cases",
+  kansli: "Kansli — internal task",
+  ekonomi: "Ekonomi — book and payment",
+  britt: "BRITT — own note",
 };
 
 export function sourceLabel(source: string): string {

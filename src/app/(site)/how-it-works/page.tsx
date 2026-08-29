@@ -1,14 +1,10 @@
-import type { Metadata } from "next";
 import { Container } from "@/components/site/Container";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { PixelFlow } from "@/components/site/PixelFlow";
 import { pixdriftStack } from "@/lib/pixdrift/stack";
-
-export const metadata: Metadata = {
-  title: "How it works — PIXDRIFT",
-  description:
-    "PIXDRIFT identifies a specific operational gap between larger systems and builds narrowly focused software around it — coexisting with existing infrastructure.",
-};
+import { t } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
+import { publicShareMeta } from "@/lib/platform/canonical";
 
 const steps = [
   {
@@ -43,14 +39,24 @@ const steps = [
   },
 ];
 
-export default function HowItWorksPage() {
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "site.how.metaTitle"),
+    description: t(locale, "site.how.metaDescription"),
+    ...publicShareMeta("/how-it-works"),
+  };
+}
+
+export default async function HowItWorksPage() {
+  const locale = await readLocale();
   return (
     <Container>
       <SectionHeading
         as="h1"
-        eyebrow="How it works"
-        title="A method, not a platform."
-        intro="PIXDRIFT solves concrete problems. Not digital transformation — specific operational gaps, addressed one system at a time."
+        eyebrow={t(locale, "site.how.eyebrow")}
+        title={t(locale, "site.how.title")}
+        intro={t(locale, "site.how.intro")}
       />
       <ol className="mt-14 border-t border-line">
         {steps.map((s) => (

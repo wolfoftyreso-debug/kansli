@@ -30,6 +30,7 @@ Källa: `packages/systems/src/catalog.ts`.
 | tyra | TYRA | pilot | `tyra` | `/tyra` | `/api/tyra` |
 | alva | ALVA | deferred | `alva` | `/alva` | `/api/alva` |
 | creditae | CREDITAE | pilot | `creditae` | `/creditae` | `/api/creditae` |
+| maj | MAJ | pilot | `maj` | `/maj` | `/api/maj` |
 
 Publik katalog (`src/lib/pixdrift/systems.ts`) saknar `kansli` medvetet.
 Den har inte NORA, MOVA eller SAGA.
@@ -50,6 +51,7 @@ Den har inte NORA, MOVA eller SAGA.
 | tyra | PASS | PARTIAL | PARTIAL | MISSING | MISSING | PARTIAL | MISSING | PARTIAL | PARTIAL | PARTIAL | PARTIAL |
 | alva | PASS | PARTIAL | PARTIAL | MISSING | MISSING | PARTIAL | MISSING | PARTIAL | PARTIAL | PARTIAL | PARTIAL |
 | creditae | PASS | PARTIAL | PARTIAL | MISSING | MISSING | PARTIAL | MISSING | PARTIAL | PARTIAL | PARTIAL | PARTIAL |
+| maj | PASS | PARTIAL | PARTIAL | MISSING | MISSING | PARTIAL | MISSING | MISSING | PARTIAL | PARTIAL | PARTIAL |
 | nora | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
 | mova | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
 | saga | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
@@ -64,17 +66,18 @@ service accounts) hör till Platform Core, inte till “har de inloggning?”.
 
 **REST — PARTIAL.**
 JSON-API under `/api/{system}` med `@pixdrift/api-core`.
-Ingen OpenAPI. Ingen publik `api.pixdrift.com/v1`.
-Flera skrivvägar saknar MCP-par (se §4).
+OpenAPI 3.1 genereras ur Capability Graph:
+`GET /api/platform/openapi`, HTML `/documentation/rest`.
+Ingen publik `api.pixdrift.com/v1`. Inte alla REST-ytor sitter i grafen (se §4).
 
 **MCP — PARTIAL.**
-`POST /mcp`, protokoll `2026-07-28`, 14 verktyg i
+`POST /mcp`, protokoll `2026-07-28`, 37 verktyg i
 `src/lib/mcp/tools.ts`. Alla anropar befintliga tjänster.
 Inte alla REST-operationer har verktyg. Ingen L4-kö.
 Rate limit och idempotens är per process.
 
 **SDK — MISSING.**
-Inga paket `@pixdrift/sdk-*`. Ingen OpenAPI att generera från.
+Inga paket `@pixdrift/sdk-*`. OpenAPI finns som frö, ingen generator.
 
 **WEBHOOK — MISSING.**
 `platform.events` är intern append-only-logg.
@@ -124,52 +127,41 @@ ingen syntetisk bevakning av login/MCP/docs. Hemligheter dumpas inte.
 
 | Lager | Betyg | Vad som finns | Vad som saknas |
 | --- | --- | --- | --- |
-| 1. Platform Core | PARTIAL | Identity, org, session, `noun:verb`-behörighet, API Core, events, request-id, `org_ref` + RLS när `app.org_ref` är satt, tunn SMS-kanal (`src/lib/platform/sms.ts`) för Ekonomi-sälj | ABAC/OPA, entitlements, billing, feature flags, notifieringskärna, hemlighetsvalv, OTel, per-tjänst SLO, sandbox-tenant |
-| 2. Universal Integration | PARTIAL | REST + MCP mot samma `src/lib/{produkt}`. Revolut OAuth. | OpenAPI, webhooks, SDK, service accounts, OAuth-appar för tredje part |
+| 1. Platform Core | PARTIAL | Identity, org, session, `noun:verb`-behörighet, API Core, events, request-id, `org_ref` + RLS när `app.org_ref` är satt, tunn SMS-kanal (`src/lib/platform/sms.ts`) för Ekonomi-sälj, leftover Identity-HTML `Cache-Control: no-store` | ABAC/OPA, entitlements, billing, feature flags, notifieringskärna, hemlighetsvalv, OTel, per-tjänst SLO, sandbox-tenant |
+| 2. Universal Integration | PARTIAL | REST + MCP mot samma `src/lib/{produkt}`. OpenAPI ur grafen. Revolut OAuth. | Publik `api.`-host, webhooks, SDK, service accounts, OAuth-appar för tredje part |
 | 3. Developer Platform | PARTIAL | `/documentation`, MCP-docs, MCP-explorer | Sandbox, Try-it, recipes, changelog-data, status, request replay |
 | 4. App / Agent | PARTIAL | MCP + klientinstruktioner i docs | ChatGPT Apps, Apps SDK-UI, produktappar |
-| 5. Knowledge & Search | PARTIAL | `/systems`, `/documentation`, sitemap, robots, OG i root layout | Locale-URL, hreflang, knowledge, verktyg, intent-graf, llms.txt |
-| 6. Design System | PARTIAL | CSS-tokens, gemensam sajtmall | Tokenpaket, komponentbibliotek, produkt-DNA-regler, a11y-svit |
+| 5. Knowledge & Search | PARTIAL | `/systems`, `/documentation`, sitemap, robots, `llms.txt` ur `@pixdrift/systems` plus `MCP_DOC_LINKS`, JSON-LD ur brand plus `/systems/{slug}`, OG per publik HTML-sida, HTML noindex plus `X-Robots-Tag` på apprum plus Identity-HTML | Locale-URL, hreflang, knowledge, verktyg, intent-graf |
+| 6. Design System | PARTIAL | CSS-tokens, gemensam sajtmall, leftover skip-to-content på sajt, apprum och gäst, leftover 404 och error ur IdP-nycklar, leftover loading ur `common.loading`, leftover ljust läge som theme-color ur paper-token, inklusive leftover Identity-HTML, leftover Identity-logout title ur leftover signed-out-mening | Tokenpaket, komponentbibliotek, produkt-DNA-regler, a11y-svit |
 | 7. Reliability | PARTIAL | CI, restore-drill, health | Reliability contract, Neon-restore-kvitto, syntetiska tester, incident |
 
 ---
 
 ## 4. Capability Graph — frö mot full täckning
 
-Grafen i kod är **bara** de 14 MCP-verktygen.
+Grafen i kod är **bara** de 37 MCP-verktygen.
 Varje verktyg har redan `rest.method` + `rest.path`.
 Det är medvetet: ingen parallell lista.
 
-REST som **finns** men **inte** sitter i grafen än:
+REST som **finns** men **inte** sitter i grafen — medvetet:
 
 | REST | Produkt | Varför den saknas i grafen |
 | --- | --- | --- |
-| PATCH/DELETE `/api/kansli/tasks/:id` | kansli | Ingen MCP-skrivning för uppdatering/radering |
-| GET `/api/ekonomi/invoices/:id` | ekonomi | Bara listan är verktyg |
 | GET/POST `/api/ekonomi/connectors` | ekonomi | Connector-yta, inte MCP |
 | GET `/api/ekonomi/reports` | ekonomi | Rapport-yta, inte MCP |
 | Revolut connect/callback | ekonomi | OAuth-flöde, inte domänverktyg |
-| GET `/api/tora/opportunities/:id` | tora | Detalj utan MCP |
-| GET `/api/tora/calendar` | tora | Kalender utan MCP |
-| GET `/api/rita/analyses/:id` | rita | Detalj utan MCP |
-| GET/POST `/api/britt/findings` | britt | Findings utan MCP |
-| GET `/api/irma/agreements` | irma | Lista utan MCP |
-| GET/POST `/api/irma/agreements/:id` | irma | Detalj/revoke utan MCP |
 | GET/POST `/api/irma/l/:token` | irma | Gästlänk, medvetet utan agent |
-| GET `/api/tyra/cases` | tyra | Lista utan MCP |
-| GET `/api/tyra/cases/:id` | tyra | Detalj utan MCP |
-| POST `/api/tyra/hub/link` | tyra | Hubblänk utan MCP |
-| GET `/api/tyra/reminders` | tyra | Outbox utan MCP |
+| POST `/api/tyra/hub/link` | tyra | Hubblänk, gästtoken |
 | POST `/api/tyra/suppliers/search` | tyra | Returnerar `NOT_CONFIGURED` |
 | GET `/api/tyra/cron/reminders` | tyra | Cron, inte agentyta |
-| GET `/api/alva/cases` | alva | Lista utan MCP |
-| GET/POST `/api/creditae/inquiries` | creditae | Lista/skapa. MCP `register_credit_inquiry` |
+| GET `/api/maj/projects/:id` | maj | Detalj utan MCP — lista+kö räcker |
+| GET `/api/platform/ops/alarms` | platform | Cron SMS, inte agentyta |
 | GET `/api/platform/health` | platform | Publik health |
 | GET `/api/platform/ai` | platform | Gateway-ping, inferens |
 | `/api/auth/*` | identity | Browser-BFF, inte agent |
 
-Nästa kodflytt i grafen: bind de REST-ytor som *ska* vara
-agentbara. Inte alla ska det (gästlänk, cron, OAuth-callback).
+Agentbara GET-ytor och IRMA-revoke sitter i grafen.
+Kvar är medvetet utan agent (gästlänk, cron, OAuth, connectors, rapporter).
 
 ---
 
@@ -179,10 +171,11 @@ Publika sidor i dag: `/`, `/systems`, `/systems/{slug}`,
 `/how-it-works`, `/applications`, `/documentation`,
 `/documentation/mcp/*`, `/documentation/capabilities`,
 `/why`, `/company`.
-Sitemap: `src/app/sitemap.ts` (saknade tidigare MCP-URL:er).
-Robots: tillåt `/`, blockera `/kansli`, `/api/`, `/idp/`.
+Sitemap: `src/app/sitemap.ts` (MCP-docsidor ur `MCP_DOC_LINKS` plus `/systems/{slug}`).
+`llms.txt`: rum ur `@pixdrift/systems` plus MCP-docsidor ur `MCP_DOC_LINKS`.
+Robots: tillåt `/`, blockera apprummen ur `@pixdrift/systems` plus `/platform` och `/api/`.
 Locale: `html lang` från `pd_locale` (kanonisk `en`). Inga `/en/` `/sv/` `/de/`.
-Ingen hreflang. Canonical är implicit via `metadataBase`.
+Ingen hreflang. Canonical per publik HTML-sida ur `PUBLIC_SITEMAP_PATHS` plus `/systems/{slug}`.
 
 | Produkt | Kärnentiteter | Problemkluster | Roller | Bransch | Flöden | Integrationer | Språk | Befintliga sidor | Saknade sidor (målbild) | Teknisk SEO | Länkar | Kvalitetslucka |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -196,6 +189,7 @@ Ingen hreflang. Canonical är implicit via `metadataBase`.
 | tyra | kund, bil, hjul | däckhotell-kaos | verkstad | däck / verkstad | ärende, hubb | leverantörssök `NOT_CONFIGURED` | en | `/systems/tyra` | däckhotell-kunskap, kalkylator | PARTIAL | svag | ärlig om vad som saknas |
 | alva | ärende, fel, mätvärde | “vad sa kunden?” | verkstad | fordon | registrera fall | diagnosmotor **inte här** | en | `/systems/alva` | guided diagnostics **nej** förrän motorn finns | PARTIAL | svag | får inte sälja diagnos |
 | creditae | förfrågan, bedömning | “vågar vi ge kredit?” | ekonomi, vd | tvärgående | registrera motpart, spara slutsats | Creditsafe via `credit.ts` | en | `/systems/creditae` | byråkoppling kanal, inte betyg | PARTIAL | svag | får inte sälja kreditbetyg |
+| maj | projekt, beslut, release | “vad har hänt i sök?” | huset (alfa) | tvärgående | analysera, godkänn, publicera | Semrush via `webintel.ts` | en | ingen `/systems/maj` | intern alfa, inte säljbar sida | MISSING | — | rum, inte katalogblad |
 | nora | — | — | — | — | — | — | — | — | — | N/A | — | inte i repot |
 | mova | — | — | — | — | — | — | — | — | — | N/A | — | inte i repot |
 | saga | — | — | — | — | — | — | — | — | — | N/A | — | inte i repot |
@@ -209,8 +203,8 @@ Skapa inte ALVA “guided diagnostics” förrän motorn är inkopplad.
 
 - ingen hreflang, inga locale-URL:er
 - sitemap saknade MCP-dokumentation (rättas i samma ändring)
-- ingen structured data-generator
-- `/llms.txt` finns som ärlig maskintext, inte som sökhack
+- JSON-LD ur brand plus `/systems/{slug}`. Ingen knowledge- eller FAQ-generator
+- `/llms.txt` är ärlig maskintext ur `@pixdrift/systems` plus `MCP_DOC_LINKS`, inte ett sökhack
 - ingen knowledge-, tools-, comparisons-yta
 - `/company` har bolagsnamn och städer, inte org.nr, DPA, privacy, terms
 - statusyta är `planned` i `platform.ts`
@@ -226,7 +220,7 @@ Mål: kall extern utvecklare gör första anropet på en kvart.
 | Hitta plattformen | PARTIAL | `/documentation` och `/documentation/mcp` finns. Ingen `developers.pixdrift.com`. |
 | Skapa sandbox | MISSING | Ingen isolering. Demo-org kräver `PIXDRIFT_SEED_DEMO`. |
 | Autentisera | PARTIAL | Session-cookie eller Bearer mot IdP. Ingen self-serve token-knapp. Klienthemligheter är env. |
-| Läsa docs | PARTIAL | MCP-docs genereras. REST saknar OpenAPI och per-operation HTML. |
+| Läsa docs | PARTIAL | MCP-docs, OpenAPI och REST-HTML genereras ur grafen. Ingen Try-it mot sandbox. |
 | Första REST-anrop | PARTIAL | Går mot `/api/...` med session. Ingen Try-it mot sandbox. |
 | Koppla MCP | PARTIAL | `POST /mcp` + `/documentation/mcp/clients`. Inga färdiga Cursor/ChatGPT-installationspaket med OAuth. |
 | Första tool | PARTIAL | Inloggad explorer `/platform/mcp`. Extern klient måste bära token själv. |
@@ -254,18 +248,18 @@ MCP-health och `server/discover` är inte samma sak som
 | Check | Resultat | Bevis |
 | --- | --- | --- |
 | Crawlbar HTML | PARTIAL | App Router-sidor. Docs är serverrenderade. |
-| Indexerbar | PARTIAL | robots tillåter sajt, blockerar app/api/idp |
-| Canonical | PARTIAL | `metadataBase` + implicit URL. Ingen per-sida canonical-policy |
+| Indexerbar | PARTIAL | robots tillåter sajt, blockerar apprum + `/platform` + `/api/`. HTML `noindex` plus `X-Robots-Tag` på samma rum plus gästlänk, bekräftelse, leftover 404 och Identity-HTML |
+| Canonical | PARTIAL | per-sida ur `PUBLIC_SITEMAP_PATHS` plus `/systems/{slug}`. Inga locale-URL:er |
 | hreflang | MISSING | — |
-| Sitemap | PARTIAL | statiska rutter + `/systems/{slug}` |
+| Sitemap | PARTIAL | MCP-docsidor ur `MCP_DOC_LINKS` plus `/systems/{slug}` |
 | Robots | PASS | `src/app/robots.ts` |
-| Structured data | MISSING | ingen JSON-LD-generator |
-| Metadata / OG | PARTIAL | root layout. Få unika per produktsida |
+| Structured data | PARTIAL | Organization + WebSite ur brand, SoftwareApplication ur `/systems/{slug}` |
+| Metadata / OG | PARTIAL | per-sida title/description/url ur samma publika ytor. Ingen OG-bild |
 | Interna länkar | PARTIAL | nav + systems. Ingen intent-graf |
 | HTTP-status | PARTIAL | inte syntetiskt bevakat |
 | Prestanda | MISSING | ingen Lighthouse-gate |
-| Mobil | PARTIAL | layout finns, ingen bevakad svit |
-| Locale | PARTIAL | `html lang` från `pd_locale`. Inga locale-URL:er |
+| Mobil | PARTIAL | layout finns, leftover Identity-HTML har viewport och leftover paper theme-color, leftover format-detection av. Ingen bevakad svit |
+| Locale | PARTIAL | `html lang` från `pd_locale`, inklusive leftover Identity-logout. Leftover Identity-logout title är leftover signed-out-meningen. Leftover dokumentationstermer ur godkända översättningar. Inga locale-URL:er |
 
 ---
 
@@ -282,6 +276,7 @@ MCP-health och `server/discover` är inte samma sak som
 | 46elks | PARTIAL | Tunn kanal `src/lib/platform/sms.ts`. Ekonomi-sälj-SMS går där. Inte en Notifications Core. |
 | ElevenLabs | PARTIAL | Tunn kanal `src/lib/platform/tts.ts`. IRMA-uppläsning går där. |
 | Creditsafe | PARTIAL | Tunn kanal `src/lib/platform/credit.ts`. CREDITAE hämtar rapport där. Inte ett betyg. |
+| Semrush | PARTIAL | Tunn kanal `src/lib/platform/webintel.ts`. MAJ hämtar översikt, keywords och backlinks där. CREDITAE webbnärvaro på knapp. Inte en dashboard. |
 | Resend / Mapbox | secrets namngivna | `docs/INTEGRATIONS.md` — kärna inte byggd |
 | Apollo.io | planned | BRITT-connector namngiven, inte driftad |
 | ChatGPT Apps | missing | — |
@@ -308,7 +303,7 @@ Påstå inte ISO/SOC. De finns inte i repot.
 Ändra bara om ny kod motbevisar tabellen.
 
 1. Håll Capability Graph som enda katalog. Fyll REST-luckor som *ska* vara agentbara.
-2. OpenAPI ur grafen — inte en handskriven spec vid sidan av.
+2. OpenAPI ur grafen — frö i `GET /api/platform/openapi`. Inte en handskriven spec. SDK/Try-it väntar.
 3. Developer Portal: sandbox + Try-it på *befintlig* `/documentation`.
 4. SDK-generering ur kontraktet.
 5. ChatGPT Apps bara där MCP redan har ett ärligt läsverktyg och ev. säker skrivning.

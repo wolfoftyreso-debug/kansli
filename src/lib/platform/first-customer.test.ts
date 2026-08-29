@@ -27,11 +27,15 @@ describe("evaluateFirstCustomerGates", () => {
     expect(board.gates.find((g) => g.id === "alva")?.state).toBe("blocked");
     expect(board.gates.find((g) => g.id === "rita")?.state).toBe("blocked");
     expect(board.gates.find((g) => g.id === "creditae")?.state).toBe("open");
-    expect(board.gates.find((g) => g.id === "creditae")?.detail).toMatch(/kreditupplysning/);
+    expect(board.gates.find((g) => g.id === "creditae")?.detail).toMatch(/credit bureau/i);
+    expect(
+      evaluateFirstCustomerGates({ ...base, locale: "sv" }).gates.find((g) => g.id === "creditae")
+        ?.detail,
+    ).toMatch(/kreditupplysning/);
     const withBureau = evaluateFirstCustomerGates({ ...base, creditVendor: true });
     expect(withBureau.gates.find((g) => g.id === "creditae")?.state).toBe("open");
-    expect(withBureau.gates.find((g) => g.id === "creditae")?.detail).toMatch(/inkopplad/);
-    expect(withBureau.gates.find((g) => g.id === "creditae")?.detail).toMatch(/slutsats/);
+    expect(withBureau.gates.find((g) => g.id === "creditae")?.detail).toMatch(/wired/i);
+    expect(withBureau.gates.find((g) => g.id === "creditae")?.detail).toMatch(/conclusion/i);
     expect(board.gates.find((g) => g.id === "upphandling")?.state).toBe("ready");
   });
 
@@ -84,7 +88,7 @@ describe("evaluateFirstCustomerGates", () => {
     expect(empty.gates.find((g) => g.id === "ekonomi")?.detail).toMatch(/Visma/);
     const booked = evaluateFirstCustomerGates({ ...base, ekonomiIssued: 5, ekonomiPaid: 1 });
     expect(booked.gates.find((g) => g.id === "ekonomi")?.state).toBe("ready");
-    expect(booked.gates.find((g) => g.id === "ekonomi")?.detail).toMatch(/5 utfärdade/);
+    expect(booked.gates.find((g) => g.id === "ekonomi")?.detail).toMatch(/5 issued/);
     expect(booked.gates.find((g) => g.id === "honesty")?.detail).toMatch(/Visma/);
     expect(booked.gates.find((g) => g.id === "honesty")?.detail).not.toMatch(/BankID/i);
     expect(booked.gates.find((g) => g.id === "irma")?.detail).not.toMatch(/BankID/i);

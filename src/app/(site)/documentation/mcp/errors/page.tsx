@@ -1,11 +1,18 @@
-import type { Metadata } from "next";
 import { McpDocNav } from "@/components/site/McpDocNav";
 import { Container } from "@/components/site/Container";
 import { SectionHeading } from "@/components/site/SectionHeading";
+import { t } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
+import { publicShareMeta } from "@/lib/platform/canonical";
 
-export const metadata: Metadata = {
-  title: "MCP errors — PIXDRIFT",
-};
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "site.doc.mcp.errors.metaTitle"),
+    description: t(locale, "site.doc.mcp.errors.intro"),
+    ...publicShareMeta("/documentation/mcp/errors"),
+  };
+}
 
 const ERRORS = [
   ["AUTHENTICATION_REQUIRED", "Missing or invalid token."],
@@ -19,16 +26,17 @@ const ERRORS = [
   ["INTERNAL_ERROR", "Unexpected failure. Details stay in logs."],
 ] as const;
 
-export default function McpErrorsPage() {
+export default async function McpErrorsPage() {
+  const locale = await readLocale();
   return (
     <Container>
       <McpDocNav current="/documentation/mcp/errors" />
       <div className="mt-10">
         <SectionHeading
           as="h1"
-          eyebrow="Errors"
-          title="Safe names. No SQL. No secrets."
-          intro="JSON-RPC errors carry a name and request id. Stack traces stay inside the process."
+          eyebrow={t(locale, "site.doc.nav.errors")}
+          title={t(locale, "site.doc.mcp.errors.title")}
+          intro={t(locale, "site.doc.mcp.errors.intro")}
         />
       </div>
       <dl className="mt-12 border-t border-line">

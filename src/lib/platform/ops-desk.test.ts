@@ -35,6 +35,11 @@ describe("ops desk notices", () => {
     expect(notices.map((item) => item.id)).toContain("overdue");
     expect(notices.map((item) => item.id)).toContain("support");
     expect(notices.find((item) => item.id === "overdue")?.href).toBe("/ekonomi");
+    expect(notices.find((item) => item.id === "overdue")?.title).toMatch(/overdue/i);
+    expect(
+      buildOpsNotices({ facts, routes: [], locale: "sv" }).find((item) => item.id === "overdue")
+        ?.title,
+    ).toMatch(/förfallet/i);
   });
 
   it("warns when TYRA reminders are blocked", () => {

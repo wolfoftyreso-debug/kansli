@@ -18,6 +18,7 @@ describe("WORKSPACE_SCHEMAS", () => {
       "tyra",
       "alva",
       "creditae",
+      "maj",
     ]);
     expect(WORKSPACE_SCHEMAS.find((e) => e.schema === "platform")?.grant).toBe("append");
   });

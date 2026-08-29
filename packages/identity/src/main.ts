@@ -18,7 +18,7 @@ async function main(): Promise<void> {
   const app = await bootIdentityFromEnv({ issuer });
 
   await app.listen({ port, host });
-  console.log(`[pixdrift-identity] issuer ${issuer} lyssnar på http://${host}:${port}`);
+  console.log(`[pixdrift-identity] issuer ${issuer} listening on http://${host}:${port}`);
 }
 
 main().catch((err) => {

@@ -84,3 +84,14 @@ export function localeTag(locale: Locale): string {
   if (locale === "no") return "nb-NO";
   return locale;
 }
+
+/** Client leftover error chrome. Cookie first, then English. */
+export function localeFromCookieHeader(cookie: string | undefined): Locale {
+  if (!cookie) return DEFAULT_LOCALE;
+  for (const part of cookie.split(";")) {
+    const [name, ...rest] = part.trim().split("=");
+    if (name !== LOCALE_COOKIE) continue;
+    return parseLocale(decodeURIComponent(rest.join("="))) ?? DEFAULT_LOCALE;
+  }
+  return DEFAULT_LOCALE;
+}

@@ -6,15 +6,16 @@ import {
   EmptyState,
   Field,
   Notice,
+  SelectField,
   SignInGate,
   Submit,
 } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
-import { t } from "@/lib/i18n";
+import { t, tyraCaseStatus, tyraIntentLabel } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
 import { tryRuntime } from "@/lib/platform/page";
 import { TaskRow } from "@/components/tyra/Rows";
-import { CASE_STATUS_LABELS, INTENT_LABELS, listCases } from "@/lib/tyra/cases";
+import { listCases } from "@/lib/tyra/cases";
 import { createTyraCase } from "./actions";
 
 export async function generateMetadata() {
@@ -74,61 +75,92 @@ export default async function TyraPage() {
       ) : (
         <>
           <form action={createTyraCase} className="flex flex-col gap-4">
-            <Field name="customerName" label="Kund" required placeholder="Anna Andersson" />
+            <Field
+              name="customerName"
+              label={t(locale, "tyra.field.customer")}
+              required
+              large
+              placeholder="Anna Andersson"
+            />
             <Field
               name="registrationNumber"
-              label="Registreringsnummer"
+              label={t(locale, "tyra.field.registration")}
               required
+              large
               placeholder="ABC123"
             />
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field name="make" label="Märke" placeholder="Volvo" />
-              <Field name="model" label="Modell" placeholder="XC60" />
+              <Field name="make" label={t(locale, "tyra.field.make")} large placeholder="Volvo" />
+              <Field name="model" label={t(locale, "tyra.field.model")} large placeholder="XC60" />
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field name="phone" label="Telefon" placeholder="+46…" />
-              <Field name="email" label="E-post" placeholder="kund@exempel.se" />
+              <Field
+                name="phone"
+                label={t(locale, "tyra.field.phone")}
+                type="tel"
+                large
+                placeholder="+46…"
+              />
+              <Field
+                name="email"
+                label={t(locale, "tyra.field.email")}
+                type="email"
+                large
+                placeholder="kund@exempel.se"
+              />
             </div>
-            <label className="flex flex-col gap-1">
-              <span className="text-sm text-ink-soft">Avsikt</span>
-              <select
-                name="intent"
-                defaultValue="TIRE_SWAP_APPOINTMENT"
-                className="rounded-md border border-line bg-paper px-3 py-2 text-sm"
-              >
-                <option value="TIRE_SWAP_APPOINTMENT">Hjulskifte</option>
-                <option value="STORE_ONLY">Inlagring</option>
-                <option value="PICKUP_ONLY">Utlämning</option>
-                <option value="QUOTE_ONLY">Offert</option>
-                <option value="MIXED">Blandat</option>
-              </select>
-            </label>
+            <SelectField
+              name="intent"
+              label={t(locale, "tyra.field.intent")}
+              large
+              defaultValue="TIRE_SWAP_APPOINTMENT"
+              options={[
+                {
+                  value: "TIRE_SWAP_APPOINTMENT",
+                  label: tyraIntentLabel(locale, "TIRE_SWAP_APPOINTMENT"),
+                },
+                { value: "STORE_ONLY", label: tyraIntentLabel(locale, "STORE_ONLY") },
+                { value: "PICKUP_ONLY", label: tyraIntentLabel(locale, "PICKUP_ONLY") },
+                { value: "QUOTE_ONLY", label: tyraIntentLabel(locale, "QUOTE_ONLY") },
+                { value: "MIXED", label: tyraIntentLabel(locale, "MIXED") },
+              ]}
+            />
             <fieldset className="flex flex-col gap-2">
-              <legend className="text-sm text-ink-soft">Åtgärder</legend>
-              <CheckField name="swapFromStorage" label="Hjulskifte från lager" defaultChecked />
-              <CheckField name="wash" label="Tvätt" defaultChecked />
-              <CheckField name="balance" label="Balansering" defaultChecked />
-              <CheckField name="storageIn" label="Lägga in hjul" />
-              <CheckField name="quote" label="Sälj däck" />
+              <legend className="text-sm text-ink-soft">{t(locale, "tyra.jobs")}</legend>
+              <CheckField
+                name="swapFromStorage"
+                label={t(locale, "tyra.job.swapFromStorage")}
+                large
+                defaultChecked
+              />
+              <CheckField name="wash" label={t(locale, "tyra.job.wash")} large defaultChecked />
+              <CheckField
+                name="balance"
+                label={t(locale, "tyra.job.balance")}
+                large
+                defaultChecked
+              />
+              <CheckField name="storageIn" label={t(locale, "tyra.job.storageIn")} large />
+              <CheckField name="quote" label={t(locale, "tyra.job.quote")} large />
             </fieldset>
-            <Submit>Öppna ärende</Submit>
+            <Submit large>{t(locale, "tyra.openCase")}</Submit>
           </form>
 
           <section className="flex flex-col gap-3">
-            <h2 className="text-lg font-semibold">Ärenden</h2>
+            <h2 className="text-lg font-semibold">{t(locale, "tyra.cases")}</h2>
             {cases.length === 0 ? (
-              <EmptyState>Inga ärenden ännu.</EmptyState>
+              <EmptyState>{t(locale, "tyra.empty")}</EmptyState>
             ) : (
               <ul className="flex flex-col gap-3">
                 {cases.map((item) => (
                   <li key={item.id}>
                     <Link href={`/tyra/cases/${item.id}`} className="block">
                       <TaskRow
-                        headline={item.registrationNumber ?? "Ärende"}
-                        subtitle={`${item.customerName ?? "Kund saknas"} · ${INTENT_LABELS[item.intent]}`}
+                        headline={item.registrationNumber ?? t(locale, "tyra.caseFallback")}
+                        subtitle={`${item.customerName ?? t(locale, "tyra.noCustomer")} · ${tyraIntentLabel(locale, item.intent)}`}
                         status={{
                           tone: caseTone(item.caseStatus),
-                          label: CASE_STATUS_LABELS[item.caseStatus] ?? item.caseStatus,
+                          label: tyraCaseStatus(locale, item.caseStatus),
                         }}
                       />
                     </Link>

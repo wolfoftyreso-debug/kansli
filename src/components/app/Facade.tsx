@@ -95,24 +95,24 @@ export function Facade({
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex h-9 items-center justify-between gap-3 border-b border-line bg-surface px-3">
-          <div className="flex min-w-0 items-center gap-3">
+          <div className="flex min-w-0 items-center gap-3 overflow-hidden">
             <Link
               href={session ? "/kansli" : "/"}
-              className="text-xs font-semibold tracking-[0.18em] md:hidden"
+              className="shrink-0 text-xs font-semibold tracking-[0.18em] md:hidden"
             >
               PIXDRIFT
             </Link>
-            <p className="pd-label truncate">{room}</p>
+            <p className="pd-label hidden truncate sm:block">{room}</p>
           </div>
           <div className="flex shrink-0 items-center gap-3">
-            <p className="pd-label hidden sm:block">
+            <p className="pd-label hidden whitespace-nowrap lg:block">
               {session?.org?.name ?? (session ? session.email : t(locale, "chrome.signedOut"))}
               {" · "}
               {t(locale, RUNTIME_KEY[runtime])}
             </p>
             {session && session.memberships.length > 1 ? (
-              <details className="relative">
-                <summary className="cursor-pointer list-none pd-label hover:text-ink [&::-webkit-details-marker]:hidden">
+              <details className="relative hidden md:block">
+                <summary className="cursor-pointer list-none pd-label whitespace-nowrap hover:text-ink [&::-webkit-details-marker]:hidden">
                   {t(locale, "chrome.switchOrg")}
                 </summary>
                 <nav
@@ -147,13 +147,16 @@ export function Facade({
               <form action="/api/auth/logout" method="post">
                 <button
                   type="submit"
-                  className="pd-label underline underline-offset-4 hover:text-ink"
+                  className="pd-label whitespace-nowrap underline underline-offset-4 hover:text-ink"
                 >
                   {t(locale, "chrome.signOut")}
                 </button>
               </form>
             ) : (
-              <a href={loginHref} className="pd-label underline underline-offset-4 hover:text-ink">
+              <a
+                href={loginHref}
+                className="pd-label whitespace-nowrap underline underline-offset-4 hover:text-ink"
+              >
                 {t(locale, "chrome.signIn")}
               </a>
             )}
@@ -174,6 +177,31 @@ export function Facade({
                     {item.id === item.label ? item.label : t(locale, item.label as MessageKey)}
                   </Link>
                 ))}
+                {session && session.memberships.length > 1 ? (
+                  <div className="border-t border-line md:hidden">
+                    <p className="px-3 pb-1 pt-2 pd-label">{t(locale, "chrome.orgs")}</p>
+                    {session.memberships.map((membership) => {
+                      const orgId = orgIdFromRef(membership.ref);
+                      if (!orgId) return null;
+                      const href = `/api/auth/login?org=${encodeURIComponent(orgId)}&next=${encodeURIComponent(loginNextFromPath(pathname))}`;
+                      const current = session.org?.ref === membership.ref;
+                      return (
+                        <a
+                          key={membership.ref}
+                          href={href}
+                          className={
+                            current
+                              ? "block px-3 py-2 text-sm font-medium text-ink"
+                              : "block px-3 py-2 text-sm text-ink-soft hover:bg-paper hover:text-ink"
+                          }
+                          aria-current={current ? "true" : undefined}
+                        >
+                          {membership.name}
+                        </a>
+                      );
+                    })}
+                  </div>
+                ) : null}
               </nav>
             </details>
           </div>

@@ -9,7 +9,7 @@ export function SignInGate({
 }: {
   next: AppNextPath;
   title: string;
-  actionLabel?: string;
+  actionLabel: string;
   children: ReactNode;
 }) {
   return (
@@ -20,7 +20,7 @@ export function SignInGate({
         href={`/api/auth/login?next=${encodeURIComponent(next)}`}
         className="mt-4 inline-flex bg-ink px-4 py-2 text-sm font-medium text-paper hover:bg-ink-soft"
       >
-        {actionLabel ?? "Sign in"}
+        {actionLabel}
       </a>
     </section>
   );
@@ -55,6 +55,7 @@ export function Field({
   multiline,
   large,
   type = "text",
+  inputMode,
 }: {
   name: string;
   label: string;
@@ -64,6 +65,7 @@ export function Field({
   multiline?: boolean;
   large?: boolean;
   type?: "text" | "email" | "tel";
+  inputMode?: "text" | "decimal" | "numeric" | "tel" | "email";
 }) {
   const cls = large
     ? "min-h-12 border border-line bg-paper px-4 py-3 text-base"
@@ -88,12 +90,48 @@ export function Field({
         <input
           name={name}
           type={type}
+          inputMode={inputMode}
           required={required}
           defaultValue={defaultValue}
           placeholder={placeholder}
           className={cls}
         />
       )}
+    </label>
+  );
+}
+
+export function SelectField({
+  name,
+  label,
+  options,
+  placeholder,
+  defaultValue = "",
+  large,
+  required,
+}: {
+  name: string;
+  label: string;
+  options: { value: string; label: string }[];
+  placeholder?: string;
+  defaultValue?: string;
+  large?: boolean;
+  required?: boolean;
+}) {
+  const cls = large
+    ? "min-h-12 border border-line bg-paper px-4 py-3 text-base"
+    : "border border-line bg-paper px-3 py-2 text-sm";
+  return (
+    <label className="flex flex-col gap-1">
+      <span className="text-sm text-ink-soft">{label}</span>
+      <select name={name} defaultValue={defaultValue} required={required} className={cls}>
+        {placeholder ? <option value="">{placeholder}</option> : null}
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
     </label>
   );
 }
@@ -117,7 +155,7 @@ export function CheckField({
     <label
       className={
         large
-          ? "flex min-h-12 items-center gap-3 text-base text-ink-soft"
+          ? "flex min-h-12 items-start gap-3 py-2 text-base text-ink-soft"
           : "flex items-start gap-2 text-sm text-ink-soft"
       }
     >
@@ -127,7 +165,7 @@ export function CheckField({
         value={value}
         defaultChecked={defaultChecked}
         required={required}
-        className={large ? "h-5 w-5 shrink-0" : "mt-1"}
+        className={large ? "mt-1 h-5 w-5 shrink-0" : "mt-1"}
       />
       <span>{label}</span>
     </label>

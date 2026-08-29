@@ -9,6 +9,7 @@ export const SYSTEM_IDS = [
   "tyra",
   "alva",
   "creditae",
+  "maj",
 ] as const;
 export type SystemId = (typeof SYSTEM_IDS)[number];
 
@@ -58,6 +59,13 @@ export const EVENT_KINDS = [
   "creditae.assessment.recorded",
   "creditae.report.fetched",
   "creditae.report.failed",
+  "creditae.web.fetched",
+  "creditae.web.failed",
+  "maj.project.created",
+  "maj.signal.recorded",
+  "maj.action.proposed",
+  "maj.action.decided",
+  "maj.release.published",
 ] as const;
 export type EventKind = (typeof EVENT_KINDS)[number];
 
@@ -258,8 +266,37 @@ export const SYSTEM_MODULES: readonly SystemModule[] = [
       "creditae.assessment.recorded",
       "creditae.report.fetched",
       "creditae.report.failed",
+      "creditae.web.fetched",
+      "creditae.web.failed",
     ],
-    capabilities: ["inquiries", "assess", "credit-report"],
+    capabilities: ["inquiries", "assess", "credit-report", "web-presence"],
+  },
+  {
+    id: "maj",
+    name: "MAJ",
+    purpose: "Measure, analyse, adjust. Search visibility as decisions to approve, not figures.",
+    status: "pilot",
+    schema: "maj",
+    basePath: "/maj",
+    apiBase: "/api/maj",
+    domainDir: "src/lib/maj",
+    eventKinds: [
+      "maj.project.created",
+      "maj.signal.recorded",
+      "maj.action.proposed",
+      "maj.action.decided",
+      "maj.release.published",
+    ],
+    capabilities: [
+      "projects",
+      "signals",
+      "keywords",
+      "backlinks",
+      "opportunities",
+      "releases",
+      "usage-ledger",
+      "prompt-compiler",
+    ],
   },
 ];
 

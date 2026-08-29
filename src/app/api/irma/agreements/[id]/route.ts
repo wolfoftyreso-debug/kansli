@@ -8,7 +8,7 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
     const present = requireOrg(actor);
     const { id } = await context.params;
     const agreement = await getAgreement(pool, present.orgRef, id);
-    if (!agreement) throw new ApiError("not_found", "Avtalet finns inte.");
+    if (!agreement) throw new ApiError("not_found", "The agreement does not exist.");
     return json({
       agreement,
       integrity: verifyAgreementIntegrity(agreement),
@@ -22,7 +22,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     const { id } = await context.params;
     const body = (await request.json().catch(() => null)) as { action?: string } | null;
     if (body?.action !== "revoke") {
-      throw new ApiError("invalid_request", "action=revoke krävs.");
+      throw new ApiError("invalid_request", "action=revoke is required.");
     }
     const agreement = await revokeAgreement({
       pool,
@@ -32,7 +32,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
       actorRef: present.sub,
       requestId,
     });
-    if (!agreement) throw new ApiError("not_found", "Avtalet finns inte.");
+    if (!agreement) throw new ApiError("not_found", "The agreement does not exist.");
     return json({ agreement });
   });
 }

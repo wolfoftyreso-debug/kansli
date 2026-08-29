@@ -4,6 +4,7 @@ import { metricsSnapshot } from "@pixdrift/mcp-core";
 import { SYSTEM_MODULES } from "@pixdrift/systems";
 import { isHardenedRuntime } from "../auth/secrets.ts";
 import { revolutConfigState } from "../ekonomi/revolut/config.ts";
+import { DEFAULT_LOCALE, type Locale } from "../i18n/index.ts";
 import { isHouseSession } from "../kansli/intakes.ts";
 import { ritaEngineSnapshot } from "../rita/resolve-engine.ts";
 import { gatewaySnapshot } from "./ai.ts";
@@ -13,6 +14,7 @@ import { loadOpsDesk } from "./ops-desk.ts";
 import { loadFirstCustomerBoard } from "./first-customer.ts";
 import { hubStatus } from "./hub-status.ts";
 import type {
+  OpsEventMeasure,
   OpsPoint,
   OpsRecent,
   OpsSchemaMeasure,
@@ -20,9 +22,11 @@ import type {
   OpsSnapshot,
   OpsTableMeasure,
 } from "./ops-view.ts";
+import { vendorChannels } from "./channels.ts";
 import { creditConfigured } from "./credit.ts";
 import { smsConfigured } from "./sms.ts";
 import { ttsConfigured } from "./tts.ts";
+import { webintelConfigured } from "./webintel.ts";
 import {
   DATABASE_CONTRACT,
   IDENTITY_TABLES,
@@ -323,7 +327,7 @@ async function loadIdentity(
 
 export async function loadOpsSnapshot(
   pool: pg.Pool,
-  input: { orgRef: string; orgName?: string | null; scope?: OpsScope },
+  input: { orgRef: string; orgName?: string | null; scope?: OpsScope; locale?: Locale },
 ): Promise<OpsSnapshot> {
   const scope = input.scope ?? opsScopeFor(input.orgRef);
   const status = hubStatus();
@@ -335,7 +339,7 @@ export async function loadOpsSnapshot(
     loadTables(pool, scope),
     loadEvents(pool, scope, input.orgRef),
     loadIdentity(pool, scope, input.orgRef),
-    loadFirstCustomerBoard(pool, input.orgRef),
+    loadFirstCustomerBoard(pool, input.orgRef, input.locale ?? DEFAULT_LOCALE),
     Promise.all([loadSeries(pool, scope, input.orgRef), loadRecent(pool, scope, input.orgRef)]),
   ]);
   const [{ series, previousWindow }, recent] = activity;
@@ -345,6 +349,7 @@ export async function loadOpsSnapshot(
     scope,
     blockedGates,
     databaseDown: status.database === "down",
+    locale: input.locale ?? DEFAULT_LOCALE,
   });
   const [queues, lastErrors] = await Promise.all([
     loadOpsQueues(pool, scope, input.orgRef),
@@ -366,7 +371,9 @@ export async function loadOpsSnapshot(
       sms: smsConfigured(),
       tts: ttsConfigured(),
       credit: creditConfigured(),
+      webintel: webintelConfigured(),
       revolut: { configured: revolut.missing.length === 0, environment: revolut.environment },
+      channels: vendorChannels(),
       mcp: metricsSnapshot(),
     },
     identity,

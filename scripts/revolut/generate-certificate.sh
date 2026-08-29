@@ -32,7 +32,7 @@ while [[ $# -gt 0 ]]; do
     --out) OUT="$2"; shift 2 ;;
     --subject) SUBJECT="$2"; shift 2 ;;
     -h|--help) sed -n '2,15p' "${BASH_SOURCE[0]}"; exit 0 ;;
-    *) echo "okänt argument: $1" >&2; exit 2 ;;
+    *) echo "unknown argument: $1" >&2; exit 2 ;;
   esac
 done
 
@@ -43,8 +43,8 @@ mkdir -p "$OUT"
 chmod 700 "$OUT"
 
 if [[ -e "$KEY" ]]; then
-  echo "FEL: $KEY finns redan." >&2
-  echo "Skapa aldrig en ny nyckel ovanpå en registrerad. Flytta undan den gamla först." >&2
+  echo "ERROR: $KEY already exists." >&2
+  echo "Never create a new key on top of a registered one. Move the old key aside first." >&2
   exit 1
 fi
 
@@ -71,31 +71,31 @@ CREATED_ISO="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
 cat <<EOF
 
-=== KLISTRA IN DET HÄR I REVOLUT (X509-fältet) ===
+=== PASTE THIS INTO REVOLUT (the X509 field) ===
 
 $(cat "$CERT")
-=== SLUT PÅ CERTIFIKAT ===
+=== END OF CERTIFICATE ===
 
-Certifikatets metadata (dessa är inte hemliga):
+Certificate metadata (these are not secrets):
 
   REVOLUT_CERTIFICATE_FINGERPRINT=$FINGERPRINT
   REVOLUT_CERTIFICATE_CREATED_AT=$CREATED_ISO
   REVOLUT_CERTIFICATE_EXPIRES_AT=$EXPIRES_ISO
   REVOLUT_CERTIFICATE_PUBLIC_KEY_SHA256=$SPKI
 
-Den sista raden låter driften upptäcka en felparad nyckel direkt, istället för
-att Revolut avvisar varje anrop utan att säga varför.
+The last line lets operations spot a mismatched key immediately, instead of
+Revolut rejecting every call without saying why.
 
-Privatnyckeln ligger i:
+The private key is at:
 
   $KEY
 
-Den skrivs aldrig ut här. Lägg den i produktionens secret store utan att den
-passerar historiken, t.ex.:
+It is never printed here. Put it in the production secret store without it
+passing through history, e.g.:
 
   vercel env add REVOLUT_PRIVATE_KEY production < $KEY
 
-Radera den lokala kopian när den ligger i secret storen:
+Delete the local copy when it is in the secret store:
 
   shred -u $KEY 2>/dev/null || rm -P $KEY
 

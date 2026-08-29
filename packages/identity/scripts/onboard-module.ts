@@ -45,8 +45,8 @@ async function main(): Promise<void> {
 
   if (!clientId || redirects.length === 0 || !ownerUrl) {
     console.error(
-      "Krävs: --id, minst en --redirect, och --owner-url eller PIXDRIFT_DB_OWNER_URL.\n" +
-        "Valfritt: --name, --audience a,b, --post-logout u, --public",
+      "Required: --id, at least one --redirect, and --owner-url or PIXDRIFT_DB_OWNER_URL.\n" +
+        "Optional: --name, --audience a,b, --post-logout u, --public",
     );
     process.exit(2);
   }
@@ -79,17 +79,17 @@ async function main(): Promise<void> {
     await pool.end();
   }
 
-  console.log(`\n✓ Registrerad klient: ${clientId} (${isPublic ? "public/PKCE" : "confidential"})`);
+  console.log(`\n✓ Registered client: ${clientId} (${isPublic ? "public/PKCE" : "confidential"})`);
   console.log(`  redirect_uris : ${redirects.join(", ")}`);
-  console.log(`  audiences     : ${audiences.join(", ") || "(inga)"}`);
-  console.log("\nModulkonfiguration:");
+  console.log(`  audiences     : ${audiences.join(", ") || "(none)"}`);
+  console.log("\nModule configuration:");
   console.log(`  PIXDRIFT_ISSUER=<https://id.pixdrift.com>`);
   console.log(`  PIXDRIFT_CLIENT_ID=${clientId}`);
   if (secret)
-    console.log(`  PIXDRIFT_CLIENT_SECRET=${secret}   # visas EN gång — lagra i secrets store`);
+    console.log(`  PIXDRIFT_CLIENT_SECRET=${secret}   # shown ONCE — store in the secrets store`);
   console.log(`  PIXDRIFT_REDIRECT_URI=${redirects[0]}`);
   console.log(
-    "\nIngen IdP-omstartskod behövs — starta om (eller ladda om) IdP:n så plockas raden upp.\n",
+    "\nNo IdP restart code is needed — restart (or reload) the IdP so it picks up the row.\n",
   );
 }
 

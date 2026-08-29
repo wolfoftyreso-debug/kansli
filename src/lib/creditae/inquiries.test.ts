@@ -2,7 +2,13 @@ import { afterAll, afterEach, describe, expect, it } from "vitest";
 import { createPool, migrateWorkspace } from "@pixdrift/db";
 import { EventLog } from "@pixdrift/events";
 import { makeOrgNumber } from "../platform/org-number.ts";
-import { createInquiry, getInquiry, listInquiries, recordAssessment } from "./inquiries.ts";
+import {
+  createInquiry,
+  fetchWebPresence,
+  getInquiry,
+  listInquiries,
+  recordAssessment,
+} from "./inquiries.ts";
 
 const OWNER = process.env.PIXDRIFT_TEST_OWNER_URL ?? process.env.PIXDRIFT_DB_OWNER_URL;
 const APP = process.env.PIXDRIFT_TEST_DATABASE_URL ?? process.env.DATABASE_URL;
@@ -39,7 +45,7 @@ describe("creditae inquiries", () => {
         subjectOrgNumber: "123456-7890",
         requestId: "req-bad",
       }),
-    ).rejects.toThrow(/Organisationsnumret/);
+    ).rejects.toThrow(/organisation number/);
   });
 });
 
@@ -174,6 +180,88 @@ live("creditae.inquiries (live Postgres)", () => {
     expect(fetched[0]?.payload["vendorScore"]).toBe("64");
     expect(fetched[0]?.payload["note"]).toMatch(/inte er slutsats/);
     expect(JSON.stringify(fetched[0])).not.toContain("cs-secret-not-real");
+  });
+
+  it("fetches web presence only on explicit action, verbatim from the vendor", async () => {
+    await migrateWorkspace({ ownerUrl: OWNER!, root: process.cwd(), appRole: "pixdrift_app" });
+    const events = new EventLog(pool);
+    const orgRef = `pixdrift:org:creditae-web-${Date.now()}`;
+    const orgNumber = makeOrgNumber(23);
+
+    const created = await createInquiry({
+      pool,
+      events,
+      orgRef,
+      actorRef: "user-test",
+      subjectOrgNumber: orgNumber,
+      subjectName: "Webbolaget AB",
+      subjectDomain: "https://www.Webbolaget.se/om-oss",
+      requestId: "req-creditae-web",
+      env: {},
+    });
+    expect(created.subjectDomain).toBe("webbolaget.se");
+    expect(created.webStatus).toBeNull();
+
+    // Without a key the channel is blocked and the vendor is never called.
+    const blocked = await fetchWebPresence({
+      pool,
+      events,
+      orgRef,
+      actorRef: "user-test",
+      inquiryId: created.id,
+      requestId: "req-web-blocked",
+      env: {},
+      fetchImpl: async () => {
+        throw new Error("should not fetch");
+      },
+    });
+    expect(blocked.webStatus).toBe("blocked");
+    expect(blocked.webRank).toBeNull();
+
+    // With a key, vendor numbers land verbatim as text.
+    const fetched = await fetchWebPresence({
+      pool,
+      events,
+      orgRef,
+      actorRef: "user-test",
+      inquiryId: created.id,
+      requestId: "req-web-fetched",
+      env: { SEMRUSH_API_KEY: "sm-secret-not-real" },
+      fetchImpl: async () =>
+        new Response(
+          "Domain;Rank;Organic Keywords;Organic Traffic;Adwords Keywords\nwebbolaget.se;4321;210;980;7",
+          { status: 200 },
+        ),
+    });
+    expect(fetched.webStatus).toBe("fetched");
+    expect(fetched.webRank).toBe("4321");
+    expect(fetched.webOrganicKeywords).toBe("210");
+    expect(fetched.webOrganicTraffic).toBe("980");
+    expect(fetched.webAdwordsKeywords).toBe("7");
+    expect(fetched.webFetchedAt).not.toBeNull();
+    expect(fetched.assessment).toBeNull();
+    expect(JSON.stringify(fetched)).not.toContain("sm-secret-not-real");
+
+    const webEvents = await events.list({ orgRef, kind: "creditae.web.fetched" });
+    expect(webEvents).toHaveLength(1);
+    expect(webEvents[0]?.payload["rank"]).toBe("4321");
+    expect(JSON.stringify(webEvents[0])).not.toContain("sm-secret-not-real");
+
+    // Vendor says no — the inquiry stays, the reason is kept.
+    const failed = await fetchWebPresence({
+      pool,
+      events,
+      orgRef,
+      actorRef: "user-test",
+      inquiryId: created.id,
+      requestId: "req-web-failed",
+      env: { SEMRUSH_API_KEY: "sm-secret-not-real" },
+      fetchImpl: async () => new Response("ERROR 50 :: NOTHING FOUND", { status: 200 }),
+    });
+    expect(failed.webStatus).toBe("failed");
+    expect(failed.webReason).toMatch(/not found/i);
+    const failedEvents = await events.list({ orgRef, kind: "creditae.web.failed" });
+    expect(failedEvents).toHaveLength(1);
   });
 
   it("keeps the inquiry when the bureau fails", async () => {

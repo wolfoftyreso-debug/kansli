@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { t, type Locale } from "@/lib/i18n";
 
 const SAFE = ["get_who_am_i", "list_platform_systems"] as const;
 
-export function McpExplorer() {
+export function McpExplorer({ locale }: { locale: Locale }) {
   const [tool, setTool] = useState<(typeof SAFE)[number]>("get_who_am_i");
   const [result, setResult] = useState<string>("");
   const [requestId, setRequestId] = useState<string>("");
@@ -34,7 +35,7 @@ export function McpExplorer() {
   return (
     <div className="flex flex-col gap-4">
       <label className="flex flex-col gap-2 text-sm">
-        Safe tool
+        {t(locale, "mcp.safeTool")}
         <select
           className="max-w-md border border-line bg-surface px-3 py-2"
           value={tool}
@@ -52,9 +53,13 @@ export function McpExplorer() {
         onClick={() => void run()}
         className="w-fit bg-ink px-4 py-2 text-sm text-paper"
       >
-        Run
+        {t(locale, "mcp.run")}
       </button>
-      {requestId ? <p className="font-mono text-xs text-muted">request {requestId}</p> : null}
+      {requestId ? (
+        <p className="font-mono text-xs text-muted">
+          {t(locale, "mcp.request", { id: requestId })}
+        </p>
+      ) : null}
       {result ? (
         <pre className="overflow-x-auto border border-line bg-surface p-4 text-xs">{result}</pre>
       ) : null}

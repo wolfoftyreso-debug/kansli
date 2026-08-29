@@ -155,21 +155,16 @@ function filledForm(company: string, email: string, orgNumber: string): FormData
   form.set("contactName", "Test Kontakt");
   form.set("contactEmail", email);
   form.set("contactTitle", "Verkstadschef");
-  form.set("sites", "En anläggning");
-  form.set("brands", "Volvo, Kia");
-  form.set("honestyAccepted", "on");
-  form.set("provisionAccount", "on");
-  form.set("issueInvoice", "on");
-  form.set("invoiceKronor", "2500");
-  form.append("demoModules", "tyra");
-  form.append("demoModules", "ekonomi");
-  form.append("demoModules", "irma");
+  form.set("termsAccepted", "on");
+  form.append("modules", "tyra");
+  form.append("modules", "ekonomi");
+  form.append("modules", "irma");
   return form;
 }
 
 async function runFleet(): Promise<{ passed: number; companies: number; failures: string[] }> {
   const stamp = Date.now();
-  if (!APP || !OWNER) throw new Error("DATABASE_URL och PIXDRIFT_DB_OWNER_URL krävs.");
+  if (!APP || !OWNER) throw new Error("DATABASE_URL and PIXDRIFT_DB_OWNER_URL are required.");
   const pool = createPool(APP, { applicationName: "live-fleet", max: 6 });
   const events = new EventLog(pool);
   const reports: CompanyReport[] = [];
@@ -177,11 +172,11 @@ async function runFleet(): Promise<{ passed: number; companies: number; failures
 
   const schemas = await pool.query<{ nspname: string }>(
     `select nspname from pg_namespace
-      where nspname in ('platform','kansli','ekonomi','tora','rita','britt','irma','tyra','alva','creditae')
+      where nspname in ('platform','kansli','ekonomi','tora','rita','britt','irma','tyra','alva','creditae','maj')
       order by 1`,
   );
-  if (schemas.rowCount !== 10) {
-    throw new Error(`saknade scheman: ${schemas.rows.map((r) => r.nspname).join(",")}`);
+  if (schemas.rowCount !== 11) {
+    throw new Error(`missing schemas: ${schemas.rows.map((r) => r.nspname).join(",")}`);
   }
 
   for (let i = 0; i < LIMIT; i += 1) {
@@ -207,7 +202,7 @@ async function runFleet(): Promise<{ passed: number; companies: number; failures
       });
       if (!intake.provision?.orgRef || !intake.passwordOnce || !intake.invoice) {
         throw new Error(
-          `provision ofullständig: ${intake.intake.blocked.join("; ") || "saknar konto/faktura"}`,
+          `provision incomplete: ${intake.intake.blocked.join("; ") || "missing account/invoice"}`,
         );
       }
       const orgRef = intake.provision.orgRef;
@@ -382,7 +377,7 @@ async function runFleet(): Promise<{ passed: number; companies: number; failures
           "kansli-api",
           tasks.status === 200 &&
             taskList.some((row) => row.title === `Verkstadstavla ${companyName}`) &&
-            !taskList.some((row) => row.title.startsWith("Förbered demo för")),
+            !taskList.some((row) => row.title.startsWith("Ny registrering:")),
           `${String(taskList.length)} uppgifter`,
         ),
       );
@@ -474,14 +469,17 @@ async function runFleet(): Promise<{ passed: number; companies: number; failures
           check(
             `ui:${path}`,
             ok,
-            ok ? "visar rätt bolag" : `status ${String(page.status)} saknar ${needle}`,
+            ok ? "shows the right company" : `status ${String(page.status)} is missing ${needle}`,
           ),
         );
       }
 
       const inbox = await request(jar, "/kansli/upphandling");
       const listed = inbox.text.includes(`Test Kontakt · ${email}`);
-      const inboxOk = inbox.status === 200 && inbox.text.includes("kansliets inkorg") && !listed;
+      const inboxOk =
+        inbox.status === 200 &&
+        (inbox.text.includes("office inbox") || inbox.text.includes("kansliets inkorg")) &&
+        !listed;
       report.checks.push(
         check(
           "house-inbox",
@@ -552,7 +550,7 @@ async function runFleet(): Promise<{ passed: number; companies: number; failures
   };
   await mkdir("/opt/cursor/artifacts", { recursive: true });
   await writeFile("/opt/cursor/artifacts/live-fleet-report.json", JSON.stringify(summary, null, 2));
-  console.log(`klar: ${String(summary.passed)}/${String(summary.companies)} bolag helt gröna`);
+  console.log(`done: ${String(summary.passed)}/${String(summary.companies)} companies fully green`);
   return { passed: summary.passed, companies: summary.companies, failures };
 }
 

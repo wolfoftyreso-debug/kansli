@@ -81,7 +81,7 @@ describe("HttpAnalysisEngine", () => {
 
   it("refuses to construct without a token", () => {
     expect(() => new HttpAnalysisEngine({ baseUrl: "http://127.0.0.1:9", token: "" })).toThrow(
-      /ENGINE_TOKEN/,
+      /ENGINE_TOKEN is missing/,
     );
   });
 

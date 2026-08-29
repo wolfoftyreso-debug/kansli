@@ -13,15 +13,15 @@ export function parseVerificationLevel(value: unknown): VerificationLevel {
 export function statusLabel(status: string): string {
   switch (status) {
     case "draft":
-      return "Skapat";
+      return "Created";
     case "viewed":
-      return "Öppnat";
+      return "Opened";
     case "signed":
-      return "Bekräftat";
+      return "Confirmed";
     case "expired":
-      return "Utgånget";
+      return "Expired";
     case "cancelled":
-      return "Återkallat";
+      return "Withdrawn";
     default:
       return status;
   }
@@ -39,7 +39,7 @@ export function effectiveStatus(input: {
 }
 
 export function verificationLabel(level: VerificationLevel): string {
-  return level === 0 ? "Ingen bekräftelse (informationsunderlag)" : "Digital bekräftelse (nivå 1)";
+  return level === 0 ? "No confirmation (information note)" : "Digital confirmation (level 1)";
 }
 
 export function daysUntilExpiry(iso: string | null | undefined): number | null {

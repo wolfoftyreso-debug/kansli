@@ -1,9 +1,12 @@
 import Link from "next/link";
+import { t } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 import { MCP_DOC_LINKS } from "@/lib/mcp/catalog";
 
-export function McpDocNav({ current }: { current: string }) {
+export async function McpDocNav({ current }: { current: string }) {
+  const locale = await readLocale();
   return (
-    <nav aria-label="MCP" className="flex flex-wrap gap-3 text-sm">
+    <nav aria-label={t(locale, "site.catalog.spec.mcp")} className="flex flex-wrap gap-3 text-sm">
       {MCP_DOC_LINKS.map((item) => (
         <Link
           key={item.href}
@@ -15,7 +18,7 @@ export function McpDocNav({ current }: { current: string }) {
           }
           aria-current={item.href === current ? "page" : undefined}
         >
-          {item.label}
+          {t(locale, item.key)}
         </Link>
       ))}
     </nav>

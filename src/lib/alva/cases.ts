@@ -135,7 +135,7 @@ export async function setCaseStatus(input: {
       where org_ref = $1 and id = $2`,
     [input.orgRef, input.caseId, input.status],
   );
-  if ((updated.rowCount ?? 0) === 0) throw new Error("Ärendet saknas.");
+  if ((updated.rowCount ?? 0) === 0) throw new Error("The case does not exist.");
 }
 
 export async function setCaseNotes(input: {
@@ -150,7 +150,7 @@ export async function setCaseNotes(input: {
       where org_ref = $1 and id = $2`,
     [input.orgRef, input.caseId, input.notes.trim() || null],
   );
-  if ((updated.rowCount ?? 0) === 0) throw new Error("Ärendet saknas.");
+  if ((updated.rowCount ?? 0) === 0) throw new Error("The case does not exist.");
 }
 
 function toCase(row: {

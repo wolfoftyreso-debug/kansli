@@ -25,7 +25,7 @@ export async function recordVerifiedInspection(input: {
     [input.orgRef, input.tireCaseId],
   );
   const vehicleId = caseRow.rows[0]?.vehicle_id;
-  if (!vehicleId) throw new Error("Ärendet saknar fordon.");
+  if (!vehicleId) throw new Error("The case has no vehicle.");
 
   let wheelSetId = (
     await input.pool.query<{ id: string }>(
@@ -100,12 +100,12 @@ export function parseTreadReadings(formData: FormData): TreadReading[] {
     if (!raw) continue;
     const treadDepthMm = Number(raw);
     if (!Number.isFinite(treadDepthMm) || treadDepthMm < 0 || treadDepthMm > 20) {
-      throw new Error(`Ogiltigt mönsterdjup för ${position}.`);
+      throw new Error(`Invalid tread depth for ${position}.`);
     }
     readings.push({ position, treadDepthMm });
   }
   if (readings.length !== INSPECTION_POSITIONS.length) {
-    throw new Error("Alla fyra positioner krävs (LF, RF, LR, RR).");
+    throw new Error("All four positions are required (LF, RF, LR, RR).");
   }
   return readings;
 }

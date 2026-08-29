@@ -108,6 +108,29 @@ AI är aldrig source of truth; automation har uttrycklig nivå (L0–L4).
   Products must not call Creditsafe. CREDITAE stores pass-through fields only
   when the vendor accepted. Tests mock the vendor. Do not live-call Creditsafe
   from tests or page-load list.
+- Web visibility goes through `src/lib/platform/webintel.ts` (Semrush).
+  Products must not call Semrush themselves. Fail closed without
+  `SEMRUSH_API_KEY`. Capabilities are `domain_overview`, `keywords` and
+  `backlinks`. CREDITAE fetches a counterpart's web presence only on an
+  explicit button press — never on page load — and stores vendor numbers
+  verbatim (`fetched` only when the vendor accepted). Tests mock the vendor.
+  The system never invents traffic, ranks or scores.
+- Vendor channel inventory lives in `src/lib/platform/channels.ts` and on
+  `/platform/drift`. Env *names* only, never values. No live probe from the
+  snapshot. Live probes stay in `pnpm ops:vendors`.
+- MAJ (`/maj`, schema `maj`) is the Search Intelligence & Execution System:
+  Measure, analyse, adjust. It shows a short action queue with evidence behind
+  every decision — never raw vendor dashboards. Business logic is
+  capability-named (`keywords`, `backlinks`), never vendor-named. Sources
+  without credentials fail closed and become connect-source decisions. Usage
+  is booked to `maj.usage_ledger` BEFORE any external call. Every completed
+  change is a versioned release (`release.v1`, additive contract). Nothing
+  executes or is sent without explicit approval; outreach is drafted, never
+  auto-sent. HEDGE posture means maximal lawful competitive response — never
+  fake reviews, click fraud, negative links, impersonation or misleading
+  pages. UI never says "AI". English is the room language. Alpha: internal
+  (house) tenants only. MCP: `list_search_projects`, `list_search_actions`,
+  `run_search_analysis`, `decide_search_action`.
 - CREDITAE lives at `/creditae`. One table `creditae.inquiries`. Credit reports
   go through `src/lib/platform/credit.ts` (Creditsafe). Products must not call
   Creditsafe. Tests mock the vendor. Do not live-call Creditsafe from tests or

@@ -14,6 +14,15 @@ describe("parseTreadReadings", () => {
   it("refuses a partial set", () => {
     const data = new FormData();
     data.set("tread_LF", "5");
-    expect(() => parseTreadReadings(data)).toThrow(/fyra positioner/);
+    expect(() => parseTreadReadings(data)).toThrow(/All four positions/);
+  });
+
+  it("refuses an invalid depth", () => {
+    const data = new FormData();
+    data.set("tread_LF", "-1");
+    data.set("tread_RF", "5");
+    data.set("tread_LR", "6");
+    data.set("tread_RR", "6");
+    expect(() => parseTreadReadings(data)).toThrow(/Invalid tread depth for LF/);
   });
 });

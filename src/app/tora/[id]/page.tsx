@@ -4,26 +4,25 @@ import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { Notice } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
+import { t, toraEvalKind, toraReqStatus, toraTiming, type Locale } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 import { tryRuntime } from "@/lib/platform/page";
-import { requirementStatusText } from "@/lib/tora/labels";
 import { loadToraOpportunity, resolveViewTier } from "@/lib/tora/market";
 import { resolveCompany } from "@/lib/tora/profile";
-import {
-  displayField,
-  evaluationKindText,
-  legalBasisText,
-  sek,
-  timingText,
-  verdictText,
-} from "@/lib/tora/view";
+import { displayField, legalBasisText, sek, verdictText } from "@/lib/tora/view";
 
-export const metadata = {
-  title: "Möjlighet — TORA — Pixdrift",
-};
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "tora.doc.metaTitle"),
+    description: t(locale, "tora.metaDescription"),
+  };
+}
 
 export default async function ToraOpportunityPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const session = await readSession();
+  const locale = await readLocale();
   const runtime = tryRuntime(session?.org?.ref);
   const company = await resolveCompany(runtime?.pool ?? null, session?.org?.ref ?? null);
   const tier = resolveViewTier({
@@ -44,24 +43,26 @@ export default async function ToraOpportunityPage({ params }: { params: Promise<
         <h1 className="text-3xl font-semibold tracking-tight">{displayField(view.title)}</h1>
         <p className="text-ink-soft">{displayField(view.organizationName)}</p>
         <p className="font-mono text-xs text-faint">
-          {view.scoreBand} · {view.organizationKindHint} · {timingText(view.timing)}
+          {view.scoreBand} · {view.organizationKindHint} · {toraTiming(locale, view.timing)}
         </p>
       </header>
 
       <section className="rounded-xl border border-line bg-surface p-4">
-        <h2 className="text-lg font-semibold">Varför ni får lämna anbud</h2>
-        <p className="mt-2 text-sm text-ink-soft">{basis.reason}</p>
+        <h2 className="text-lg font-semibold">{t(locale, "tora.doc.whyBid")}</h2>
+        <p className="mt-2 text-sm text-ink-soft">
+          {basis.fallback ? t(locale, "tora.doc.whyBidDefault") : basis.reason}
+        </p>
         {basis.contractId ? (
           <p className="mt-2 font-mono text-xs text-faint">{basis.contractId}</p>
         ) : null}
       </section>
 
       <section className="flex flex-col gap-2">
-        <h2 className="text-lg font-semibold">Bedömning</h2>
+        <h2 className="text-lg font-semibold">{t(locale, "tora.doc.assessment")}</h2>
         <p className="text-sm text-ink-soft">{displayField(view.rationale)}</p>
         <p className="text-sm text-muted">{displayField(view.accessExplanation)}</p>
         <p className="text-sm text-muted">
-          Sista anbudsdag: {displayField(view.deadlineAt)}
+          {t(locale, "tora.doc.deadline")} {displayField(view.deadlineAt)}
           {view.estimatedValueSek.state === "unlocked" &&
           typeof view.estimatedValueSek.value === "number"
             ? ` · ${sek(view.estimatedValueSek.value)}`
@@ -71,7 +72,7 @@ export default async function ToraOpportunityPage({ params }: { params: Promise<
 
       {view.caveats.length > 0 ? (
         <section className="flex flex-col gap-2">
-          <h2 className="text-lg font-semibold">Förbehåll</h2>
+          <h2 className="text-lg font-semibold">{t(locale, "tora.doc.caveats")}</h2>
           <ul className="flex flex-col gap-2">
             {view.caveats.map((caveat) => (
               <li
@@ -85,28 +86,26 @@ export default async function ToraOpportunityPage({ params }: { params: Promise<
         </section>
       ) : null}
 
-      <QualificationBlock view={view} />
-      <ScoreBlock view={view} />
-      <ValueBlock detail={detail} />
-      <EvaluationBlock detail={detail} />
-      <Actions detail={detail} />
-      <WalkthroughBlock detail={detail} />
-      <DocumentsBlock detail={detail} />
-      <RemediesBlock detail={detail} />
-      <QuestionsBlock detail={detail} />
+      <QualificationBlock view={view} locale={locale} />
+      <ScoreBlock view={view} locale={locale} />
+      <ValueBlock detail={detail} locale={locale} />
+      <EvaluationBlock detail={detail} locale={locale} />
+      <Actions detail={detail} locale={locale} />
+      <WalkthroughBlock detail={detail} locale={locale} />
+      <DocumentsBlock detail={detail} locale={locale} />
+      <RemediesBlock detail={detail} locale={locale} />
+      <QuestionsBlock detail={detail} locale={locale} />
 
-      <Notice>
-        Betalkonto. Ni ser hela bedömningen för {company.name}: krav, belopp och nästa steg.
-      </Notice>
+      <Notice>{t(locale, "tora.doc.paidNotice", { name: company.name })}</Notice>
     </AppShell>
   );
 }
 
-function QualificationBlock({ view }: { view: OpportunityView }) {
+function QualificationBlock({ view, locale }: { view: OpportunityView; locale: Locale }) {
   if (view.qualification.state === "locked") {
     return (
       <section>
-        <h2 className="text-lg font-semibold">Krav mot ert bolag</h2>
+        <h2 className="text-lg font-semibold">{t(locale, "tora.doc.requirements")}</h2>
         <p className="mt-2 text-sm text-muted">{view.qualification.teaser}</p>
       </section>
     );
@@ -114,11 +113,17 @@ function QualificationBlock({ view }: { view: OpportunityView }) {
   const qualification = view.qualification.value;
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="text-lg font-semibold">Krav mot ert bolag</h2>
+      <h2 className="text-lg font-semibold">{t(locale, "tora.doc.requirements")}</h2>
       <p className="text-sm text-ink-soft">
-        {qualification.counts.met} uppfyllda, {qualification.counts.remediable} går att fixa,{" "}
-        {qualification.counts.unmet} saknas
-        {qualification.counts.unknown > 0 ? `, ${qualification.counts.unknown} okända` : ""}.
+        {t(locale, "tora.doc.reqCounts", {
+          met: qualification.counts.met,
+          remediable: qualification.counts.remediable,
+          unmet: qualification.counts.unmet,
+        })}
+        {qualification.counts.unknown > 0
+          ? t(locale, "tora.doc.reqUnknown", { count: qualification.counts.unknown })
+          : ""}
+        .
       </p>
       {qualification.explanation ? (
         <p className="text-sm text-muted">{qualification.explanation}</p>
@@ -129,7 +134,7 @@ function QualificationBlock({ view }: { view: OpportunityView }) {
             key={item.requirementId}
             className="rounded-xl border border-line bg-surface px-4 py-3"
           >
-            <p className="text-xs font-medium text-accent">{requirementStatusText(item.status)}</p>
+            <p className="text-xs font-medium text-accent">{toraReqStatus(locale, item.status)}</p>
             <p className="mt-1 font-medium">{item.label}</p>
             <p className="mt-1 text-sm text-ink-soft">{item.explanation}</p>
             {item.remediation ? (
@@ -142,11 +147,11 @@ function QualificationBlock({ view }: { view: OpportunityView }) {
   );
 }
 
-function ScoreBlock({ view }: { view: OpportunityView }) {
+function ScoreBlock({ view, locale }: { view: OpportunityView; locale: Locale }) {
   if (view.score.state === "locked") {
     return (
       <section>
-        <h2 className="text-lg font-semibold">Poäng</h2>
+        <h2 className="text-lg font-semibold">{t(locale, "tora.doc.score")}</h2>
         <p className="mt-2 text-sm text-muted">{view.score.teaser}</p>
       </section>
     );
@@ -154,11 +159,13 @@ function ScoreBlock({ view }: { view: OpportunityView }) {
   const score = view.score.value;
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="text-lg font-semibold">Poäng</h2>
+      <h2 className="text-lg font-semibold">{t(locale, "tora.doc.score")}</h2>
       <p className="text-sm text-ink-soft">{score.explanation}</p>
       <p className="font-mono text-xs text-faint">
-        {Math.round(score.score)} av 100 · {Math.round(score.confidence * 100)} % av underlaget går
-        att räkna på
+        {t(locale, "tora.doc.scoreMeta", {
+          score: Math.round(score.score),
+          pct: Math.round(score.confidence * 100),
+        })}
       </p>
       <ul className="flex flex-col gap-2">
         {score.factors.map((factor) => (
@@ -172,12 +179,12 @@ function ScoreBlock({ view }: { view: OpportunityView }) {
   );
 }
 
-function ValueBlock({ detail }: { detail: OpportunityDetailResponse }) {
+function ValueBlock({ detail, locale }: { detail: OpportunityDetailResponse; locale: Locale }) {
   const field = detail.value;
   if (field.state === "locked") {
     return (
       <section>
-        <h2 className="text-lg font-semibold">Värde</h2>
+        <h2 className="text-lg font-semibold">{t(locale, "tora.doc.value")}</h2>
         <p className="mt-2 text-sm text-muted">{field.teaser}</p>
       </section>
     );
@@ -186,34 +193,44 @@ function ValueBlock({ detail }: { detail: OpportunityDetailResponse }) {
   if (!value) {
     return (
       <section>
-        <h2 className="text-lg font-semibold">Värde</h2>
-        <p className="mt-2 text-sm text-muted">Vi har inget värde att visa.</p>
+        <h2 className="text-lg font-semibold">{t(locale, "tora.doc.value")}</h2>
+        <p className="mt-2 text-sm text-muted">{t(locale, "tora.doc.noValue")}</p>
       </section>
     );
   }
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="text-lg font-semibold">Värde</h2>
+      <h2 className="text-lg font-semibold">{t(locale, "tora.doc.value")}</h2>
       <p className="text-sm text-ink-soft">{value.explanation}</p>
       <p className="font-mono text-xs text-faint">
-        {value.securedMonths} säkrade månader
+        {t(locale, "tora.doc.securedMonths", { count: value.securedMonths })}
         {value.undecidedOptionMonths > 0
-          ? ` · ${value.undecidedOptionMonths} oavgjorda optionsmånader`
+          ? ` · ${t(locale, "tora.doc.optionMonths", { count: value.undecidedOptionMonths })}`
           : ""}
-        {typeof value.totalValueSek === "number" ? ` · ${sek(value.totalValueSek)} publicerat` : ""}
-        {typeof value.annualValueSek === "number" ? ` · ${sek(value.annualValueSek)} / år` : ""}
+        {typeof value.totalValueSek === "number"
+          ? ` · ${sek(value.totalValueSek)} ${t(locale, "tora.doc.published")}`
+          : ""}
+        {typeof value.annualValueSek === "number"
+          ? ` · ${sek(value.annualValueSek)} ${t(locale, "tora.doc.perYear")}`
+          : ""}
       </p>
       <p className="text-sm text-muted">{value.yourShare.explanation}</p>
     </section>
   );
 }
 
-function EvaluationBlock({ detail }: { detail: OpportunityDetailResponse }) {
+function EvaluationBlock({
+  detail,
+  locale,
+}: {
+  detail: OpportunityDetailResponse;
+  locale: Locale;
+}) {
   const field = detail.evaluation;
   if (field.state === "locked") {
     return (
       <section>
-        <h2 className="text-lg font-semibold">Utvärdering</h2>
+        <h2 className="text-lg font-semibold">{t(locale, "tora.doc.evaluation")}</h2>
         <p className="mt-2 text-sm text-muted">{field.teaser}</p>
       </section>
     );
@@ -222,15 +239,15 @@ function EvaluationBlock({ detail }: { detail: OpportunityDetailResponse }) {
   if (!evaluation) {
     return (
       <section>
-        <h2 className="text-lg font-semibold">Utvärdering</h2>
-        <p className="mt-2 text-sm text-muted">Ingen utvärderingsmodell i underlaget.</p>
+        <h2 className="text-lg font-semibold">{t(locale, "tora.doc.evaluation")}</h2>
+        <p className="mt-2 text-sm text-muted">{t(locale, "tora.doc.noEvaluation")}</p>
       </section>
     );
   }
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="text-lg font-semibold">Utvärdering</h2>
-      <p className="text-sm text-ink-soft">{evaluationKindText(evaluation.kind)}</p>
+      <h2 className="text-lg font-semibold">{t(locale, "tora.doc.evaluation")}</h2>
+      <p className="text-sm text-ink-soft">{toraEvalKind(locale, evaluation.kind)}</p>
       {evaluation.criteria.length > 0 ? (
         <ul className="flex flex-col gap-2">
           {evaluation.criteria.map((criterion) => (
@@ -248,12 +265,12 @@ function EvaluationBlock({ detail }: { detail: OpportunityDetailResponse }) {
   );
 }
 
-function Actions({ detail }: { detail: OpportunityDetailResponse }) {
+function Actions({ detail, locale }: { detail: OpportunityDetailResponse; locale: Locale }) {
   const field = detail.view.recommendedActions;
   if (field.state === "locked") {
     return (
       <section>
-        <h2 className="text-lg font-semibold">Att göra</h2>
+        <h2 className="text-lg font-semibold">{t(locale, "tora.doc.todo")}</h2>
         <p className="mt-2 text-sm text-muted">{field.teaser}</p>
       </section>
     );
@@ -261,7 +278,7 @@ function Actions({ detail }: { detail: OpportunityDetailResponse }) {
   if (!field.value.length) return null;
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="text-lg font-semibold">Att göra</h2>
+      <h2 className="text-lg font-semibold">{t(locale, "tora.doc.todo")}</h2>
       <ul className="flex flex-col gap-2">
         {field.value.map((action) => (
           <li key={action.label} className="rounded-xl border border-line bg-surface px-4 py-3">
@@ -274,12 +291,18 @@ function Actions({ detail }: { detail: OpportunityDetailResponse }) {
   );
 }
 
-function WalkthroughBlock({ detail }: { detail: OpportunityDetailResponse }) {
+function WalkthroughBlock({
+  detail,
+  locale,
+}: {
+  detail: OpportunityDetailResponse;
+  locale: Locale;
+}) {
   const walkthrough = detail.walkthrough;
   if (!walkthrough) return null;
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="text-lg font-semibold">Processen</h2>
+      <h2 className="text-lg font-semibold">{t(locale, "tora.doc.process")}</h2>
       <p className="text-sm text-ink-soft">{walkthrough.whereYouAre}</p>
       <ol className="flex flex-col gap-2">
         {walkthrough.stages.map((entry) => (
@@ -299,11 +322,11 @@ function WalkthroughBlock({ detail }: { detail: OpportunityDetailResponse }) {
   );
 }
 
-function DocumentsBlock({ detail }: { detail: OpportunityDetailResponse }) {
+function DocumentsBlock({ detail, locale }: { detail: OpportunityDetailResponse; locale: Locale }) {
   const docs = detail.documents;
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="text-lg font-semibold">Handlingar</h2>
+      <h2 className="text-lg font-semibold">{t(locale, "tora.doc.documents")}</h2>
       <p className="text-sm text-ink-soft">{docs.explanation}</p>
       {docs.status === "ready" ? (
         <ul className="flex flex-col gap-2">
@@ -317,7 +340,9 @@ function DocumentsBlock({ detail }: { detail: OpportunityDetailResponse }) {
               </p>
               <p className="mt-1 font-medium">{item.evidence.title}</p>
               {item.startBy ? (
-                <p className="font-mono text-xs text-faint">börja senast {item.startBy}</p>
+                <p className="font-mono text-xs text-faint">
+                  {t(locale, "tora.doc.startBy", { when: item.startBy })}
+                </p>
               ) : null}
             </li>
           ))}
@@ -327,10 +352,10 @@ function DocumentsBlock({ detail }: { detail: OpportunityDetailResponse }) {
   );
 }
 
-function RemediesBlock({ detail }: { detail: OpportunityDetailResponse }) {
+function RemediesBlock({ detail, locale }: { detail: OpportunityDetailResponse; locale: Locale }) {
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="text-lg font-semibold">Så kan ni överklaga</h2>
+      <h2 className="text-lg font-semibold">{t(locale, "tora.doc.remedies")}</h2>
       <p className="text-sm text-ink-soft">{detail.remedies.summary}</p>
       <ul className="flex flex-col gap-2">
         {detail.remedies.windows.map((window) => (
@@ -341,7 +366,9 @@ function RemediesBlock({ detail }: { detail: OpportunityDetailResponse }) {
             <p className="font-medium">{window.remedy.title}</p>
             <p className="mt-1 text-sm text-ink-soft">{window.basis}</p>
             {window.closesOn ? (
-              <p className="mt-1 font-mono text-xs text-faint">stänger {window.closesOn}</p>
+              <p className="mt-1 font-mono text-xs text-faint">
+                {t(locale, "tora.doc.closes", { when: window.closesOn })}
+              </p>
             ) : null}
           </li>
         ))}
@@ -350,11 +377,11 @@ function RemediesBlock({ detail }: { detail: OpportunityDetailResponse }) {
   );
 }
 
-function QuestionsBlock({ detail }: { detail: OpportunityDetailResponse }) {
+function QuestionsBlock({ detail, locale }: { detail: OpportunityDetailResponse; locale: Locale }) {
   const plan = detail.questions;
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="text-lg font-semibold">Frågor</h2>
+      <h2 className="text-lg font-semibold">{t(locale, "tora.doc.questions")}</h2>
       <p className="text-sm text-ink-soft">{plan.summary}</p>
       {plan.status === "ready" ? (
         <ul className="flex flex-col gap-2">

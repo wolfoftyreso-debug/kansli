@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       }>;
     } | null;
     if (!body?.customerName?.trim() || !body.lines?.length) {
-      throw new ApiError("invalid_request", "customerName och minst en rad krävs.");
+      throw new ApiError("invalid_request", "customerName and at least one line are required.");
     }
     const invoice = await createDraftInvoice({
       pool,

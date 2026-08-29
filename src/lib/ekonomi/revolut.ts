@@ -199,7 +199,7 @@ async function revolutGet<T>(
   });
   if (!response.ok) {
     throw new Error(
-      `Revolut svarade ${response.status}. Nyckeln godkändes inte, eller så svarar Revolut inte just nu.`,
+      `Revolut responded ${response.status}. The key was not accepted, or Revolut is not answering right now.`,
     );
   }
   return (await response.json()) as T;
@@ -326,7 +326,7 @@ export async function loadRevolutStatement(input: {
       reauthorize: opened.reauthorize,
       accounts: [],
       lines: stored,
-      error: error instanceof Error ? error.message : "Revolut svarade inte.",
+      error: error instanceof Error ? error.message : "Revolut did not answer.",
     };
   }
 }
@@ -373,8 +373,8 @@ export async function syncRevolut(input: {
       ambiguous: 0,
       blocked: true,
       detail: opened.reauthorize
-        ? "Revolut-anslutningen måste göras om. Tryck Anslut om på Anslutningar."
-        : "Revolut är inte anslutet och ingen nyckel är sparad. Anslut under Anslutningar.",
+        ? "The Revolut connection must be done again. Press Reconnect on Connections."
+        : "Revolut is not connected and no key is saved. Connect under Connections.",
     };
   }
 
@@ -441,6 +441,6 @@ export async function syncRevolut(input: {
     matched,
     ambiguous,
     blocked: false,
-    detail: `${raw.length} hämtade, ${matched} matchade, ${ambiguous} tvetydiga.`,
+    detail: `${raw.length} fetched, ${matched} matched, ${ambiguous} ambiguous.`,
   };
 }

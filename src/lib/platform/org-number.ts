@@ -20,10 +20,10 @@ function luhnCheckDigit(nine: string): number {
 
 export function orgNumberError(raw: string): string | null {
   const digits = digitsOfOrgNumber(raw);
-  if (!digits) return "Organisationsnumret saknas.";
-  if (digits.length !== 10) return "Organisationsnumret ska vara tio siffror.";
+  if (!digits) return "The organisation number is missing.";
+  if (digits.length !== 10) return "The organisation number must be ten digits.";
   if (luhnCheckDigit(digits.slice(0, 9)) !== Number(digits[9])) {
-    return "Organisationsnumret stämmer inte. Kontrollera siffrorna.";
+    return "The organisation number does not check out. Check the digits.";
   }
   return null;
 }

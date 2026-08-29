@@ -19,7 +19,7 @@ describe("GlobalRef", () => {
   });
 
   it("rejects a bare id", () => {
-    expect(() => parseRef("abc123")).toThrow();
+    expect(() => parseRef("abc123")).toThrow(/abc123 is not a global reference \(system:kind:id\)/);
   });
 });
 
@@ -61,7 +61,9 @@ describe("assertPlatformRoleIsSafe", () => {
       scope: "platform",
       permissions: ["scan:read"],
     });
-    expect(() => assertPlatformRoleIsSafe(role)).toThrow(/kunddata/);
+    expect(() => assertPlatformRoleIsSafe(role)).toThrow(
+      /The platform role support cannot hold customer-data permissions: scan:read/,
+    );
   });
 
   it("ignores org-scoped roles", () => {

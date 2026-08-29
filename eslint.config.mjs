@@ -16,6 +16,8 @@ const eslintConfig = defineConfig([
     // it ships to the BRITT repo and is linted there, not by the Next config.
     "integrations/britt/pixdrift-oidc.js",
     ".worktrees/**",
+    // Locked design proofs: vendored HTML/JS, not app code.
+    "docs/design/referens/**",
   ]),
 ]);
 

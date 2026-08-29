@@ -233,8 +233,8 @@ export const SUPPORTED_CONTRACT_VERSION = "1";
 export class ContractVersionMismatch extends Error {
   constructor(readonly found: string) {
     super(
-      `motorn talar kontraktversion ${found}, den här koden läser ${SUPPORTED_CONTRACT_VERSION}. ` +
-        `Bygg om motorn eller uppgradera adaptern innan analysen körs.`,
+      `The engine speaks contract version ${found}, this code reads ${SUPPORTED_CONTRACT_VERSION}. ` +
+        `Rebuild the engine or upgrade the adapter before running the analysis.`,
     );
     this.name = "ContractVersionMismatch";
   }

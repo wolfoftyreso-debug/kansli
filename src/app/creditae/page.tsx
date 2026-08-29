@@ -64,6 +64,11 @@ export default async function CreditaePage() {
               placeholder="556016-0680"
             />
             <Field name="subjectName" label={t(locale, "creditae.companyName")} />
+            <Field
+              name="subjectDomain"
+              label={t(locale, "creditae.domain")}
+              placeholder="exempel.se"
+            />
             <Field name="reason" label={t(locale, "creditae.reason")} multiline />
             <Submit>{t(locale, "creditae.register")}</Submit>
           </form>

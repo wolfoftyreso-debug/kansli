@@ -70,6 +70,22 @@ const OIDC_FIELDS: (keyof AuthorizeParams)[] = [
   "org",
 ];
 
+const IDP_HTML_ROBOTS = '<meta name="robots" content="noindex, nofollow">';
+const IDP_HTML_VIEWPORT = '<meta name="viewport" content="width=device-width, initial-scale=1">';
+const IDP_HTML_COLOR_SCHEME = '<meta name="color-scheme" content="light">';
+const IDP_HTML_THEME_COLOR = '<meta name="theme-color" content="#fbfbf9">';
+const IDP_HTML_FORMAT_DETECTION =
+  '<meta name="format-detection" content="telephone=no, email=no, address=no">';
+const IDP_HTML_CACHE_CONTROL = "no-store";
+
+function sendHtml(reply: FastifyReply, body: string, status = 200) {
+  return reply
+    .code(status)
+    .type("text/html")
+    .header("cache-control", IDP_HTML_CACHE_CONTROL)
+    .send(body);
+}
+
 function requestLocale(request: {
   cookies?: Record<string, string | undefined>;
   headers: { "accept-language"?: string | string[] };
@@ -100,7 +116,11 @@ function loginPage(
     : "";
   return `<!doctype html>
 <html lang="${esc(localeTag(locale))}"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+${IDP_HTML_VIEWPORT}
+${IDP_HTML_COLOR_SCHEME}
+${IDP_HTML_THEME_COLOR}
+${IDP_HTML_FORMAT_DETECTION}
+${IDP_HTML_ROBOTS}
 <title>${esc(t(locale, "idp.title"))}</title>
 <style>
   body{font-family:Geist,ui-sans-serif,system-ui,sans-serif;margin:0;min-height:100vh;display:grid;place-items:center;background:#fbfbf9;color:#101317}
@@ -134,8 +154,15 @@ function loginPage(
 }
 
 function errorPage(locale: Locale, message: string): string {
-  return `<!doctype html><html lang="${esc(localeTag(locale))}"><head><meta charset="utf-8"><title>${esc(t(locale, "idp.errorTitle"))}</title></head>
+  return `<!doctype html><html lang="${esc(localeTag(locale))}"><head><meta charset="utf-8">${IDP_HTML_VIEWPORT}${IDP_HTML_COLOR_SCHEME}${IDP_HTML_THEME_COLOR}${IDP_HTML_FORMAT_DETECTION}${IDP_HTML_ROBOTS}<title>${esc(t(locale, "idp.errorTitle"))}</title></head>
 <body style="font-family:system-ui;margin:3rem"><h1>${esc(t(locale, "idp.errorHeading"))}</h1><p>${esc(message)}</p></body></html>`;
+}
+
+const IDP_LOGOUT_SENTENCE = "You are signed out.";
+
+function logoutPage(locale: Locale): string {
+  return `<!doctype html><html lang="${esc(localeTag(locale))}"><head><meta charset="utf-8">${IDP_HTML_VIEWPORT}${IDP_HTML_COLOR_SCHEME}${IDP_HTML_THEME_COLOR}${IDP_HTML_FORMAT_DETECTION}${IDP_HTML_ROBOTS}<title>${esc(IDP_LOGOUT_SENTENCE)}</title></head>
+<body style="font-family:system-ui;margin:3rem"><p>${esc(IDP_LOGOUT_SENTENCE)}</p></body></html>`;
 }
 
 export async function createIdentityServer(config: IdentityConfig): Promise<FastifyInstance> {
@@ -188,9 +215,9 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
     params: AuthorizeParams,
   ): { client: OidcClient; redirectUri: string } | { error: string } {
     const client = params.client_id ? clientById.get(params.client_id) : undefined;
-    if (!client) return { error: "okänd client_id" };
+    if (!client) return { error: "unknown client_id" };
     const redirectUri = params.redirect_uri ?? "";
-    if (!client.redirectUris.includes(redirectUri)) return { error: "redirect_uri matchar inte" };
+    if (!client.redirectUris.includes(redirectUri)) return { error: "redirect_uri does not match" };
     return { client, redirectUri };
   }
 
@@ -251,10 +278,7 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
     const params = request.query;
     const validation = validateClientRedirect(params);
     if ("error" in validation) {
-      return reply
-        .code(400)
-        .type("text/html")
-        .send(errorPage(requestLocale(request), validation.error));
+      return sendHtml(reply, errorPage(requestLocale(request), validation.error), 400);
     }
     const { client, redirectUri } = validation;
 
@@ -280,11 +304,10 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
         return reply;
       }
     }
-    return reply
-      .type("text/html")
-      .send(
-        loginPage(requestLocale(request), params, authorizeAction, undefined, config.demoLogin),
-      );
+    return sendHtml(
+      reply,
+      loginPage(requestLocale(request), params, authorizeAction, undefined, config.demoLogin),
+    );
   });
 
   app.post<{ Body: AuthorizeParams & { email?: string; password?: string } }>(
@@ -293,10 +316,7 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
       const params = request.body;
       const validation = validateClientRedirect(params);
       if ("error" in validation) {
-        return reply
-          .code(400)
-          .type("text/html")
-          .send(errorPage(requestLocale(request), validation.error));
+        return sendHtml(reply, errorPage(requestLocale(request), validation.error), 400);
       }
       const { client, redirectUri } = validation;
       const locale = requestLocale(request);
@@ -308,18 +328,17 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
       const now = Date.now();
       const failure = loginFailures.get(throttleKey);
       if (failure && failure.resetAt > now && failure.count >= MAX_LOGIN_FAILURES) {
-        return reply
-          .code(429)
-          .type("text/html")
-          .send(
-            loginPage(
-              locale,
-              params,
-              authorizeAction,
-              t(locale, "idp.tooManyAttempts"),
-              config.demoLogin,
-            ),
-          );
+        return sendHtml(
+          reply,
+          loginPage(
+            locale,
+            params,
+            authorizeAction,
+            t(locale, "idp.tooManyAttempts"),
+            config.demoLogin,
+          ),
+          429,
+        );
       }
 
       const user = await config.store.findUserByEmail(email);
@@ -330,18 +349,16 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
           failure && failure.resetAt > now ? failure : { count: 0, resetAt: now + LOGIN_WINDOW_MS };
         base.count += 1;
         loginFailures.set(throttleKey, base);
-        return reply
-          .code(200)
-          .type("text/html")
-          .send(
-            loginPage(
-              locale,
-              params,
-              authorizeAction,
-              t(locale, "idp.wrongCredentials"),
-              config.demoLogin,
-            ),
-          );
+        return sendHtml(
+          reply,
+          loginPage(
+            locale,
+            params,
+            authorizeAction,
+            t(locale, "idp.wrongCredentials"),
+            config.demoLogin,
+          ),
+        );
       }
       loginFailures.delete(throttleKey);
 
@@ -472,9 +489,7 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
         return reply.redirect(url.toString());
       }
     }
-    return reply
-      .type("text/html")
-      .send(`<!doctype html><meta charset="utf-8"><p>Du är utloggad.</p>`);
+    return sendHtml(reply, logoutPage(requestLocale(request)));
   };
   app.route({ method: ["GET", "POST"], url: "/logout", handler: endSessionHandler });
 

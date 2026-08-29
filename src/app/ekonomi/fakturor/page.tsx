@@ -3,19 +3,28 @@ import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { Field, Notice, SignInGate, Submit } from "@/components/app/SignInGate";
 import { InvoiceLineFields } from "@/components/ekonomi/InvoiceLineFields";
-import { INVOICE_STATUS_LABELS, listInvoices } from "@/lib/ekonomi/invoices";
+import { listInvoices } from "@/lib/ekonomi/invoices";
 import { formatSek } from "@/lib/ekonomi/money";
 import { readSession } from "@/lib/auth/session";
-import { formatSwedishDate } from "@/lib/format/datetime";
+import { formatDate } from "@/lib/format/datetime";
+import { ekonomiInvoiceStatus, t } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 import { tryRuntime } from "@/lib/platform/page";
 import { bookSaleAction, createInvoiceAction } from "../actions";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "Fakturor — Ekonomi" };
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "ekonomi.inv.metaTitle"),
+    description: t(locale, "ekonomi.inv.metaDescription"),
+  };
+}
 
 export default async function FakturorPage() {
   const session = await readSession();
+  const locale = await readLocale();
   const runtime = tryRuntime(session?.org?.ref);
   const invoices =
     session?.org?.ref && runtime ? await listInvoices(runtime.pool, session.org.ref) : [];
@@ -25,29 +34,30 @@ export default async function FakturorPage() {
       <ProductCrumb
         crumbs={[
           { href: "/ekonomi", label: "Ekonomi" },
-          { href: "/ekonomi/fakturor", label: "Fakturor" },
+          { href: "/ekonomi/fakturor", label: t(locale, "ekonomi.invoices") },
         ]}
       />
-      <h1 className="text-3xl font-semibold tracking-tight">Fakturor</h1>
-      <p className="max-w-xl text-ink-soft">
-        Utkast bokförs inte. Utfärdad faktura skriver kundfordran, försäljning och utgående moms.
-        Förfaller om tio dagar om du inte ändrar det senare.
-      </p>
+      <h1 className="text-3xl font-semibold tracking-tight">{t(locale, "ekonomi.inv.heading")}</h1>
+      <p className="max-w-xl text-ink-soft">{t(locale, "ekonomi.inv.lead")}</p>
 
       {!session ? (
-        <SignInGate next="/ekonomi" title="Logga in för fakturor">
-          Fakturor tillhör organisationen.
+        <SignInGate
+          next="/ekonomi/fakturor"
+          title={t(locale, "ekonomi.inv.signInTitle")}
+          actionLabel={t(locale, "chrome.signIn")}
+        >
+          {t(locale, "ekonomi.inv.signInBody")}
         </SignInGate>
       ) : (
         <>
           <ul className="flex flex-col gap-3">
             {invoices.length === 0 ? (
-              <p className="text-sm text-muted">Inga fakturor ännu.</p>
+              <p className="text-sm text-muted">{t(locale, "ekonomi.inv.empty")}</p>
             ) : null}
             {invoices.map((invoice) => (
               <li key={invoice.id} className="rounded-xl border border-line bg-surface px-4 py-4">
                 <p className="text-xs uppercase tracking-wide text-accent">
-                  {INVOICE_STATUS_LABELS[invoice.status]}
+                  {ekonomiInvoiceStatus(locale, invoice.status)}
                 </p>
                 <p className="mt-1 text-lg font-medium">
                   <Link href={`/ekonomi/fakturor/${invoice.id}`} className="hover:underline">
@@ -56,7 +66,9 @@ export default async function FakturorPage() {
                 </p>
                 <p className="text-sm text-ink-soft">
                   {invoice.customerName} · {formatSek(invoice.grossOre)}
-                  {invoice.dueAt ? ` · förfaller ${formatSwedishDate(invoice.dueAt)}` : ""}
+                  {invoice.dueAt
+                    ? ` · ${t(locale, "ekonomi.desk.due", { date: formatDate(invoice.dueAt, locale) })}`
+                    : ""}
                 </p>
               </li>
             ))}
@@ -66,22 +78,19 @@ export default async function FakturorPage() {
             action={bookSaleAction}
             className="flex flex-col gap-4 rounded-xl border border-line bg-surface px-4 py-4"
           >
-            <h2 className="text-lg font-semibold">Nytt sälj</h2>
-            <Field name="customerName" label="Kund" required />
-            <Field name="customerRef" label="Kundreferens (valfritt)" />
-            <InvoiceLineFields rows={3} />
-            <Notice>
-              Skriv kronor. 2 500 eller 2500,50 går bra. Boken sparar öre. Moms 6 % och 0 % går inte
-              att boka än — boken har inte de kontona.
-            </Notice>
+            <h2 className="text-lg font-semibold">{t(locale, "ekonomi.desk.newSale")}</h2>
+            <Field name="customerName" label={t(locale, "tyra.field.customer")} required large />
+            <Field name="customerRef" label={t(locale, "ekonomi.field.customerRef")} large />
+            <InvoiceLineFields rows={3} locale={locale} />
+            <Notice>{t(locale, "ekonomi.inv.notice")}</Notice>
             <div className="flex flex-wrap gap-3">
-              <Submit>Boka sälj</Submit>
+              <Submit large>{t(locale, "tyra.case.bookSale")}</Submit>
               <button
                 type="submit"
                 formAction={createInvoiceAction}
-                className="self-start border border-line bg-paper px-4 py-2 text-sm"
+                className="min-h-12 self-start border border-line bg-paper px-4 py-3 text-base"
               >
-                Spara utkast
+                {t(locale, "ekonomi.inv.saveDraft")}
               </button>
             </div>
           </form>

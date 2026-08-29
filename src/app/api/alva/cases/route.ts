@@ -8,7 +8,7 @@ export async function GET() {
     return json({
       cases: await listCases(pool, present.orgRef),
       engine: "deferred",
-      note: "Ärendet är registrerat. Diagnosen är inte inkopplad än.",
+      note: "The case is registered. Diagnosis is not connected yet.",
     });
   });
 }
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
       mileageKm?: number;
       desiredOutcome?: string;
     } | null;
-    if (!body?.complaint?.trim()) throw new ApiError("invalid_request", "complaint krävs.");
+    if (!body?.complaint?.trim()) throw new ApiError("invalid_request", "complaint is required.");
     const item = await createCase({
       pool,
       events,

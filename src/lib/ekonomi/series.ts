@@ -1,11 +1,12 @@
+import { DEFAULT_LOCALE, localeTag, type Locale } from "../i18n/locales.ts";
 import type { Invoice } from "./invoices.ts";
 import type { Payment } from "./payments.ts";
 
 export const PERIODS = [
-  { id: "1W", days: 7, label: "1V" },
+  { id: "1W", days: 7, label: "1W" },
   { id: "1M", days: 30, label: "1M" },
   { id: "3M", days: 90, label: "3M" },
-  { id: "1Y", days: 365, label: "1Å" },
+  { id: "1Y", days: 365, label: "1Y" },
   { id: "MAX", days: null, label: "Max" },
 ] as const;
 
@@ -184,9 +185,13 @@ export function formatSekCompact(ore: number): string {
   return `${sign}${Math.round(abs).toLocaleString("sv-SE")} kr`;
 }
 
-export function formatChartDay(day: string, withYear = false): string {
+export function formatChartDay(
+  day: string,
+  withYear = false,
+  locale: Locale = DEFAULT_LOCALE,
+): string {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return day || "—";
-  return new Intl.DateTimeFormat("sv-SE", {
+  return new Intl.DateTimeFormat(localeTag(locale), {
     timeZone: STOCKHOLM,
     day: "numeric",
     month: "short",
@@ -194,7 +199,11 @@ export function formatChartDay(day: string, withYear = false): string {
   }).format(new Date(`${day}T12:00:00+02:00`));
 }
 
-export function formatChartRange(from: string, to: string): string {
+export function formatChartRange(
+  from: string,
+  to: string,
+  locale: Locale = DEFAULT_LOCALE,
+): string {
   const showYear = Boolean(from && to && from.slice(0, 4) !== to.slice(0, 4));
-  return `${formatChartDay(from, showYear)} – ${formatChartDay(to, showYear)}`;
+  return `${formatChartDay(from, showYear, locale)} – ${formatChartDay(to, showYear, locale)}`;
 }

@@ -214,6 +214,6 @@ export function remedy(key: RemedyKey): Remedy {
   const found = REMEDIES.find((r) => r.key === key);
   // Nycklarna är en sluten union; träffas inte någon är det ett programmeringsfel
   // och inte ett tomt svar, så det ska höras direkt.
-  if (!found) throw new Error(`okänt rättsmedel: ${key}`);
+  if (!found) throw new Error(`unknown remedy: ${key}`);
   return found;
 }

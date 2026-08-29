@@ -10,8 +10,8 @@ export async function GET(request: Request) {
     const system = url.searchParams.get("system") ?? undefined;
     const kind = url.searchParams.get("kind") ?? undefined;
     const after = url.searchParams.get("after") ?? undefined;
-    if (system && !isSystemId(system)) throw new ApiError("invalid_request", "okänt system");
-    if (kind && !isEventKind(kind)) throw new ApiError("invalid_request", "okänd händelse");
+    if (system && !isSystemId(system)) throw new ApiError("invalid_request", "unknown system");
+    if (kind && !isEventKind(kind)) throw new ApiError("invalid_request", "unknown event");
     const order = url.searchParams.get("order") === "desc" ? "desc" : "asc";
     const items = await events.list({
       after,
