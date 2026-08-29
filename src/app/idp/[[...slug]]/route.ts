@@ -8,6 +8,7 @@
  * lightweight `inject()` (no socket needed — ideal for serverless functions).
  * Leftover HTML robots (`noindex, nofollow`) live on the Fastify pages.
  * Leftover logout `html lang` follows `pd_locale`. The signed-out sentence stays.
+ * Leftover Identity HTML viewport matches leftover login.
  *
  * The OIDC issuer is `${origin}/idp`; discovery therefore advertises
  * `${origin}/idp/authorize`, `/idp/token`, `/idp/jwks.json`, etc. On Vercel,

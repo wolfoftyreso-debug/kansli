@@ -258,7 +258,7 @@ MCP-health och `server/discover` är inte samma sak som
 | Interna länkar | PARTIAL | nav + systems. Ingen intent-graf |
 | HTTP-status | PARTIAL | inte syntetiskt bevakat |
 | Prestanda | MISSING | ingen Lighthouse-gate |
-| Mobil | PARTIAL | layout finns, ingen bevakad svit |
+| Mobil | PARTIAL | layout finns, leftover Identity-HTML har viewport. Ingen bevakad svit |
 | Locale | PARTIAL | `html lang` från `pd_locale`, inklusive leftover Identity-logout. Inga locale-URL:er |
 
 ---

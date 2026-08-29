@@ -71,6 +71,7 @@ const OIDC_FIELDS: (keyof AuthorizeParams)[] = [
 ];
 
 const IDP_HTML_ROBOTS = '<meta name="robots" content="noindex, nofollow">';
+const IDP_HTML_VIEWPORT = '<meta name="viewport" content="width=device-width, initial-scale=1">';
 
 function requestLocale(request: {
   cookies?: Record<string, string | undefined>;
@@ -102,7 +103,7 @@ function loginPage(
     : "";
   return `<!doctype html>
 <html lang="${esc(localeTag(locale))}"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+${IDP_HTML_VIEWPORT}
 ${IDP_HTML_ROBOTS}
 <title>${esc(t(locale, "idp.title"))}</title>
 <style>
@@ -137,12 +138,12 @@ ${IDP_HTML_ROBOTS}
 }
 
 function errorPage(locale: Locale, message: string): string {
-  return `<!doctype html><html lang="${esc(localeTag(locale))}"><head><meta charset="utf-8">${IDP_HTML_ROBOTS}<title>${esc(t(locale, "idp.errorTitle"))}</title></head>
+  return `<!doctype html><html lang="${esc(localeTag(locale))}"><head><meta charset="utf-8">${IDP_HTML_VIEWPORT}${IDP_HTML_ROBOTS}<title>${esc(t(locale, "idp.errorTitle"))}</title></head>
 <body style="font-family:system-ui;margin:3rem"><h1>${esc(t(locale, "idp.errorHeading"))}</h1><p>${esc(message)}</p></body></html>`;
 }
 
 function logoutPage(locale: Locale): string {
-  return `<!doctype html><html lang="${esc(localeTag(locale))}"><head><meta charset="utf-8">${IDP_HTML_ROBOTS}</head>
+  return `<!doctype html><html lang="${esc(localeTag(locale))}"><head><meta charset="utf-8">${IDP_HTML_VIEWPORT}${IDP_HTML_ROBOTS}</head>
 <body style="font-family:system-ui;margin:3rem"><p>You are signed out.</p></body></html>`;
 }
 

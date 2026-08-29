@@ -5,6 +5,7 @@ import { APP_ROBOTS_DISALLOW } from "../../app/robots.ts";
 import {
   APP_ROOM_ROBOTS,
   APP_ROOM_ROBOTS_CONTENT,
+  APP_ROOM_VIEWPORT_META,
   appRoomRobots,
   appRoomRobotsMeta,
 } from "./app-robots.ts";
@@ -36,6 +37,14 @@ describe("leftover app-room robots lock", () => {
       `content="${APP_ROOM_ROBOTS_CONTENT}"`,
     );
     expect(readFileSync("src/app/api/auth/login/route.ts", "utf8")).toContain("appRoomRobotsMeta");
+    expect(APP_ROOM_VIEWPORT_META).toContain("width=device-width");
+    expect(readFileSync("packages/identity/src/server.ts", "utf8")).toContain("IDP_HTML_VIEWPORT");
+    expect(readFileSync("packages/identity/src/server.ts", "utf8")).toContain(
+      APP_ROOM_VIEWPORT_META,
+    );
+    expect(readFileSync("src/app/api/auth/login/route.ts", "utf8")).toContain(
+      "APP_ROOM_VIEWPORT_META",
+    );
   });
 
   it("leaves leftover public site and intake form out of HTML noindex", () => {
