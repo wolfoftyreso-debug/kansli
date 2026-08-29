@@ -1,16 +1,17 @@
 import { SYSTEM_MODULES, type SystemId } from "@pixdrift/systems";
+import type { MessageKey } from "../i18n/en.ts";
 import { mcpCatalog } from "./handle";
 
-export const MCP_DOC_LINKS = [
-  { href: "/documentation/mcp", label: "Overview" },
-  { href: "/documentation/capabilities", label: "Capability Graph" },
-  { href: "/documentation/rest", label: "REST" },
-  { href: "/documentation/mcp/authentication", label: "Authentication" },
-  { href: "/documentation/mcp/clients", label: "Connecting a client" },
-  { href: "/documentation/mcp/tools", label: "Tools" },
-  { href: "/documentation/mcp/systems", label: "Systems" },
-  { href: "/documentation/mcp/errors", label: "Errors" },
-] as const;
+export const MCP_DOC_LINKS: readonly { href: string; key: MessageKey }[] = [
+  { href: "/documentation/mcp", key: "site.doc.area.overview" },
+  { href: "/documentation/capabilities", key: "site.doc.capabilityGraph" },
+  { href: "/documentation/rest", key: "site.doc.rest" },
+  { href: "/documentation/mcp/authentication", key: "site.doc.nav.auth" },
+  { href: "/documentation/mcp/clients", key: "site.doc.nav.clients" },
+  { href: "/documentation/mcp/tools", key: "site.doc.nav.tools" },
+  { href: "/documentation/mcp/systems", key: "site.doc.systems" },
+  { href: "/documentation/mcp/errors", key: "site.doc.nav.errors" },
+];
 
 export function toolsForSystem(id: string) {
   return mcpCatalog().tools.filter((tool) => tool.system === id);
