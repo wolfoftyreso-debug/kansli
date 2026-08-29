@@ -131,7 +131,7 @@ ingen syntetisk bevakning av login/MCP/docs. Hemligheter dumpas inte.
 | 2. Universal Integration | PARTIAL | REST + MCP mot samma `src/lib/{produkt}`. OpenAPI ur grafen. Revolut OAuth. | Publik `api.`-host, webhooks, SDK, service accounts, OAuth-appar för tredje part |
 | 3. Developer Platform | PARTIAL | `/documentation`, MCP-docs, MCP-explorer | Sandbox, Try-it, recipes, changelog-data, status, request replay |
 | 4. App / Agent | PARTIAL | MCP + klientinstruktioner i docs | ChatGPT Apps, Apps SDK-UI, produktappar |
-| 5. Knowledge & Search | PARTIAL | `/systems`, `/documentation`, sitemap, robots, `llms.txt` ur `@pixdrift/systems` plus `MCP_DOC_LINKS`, JSON-LD ur brand plus `/systems/{slug}`, OG i root layout | Locale-URL, hreflang, knowledge, verktyg, intent-graf |
+| 5. Knowledge & Search | PARTIAL | `/systems`, `/documentation`, sitemap, robots, `llms.txt` ur `@pixdrift/systems` plus `MCP_DOC_LINKS`, JSON-LD ur brand plus `/systems/{slug}`, OG per publik HTML-sida, HTML noindex på apprum | Locale-URL, hreflang, knowledge, verktyg, intent-graf |
 | 6. Design System | PARTIAL | CSS-tokens, gemensam sajtmall | Tokenpaket, komponentbibliotek, produkt-DNA-regler, a11y-svit |
 | 7. Reliability | PARTIAL | CI, restore-drill, health | Reliability contract, Neon-restore-kvitto, syntetiska tester, incident |
 
@@ -248,7 +248,7 @@ MCP-health och `server/discover` är inte samma sak som
 | Check | Resultat | Bevis |
 | --- | --- | --- |
 | Crawlbar HTML | PARTIAL | App Router-sidor. Docs är serverrenderade. |
-| Indexerbar | PARTIAL | robots tillåter sajt, blockerar apprum + `/platform` + `/api/` |
+| Indexerbar | PARTIAL | robots tillåter sajt, blockerar apprum + `/platform` + `/api/`. HTML `noindex` på samma rum plus gästlänk och bekräftelse |
 | Canonical | PARTIAL | per-sida ur `PUBLIC_SITEMAP_PATHS` plus `/systems/{slug}`. Inga locale-URL:er |
 | hreflang | MISSING | — |
 | Sitemap | PARTIAL | MCP-docsidor ur `MCP_DOC_LINKS` plus `/systems/{slug}` |

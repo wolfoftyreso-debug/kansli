@@ -3,6 +3,7 @@ import { StatusBanner } from "@/components/tyra/Status";
 import { TaskRow } from "@/components/tyra/Rows";
 import { t } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
+import { appRoomRobots } from "@/lib/platform/app-robots";
 import { tryRuntime } from "@/lib/platform/page";
 import { getHubViewByToken } from "@/lib/tyra/hub";
 
@@ -13,7 +14,7 @@ export async function generateMetadata() {
   return {
     title: t(locale, "tyra.hub.metaTitle"),
     description: t(locale, "tyra.hub.metaDescription"),
-    robots: { index: false, follow: false },
+    ...appRoomRobots(),
   };
 }
 

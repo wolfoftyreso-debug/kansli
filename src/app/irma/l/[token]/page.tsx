@@ -6,6 +6,7 @@ import { daysUntilExpiry } from "@/lib/irma/status";
 import { formatDateTime } from "@/lib/format/datetime";
 import { t } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
+import { appRoomRobots } from "@/lib/platform/app-robots";
 import { ttsConfigured } from "@/lib/platform/tts";
 import {
   irmaThrottleKey,
@@ -25,7 +26,7 @@ export async function generateMetadata() {
   return {
     title: t(locale, "irma.guest.metaTitle"),
     description: t(locale, "irma.guest.metaDescription"),
-    robots: { index: false, follow: false },
+    ...appRoomRobots(),
   };
 }
 

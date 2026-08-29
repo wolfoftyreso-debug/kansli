@@ -5,6 +5,7 @@ import { readSession } from "@/lib/auth/session";
 import { formatDateTime } from "@/lib/format/datetime";
 import { t } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
+import { appRoomRobots } from "@/lib/platform/app-robots";
 import { getIntake, isHouseSession } from "@/lib/kansli/intakes";
 import { readIntakeReveal } from "@/lib/kansli/intake-reveal";
 import {
@@ -23,6 +24,7 @@ export async function generateMetadata() {
   const locale = await readLocale();
   return {
     title: t(locale, "intake.confirm.metaTitle"),
+    ...appRoomRobots(),
   };
 }
 
