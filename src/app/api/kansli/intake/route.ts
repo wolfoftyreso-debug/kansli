@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     result = await completeIntakeSubmit(form);
   } catch (error) {
     const message = error instanceof Error ? error.message : "";
-    if (/minst en modul/.test(message)) {
+    if (/minst en modul|at least one module/.test(message)) {
       return NextResponse.redirect(new URL("/upphandling?fel=moduler", requestBase(request)), 303);
     }
     if (/stämmer inte|tio siffror|saknas|does not check out|ten digits|is missing/.test(message)) {

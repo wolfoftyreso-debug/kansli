@@ -49,14 +49,14 @@ export function parseIntakeForm(form: FormData, houseOrgRef: string): IntakeDraf
   const contactEmail = String(form.get("contactEmail") ?? "")
     .trim()
     .toLowerCase();
-  if (companyName.length < 2) throw new Error("bolagsnamn krävs.");
-  if (contactName.length < 2) throw new Error("kontaktperson krävs.");
-  if (!EMAIL.test(contactEmail)) throw new Error("en giltig arbets-e-post krävs.");
+  if (companyName.length < 2) throw new Error("Company name is required.");
+  if (contactName.length < 2) throw new Error("Contact person is required.");
+  if (!EMAIL.test(contactEmail)) throw new Error("A valid work email is required.");
   const modules = parseModules(form.getAll("modules"));
-  if (modules.length === 0) throw new Error("välj minst en modul.");
+  if (modules.length === 0) throw new Error("Pick at least one module.");
   const termsAccepted = form.get("termsAccepted") === "on";
   if (!termsAccepted) {
-    throw new Error("villkorsrutan måste kryssas. Registreringen skapar en faktura.");
+    throw new Error("The terms box must be checked. Registration creates an invoice.");
   }
   const rawOrgNumber = optional(form, "orgNumber");
   if (rawOrgNumber && orgNumberError(rawOrgNumber)) {

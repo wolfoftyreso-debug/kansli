@@ -22,8 +22,7 @@ describe("lib required-language", () => {
     expect(profile).not.toContain("Bolagsnamn krävs.");
   });
 
-  it("leaves intake form, tenancy and connector-key throws as written", () => {
-    expect(readFileSync("src/lib/kansli/intakes.ts", "utf8")).toContain("bolagsnamn krävs.");
+  it("leaves tenancy and connector-key throws as written", () => {
     expect(readFileSync("src/lib/platform/tenancy.ts", "utf8")).toContain("orgRef krävs");
     expect(readFileSync("src/lib/ekonomi/connectors.ts", "utf8")).toContain("EKONOMI_WRAP_KEY");
   });

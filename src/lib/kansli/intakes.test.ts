@@ -36,7 +36,9 @@ describe("self-service registration domain", () => {
     form.set("contactName", "Anna Inköp");
     form.set("contactEmail", "anna@bilia.se");
     form.append("modules", "tyra");
-    expect(() => parseIntakeForm(form, "pixdrift:org:org-exempelbolaget")).toThrow(/villkor/i);
+    expect(() => parseIntakeForm(form, "pixdrift:org:org-exempelbolaget")).toThrow(
+      /terms box must be checked/,
+    );
   });
 
   it("refuses a registration without modules", () => {
@@ -46,7 +48,7 @@ describe("self-service registration domain", () => {
     form.set("contactEmail", "anna@bilia.se");
     form.set("termsAccepted", "on");
     expect(() => parseIntakeForm(form, "pixdrift:org:org-exempelbolaget")).toThrow(
-      /minst en modul/,
+      /at least one module/,
     );
   });
 

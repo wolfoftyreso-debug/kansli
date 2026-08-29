@@ -45,7 +45,7 @@ describe("self-service pricing", () => {
   });
 
   it("refuses an empty selection", () => {
-    expect(() => priceOrder([])).toThrow(/minst en modul/);
+    expect(() => priceOrder([])).toThrow(/at least one module/);
   });
 
   it("parses only known modules, once each", () => {

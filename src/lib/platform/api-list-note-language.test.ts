@@ -39,5 +39,8 @@ describe("API list note language", () => {
     expect(readFileSync("src/app/api/kansli/intake/route.ts", "utf8")).toContain(
       "does not check out|ten digits|is missing",
     );
+    expect(readFileSync("src/app/api/kansli/intake/route.ts", "utf8")).toContain(
+      "minst en modul|at least one module",
+    );
   });
 });

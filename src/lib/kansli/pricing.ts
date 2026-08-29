@@ -94,7 +94,7 @@ export interface PricedOrder {
  * customer is upgraded to everything and pays the cap — never more.
  */
 export function priceOrder(selected: SellableModule[]): PricedOrder {
-  if (selected.length === 0) throw new Error("välj minst en modul.");
+  if (selected.length === 0) throw new Error("Pick at least one module.");
   const sum = selected.reduce((acc, id) => acc + MODULE_PRICING[id].monthlyNetOre, 0);
   if (sum >= ALL_MODULES_MONTHLY_NET_ORE) {
     return {
