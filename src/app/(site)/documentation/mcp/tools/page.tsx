@@ -38,7 +38,9 @@ export default async function McpToolsPage() {
               </p>
             ) : null}
             {tool.deprecated ? (
-              <p className="mt-2 text-sm">Deprecated. Use {tool.replacement}.</p>
+              <p className="mt-2 text-sm">
+                {t(locale, "site.doc.mcp.deprecated", { name: tool.replacement ?? "" })}
+              </p>
             ) : null}
           </article>
         ))}

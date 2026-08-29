@@ -62,15 +62,15 @@ export default async function CapabilityGraphPage() {
                 <dd className="font-mono">{capability.interfaces.mcp}</dd>
               </div>
               <div>
-                <dt className="text-muted">Event</dt>
+                <dt className="text-muted">{t(locale, "site.doc.graph.event")}</dt>
                 <dd className="font-mono">{capability.interfaces.event ?? "—"}</dd>
               </div>
               <div>
-                <dt className="text-muted">SDK / webhook / ChatGPT</dt>
-                <dd>not registered</dd>
+                <dt className="text-muted">{t(locale, "site.doc.graph.sdk")}</dt>
+                <dd>{t(locale, "site.doc.graph.notRegistered")}</dd>
               </div>
               <div>
-                <dt className="text-muted">Permission</dt>
+                <dt className="text-muted">{t(locale, "site.doc.graph.permission")}</dt>
                 <dd className="font-mono">
                   {capability.permissions.length > 0
                     ? capability.permissions.join(", ")
@@ -78,7 +78,7 @@ export default async function CapabilityGraphPage() {
                 </dd>
               </div>
               <div>
-                <dt className="text-muted">Documentation</dt>
+                <dt className="text-muted">{t(locale, "site.catalog.documentation")}</dt>
                 <dd>
                   <Link
                     href={capability.documentation.slug}

@@ -52,7 +52,9 @@ export default async function RestDocumentationPage() {
               {operation.description}
             </p>
             {operation.event ? (
-              <p className="mt-3 text-sm text-muted">Event {operation.event}</p>
+              <p className="mt-3 text-sm text-muted">
+                {t(locale, "site.doc.rest.event", { name: operation.event })}
+              </p>
             ) : null}
           </article>
         ))}

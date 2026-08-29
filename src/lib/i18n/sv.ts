@@ -1600,6 +1600,12 @@ export const SV: Record<MessageKey, string> = {
   "site.doc.graph.intro":
     "Den här sidan genereras från MCP-registret. Saknas en kapabilitet här är den inte registrerad. NORA, MOVA och SAGA finns inte i det här arkivet.",
   "site.doc.graph.source": "Källa {source} · {count} kapabiliteter · JSON",
+  "site.doc.graph.event": "Händelse",
+  "site.doc.graph.permission": "Behörighet",
+  "site.doc.graph.notRegistered": "inte registrerat",
+  "site.doc.graph.sdk": "SDK / webhook / ChatGPT",
+  "site.doc.mcp.deprecated": "Utfasad. Använd {name}.",
+  "site.doc.rest.event": "Händelse {name}",
 
   "site.why.metaTitle": "Varför PIXDRIFT finns — PIXDRIFT",
   "site.why.metaDescription":

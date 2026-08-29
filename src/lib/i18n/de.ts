@@ -1620,6 +1620,12 @@ export const DE: Record<MessageKey, string> = {
   "site.doc.graph.intro":
     "This page is generated from the MCP registry. If a capability is missing here, it is not registered. NORA, MOVA and SAGA are not in this repository.",
   "site.doc.graph.source": "Source {source} · {count} capabilities · JSON",
+  "site.doc.graph.event": "Event",
+  "site.doc.graph.permission": "Permission",
+  "site.doc.graph.notRegistered": "not registered",
+  "site.doc.graph.sdk": "SDK / webhook / ChatGPT",
+  "site.doc.mcp.deprecated": "Deprecated. Use {name}.",
+  "site.doc.rest.event": "Event {name}",
 
   "site.why.metaTitle": "Why PIXDRIFT exists — PIXDRIFT",
   "site.why.metaDescription":

@@ -186,6 +186,7 @@ describe("locale registry", () => {
     expect(t("sv", "site.doc.rest.title")).toBe("En graf. Två gränssnitt.");
     expect(t("sv", "site.why.title")).toBe("Varför PIXDRIFT finns");
     expect(t("sv", "site.how.title")).toBe("En metod, inte en plattform.");
+    expect(t("sv", "site.doc.graph.notRegistered")).toBe("inte registrerat");
     expect(t("en", "tyra.case.workCard")).toBe("Work card");
     expect(t("sv", "tyra.case.next")).toBe("Nästa");
     expect(t("en", "tora.doc.whyBidDefault")).toBe(
