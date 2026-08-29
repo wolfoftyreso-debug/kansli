@@ -172,7 +172,7 @@ Publika sidor i dag: `/`, `/systems`, `/systems/{slug}`,
 `/documentation/mcp/*`, `/documentation/capabilities`,
 `/why`, `/company`.
 Sitemap: `src/app/sitemap.ts` (saknade tidigare MCP-URL:er).
-Robots: tillåt `/`, blockera `/kansli`, `/api/`, `/idp/`.
+Robots: tillåt `/`, blockera apprummen ur `@pixdrift/systems` plus `/platform` och `/api/`.
 Locale: `html lang` från `pd_locale` (kanonisk `en`). Inga `/en/` `/sv/` `/de/`.
 Ingen hreflang. Canonical är implicit via `metadataBase`.
 
@@ -247,7 +247,7 @@ MCP-health och `server/discover` är inte samma sak som
 | Check | Resultat | Bevis |
 | --- | --- | --- |
 | Crawlbar HTML | PARTIAL | App Router-sidor. Docs är serverrenderade. |
-| Indexerbar | PARTIAL | robots tillåter sajt, blockerar app/api/idp |
+| Indexerbar | PARTIAL | robots tillåter sajt, blockerar apprum + `/platform` + `/api/` |
 | Canonical | PARTIAL | `metadataBase` + implicit URL. Ingen per-sida canonical-policy |
 | hreflang | MISSING | — |
 | Sitemap | PARTIAL | statiska rutter + `/systems/{slug}` |
