@@ -78,7 +78,7 @@ describe("API invalid_request language", () => {
   });
 
   it("leaves intake sender check and org-number pass-through as written", () => {
-    expect(readFileSync("src/app/api/kansli/intake/route.ts", "utf8")).toContain("Fel avsändare.");
+    expect(readFileSync("src/app/api/kansli/intake/route.ts", "utf8")).toContain("Wrong sender.");
     expect(readFileSync("src/app/api/rita/analyses/route.ts", "utf8")).toContain("numberIssue");
     expect(readFileSync("packages/api-core/src/error.ts", "utf8")).toContain(
       "An unexpected error occurred.",

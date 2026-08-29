@@ -8,7 +8,7 @@ export async function GET() {
     return json({
       cases: await listCases(pool, present.orgRef),
       engine: "deferred",
-      note: "Ärendet är registrerat. Diagnosen är inte inkopplad än.",
+      note: "The case is registered. Diagnosis is not connected yet.",
     });
   });
 }

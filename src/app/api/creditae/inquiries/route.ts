@@ -9,7 +9,7 @@ export async function GET() {
     return json({
       inquiries: await listInquiries(pool, present.orgRef),
       credit: { configured: creditConfigured() },
-      note: "CREDITAE sätter inget kreditbetyg. Byråns rapport är inte er slutsats.",
+      note: "CREDITAE does not set a credit rating. The bureau report is not your conclusion.",
     });
   });
 }

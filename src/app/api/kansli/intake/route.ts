@@ -27,7 +27,7 @@ function sameOrigin(request: Request): boolean {
 
 export async function POST(request: Request) {
   if (!sameOrigin(request)) {
-    return new NextResponse("Fel avsändare.", { status: 403 });
+    return new NextResponse("Wrong sender.", { status: 403 });
   }
   const form = await request.formData();
   let result: Awaited<ReturnType<typeof completeIntakeSubmit>>;
