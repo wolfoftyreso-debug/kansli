@@ -9,6 +9,8 @@ describe("Identity authorize leftover-throw language", () => {
     expect(server).toContain("redirect_uri does not match");
     expect(server).toContain("You are signed out.");
     expect(server).toContain("function logoutPage");
+    expect(server).toContain("IDP_LOGOUT_SENTENCE");
+    expect(server).toContain("<title>${esc(IDP_LOGOUT_SENTENCE)}</title>");
     expect(server).toContain("logoutPage(requestLocale(request))");
     expect(server).toContain("function sendHtml");
     expect(server).toContain('IDP_HTML_CACHE_CONTROL = "no-store"');

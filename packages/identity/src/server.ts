@@ -158,9 +158,11 @@ function errorPage(locale: Locale, message: string): string {
 <body style="font-family:system-ui;margin:3rem"><h1>${esc(t(locale, "idp.errorHeading"))}</h1><p>${esc(message)}</p></body></html>`;
 }
 
+const IDP_LOGOUT_SENTENCE = "You are signed out.";
+
 function logoutPage(locale: Locale): string {
-  return `<!doctype html><html lang="${esc(localeTag(locale))}"><head><meta charset="utf-8">${IDP_HTML_VIEWPORT}${IDP_HTML_COLOR_SCHEME}${IDP_HTML_THEME_COLOR}${IDP_HTML_FORMAT_DETECTION}${IDP_HTML_ROBOTS}</head>
-<body style="font-family:system-ui;margin:3rem"><p>You are signed out.</p></body></html>`;
+  return `<!doctype html><html lang="${esc(localeTag(locale))}"><head><meta charset="utf-8">${IDP_HTML_VIEWPORT}${IDP_HTML_COLOR_SCHEME}${IDP_HTML_THEME_COLOR}${IDP_HTML_FORMAT_DETECTION}${IDP_HTML_ROBOTS}<title>${esc(IDP_LOGOUT_SENTENCE)}</title></head>
+<body style="font-family:system-ui;margin:3rem"><p>${esc(IDP_LOGOUT_SENTENCE)}</p></body></html>`;
 }
 
 export async function createIdentityServer(config: IdentityConfig): Promise<FastifyInstance> {

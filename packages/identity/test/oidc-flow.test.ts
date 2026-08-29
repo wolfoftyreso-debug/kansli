@@ -326,7 +326,9 @@ describe("Authorize leftover-error language", () => {
 
     const logout = await fetch(`${issuer}/logout`);
     expect(logout.status).toBe(200);
-    expect(await logout.text()).toContain("You are signed out.");
+    const logoutHtml = await logout.text();
+    expect(logoutHtml).toContain("<title>You are signed out.</title>");
+    expect(logoutHtml).toContain("<p>You are signed out.</p>");
   });
 });
 
