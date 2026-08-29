@@ -24,7 +24,9 @@ export default async function TyraCustomersPage() {
   const locale = await readLocale();
   const runtime = tryRuntime(session?.org?.ref);
   const cards =
-    session?.org?.ref && runtime ? await listCustomerCards(runtime.pool, session.org.ref) : [];
+    session?.org?.ref && runtime
+      ? await listCustomerCards(runtime.pool, session.org.ref, locale)
+      : [];
   const cases = session?.org?.ref && runtime ? await listCases(runtime.pool, session.org.ref) : [];
 
   return (

@@ -1,7 +1,12 @@
 import type pg from "pg";
+import { DEFAULT_LOCALE, type Locale } from "../i18n/index.ts";
 import { buildCustomerCard, type CustomerCard } from "./crm.ts";
 
-export async function listCustomerCards(pool: pg.Pool, orgRef: string): Promise<CustomerCard[]> {
+export async function listCustomerCards(
+  pool: pg.Pool,
+  orgRef: string,
+  locale: Locale = DEFAULT_LOCALE,
+): Promise<CustomerCard[]> {
   const customers = await pool.query<{ id: string; name: string }>(
     `select id, name from tyra.customers where org_ref = $1 order by lower(name) asc`,
     [orgRef],
@@ -42,6 +47,7 @@ export async function listCustomerCards(pool: pg.Pool, orgRef: string): Promise<
       (row) => row.customer_id === customer.id || (row.vehicle_id && ownedIds.has(row.vehicle_id)),
     );
     return buildCustomerCard({
+      locale,
       customer: { id: customer.id, name: customer.name },
       vehicles: ownedVehicles.map((row) => ({
         id: row.id,

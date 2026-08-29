@@ -1,3 +1,5 @@
+import { DEFAULT_LOCALE, t, type Locale } from "../i18n/index.ts";
+
 export type CrmCustomer = {
   id: string;
   name: string;
@@ -49,11 +51,19 @@ function by<T>(get: (x: T) => string) {
   return (a: T, b: T) => get(a).localeCompare(get(b), "sv");
 }
 
+export function nextActionLabel(
+  kind: "prepareQuote" | "pick" | "checkIn" | "stored" | "idle",
+  locale: Locale = DEFAULT_LOCALE,
+): string {
+  return t(locale, `tyra.cards.next.${kind}`);
+}
+
 export function buildCustomerCard(input: {
   customer: CrmCustomer;
   vehicles: CrmVehicle[];
   wheelSets: CrmWheelSet[];
   opportunities: CrmOpportunity[];
+  locale?: Locale;
 }): CustomerCard {
   const wheelSetsByVehicleId = new Map<string, CrmWheelSet[]>();
   for (const ws of input.wheelSets) {
@@ -92,18 +102,20 @@ export function buildCustomerCard(input: {
     ["CHECKING_IN", "REGISTERED"].includes(ws.status),
   );
 
+  const locale = input.locale ?? DEFAULT_LOCALE;
   const nextAction: CustomerCard["nextAction"] =
     openWheelSetIds.size > 0
-      ? { kind: "prepare_quote", label: "Sälj däck" }
+      ? { kind: "prepare_quote", label: nextActionLabel("prepareQuote", locale) }
       : hasPick
-        ? { kind: "pick", label: "Plocka hjul" }
+        ? { kind: "pick", label: nextActionLabel("pick", locale) }
         : hasCheckIn
-          ? { kind: "check_in", label: "Checka in" }
+          ? { kind: "check_in", label: nextActionLabel("checkIn", locale) }
           : {
               kind: "none",
-              label: input.wheelSets.some((ws) => ws.storageStatus === "STORED")
-                ? "Inlagda hjul — ingen öppen åtgärd"
-                : "Inget att göra just nu",
+              label: nextActionLabel(
+                input.wheelSets.some((ws) => ws.storageStatus === "STORED") ? "stored" : "idle",
+                locale,
+              ),
             };
 
   return {
