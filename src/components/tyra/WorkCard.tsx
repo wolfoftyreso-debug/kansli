@@ -5,6 +5,8 @@ import { StatusBadge, type StatusTone } from "./Status.tsx";
 
 export function WorkCard(props: {
   title: string;
+  workLabel: string;
+  nextLabel: string;
   subtitle?: string | null;
   status?: { tone: StatusTone; label: string } | null;
   nextTitle?: string | null;
@@ -15,7 +17,7 @@ export function WorkCard(props: {
     <Card pad="lg">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <div className="text-xs font-medium text-[var(--tyra-muted)]">Arbetskort</div>
+          <div className="text-xs font-medium text-[var(--tyra-muted)]">{props.workLabel}</div>
           <div className={cn("mt-2 text-3xl font-semibold tracking-tight", "break-words")}>
             {props.title}
           </div>
@@ -27,10 +29,8 @@ export function WorkCard(props: {
       </div>
 
       <div className="mt-6 rounded-[var(--tyra-radius)] border border-[var(--tyra-border)] bg-[var(--tyra-panel)] px-5 py-4">
-        <div className="text-xs font-medium text-[var(--tyra-muted)]">Nästa</div>
-        <div className="mt-2 text-xl font-semibold tracking-tight">
-          {props.nextTitle ?? "Klart."}
-        </div>
+        <div className="text-xs font-medium text-[var(--tyra-muted)]">{props.nextLabel}</div>
+        <div className="mt-2 text-xl font-semibold tracking-tight">{props.nextTitle}</div>
         {props.nextHint ? (
           <div className="mt-2 text-sm text-[var(--tyra-muted)]">{props.nextHint}</div>
         ) : null}

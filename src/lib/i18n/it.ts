@@ -1680,4 +1680,7 @@ export const IT: Record<MessageKey, string> = {
   "tora.req.unmet": "Missing",
   "tora.req.remediable": "Can be fixed",
   "tora.req.unknown": "We do not know",
+
+  "tyra.case.workCard": "Work card",
+  "tyra.case.next": "Next",
 };

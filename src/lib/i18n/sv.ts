@@ -1663,4 +1663,7 @@ export const SV: Record<MessageKey, string> = {
   "tora.req.unmet": "Saknas",
   "tora.req.remediable": "Går att fixa",
   "tora.req.unknown": "Vi vet inte",
+
+  "tyra.case.workCard": "Arbetskort",
+  "tyra.case.next": "Nästa",
 };

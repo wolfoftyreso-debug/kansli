@@ -114,6 +114,8 @@ export default async function TyraCasePage({
 
           <WorkCard
             title={card.headline}
+            workLabel={t(locale, "tyra.case.workCard")}
+            nextLabel={t(locale, "tyra.case.next")}
             subtitle={card.summary || t(locale, "tyra.case.noJobs")}
             status={{
               tone: caseTone(card.caseStatus),

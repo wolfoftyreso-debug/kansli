@@ -171,6 +171,8 @@ describe("locale registry", () => {
     expect(catalogSection("sv", "identity", "01", "")).toBe(
       "En inloggning till alla system, så ni inte loggar in om och om igen.",
     );
+    expect(t("en", "tyra.case.workCard")).toBe("Work card");
+    expect(t("sv", "tyra.case.next")).toBe("Nästa");
     expect(toraReqStatus("en", "met")).toBe("Met");
     expect(toraReqStatus("sv", "remediable")).toBe("Går att fixa");
     expect(t("en", "platform.rita.rulesModel")).toBe("RITA · rules + model");
