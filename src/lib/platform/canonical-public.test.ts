@@ -5,7 +5,7 @@ import { MCP_DOC_LINKS } from "../mcp/catalog.ts";
 import { systems } from "../pixdrift/systems.ts";
 import { PUBLIC_CANONICAL_PATHS, publicCanonical } from "./canonical.ts";
 
-const PAGE_CANONICALS: readonly [string, string][] = [
+const PAGE_CANONICALS: [string, string][] = [
   ["src/app/(site)/page.tsx", 'publicCanonical("/")'],
   ["src/app/(site)/systems/page.tsx", 'publicCanonical("/systems")'],
   ["src/app/(site)/systems/[slug]/page.tsx", "publicCanonical(`/systems/${slug}`)"],
@@ -14,9 +14,10 @@ const PAGE_CANONICALS: readonly [string, string][] = [
   ["src/app/(site)/documentation/page.tsx", 'publicCanonical("/documentation")'],
   ["src/app/(site)/why/page.tsx", 'publicCanonical("/why")'],
   ["src/app/(site)/company/page.tsx", 'publicCanonical("/company")'],
-  ...MCP_DOC_LINKS.map(
-    (item) => [`src/app/(site)${item.href}/page.tsx`, `publicCanonical("${item.href}")`] as const,
-  ),
+  ...MCP_DOC_LINKS.map((item): [string, string] => [
+    `src/app/(site)${item.href}/page.tsx`,
+    `publicCanonical("${item.href}")`,
+  ]),
 ];
 
 describe("leftover public canonical lock", () => {
