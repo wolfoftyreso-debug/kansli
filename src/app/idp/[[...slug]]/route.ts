@@ -10,6 +10,7 @@
  * Leftover logout `html lang` follows `pd_locale`. The signed-out sentence stays.
  * Leftover Identity HTML viewport matches leftover login.
  * Leftover Identity HTML color-scheme stays light.
+ * Leftover Identity HTML format-detection stays off.
  *
  * The OIDC issuer is `${origin}/idp`; discovery therefore advertises
  * `${origin}/idp/authorize`, `/idp/token`, `/idp/jwks.json`, etc. On Vercel,

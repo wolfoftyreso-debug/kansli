@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import { DEFAULT_LOCALE, localeTag, t } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
-import { COLOR_SCHEME, PAPER_HEX } from "@/lib/platform/theme-chrome";
+import { COLOR_SCHEME, LEFTOVER_FORMAT_DETECTION, PAPER_HEX } from "@/lib/platform/theme-chrome";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -32,6 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description,
     applicationName: "PIXDRIFT",
+    formatDetection: LEFTOVER_FORMAT_DETECTION,
     openGraph: {
       type: "website",
       siteName: "PIXDRIFT",

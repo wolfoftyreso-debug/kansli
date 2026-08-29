@@ -1,6 +1,11 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { COLOR_SCHEME, leftoverColorSchemeMeta, PAPER_HEX } from "./theme-chrome.ts";
+import {
+  COLOR_SCHEME,
+  leftoverColorSchemeMeta,
+  leftoverFormatDetectionMeta,
+  PAPER_HEX,
+} from "./theme-chrome.ts";
 
 describe("leftover theme chrome", () => {
   it("locks leftover light color-scheme and paper theme-color", () => {
@@ -17,6 +22,16 @@ describe("leftover theme chrome", () => {
     );
     expect(readFileSync("src/app/api/auth/login/route.ts", "utf8")).toContain(
       "leftoverColorSchemeMeta",
+    );
+    expect(leftoverFormatDetectionMeta()).toContain("telephone=no");
+    expect(readFileSync("src/app/layout.tsx", "utf8")).toContain(
+      "formatDetection: LEFTOVER_FORMAT_DETECTION",
+    );
+    expect(readFileSync("packages/identity/src/server.ts", "utf8")).toContain(
+      "telephone=no, email=no, address=no",
+    );
+    expect(readFileSync("src/app/api/auth/login/route.ts", "utf8")).toContain(
+      "leftoverFormatDetectionMeta",
     );
   });
 
