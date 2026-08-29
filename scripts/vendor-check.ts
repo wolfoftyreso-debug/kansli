@@ -3,7 +3,7 @@
  * no SMS sent, no speech generated, no vendor units burned beyond a ping.
  * Secrets are never printed.
  */
-type Result = { vendor: string; status: "OK" | "FEL" | "SAKNAS"; detail: string; ms?: number };
+type Result = { vendor: string; status: "OK" | "FAIL" | "MISSING"; detail: string; ms?: number };
 const results: Result[] = [];
 
 function redact(text: string): string {
@@ -23,7 +23,7 @@ async function probe(
 ): Promise<void> {
   const missing = envNames.filter((name) => !process.env[name]?.trim());
   if (missing.length > 0) {
-    results.push({ vendor, status: "SAKNAS", detail: `saknar ${missing.join(", ")}` });
+    results.push({ vendor, status: "MISSING", detail: `missing ${missing.join(", ")}` });
     return;
   }
   const start = Date.now();
@@ -32,7 +32,7 @@ async function probe(
     results.push({ vendor, status: "OK", detail: redact(detail), ms: Date.now() - start });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    results.push({ vendor, status: "FEL", detail: redact(message), ms: Date.now() - start });
+    results.push({ vendor, status: "FAIL", detail: redact(message), ms: Date.now() - start });
   }
 }
 
@@ -56,7 +56,7 @@ async function json(url: string, init?: RequestInit): Promise<{ status: number; 
 
 const main = async () => {
   // 1. AI Gateway (platform channel): model list + real 16-token inference.
-  await probe("AI Gateway (plattformskanal)", ["AI_GATEWAY_API_KEY"], async () => {
+  await probe("AI Gateway (platform channel)", ["AI_GATEWAY_API_KEY"], async () => {
     const base =
       process.env.AI_GATEWAY_BASE_URL?.replace(/\/+$/, "") || "https://ai-gateway.vercel.sh/v1";
     const headers = {
@@ -83,7 +83,7 @@ const main = async () => {
     const text =
       (chat.body as { choices?: { message?: { content?: string } }[] }).choices?.[0]?.message
         ?.content ?? "";
-    return `${models.length} modeller · ${model}: "${text.trim()}"`;
+    return `${models.length} models · ${model}: "${text.trim()}"`;
   });
 
   // 2. Anthropic direct: model list (free) + 8-token inference on cheapest model.
@@ -109,7 +109,7 @@ const main = async () => {
     if (chat.status !== 200)
       throw new Error(`messages ${chat.status}: ${JSON.stringify(chat.body)}`);
     const text = (chat.body as { content: { text?: string }[] }).content?.[0]?.text ?? "";
-    return `${models.length} modeller · ${model}: "${text.trim()}"`;
+    return `${models.length} models · ${model}: "${text.trim()}"`;
   });
 
   // 3. OpenAI direct: model list (free) + tiny inference on a nano/mini model.
@@ -136,14 +136,14 @@ const main = async () => {
     });
     if (chat.status === 429) {
       throw new Error(
-        `nyckeln är giltig (${models.length} modeller listas) men saldot är slut — fyll på krediter hos OpenAI`,
+        `the key is valid (${models.length} models listed) but the balance is empty — top up credits at OpenAI`,
       );
     }
     if (chat.status !== 200) throw new Error(`chat ${chat.status}: ${JSON.stringify(chat.body)}`);
     const text =
       (chat.body as { choices: { message: { content: string } }[] }).choices?.[0]?.message
         ?.content ?? "";
-    return `${models.length} modeller · ${model}: "${text.trim()}"`;
+    return `${models.length} models · ${model}: "${text.trim()}"`;
   });
 
   // 4. Gemini: model list (free) + tiny inference on a flash model.
@@ -183,7 +183,7 @@ const main = async () => {
         },
       );
     let model = candidates[0] ?? models[0]!;
-    let chat: { status: number; body: unknown } = { status: 0, body: "ej försökt" };
+    let chat: { status: number; body: unknown } = { status: 0, body: "not attempted" };
     // Newer models may demand another API surface or hang; walk the candidates.
     for (const candidate of candidates) {
       model = candidate;
@@ -199,21 +199,21 @@ const main = async () => {
     const text =
       (chat.body as { candidates?: { content?: { parts?: { text?: string }[] } }[] })
         .candidates?.[0]?.content?.parts?.[0]?.text ?? "";
-    return `${models.length} modeller · ${model}: "${text.trim()}"`;
+    return `${models.length} models · ${model}: "${text.trim()}"`;
   });
 
   // 5. ElevenLabs: auth check only. No speech is generated.
-  await probe("ElevenLabs (tal)", ["ELEVENLABS_API_KEY"], async () => {
+  await probe("ElevenLabs (speech)", ["ELEVENLABS_API_KEY"], async () => {
     const res = await json("https://api.elevenlabs.io/v1/user", {
       headers: { "xi-api-key": process.env.ELEVENLABS_API_KEY! },
     });
     if (res.status !== 200) throw new Error(`user ${res.status}: ${JSON.stringify(res.body)}`);
     const body = res.body as { subscription?: { tier?: string; character_count?: number } };
-    return `konto ok · plan ${body.subscription?.tier ?? "?"} · ${body.subscription?.character_count ?? "?"} tecken använda`;
+    return `account ok · plan ${body.subscription?.tier ?? "?"} · ${body.subscription?.character_count ?? "?"} characters used`;
   });
 
   // 6. Creditsafe: authenticate only. No report fetched.
-  await probe("Creditsafe (kredit)", ["CREDITSAFE_USERNAME", "CREDITSAFE_PASSWORD"], async () => {
+  await probe("Creditsafe (credit)", ["CREDITSAFE_USERNAME", "CREDITSAFE_PASSWORD"], async () => {
     const base =
       process.env.CREDITSAFE_BASE_URL?.replace(/\/+$/, "") ||
       (process.env.CREDITSAFE_SANDBOX === "true"
@@ -228,11 +228,11 @@ const main = async () => {
       }),
     });
     if (res.status !== 200) throw new Error(`authenticate ${res.status}`);
-    return `inloggning ok mot ${base.includes("sandbox") ? "sandbox" : "produktion"}`;
+    return `login ok against ${base.includes("sandbox") ? "sandbox" : "production"}`;
   });
 
   // 7. Semrush: unit balance (free endpoint). No report units spent.
-  await probe("Semrush (söksynlighet)", ["SEMRUSH_API_KEY"], async () => {
+  await probe("Semrush (search visibility)", ["SEMRUSH_API_KEY"], async () => {
     const res = await json(
       `https://www.semrush.com/users/countapiunits.html?key=${process.env.SEMRUSH_API_KEY}`,
     );
@@ -240,7 +240,7 @@ const main = async () => {
       throw new Error(`countapiunits ${res.status}: ${JSON.stringify(res.body)}`);
     const text = String(res.body).trim();
     if (/ERROR/i.test(text)) throw new Error(text);
-    return `nyckel ok · ${Number(text).toLocaleString("sv-SE")} API-units kvar`;
+    return `key ok · ${Number(text).toLocaleString("en-GB")} API units left`;
   });
 
   // 8. 46elks: account info. No SMS sent.
@@ -253,58 +253,58 @@ const main = async () => {
     });
     if (res.status !== 200) throw new Error(`me ${res.status}: ${JSON.stringify(res.body)}`);
     const body = res.body as { displayname?: string; balance?: number; currency?: string };
-    return `konto "${body.displayname ?? "?"}" · saldo ${((body.balance ?? 0) / 10000).toFixed(2)} ${body.currency ?? ""}`;
+    return `account "${body.displayname ?? "?"}" · balance ${((body.balance ?? 0) / 10000).toFixed(2)} ${body.currency ?? ""}`;
   });
 
   // 9. Resend: read-only domain list.
-  await probe("Resend (mejl)", ["RESEND_API_KEY"], async () => {
+  await probe("Resend (mail)", ["RESEND_API_KEY"], async () => {
     const res = await json("https://api.resend.com/domains", {
       headers: { authorization: `Bearer ${process.env.RESEND_API_KEY}` },
     });
     if (res.status !== 200) throw new Error(`domains ${res.status}: ${JSON.stringify(res.body)}`);
     const data = (res.body as { data?: { name: string; status: string }[] }).data ?? [];
     return data.length === 0
-      ? "nyckel ok · inga domäner verifierade ännu"
-      : `nyckel ok · ${data.map((d) => `${d.name} (${d.status})`).join(", ")}`;
+      ? "key ok · no domains verified yet"
+      : `key ok · ${data.map((d) => `${d.name} (${d.status})`).join(", ")}`;
   });
 
   // 10. Mapbox: one forward geocode (free tier).
-  await probe("Mapbox (kartor)", ["MAPBOX_ACCESS_TOKEN"], async () => {
+  await probe("Mapbox (maps)", ["MAPBOX_ACCESS_TOKEN"], async () => {
     const res = await json(
       `https://api.mapbox.com/search/geocode/v6/forward?q=Stockholm&limit=1&access_token=${process.env.MAPBOX_ACCESS_TOKEN}`,
     );
     if (res.status !== 200) throw new Error(`geocode ${res.status}: ${JSON.stringify(res.body)}`);
     const name = (res.body as { features?: { properties?: { full_address?: string } }[] })
       .features?.[0]?.properties?.full_address;
-    return `token ok · geokodade "Stockholm" → ${name ?? "träff"}`;
+    return `token ok · geocoded "Stockholm" → ${name ?? "hit"}`;
   });
 
   // 11. Apollo.io: auth health check.
-  await probe("Apollo.io (B2B-data)", ["APOLLO_API_KEY"], async () => {
+  await probe("Apollo.io (B2B data)", ["APOLLO_API_KEY"], async () => {
     const res = await json("https://api.apollo.io/api/v1/auth/health", {
       headers: { "x-api-key": process.env.APOLLO_API_KEY! },
     });
     if (res.status !== 200) throw new Error(`health ${res.status}: ${JSON.stringify(res.body)}`);
     const ok = (res.body as { is_logged_in?: boolean }).is_logged_in;
-    if (!ok) throw new Error("nyckeln avvisades (is_logged_in=false)");
-    return "nyckel ok · inloggad";
+    if (!ok) throw new Error("the key was rejected (is_logged_in=false)");
+    return "key ok · signed in";
   });
 
   const width = Math.max(...results.map((r) => r.vendor.length));
-  console.log("VENDOR-API-KONTROLL —", new Date().toISOString());
+  console.log("VENDOR API CHECK —", new Date().toISOString());
   console.log("");
   for (const r of results) {
     const ms = r.ms != null ? ` (${r.ms} ms)` : "";
-    console.log(`${r.vendor.padEnd(width)}  ${r.status.padEnd(6)} ${r.detail}${ms}`);
+    console.log(`${r.vendor.padEnd(width)}  ${r.status.padEnd(7)} ${r.detail}${ms}`);
   }
   const ok = results.filter((r) => r.status === "OK").length;
-  const fel = results.filter((r) => r.status === "FEL").length;
-  const saknas = results.filter((r) => r.status === "SAKNAS").length;
+  const fail = results.filter((r) => r.status === "FAIL").length;
+  const missing = results.filter((r) => r.status === "MISSING").length;
   console.log("");
-  console.log(`Summering: ${ok} OK · ${fel} FEL · ${saknas} SAKNAS`);
+  console.log(`Summary: ${ok} OK · ${fail} FAIL · ${missing} MISSING`);
 };
 
 main().catch((error) => {
-  console.error("probe-fel:", error instanceof Error ? error.message : error);
+  console.error("probe error:", error instanceof Error ? error.message : error);
   process.exit(1);
 });

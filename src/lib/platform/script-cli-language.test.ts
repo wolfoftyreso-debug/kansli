@@ -47,10 +47,12 @@ describe("leftover workspace script CLI language", () => {
     expect(noDb.stderr).toContain("Set DATABASE_URL (the app role, not the owner).");
   });
 
-  it("leaves leftover vendor-check and Revolut cert script copy as written", () => {
-    expect(readFileSync("scripts/vendor-check.ts", "utf8")).toContain("nyckeln är giltig");
+  it("leaves leftover Revolut cert script copy and the ping prompt as written", () => {
     expect(readFileSync("scripts/revolut/generate-certificate.sh", "utf8")).toContain(
       "okänt argument:",
+    );
+    expect(readFileSync("scripts/vendor-check.ts", "utf8")).toContain(
+      "Svara med ett enda ord: pong. Inget annat.",
     );
   });
 });
