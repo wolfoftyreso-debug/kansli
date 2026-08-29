@@ -164,7 +164,7 @@ function filledForm(company: string, email: string, orgNumber: string): FormData
 
 async function runFleet(): Promise<{ passed: number; companies: number; failures: string[] }> {
   const stamp = Date.now();
-  if (!APP || !OWNER) throw new Error("DATABASE_URL och PIXDRIFT_DB_OWNER_URL krävs.");
+  if (!APP || !OWNER) throw new Error("DATABASE_URL and PIXDRIFT_DB_OWNER_URL are required.");
   const pool = createPool(APP, { applicationName: "live-fleet", max: 6 });
   const events = new EventLog(pool);
   const reports: CompanyReport[] = [];
@@ -176,7 +176,7 @@ async function runFleet(): Promise<{ passed: number; companies: number; failures
       order by 1`,
   );
   if (schemas.rowCount !== 11) {
-    throw new Error(`saknade scheman: ${schemas.rows.map((r) => r.nspname).join(",")}`);
+    throw new Error(`missing schemas: ${schemas.rows.map((r) => r.nspname).join(",")}`);
   }
 
   for (let i = 0; i < LIMIT; i += 1) {
@@ -202,7 +202,7 @@ async function runFleet(): Promise<{ passed: number; companies: number; failures
       });
       if (!intake.provision?.orgRef || !intake.passwordOnce || !intake.invoice) {
         throw new Error(
-          `provision ofullständig: ${intake.intake.blocked.join("; ") || "saknar konto/faktura"}`,
+          `provision incomplete: ${intake.intake.blocked.join("; ") || "missing account/invoice"}`,
         );
       }
       const orgRef = intake.provision.orgRef;
@@ -469,7 +469,7 @@ async function runFleet(): Promise<{ passed: number; companies: number; failures
           check(
             `ui:${path}`,
             ok,
-            ok ? "visar rätt bolag" : `status ${String(page.status)} saknar ${needle}`,
+            ok ? "shows the right company" : `status ${String(page.status)} is missing ${needle}`,
           ),
         );
       }
@@ -550,7 +550,7 @@ async function runFleet(): Promise<{ passed: number; companies: number; failures
   };
   await mkdir("/opt/cursor/artifacts", { recursive: true });
   await writeFile("/opt/cursor/artifacts/live-fleet-report.json", JSON.stringify(summary, null, 2));
-  console.log(`klar: ${String(summary.passed)}/${String(summary.companies)} bolag helt gröna`);
+  console.log(`done: ${String(summary.passed)}/${String(summary.companies)} companies fully green`);
   return { passed: summary.passed, companies: summary.companies, failures };
 }
 
