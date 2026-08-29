@@ -35,6 +35,7 @@ import { majIsOpen } from "@/lib/maj/access";
 import { listActions, runAnalysis } from "@/lib/maj/engine";
 import { getProject, listProjects } from "@/lib/maj/projects";
 import { decideAction } from "@/lib/maj/releases";
+import { lookupOpsDebug } from "@/lib/platform/ops-debug";
 import { loadOpsSnapshot, opsScopeFor } from "@/lib/platform/ops";
 import { getRuntime } from "@/lib/platform/runtime";
 import { needStore } from "./runtime";
@@ -401,7 +402,8 @@ export function buildPixdriftRegistry(): ToolRegistry {
       idempotent: true,
       rateClass: "read",
       whenToUse: "You need whether this organisation is healthy and what is open.",
-      whenNotToUse: "You need an audit trail — use list_family_events.",
+      whenNotToUse:
+        "You have a request id — use lookup_ops_debug. You need an audit trail — use list_family_events.",
       rest: { method: "GET", path: "/api/platform/ops" },
       handler: async (ctx) => {
         const actor = orgOf(ctx);
@@ -464,6 +466,60 @@ export function buildPixdriftRegistry(): ToolRegistry {
             sms: { vendor: snapshot.sms.vendor, routeCount: snapshot.sms.routes.length },
             queues: snapshot.queues,
           },
+        };
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "lookup_ops_debug",
+      title: "Lookup operations debug",
+      description:
+        "Looks up one request-id or subject in the operations log. Identity fields only — not event payloads or outbox bodies.",
+      system: "kansli",
+      domain: "platform",
+      inputSchema: {
+        type: "object",
+        properties: { q: { type: "string" } },
+        required: ["q"],
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You have a request id and need whether it landed.",
+      whenNotToUse: "You need the snapshot — use get_ops_snapshot.",
+      rest: { method: "GET", path: "/api/platform/ops/debug" },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const scope = opsScopeFor(actor.orgRef);
+        const db = scope === "house" ? getRuntime().pool : pool;
+        const q = typeof input.q === "string" ? input.q.trim() : "";
+        const found = await lookupOpsDebug(db, { q, scope, orgRef: actor.orgRef });
+        return {
+          q: found.q,
+          note: found.note,
+          events: found.events.map((item) => ({
+            id: item.id,
+            at: item.at,
+            system: item.system,
+            kind: item.kind,
+            requestId: item.requestId,
+            subjectRef: item.subjectRef,
+          })),
+          outbox: found.outbox.map((item) => ({
+            source: item.source,
+            id: item.id,
+            status: item.status,
+            createdAt: item.createdAt,
+          })),
         };
       },
     }),

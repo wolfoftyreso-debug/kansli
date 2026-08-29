@@ -71,7 +71,7 @@ OpenAPI 3.1 genereras ur Capability Graph:
 Ingen publik `api.pixdrift.com/v1`. Inte alla REST-ytor sitter i grafen (se §4).
 
 **MCP — PARTIAL.**
-`POST /mcp`, protokoll `2026-07-28`, 36 verktyg i
+`POST /mcp`, protokoll `2026-07-28`, 37 verktyg i
 `src/lib/mcp/tools.ts`. Alla anropar befintliga tjänster.
 Inte alla REST-operationer har verktyg. Ingen L4-kö.
 Rate limit och idempotens är per process.
@@ -139,7 +139,7 @@ ingen syntetisk bevakning av login/MCP/docs. Hemligheter dumpas inte.
 
 ## 4. Capability Graph — frö mot full täckning
 
-Grafen i kod är **bara** de 36 MCP-verktygen.
+Grafen i kod är **bara** de 37 MCP-verktygen.
 Varje verktyg har redan `rest.method` + `rest.path`.
 Det är medvetet: ingen parallell lista.
 
@@ -167,7 +167,7 @@ REST som **finns** men **inte** sitter i grafen än:
 | POST `/api/maj/projects/:id/analyze` | maj | MCP `run_search_analysis` |
 | GET `/api/maj/projects/:id/actions` | maj | MCP `list_search_actions` |
 | POST `/api/maj/actions/:id/decide` | maj | MCP `decide_search_action` |
-| GET `/api/platform/ops/debug` | platform | Request-id-sök utan MCP |
+| GET `/api/platform/ops/debug` | platform | Request-id-sök. MCP `lookup_ops_debug` |
 | GET `/api/platform/ops/alarms` | platform | Cron SMS, inte agentyta |
 | GET `/api/platform/health` | platform | Publik health |
 | GET `/api/platform/ai` | platform | Gateway-ping, inferens |

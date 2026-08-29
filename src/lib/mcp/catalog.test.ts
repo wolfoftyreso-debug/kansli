@@ -11,6 +11,7 @@ describe("MCP catalog contract", () => {
     expect(catalog.tools.length).toBeGreaterThanOrEqual(10);
     const names = catalog.tools.map((tool) => tool.name);
     expect(names).toContain("get_ops_snapshot");
+    expect(names).toContain("lookup_ops_debug");
     expect(names).toContain("create_office_task");
     expect(names).toContain("toggle_office_task");
     expect(names).toContain("delete_office_task");

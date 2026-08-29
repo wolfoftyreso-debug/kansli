@@ -25,6 +25,7 @@ describe("OpenAPI seed", () => {
     expect(openApiPath("/api/maj/projects/:id/actions")).toBe("/api/maj/projects/{id}/actions");
     const spec = buildOpenApiDocument();
     expect(spec.paths["/api/platform/ops"]?.get?.operationId).toBe("get_ops_snapshot");
+    expect(spec.paths["/api/platform/ops/debug"]?.get?.operationId).toBe("lookup_ops_debug");
     expect(spec.paths["/api/kansli/tasks/{id}"]?.patch?.operationId).toBe("toggle_office_task");
     expect(spec.paths["/api/kansli/tasks/{id}"]?.delete?.operationId).toBe("delete_office_task");
     expect(spec.paths["/api/kansli/tasks/{id}"]?.delete?.["x-event"]).toBe("kansli.task.updated");
