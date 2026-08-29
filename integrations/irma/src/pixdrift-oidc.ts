@@ -111,14 +111,15 @@ export function createPixdriftOidc(config: PixdriftClientConfig): PixdriftOidc {
         headers: { "content-type": "application/x-www-form-urlencoded" },
         body,
       });
-      if (!res.ok) throw new Error(`pixdrift token-utbyte ${res.status}`);
+      if (!res.ok) throw new Error(`pixdrift token exchange ${res.status}`);
       const json = (await res.json()) as { id_token: string };
-      if (!jwks) throw new Error("JWKS ej initierad");
+      if (!jwks) throw new Error("JWKS is not initialised");
       const { payload } = await jwtVerify(json.id_token, jwks, {
         issuer: doc.issuer,
         audience: config.clientId,
       });
-      if (expected.nonce && payload.nonce !== expected.nonce) throw new Error("nonce matchar inte");
+      if (expected.nonce && payload.nonce !== expected.nonce)
+        throw new Error("nonce does not match");
       const org = (payload.org ?? null) as PixdriftIdentity["org"];
       return {
         sub: String(payload.sub),

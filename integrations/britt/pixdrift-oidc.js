@@ -104,7 +104,7 @@ function createPixdriftOidc(config) {
     if (claims.iss !== doc.issuer) throw new Error("fel utfärdare");
     const aud = Array.isArray(claims.aud) ? claims.aud : [claims.aud];
     if (!aud.includes(config.clientId)) throw new Error("fel audience");
-    if (nonce && claims.nonce !== nonce) throw new Error("nonce matchar inte");
+    if (nonce && claims.nonce !== nonce) throw new Error("nonce does not match");
     return claims;
   }
 
@@ -145,7 +145,7 @@ function createPixdriftOidc(config) {
         headers: { "content-type": "application/x-www-form-urlencoded" },
         body,
       });
-      if (!res.ok) throw new Error("pixdrift token-utbyte " + res.status);
+      if (!res.ok) throw new Error("pixdrift token exchange " + res.status);
       const json = await res.json();
       const claims = await verifyIdToken(json.id_token, expected.nonce);
       return {

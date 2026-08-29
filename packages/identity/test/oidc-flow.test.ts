@@ -172,7 +172,7 @@ describe("Authorization Code + PKCE flow", () => {
     const code = new URL(result.location!).searchParams.get("code")!;
     await expect(
       oidc.exchangeCode({ code, codeVerifier: generateCodeVerifier(), nonce }),
-    ).rejects.toThrow(/token-utbyte misslyckades/);
+    ).rejects.toThrow(/Token exchange failed/);
   });
 
   it("does not allow an authorization code to be used twice", async () => {

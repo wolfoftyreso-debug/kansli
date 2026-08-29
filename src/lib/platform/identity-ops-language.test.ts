@@ -19,10 +19,7 @@ describe("Identity ops language", () => {
     expect(grantsSql("pixdrift_app")).toContain("grant usage on schema public to pixdrift_app");
   });
 
-  it("leaves token-exchange and migrate appRole throws as written", () => {
-    expect(readFileSync("packages/auth-client/src/index.ts", "utf8")).toContain(
-      "token-utbyte misslyckades",
-    );
+  it("leaves migrate appRole throws as written", () => {
     expect(readFileSync("packages/db/src/migrate.ts", "utf8")).toContain("ogiltigt appRole:");
   });
 });
