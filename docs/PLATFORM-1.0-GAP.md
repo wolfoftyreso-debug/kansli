@@ -248,7 +248,7 @@ MCP-health och `server/discover` är inte samma sak som
 | Check | Resultat | Bevis |
 | --- | --- | --- |
 | Crawlbar HTML | PARTIAL | App Router-sidor. Docs är serverrenderade. |
-| Indexerbar | PARTIAL | robots tillåter sajt, blockerar apprum + `/platform` + `/api/`. HTML `noindex` på samma rum plus gästlänk och bekräftelse |
+| Indexerbar | PARTIAL | robots tillåter sajt, blockerar apprum + `/platform` + `/api/`. HTML `noindex` på samma rum plus gästlänk, bekräftelse och leftover 404 |
 | Canonical | PARTIAL | per-sida ur `PUBLIC_SITEMAP_PATHS` plus `/systems/{slug}`. Inga locale-URL:er |
 | hreflang | MISSING | — |
 | Sitemap | PARTIAL | MCP-docsidor ur `MCP_DOC_LINKS` plus `/systems/{slug}` |
