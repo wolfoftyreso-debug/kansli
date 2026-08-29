@@ -1519,6 +1519,34 @@ export const SV: Record<MessageKey, string> = {
     "Ett jobb per system. TORA tar upphandlingar. RITA tar skatt. Samma inloggning överallt.",
   "site.systems.open": "Öppna",
 
+  "site.doc.metaTitle": "Dokumentation — PIXDRIFT",
+  "site.doc.metaDescription":
+    "Strukturerad dokumentation för PIXDRIFT-system: översikt, begrepp, komma igång, arbetsflöden, integrationer, teknisk referens, säkerhet och versionsanteckningar.",
+  "site.doc.eyebrow": "Dokumentation",
+  "site.doc.title": "Dokumentationen är en del av produkten.",
+  "site.doc.intro":
+    "Varje system länkar in i samma strukturerade dokumentationsmiljö, med samma form så att informationen alltid sitter där ni väntar er den.",
+  "site.doc.mcpBlurb":
+    "Agenter använder MCP. Applikationer använder REST. Båda anropar samma domäntjänster.",
+  "site.doc.mcpDocs": "MCP-dokumentation",
+  "site.doc.capabilityGraph": "Capability Graph",
+  "site.doc.rest": "REST",
+  "site.doc.perSystem": "Struktur per system",
+  "site.doc.area.overview": "Översikt",
+  "site.doc.area.concepts": "Begrepp",
+  "site.doc.area.gettingStarted": "Komma igång",
+  "site.doc.area.workflows": "Arbetsflöden",
+  "site.doc.area.integrations": "Integrationer",
+  "site.doc.area.technical": "Teknisk referens",
+  "site.doc.area.security": "Säkerhet",
+  "site.doc.area.releaseNotes": "Versionsanteckningar",
+  "site.doc.systems": "System",
+  "site.doc.coverage":
+    "Dokumentationstäckning följs som en maskinläsbar matris; kapabiliteter som inte är dokumenterade ännu rapporteras i stället för att antas klara.",
+  "site.doc.terminology": "Terminologi",
+  "site.doc.terminologyIntro":
+    "Ett styrt ordförråd i alla system. Engelska är kanonisk; översättningar härleds från den så att termer inte driver isär mellan produkter.",
+
   "site.catalog.identity.purpose": "En inloggning till alla system.",
   "site.catalog.identity.category": "Inloggning",
   "site.catalog.identity.summary":

@@ -1521,6 +1521,33 @@ export const NO: Record<MessageKey, string> = {
     "One job per system. TORA takes procurement. RITA takes tax. The same sign-in everywhere.",
   "site.systems.open": "Open",
 
+  "site.doc.metaTitle": "Documentation — PIXDRIFT",
+  "site.doc.metaDescription":
+    "Structured documentation for PIXDRIFT systems: overview, concepts, getting started, workflows, integrations, technical reference, security and release notes.",
+  "site.doc.eyebrow": "Documentation",
+  "site.doc.title": "Documentation is part of the product.",
+  "site.doc.intro":
+    "Every system links into the same structured documentation environment, with a consistent shape so information is always where you expect it.",
+  "site.doc.mcpBlurb": "Agents use MCP. Applications use REST. Both call the same domain services.",
+  "site.doc.mcpDocs": "MCP documentation",
+  "site.doc.capabilityGraph": "Capability Graph",
+  "site.doc.rest": "REST",
+  "site.doc.perSystem": "Per-system structure",
+  "site.doc.area.overview": "Overview",
+  "site.doc.area.concepts": "Concepts",
+  "site.doc.area.gettingStarted": "Getting started",
+  "site.doc.area.workflows": "Workflows",
+  "site.doc.area.integrations": "Integrations",
+  "site.doc.area.technical": "Technical reference",
+  "site.doc.area.security": "Security",
+  "site.doc.area.releaseNotes": "Release notes",
+  "site.doc.systems": "Systems",
+  "site.doc.coverage":
+    "Documentation coverage is tracked as a machine-readable matrix; capabilities that are not yet documented are reported rather than assumed complete.",
+  "site.doc.terminology": "Terminology",
+  "site.doc.terminologyIntro":
+    "One controlled vocabulary across every system. English is canonical; translations derive from it so terms do not drift between products.",
+
   "site.catalog.identity.purpose": "One sign-in for every system.",
   "site.catalog.identity.category": "Sign-in",
   "site.catalog.identity.summary":

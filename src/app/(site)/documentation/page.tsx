@@ -1,72 +1,74 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { systems } from "@/lib/pixdrift/systems";
 import { terminology } from "@/lib/pixdrift/terminology";
 import { Container } from "@/components/site/Container";
 import { SectionHeading } from "@/components/site/SectionHeading";
+import { t, type MessageKey } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 
-export const metadata: Metadata = {
-  title: "Documentation — PIXDRIFT",
-  description:
-    "Structured documentation for PIXDRIFT systems: overview, concepts, getting started, workflows, integrations, technical reference, security and release notes.",
-};
+const DOC_AREAS = [
+  "overview",
+  "concepts",
+  "gettingStarted",
+  "workflows",
+  "integrations",
+  "technical",
+  "security",
+  "releaseNotes",
+] as const;
 
-const areas = [
-  "Overview",
-  "Concepts",
-  "Getting started",
-  "Workflows",
-  "Integrations",
-  "Technical reference",
-  "Security",
-  "Release notes",
-];
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "site.doc.metaTitle"),
+    description: t(locale, "site.doc.metaDescription"),
+  };
+}
 
-export default function DocumentationPage() {
+export default async function DocumentationPage() {
+  const locale = await readLocale();
   return (
     <Container>
       <SectionHeading
         as="h1"
-        eyebrow="Documentation"
-        title="Documentation is part of the product."
-        intro="Every system links into the same structured documentation environment, with a consistent shape so information is always where you expect it."
+        eyebrow={t(locale, "site.doc.eyebrow")}
+        title={t(locale, "site.doc.title")}
+        intro={t(locale, "site.doc.intro")}
       />
 
       <div className="mt-10 border border-line bg-surface p-6">
-        <p className="pd-label">MCP</p>
-        <p className="mt-2 max-w-2xl text-ink-soft">
-          Agents use MCP. Applications use REST. Both call the same domain services.
-        </p>
+        <p className="pd-label">{t(locale, "site.catalog.spec.mcp")}</p>
+        <p className="mt-2 max-w-2xl text-ink-soft">{t(locale, "site.doc.mcpBlurb")}</p>
         <p className="mt-4 flex flex-wrap gap-4">
           <Link href="/documentation/mcp" className="underline decoration-line underline-offset-4">
-            MCP documentation
+            {t(locale, "site.doc.mcpDocs")}
           </Link>
           <Link
             href="/documentation/capabilities"
             className="underline decoration-line underline-offset-4"
           >
-            Capability Graph
+            {t(locale, "site.doc.capabilityGraph")}
           </Link>
           <Link href="/documentation/rest" className="underline decoration-line underline-offset-4">
-            REST
+            {t(locale, "site.doc.rest")}
           </Link>
         </p>
       </div>
 
       <div className="mt-14 grid grid-cols-1 gap-12 lg:grid-cols-[1fr_1.4fr]">
         <div>
-          <p className="pd-label">Per-system structure</p>
+          <p className="pd-label">{t(locale, "site.doc.perSystem")}</p>
           <ul className="mt-4 border-t border-line">
-            {areas.map((a) => (
-              <li key={a} className="border-b border-line py-3 text-ink">
-                {a}
+            {DOC_AREAS.map((area) => (
+              <li key={area} className="border-b border-line py-3 text-ink">
+                {t(locale, `site.doc.area.${area}` as MessageKey)}
               </li>
             ))}
           </ul>
         </div>
 
         <div>
-          <p className="pd-label">Systems</p>
+          <p className="pd-label">{t(locale, "site.doc.systems")}</p>
           <div className="mt-4 grid grid-cols-1 gap-px border border-line bg-line sm:grid-cols-2">
             {systems.map((s) => (
               <Link
@@ -79,29 +81,23 @@ export default function DocumentationPage() {
               </Link>
             ))}
           </div>
-          <p className="mt-6 max-w-xl text-sm text-muted">
-            Documentation coverage is tracked as a machine-readable matrix; capabilities that are
-            not yet documented are reported rather than assumed complete.
-          </p>
+          <p className="mt-6 max-w-xl text-sm text-muted">{t(locale, "site.doc.coverage")}</p>
         </div>
       </div>
 
       {/* Controlled terminology (doctrine §15) */}
       <div className="mt-24">
-        <p className="pd-label">Terminology</p>
-        <p className="mt-4 max-w-2xl text-ink-soft">
-          One controlled vocabulary across every system. English is canonical; translations derive
-          from it so terms do not drift between products.
-        </p>
+        <p className="pd-label">{t(locale, "site.doc.terminology")}</p>
+        <p className="mt-4 max-w-2xl text-ink-soft">{t(locale, "site.doc.terminologyIntro")}</p>
         <dl className="mt-8 border-t border-line">
-          {terminology.map((t) => (
+          {terminology.map((item) => (
             <div
-              key={t.term}
+              key={item.term}
               className="grid grid-cols-1 gap-2 border-b border-line py-5 md:grid-cols-[12rem_1fr] md:gap-10"
             >
-              <dt className="font-medium text-ink">{t.term}</dt>
+              <dt className="font-medium text-ink">{item.term}</dt>
               <dd className="max-w-2xl text-ink-soft">
-                {t.definition} <span className="text-muted">{t.context}</span>
+                {item.definition} <span className="text-muted">{item.context}</span>
               </dd>
             </div>
           ))}
