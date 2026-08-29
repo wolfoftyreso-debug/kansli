@@ -35,6 +35,8 @@ import { majIsOpen } from "@/lib/maj/access";
 import { listActions, runAnalysis } from "@/lib/maj/engine";
 import { getProject, listProjects } from "@/lib/maj/projects";
 import { decideAction } from "@/lib/maj/releases";
+import { loadOpsSnapshot, opsScopeFor } from "@/lib/platform/ops";
+import { getRuntime } from "@/lib/platform/runtime";
 import { needStore } from "./runtime";
 
 function orgOf(ctx: McpRuntime): Actor & { orgRef: string } {
@@ -377,6 +379,92 @@ export function buildPixdriftRegistry(): ToolRegistry {
           })),
           input,
         );
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "get_ops_snapshot",
+      title: "Get operations snapshot",
+      description:
+        "Returns the operations snapshot for the authenticated organisation. Identity counts and health flags only — not SMS routes, outbox bodies or debug dumps.",
+      system: "kansli",
+      domain: "platform",
+      inputSchema: { type: "object", properties: {}, additionalProperties: false },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need whether this organisation is healthy and what is open.",
+      whenNotToUse: "You need an audit trail — use list_family_events.",
+      rest: { method: "GET", path: "/api/platform/ops" },
+      handler: async (ctx) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const scope = opsScopeFor(actor.orgRef);
+        const db = scope === "house" ? getRuntime().pool : pool;
+        const snapshot = await loadOpsSnapshot(db, {
+          orgRef: actor.orgRef,
+          orgName: actor.orgName,
+          scope,
+        });
+        return {
+          snapshot: {
+            takenAt: snapshot.takenAt,
+            scope: snapshot.scope,
+            orgRef: snapshot.orgRef,
+            orgName: snapshot.orgName,
+            runtime: snapshot.runtime,
+            hardened: snapshot.hardened,
+            health: {
+              database: snapshot.health.database,
+              gatewayConfigured: snapshot.health.gateway.configured,
+              ritaAvailable: snapshot.health.rita.available,
+              sms: snapshot.health.sms,
+              tts: snapshot.health.tts,
+              credit: snapshot.health.credit,
+              webintel: snapshot.health.webintel,
+              revolutConfigured: snapshot.health.revolut.configured,
+              mcp: {
+                requests: snapshot.health.mcp.mcp_requests_total,
+                toolCalls: snapshot.health.mcp.mcp_tool_calls_total,
+                toolErrors: snapshot.health.mcp.mcp_tool_errors_total,
+              },
+            },
+            identity: snapshot.identity,
+            events: snapshot.events.map((item) => ({
+              system: item.system,
+              count: item.count,
+              lastAt: item.lastAt,
+            })),
+            readiness: {
+              pilotOfferable: snapshot.readiness.pilotOfferable,
+              allSystemsReady: snapshot.readiness.allSystemsReady,
+              blockedGates: snapshot.readiness.gates.filter((gate) => gate.state === "blocked")
+                .length,
+            },
+            ledger: {
+              openCount: snapshot.ledger.openCount,
+              overdueCount: snapshot.ledger.overdueCount,
+              notDueOre: snapshot.ledger.notDueOre,
+              overdueOre: snapshot.ledger.overdueOre,
+            },
+            support: {
+              open: snapshot.support.open,
+              observations: snapshot.support.observations,
+              tasks: snapshot.support.tasks,
+              cases: snapshot.support.cases,
+              intakes: snapshot.support.intakes,
+            },
+            sms: { vendor: snapshot.sms.vendor, routeCount: snapshot.sms.routes.length },
+            queues: snapshot.queues,
+          },
+        };
       },
     }),
   );

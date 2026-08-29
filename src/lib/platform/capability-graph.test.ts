@@ -12,7 +12,7 @@ describe("capability graph seed", () => {
       tools.map((tool) => tool.name).sort(),
     );
     expect(graph.capabilities).toHaveLength(tools.length);
-    expect(graph.capabilities.length).toBe(35);
+    expect(graph.capabilities.length).toBe(36);
   });
 
   it("keeps REST bindings on every registered tool", () => {
@@ -53,6 +53,12 @@ describe("capability graph seed", () => {
       path: "/api/kansli/tasks/:id",
     });
     expect(byId.list_office_tasks.interfaces.event).toBeNull();
+    expect(byId.get_ops_snapshot.product).toBe("kansli");
+    expect(byId.get_ops_snapshot.interfaces.event).toBeNull();
+    expect(byId.get_ops_snapshot.interfaces.rest).toEqual({
+      method: "GET",
+      path: "/api/platform/ops",
+    });
     expect(byId.get_ledger_invoice.product).toBe("ekonomi");
     expect(byId.get_ledger_invoice.interfaces.event).toBeNull();
     expect(byId.get_ledger_invoice.interfaces.rest).toEqual({
