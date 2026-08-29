@@ -9,7 +9,7 @@ export function SignInGate({
 }: {
   next: AppNextPath;
   title: string;
-  actionLabel?: string;
+  actionLabel: string;
   children: ReactNode;
 }) {
   return (
@@ -20,7 +20,7 @@ export function SignInGate({
         href={`/api/auth/login?next=${encodeURIComponent(next)}`}
         className="mt-4 inline-flex bg-ink px-4 py-2 text-sm font-medium text-paper hover:bg-ink-soft"
       >
-        {actionLabel ?? "Sign in"}
+        {actionLabel}
       </a>
     </section>
   );
