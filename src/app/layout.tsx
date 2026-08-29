@@ -1,9 +1,15 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import { DEFAULT_LOCALE, localeTag, t } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
+import { COLOR_SCHEME, PAPER_HEX } from "@/lib/platform/theme-chrome";
 import "./globals.css";
+
+export const viewport: Viewport = {
+  themeColor: PAPER_HEX,
+  colorScheme: COLOR_SCHEME,
+};
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
