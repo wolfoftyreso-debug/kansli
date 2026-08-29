@@ -184,6 +184,8 @@ describe("locale registry", () => {
     );
     expect(t("sv", "site.doc.mcp.tools.title")).toBe("Genererad från registret");
     expect(t("sv", "site.doc.rest.title")).toBe("En graf. Två gränssnitt.");
+    expect(t("sv", "site.why.title")).toBe("Varför PIXDRIFT finns");
+    expect(t("sv", "site.how.title")).toBe("En metod, inte en plattform.");
     expect(t("en", "tyra.case.workCard")).toBe("Work card");
     expect(t("sv", "tyra.case.next")).toBe("Nästa");
     expect(t("en", "tora.doc.whyBidDefault")).toBe(

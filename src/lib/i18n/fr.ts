@@ -1626,6 +1626,35 @@ export const FR: Record<MessageKey, string> = {
     "This page is generated from the MCP registry. If a capability is missing here, it is not registered. NORA, MOVA and SAGA are not in this repository.",
   "site.doc.graph.source": "Source {source} · {count} capabilities · JSON",
 
+  "site.why.metaTitle": "Why PIXDRIFT exists — PIXDRIFT",
+  "site.why.metaDescription":
+    "Software environments have become increasingly capable while becoming increasingly fragmented. PIXDRIFT builds the smaller, precise pieces that connect what already exists.",
+  "site.why.eyebrow": "Philosophy",
+  "site.why.title": "Why PIXDRIFT exists",
+  "site.why.intro":
+    "Software environments have become increasingly capable while, at the same time, becoming increasingly fragmented.",
+  "site.applications.metaTitle": "Applications — PIXDRIFT",
+  "site.applications.metaDescription":
+    "Where the spaces between systems matter most: environments that run many capable platforms and still depend on the connections between them.",
+  "site.applications.eyebrow": "Applications",
+  "site.applications.title": "Where the in-between matters.",
+  "site.applications.intro":
+    "PIXDRIFT is built for environments that already run capable systems and still depend on the operational gaps between them.",
+  "site.how.metaTitle": "How it works — PIXDRIFT",
+  "site.how.metaDescription":
+    "PIXDRIFT identifies a specific operational gap between larger systems and builds narrowly focused software around it — coexisting with existing infrastructure.",
+  "site.how.eyebrow": "How it works",
+  "site.how.title": "A method, not a platform.",
+  "site.how.intro":
+    "PIXDRIFT solves concrete problems. Not digital transformation — specific operational gaps, addressed one system at a time.",
+  "site.company.metaTitle": "Company — PIXDRIFT",
+  "site.company.metaDescription":
+    "{name} is developed by {company}, operating from Stockholm, Sweden and Houston, Texas.",
+  "site.company.eyebrow": "Company",
+  "site.company.title": "{name} is developed by {company}.",
+  "site.company.intro":
+    "{company} develops software around practical problems affecting organizations, infrastructure and society.",
+
   "site.catalog.identity.purpose": "One sign-in for every system.",
   "site.catalog.identity.category": "Sign-in",
   "site.catalog.identity.summary":

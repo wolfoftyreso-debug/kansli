@@ -1,12 +1,7 @@
-import type { Metadata } from "next";
 import { Container } from "@/components/site/Container";
 import { SectionHeading } from "@/components/site/SectionHeading";
-
-export const metadata: Metadata = {
-  title: "Applications — PIXDRIFT",
-  description:
-    "Where the spaces between systems matter most: environments that run many capable platforms and still depend on the connections between them.",
-};
+import { t } from "@/lib/i18n";
+import { readLocale } from "@/lib/i18n/request";
 
 const sectors = [
   {
@@ -31,14 +26,23 @@ const sectors = [
   },
 ];
 
-export default function ApplicationsPage() {
+export async function generateMetadata() {
+  const locale = await readLocale();
+  return {
+    title: t(locale, "site.applications.metaTitle"),
+    description: t(locale, "site.applications.metaDescription"),
+  };
+}
+
+export default async function ApplicationsPage() {
+  const locale = await readLocale();
   return (
     <Container>
       <SectionHeading
         as="h1"
-        eyebrow="Applications"
-        title="Where the in-between matters."
-        intro="PIXDRIFT is built for environments that already run capable systems and still depend on the operational gaps between them."
+        eyebrow={t(locale, "site.applications.eyebrow")}
+        title={t(locale, "site.applications.title")}
+        intro={t(locale, "site.applications.intro")}
       />
       <div className="mt-14 border-t border-line">
         {sectors.map((s) => (

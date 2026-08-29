@@ -1601,6 +1601,35 @@ export const SV: Record<MessageKey, string> = {
     "Den här sidan genereras från MCP-registret. Saknas en kapabilitet här är den inte registrerad. NORA, MOVA och SAGA finns inte i det här arkivet.",
   "site.doc.graph.source": "Källa {source} · {count} kapabiliteter · JSON",
 
+  "site.why.metaTitle": "Varför PIXDRIFT finns — PIXDRIFT",
+  "site.why.metaDescription":
+    "Programvarumiljöer har blivit allt mer kapabla och samtidigt allt mer fragmenterade. PIXDRIFT bygger de mindre, precisa bitarna som kopplar ihop det som redan finns.",
+  "site.why.eyebrow": "Filosofi",
+  "site.why.title": "Varför PIXDRIFT finns",
+  "site.why.intro":
+    "Programvarumiljöer har blivit allt mer kapabla och samtidigt allt mer fragmenterade.",
+  "site.applications.metaTitle": "Applikationer — PIXDRIFT",
+  "site.applications.metaDescription":
+    "Där mellanrummen mellan system spelar mest roll: miljöer som kör många kapabla plattformar och ändå beror på kopplingarna mellan dem.",
+  "site.applications.eyebrow": "Applikationer",
+  "site.applications.title": "Där mellanrummet spelar roll.",
+  "site.applications.intro":
+    "PIXDRIFT är byggt för miljöer som redan kör kapabla system och ändå beror på de operativa luckorna mellan dem.",
+  "site.how.metaTitle": "Så fungerar det — PIXDRIFT",
+  "site.how.metaDescription":
+    "PIXDRIFT identifierar en specifik operativ lucka mellan större system och bygger smalt fokuserad programvara kring den — som samexisterar med befintlig infrastruktur.",
+  "site.how.eyebrow": "Så fungerar det",
+  "site.how.title": "En metod, inte en plattform.",
+  "site.how.intro":
+    "PIXDRIFT löser konkreta problem. Inte digital transformation — specifika operativa luckor, ett system i taget.",
+  "site.company.metaTitle": "Bolag — PIXDRIFT",
+  "site.company.metaDescription":
+    "{name} utvecklas av {company}, med verksamhet i Stockholm, Sverige och Houston, Texas.",
+  "site.company.eyebrow": "Bolag",
+  "site.company.title": "{name} utvecklas av {company}.",
+  "site.company.intro":
+    "{company} utvecklar programvara kring praktiska problem som påverkar organisationer, infrastruktur och samhälle.",
+
   "site.catalog.identity.purpose": "En inloggning till alla system.",
   "site.catalog.identity.category": "Inloggning",
   "site.catalog.identity.summary":
