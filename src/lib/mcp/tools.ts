@@ -25,6 +25,7 @@ import {
   parseIntent,
   parseOperations,
 } from "@/lib/tyra/cases";
+import { listOutbox } from "@/lib/tyra/reminders";
 import { createCase as createAlvaCase, listCases as listAlvaCases } from "@/lib/alva/cases";
 import {
   createInquiry as createCreditaeInquiry,
@@ -1302,6 +1303,48 @@ export function buildPixdriftRegistry(): ToolRegistry {
             })),
           },
         };
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "list_vehicle_reminders",
+      title: "List vehicle reminders",
+      description:
+        "Lists TYRA reminder outbox rows for the authenticated organisation. Identity fields only — not recipient, subject or SMS body. Does not queue or send.",
+      system: "tyra",
+      domain: "workshop",
+      inputSchema: {
+        type: "object",
+        properties: { limit: { type: "integer" }, cursor: { type: "string" } },
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need queued workshop reminders.",
+      whenNotToUse: "You want to store a case — use create_vehicle_case.",
+      rest: { method: "GET", path: "/api/tyra/reminders" },
+      flags: readFlags(true),
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const rows = await listOutbox(pool, actor.orgRef);
+        return page(
+          rows.map((item) => ({
+            id: item.id,
+            channel: item.channel,
+            status: item.status,
+            createdAt: item.createdAt,
+          })),
+          input,
+        );
       },
     }),
   );

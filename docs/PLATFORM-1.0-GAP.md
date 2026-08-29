@@ -71,7 +71,7 @@ OpenAPI 3.1 genereras ur Capability Graph:
 Ingen publik `api.pixdrift.com/v1`. Inte alla REST-ytor sitter i grafen (se §4).
 
 **MCP — PARTIAL.**
-`POST /mcp`, protokoll `2026-07-28`, 34 verktyg i
+`POST /mcp`, protokoll `2026-07-28`, 35 verktyg i
 `src/lib/mcp/tools.ts`. Alla anropar befintliga tjänster.
 Inte alla REST-operationer har verktyg. Ingen L4-kö.
 Rate limit och idempotens är per process.
@@ -139,7 +139,7 @@ ingen syntetisk bevakning av login/MCP/docs. Hemligheter dumpas inte.
 
 ## 4. Capability Graph — frö mot full täckning
 
-Grafen i kod är **bara** de 34 MCP-verktygen.
+Grafen i kod är **bara** de 35 MCP-verktygen.
 Varje verktyg har redan `rest.method` + `rest.path`.
 Det är medvetet: ingen parallell lista.
 
@@ -157,7 +157,7 @@ REST som **finns** men **inte** sitter i grafen än:
 | GET/POST `/api/irma/l/:token` | irma | Gästlänk, medvetet utan agent |
 | GET `/api/tyra/cases` | tyra | Lista. MCP `list_vehicle_cases` |
 | POST `/api/tyra/hub/link` | tyra | Hubblänk utan MCP |
-| GET `/api/tyra/reminders` | tyra | Outbox utan MCP |
+| GET `/api/tyra/reminders` | tyra | Outbox. MCP `list_vehicle_reminders` |
 | POST `/api/tyra/suppliers/search` | tyra | Returnerar `NOT_CONFIGURED` |
 | GET `/api/tyra/cron/reminders` | tyra | Cron, inte agentyta |
 | GET `/api/alva/cases` | alva | Lista. MCP `list_diagnostic_cases` |
