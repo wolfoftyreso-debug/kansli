@@ -22,7 +22,7 @@ export default async function TyraHubPage({ params }: { params: Promise<{ token:
   const locale = await readLocale();
   const runtime = tryRuntime();
   if (!runtime) notFound();
-  const view = await getHubViewByToken(runtime.pool, token);
+  const view = await getHubViewByToken(runtime.pool, token, locale);
   if (!view) notFound();
 
   const vehicleLabel = view.vehicle

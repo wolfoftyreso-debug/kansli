@@ -1385,6 +1385,12 @@ export const DE: Record<MessageKey, string> = {
   "tyra.hub.noStorage": "No storage place is saved yet.",
   "tyra.hub.tread": "Tread depth {mm} mm",
   "tyra.hub.footer": "No account. No live prices. Only what the workshop has verified.",
+  "tyra.hub.note.noVehicle": "No vehicle is linked yet.",
+  "tyra.hub.note.actionNeeded":
+    "Action needed — the workshop has marked that the tires are not in good condition.",
+  "tyra.hub.note.followUp": "Something needs a follow-up at the next visit.",
+  "tyra.hub.note.noInspection": "No verified inspection yet. No measurements are shown.",
+  "tyra.hub.note.clear": "No warnings from the latest verified inspection.",
 
   "rita.formTitle": "New analysis",
   "rita.orgWrong": "The organisation number does not check out. Check the digits.",

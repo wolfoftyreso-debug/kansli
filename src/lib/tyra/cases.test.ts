@@ -101,7 +101,7 @@ live("TYRA cases + hub (live Postgres)", () => {
     expect(view?.customerName).toBe("Anna Andersson");
     expect(view?.vehicle?.registrationNumber).toBe("ABC123");
     expect(view?.positions).toEqual([]);
-    expect(view?.commercialNote).toMatch(/ingen verifierad inspektion/i);
+    expect(view?.commercialNote).toMatch(/no verified inspection/i);
 
     const issued = await events.list({ orgRef, kind: "tyra.hub.link.issued" });
     expect(issued).toHaveLength(1);

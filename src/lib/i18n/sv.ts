@@ -1365,6 +1365,12 @@ export const SV: Record<MessageKey, string> = {
   "tyra.hub.noStorage": "Ingen lagerplats är sparad ännu.",
   "tyra.hub.tread": "Mönsterdjup {mm} mm",
   "tyra.hub.footer": "Inget konto. Inga live-priser. Bara det verkstaden har verifierat.",
+  "tyra.hub.note.noVehicle": "Inget fordon är kopplat ännu.",
+  "tyra.hub.note.actionNeeded":
+    "Åtgärd behövs — verkstaden har markerat att däcken inte är i gott skick.",
+  "tyra.hub.note.followUp": "Något behöver följas upp vid nästa besök.",
+  "tyra.hub.note.noInspection": "Ingen verifierad inspektion finns ännu. Inga mätvärden visas.",
+  "tyra.hub.note.clear": "Inga varningar från den senaste verifierade inspektionen.",
 
   "rita.formTitle": "Ny analys",
   "rita.orgWrong": "Organisationsnumret stämmer inte. Kontrollera siffrorna.",
