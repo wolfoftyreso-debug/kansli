@@ -4,19 +4,12 @@ import { AppShell } from "@/components/app/AppShell";
 import { ProductCrumb } from "@/components/app/ProductCrumb";
 import { Notice } from "@/components/app/SignInGate";
 import { readSession } from "@/lib/auth/session";
-import { t, toraReqStatus, type Locale } from "@/lib/i18n";
+import { t, toraEvalKind, toraReqStatus, toraTiming, type Locale } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
 import { tryRuntime } from "@/lib/platform/page";
 import { loadToraOpportunity, resolveViewTier } from "@/lib/tora/market";
 import { resolveCompany } from "@/lib/tora/profile";
-import {
-  displayField,
-  evaluationKindText,
-  legalBasisText,
-  sek,
-  timingText,
-  verdictText,
-} from "@/lib/tora/view";
+import { displayField, legalBasisText, sek, verdictText } from "@/lib/tora/view";
 
 export async function generateMetadata() {
   const locale = await readLocale();
@@ -49,7 +42,7 @@ export default async function ToraOpportunityPage({ params }: { params: Promise<
         <h1 className="text-3xl font-semibold tracking-tight">{displayField(view.title)}</h1>
         <p className="text-ink-soft">{displayField(view.organizationName)}</p>
         <p className="font-mono text-xs text-faint">
-          {view.scoreBand} · {view.organizationKindHint} · {timingText(view.timing)}
+          {view.scoreBand} · {view.organizationKindHint} · {toraTiming(locale, view.timing)}
         </p>
       </header>
 
@@ -251,7 +244,7 @@ function EvaluationBlock({
   return (
     <section className="flex flex-col gap-2">
       <h2 className="text-lg font-semibold">{t(locale, "tora.doc.evaluation")}</h2>
-      <p className="text-sm text-ink-soft">{evaluationKindText(evaluation.kind)}</p>
+      <p className="text-sm text-ink-soft">{toraEvalKind(locale, evaluation.kind)}</p>
       {evaluation.criteria.length > 0 ? (
         <ul className="flex flex-col gap-2">
           {evaluation.criteria.map((criterion) => (

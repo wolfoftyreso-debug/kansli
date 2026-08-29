@@ -1666,4 +1666,12 @@ export const SV: Record<MessageKey, string> = {
 
   "tyra.case.workCard": "Arbetskort",
   "tyra.case.next": "Nästa",
+
+  "tora.timing.open_now": "Öppen nu",
+  "tora.timing.upcoming": "Kommande",
+  "tora.timing.watch": "Bevakning",
+  "tora.timing.closed": "Stängd",
+  "tora.eval.lowest_price": "Lägsta pris",
+  "tora.eval.best_price_quality_ratio": "Bästa förhållandet mellan pris och kvalitet",
+  "tora.eval.fixed_price_best_quality": "Fast pris, bästa kvalitet",
 };

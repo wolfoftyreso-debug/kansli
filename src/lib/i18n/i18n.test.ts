@@ -28,7 +28,9 @@ import {
   ritaFindingStatus,
   t,
   toraCalKind,
+  toraEvalKind,
   toraReqStatus,
+  toraTiming,
   tyraCaseStatus,
   tyraIntentLabel,
   tyraStepStatus,
@@ -173,6 +175,9 @@ describe("locale registry", () => {
     );
     expect(t("en", "tyra.case.workCard")).toBe("Work card");
     expect(t("sv", "tyra.case.next")).toBe("Nästa");
+    expect(toraTiming("en", "open_now")).toBe("Open now");
+    expect(toraTiming("sv", "closed")).toBe("Stängd");
+    expect(toraEvalKind("en", "lowest_price")).toBe("Lowest price");
     expect(toraReqStatus("en", "met")).toBe("Met");
     expect(toraReqStatus("sv", "remediable")).toBe("Går att fixa");
     expect(t("en", "platform.rita.rulesModel")).toBe("RITA · rules + model");

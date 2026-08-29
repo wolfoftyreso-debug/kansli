@@ -1682,4 +1682,12 @@ export const NL: Record<MessageKey, string> = {
 
   "tyra.case.workCard": "Work card",
   "tyra.case.next": "Next",
+
+  "tora.timing.open_now": "Open now",
+  "tora.timing.upcoming": "Upcoming",
+  "tora.timing.watch": "Watch",
+  "tora.timing.closed": "Closed",
+  "tora.eval.lowest_price": "Lowest price",
+  "tora.eval.best_price_quality_ratio": "Best price-quality ratio",
+  "tora.eval.fixed_price_best_quality": "Fixed price, best quality",
 };
