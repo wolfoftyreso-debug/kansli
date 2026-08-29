@@ -16,7 +16,7 @@ export async function requireOrgAction(
   const session = await readSession();
   if (!session?.org?.ref) redirect(`/api/auth/login?next=${encodeURIComponent(dest)}`);
   if (permission && !hasPermission(session.org.permissions ?? [], permission)) {
-    throw new Error(`Saknar behörighet ${permission}.`);
+    throw new Error(`Missing permission ${permission}.`);
   }
   return { session: session as OrgActionContext["session"], ...runtimeForOrg(session.org.ref) };
 }

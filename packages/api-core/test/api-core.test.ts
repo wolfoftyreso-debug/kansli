@@ -29,12 +29,14 @@ describe("ApiError", () => {
 
 describe("authz", () => {
   it("requires an organisation", () => {
-    expect(() => requireOrg({ ...actor, orgRef: null })).toThrow(ApiError);
+    expect(() => requireOrg({ ...actor, orgRef: null })).toThrow(
+      /No active organisation in the session/,
+    );
     expect(requireOrg(actor).orgRef).toBe(actor.orgRef);
   });
 
   it("checks permissions including wildcards", () => {
-    expect(() => requirePermission(actor, "scan:run")).toThrow(/Saknar/);
+    expect(() => requirePermission(actor, "scan:run")).toThrow(/Missing permission scan:run/);
     expect(requirePermission(actor, "scan:read").sub).toBe(actor.sub);
     expect(requirePermission({ ...actor, permissions: ["scan:*"] }, "scan:run").sub).toBe(
       actor.sub,

@@ -19,8 +19,8 @@ export function getRuntime(): PlatformRuntime {
   if (!url) {
     throw new ApiError(
       "not_ready",
-      "Databasen är inte konfigurerad.",
-      "Sätt DATABASE_URL för app-rollen.",
+      "The database is not configured.",
+      "Set DATABASE_URL for the app role.",
     );
   }
   const pool = createPool(url, { applicationName: "kansli", max: 8, statementTimeoutMs: 15_000 });
