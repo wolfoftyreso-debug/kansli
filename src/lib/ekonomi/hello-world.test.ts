@@ -96,7 +96,7 @@ live("ekonomi hello-world (live Postgres)", () => {
       rail: "stripe",
     });
     expect(stripeOffer.status).toBe("blocked");
-    expect(stripeOffer.note).toMatch(/Stripe är inte inkopplat/);
+    expect(stripeOffer.note).toMatch(/Stripe is not connected/);
 
     const first = await recordReceivedPayment({
       pool,

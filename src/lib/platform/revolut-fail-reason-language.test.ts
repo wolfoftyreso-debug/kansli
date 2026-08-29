@@ -25,13 +25,10 @@ describe("Revolut vendor fail-reason language", () => {
     expect(client).not.toContain("Revolut avvisade anropet.");
   });
 
-  it("leaves event headlines, rail reasons and the Swedish UI catalog as written", () => {
+  it("leaves event headlines and the Swedish UI catalog as written", () => {
     expect(readFileSync("src/lib/ekonomi/revolut.ts", "utf8")).toContain("Revolut-synk blockerad");
     expect(readFileSync("src/lib/ekonomi/revolut/tokens.ts", "utf8")).toContain(
       "Revolut behöver anslutas om",
-    );
-    expect(readFileSync("src/lib/ekonomi/rails.ts", "utf8")).toContain(
-      "Revolut är inte anslutet. Anslut under Anslutningar",
     );
     expect(readFileSync("src/lib/i18n/sv.ts", "utf8")).toContain(
       "Revolut-konfigurationen är inte klar.",
