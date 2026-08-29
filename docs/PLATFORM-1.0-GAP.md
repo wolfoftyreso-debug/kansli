@@ -259,7 +259,7 @@ MCP-health och `server/discover` är inte samma sak som
 | HTTP-status | PARTIAL | inte syntetiskt bevakat |
 | Prestanda | MISSING | ingen Lighthouse-gate |
 | Mobil | PARTIAL | layout finns, ingen bevakad svit |
-| Locale | PARTIAL | `html lang` från `pd_locale`. Inga locale-URL:er |
+| Locale | PARTIAL | `html lang` från `pd_locale`, inklusive leftover Identity-logout. Inga locale-URL:er |
 
 ---
 

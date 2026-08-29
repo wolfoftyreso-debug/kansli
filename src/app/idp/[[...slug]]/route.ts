@@ -7,6 +7,7 @@
  * same Fastify server exercised by the identity test-suite, via Fastify's
  * lightweight `inject()` (no socket needed — ideal for serverless functions).
  * Leftover HTML robots (`noindex, nofollow`) live on the Fastify pages.
+ * Leftover logout `html lang` follows `pd_locale`. The signed-out sentence stays.
  *
  * The OIDC issuer is `${origin}/idp`; discovery therefore advertises
  * `${origin}/idp/authorize`, `/idp/token`, `/idp/jwks.json`, etc. On Vercel,

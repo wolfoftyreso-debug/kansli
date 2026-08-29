@@ -8,6 +8,8 @@ describe("Identity authorize leftover-throw language", () => {
     expect(server).toContain("unknown client_id");
     expect(server).toContain("redirect_uri does not match");
     expect(server).toContain("You are signed out.");
+    expect(server).toContain("function logoutPage");
+    expect(server).toContain("logoutPage(requestLocale(request))");
     expect(server).not.toContain("okänd client_id");
     expect(server).not.toContain("redirect_uri matchar inte");
     expect(server).not.toContain("Du är utloggad.");

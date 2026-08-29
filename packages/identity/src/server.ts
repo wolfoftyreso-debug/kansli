@@ -141,6 +141,11 @@ function errorPage(locale: Locale, message: string): string {
 <body style="font-family:system-ui;margin:3rem"><h1>${esc(t(locale, "idp.errorHeading"))}</h1><p>${esc(message)}</p></body></html>`;
 }
 
+function logoutPage(locale: Locale): string {
+  return `<!doctype html><html lang="${esc(localeTag(locale))}"><head><meta charset="utf-8">${IDP_HTML_ROBOTS}</head>
+<body style="font-family:system-ui;margin:3rem"><p>You are signed out.</p></body></html>`;
+}
+
 export async function createIdentityServer(config: IdentityConfig): Promise<FastifyInstance> {
   const app = Fastify({ logger: false });
   await app.register(cookie, { secret: config.sessionSecret });
@@ -475,9 +480,7 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
         return reply.redirect(url.toString());
       }
     }
-    return reply
-      .type("text/html")
-      .send(`<!doctype html>${IDP_HTML_ROBOTS}<meta charset="utf-8"><p>You are signed out.</p>`);
+    return reply.type("text/html").send(logoutPage(requestLocale(request)));
   };
   app.route({ method: ["GET", "POST"], url: "/logout", handler: endSessionHandler });
 
