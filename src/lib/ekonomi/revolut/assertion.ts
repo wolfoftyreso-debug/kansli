@@ -33,16 +33,15 @@ export interface AssertionInput {
 }
 
 export async function signClientAssertion(input: AssertionInput): Promise<string> {
-  if (!input.issuer) throw new Error("client assertion saknar iss (redirect-URI:ns värd).");
-  if (!input.clientId) throw new Error("client assertion saknar sub (REVOLUT_CLIENT_ID).");
+  if (!input.issuer)
+    throw new Error("The client assertion is missing iss (the redirect URI host).");
+  if (!input.clientId) throw new Error("The client assertion is missing sub (REVOLUT_CLIENT_ID).");
 
   let key: CryptoKey | Uint8Array;
   try {
     key = await importPKCS8(input.privateKeyPem, ASSERTION_ALG);
   } catch {
-    throw new Error(
-      "REVOLUT_PRIVATE_KEY kunde inte tolkas som PKCS#8. Kontrollera PEM-innehållet.",
-    );
+    throw new Error("REVOLUT_PRIVATE_KEY could not be parsed as PKCS#8. Check the PEM contents.");
   }
 
   const issuedAt = Math.floor((input.now?.getTime() ?? Date.now()) / 1000);
@@ -62,10 +61,10 @@ export async function signClientAssertion(input: AssertionInput): Promise<string
 /** Builds the assertion from the environment. Throws when config is incomplete. */
 export async function clientAssertionFromEnv(env: Env = process.env): Promise<string> {
   const privateKeyPem = revolutPrivateKeyPem(env);
-  if (!privateKeyPem) throw new Error("REVOLUT_PRIVATE_KEY saknas.");
+  if (!privateKeyPem) throw new Error("REVOLUT_PRIVATE_KEY is missing.");
   const clientId = revolutClientId(env);
   if (!clientId)
-    throw new Error("REVOLUT_CLIENT_ID saknas. Revolut utfärdar den efter certifikatet.");
+    throw new Error("REVOLUT_CLIENT_ID is missing. Revolut issues it after the certificate.");
   return signClientAssertion({
     issuer: revolutJwtIssuer(env),
     clientId,

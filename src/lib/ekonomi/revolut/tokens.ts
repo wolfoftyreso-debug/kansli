@@ -81,13 +81,13 @@ async function postToken(
   } catch (error) {
     throw new RevolutError(
       "configuration",
-      error instanceof Error ? error.message : "Revolut-konfigurationen är ogiltig.",
+      error instanceof Error ? error.message : "The Revolut configuration is invalid.",
       { cause: error },
     );
   }
   const clientId = revolutClientId(env);
   if (!clientId) {
-    throw new RevolutError("configuration", "REVOLUT_CLIENT_ID saknas.");
+    throw new RevolutError("configuration", "REVOLUT_CLIENT_ID is missing.");
   }
   // A key that is not the other half of the registered certificate cannot
   // produce an assertion Revolut will accept, in any environment. Saying so

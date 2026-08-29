@@ -86,7 +86,7 @@ export function normalisePem(value: string): string {
   const text = value.includes("\\n") ? value.replace(/\\n/g, "\n") : value;
   const trimmed = text.trim();
   if (!trimmed.startsWith("-----BEGIN")) {
-    throw new Error("PEM saknar -----BEGIN-rad. Nyckeln eller certifikatet är trasigt.");
+    throw new Error("The PEM is missing a -----BEGIN line. The key or certificate is broken.");
   }
   return `${trimmed}\n`;
 }
@@ -123,7 +123,7 @@ export function revolutRedirectUri(env: Env = process.env): string {
     try {
       url = new URL(configured);
     } catch {
-      throw new Error("REVOLUT_REDIRECT_URI måste vara en absolut URL.");
+      throw new Error("REVOLUT_REDIRECT_URI must be an absolute URL.");
     }
     // An origin is accepted as shorthand; anything else is taken literally so a
     // legacy registered path keeps working.
@@ -148,7 +148,7 @@ export function revolutRedirect(env: Env = process.env): RevolutRedirect {
       host: parsed.host,
       usableInRevolutPortal: false,
       reason:
-        "Revoluts certifikatdialog kräver en publik https-URI. Localhost och http avvisas. Sätt REVOLUT_REDIRECT_URI.",
+        "Revolut's certificate dialog requires a public https URI. Localhost and http are rejected. Set REVOLUT_REDIRECT_URI.",
       source,
     };
   }
@@ -156,7 +156,7 @@ export function revolutRedirect(env: Env = process.env): RevolutRedirect {
     uri,
     host: parsed.host,
     usableInRevolutPortal: true,
-    reason: `Registrerad hos Revolut. JWT iss ska vara ${parsed.host}.`,
+    reason: `Registered with Revolut. JWT iss must be ${parsed.host}.`,
     source,
   };
 }
@@ -222,27 +222,27 @@ export function revolutKeyMatch(env: Env = process.env): KeyMatch {
     return {
       state: "unknown",
       reason:
-        "REVOLUT_CERTIFICATE_PUBLIC_KEY_SHA256 är inte satt, så vi kan inte kontrollera här att nyckeln och certifikatet hör ihop.",
+        "REVOLUT_CERTIFICATE_PUBLIC_KEY_SHA256 is not set, so we cannot check here that the key and certificate belong together.",
     };
   }
   let actual: string;
   try {
     const pem = revolutPrivateKeyPem(env);
     if (!pem) {
-      return { state: "unknown", reason: "REVOLUT_PRIVATE_KEY saknas." };
+      return { state: "unknown", reason: "REVOLUT_PRIVATE_KEY is missing." };
     }
     actual = spkiSha256(pem);
   } catch {
-    return { state: "unknown", reason: "REVOLUT_PRIVATE_KEY kan inte läsas." };
+    return { state: "unknown", reason: "REVOLUT_PRIVATE_KEY cannot be read." };
   }
   if (actual === expected) {
-    return { state: "match", reason: "Den privata nyckeln hör till certifikatet hos Revolut." };
+    return { state: "match", reason: "The private key belongs to the certificate at Revolut." };
   }
   return {
     state: "mismatch",
     reason:
-      "Den privata nyckeln i miljön hör inte till certifikatet som är registrerat hos Revolut. " +
-      "Ladda upp certifikatet som hör till nyckeln, eller lägg in nyckeln som hör till certifikatet.",
+      "The private key in the environment does not belong to the certificate registered with Revolut. " +
+      "Upload the certificate that belongs to the key, or put in the key that belongs to the certificate.",
   };
 }
 
@@ -276,7 +276,7 @@ export function revolutConfigState(env: Env = process.env): RevolutConfigState {
     hasPrivateKey = Boolean(revolutPrivateKeyPem(env));
   } catch (error) {
     privateKeyError =
-      error instanceof Error ? error.message : "REVOLUT_PRIVATE_KEY kan inte läsas.";
+      error instanceof Error ? error.message : "REVOLUT_PRIVATE_KEY cannot be read.";
   }
 
   const environmentIsExplicit = revolutEnvironmentIsExplicit(env);
@@ -323,11 +323,11 @@ export function assertProductionRevolutConfig(env: Env = process.env): void {
   const state = revolutConfigState(env);
   if (state.redirect.source !== "configured") {
     throw new Error(
-      "REVOLUT_ENVIRONMENT=production kräver ett explicit REVOLUT_REDIRECT_URI. Härled aldrig callback från Host eller VERCEL_URL.",
+      "REVOLUT_ENVIRONMENT=production requires an explicit REVOLUT_REDIRECT_URI. Never derive the callback from Host or VERCEL_URL.",
     );
   }
   if (!state.redirect.usableInRevolutPortal) {
-    throw new Error(`REVOLUT_REDIRECT_URI måste vara publik https. Fick ${state.redirect.uri}.`);
+    throw new Error(`REVOLUT_REDIRECT_URI must be public https. Got ${state.redirect.uri}.`);
   }
   if (state.privateKeyError) throw new Error(state.privateKeyError);
   if (state.keyMatch.state === "mismatch") throw new Error(state.keyMatch.reason);
