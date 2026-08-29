@@ -100,7 +100,7 @@ export function parseTreadReadings(formData: FormData): TreadReading[] {
     if (!raw) continue;
     const treadDepthMm = Number(raw);
     if (!Number.isFinite(treadDepthMm) || treadDepthMm < 0 || treadDepthMm > 20) {
-      throw new Error(`Ogiltigt mönsterdjup för ${position}.`);
+      throw new Error(`Invalid tread depth for ${position}.`);
     }
     readings.push({ position, treadDepthMm });
   }

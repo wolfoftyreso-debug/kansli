@@ -74,5 +74,8 @@ describe("leftover unlocked machine-throw language", () => {
     expect(readFileSync("src/lib/tyra/reminders.ts", "utf8")).toContain(
       "Kundtext får inte innehålla Tyra.",
     );
+    expect(readFileSync("src/lib/tyra/suppliers/gateway.ts", "utf8")).toContain(
+      "Live-pris finns inte. Ingen leverantör är inkopplad än.",
+    );
   });
 });

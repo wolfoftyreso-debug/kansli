@@ -13,6 +13,8 @@ describe("lib required-language", () => {
     expect(cases).toContain("At least one operation is required.");
     expect(cases).toContain("Storage code is required.");
     expect(inspections).toContain("All four positions are required (LF, RF, LR, RR).");
+    expect(inspections).toContain("Invalid tread depth for ${position}.");
+    expect(inspections).not.toContain("Ogiltigt mönsterdjup");
     expect(protocol).toContain("Observation requires a label.");
     expect(protocol).toContain("Measurement requires a name and a unit.");
     expect(protocol).toContain("A measurement value is required.");
