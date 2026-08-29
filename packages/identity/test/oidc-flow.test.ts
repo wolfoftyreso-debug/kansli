@@ -299,6 +299,26 @@ describe("Logout open-redirect guard", () => {
   });
 });
 
+describe("Authorize leftover-error language", () => {
+  it("returns English-canonical client and redirect errors without signing in", async () => {
+    const unknown = await fetch(
+      `${issuer}/authorize?client_id=nope&redirect_uri=http://127.0.0.1:9/cb`,
+    );
+    expect(unknown.status).toBe(400);
+    expect(await unknown.text()).toContain("unknown client_id");
+
+    const mismatch = await fetch(
+      `${issuer}/authorize?client_id=${CLIENT_ID}&redirect_uri=http://evil.test/cb`,
+    );
+    expect(mismatch.status).toBe(400);
+    expect(await mismatch.text()).toContain("redirect_uri does not match");
+
+    const logout = await fetch(`${issuer}/logout`);
+    expect(logout.status).toBe(200);
+    expect(await logout.text()).toContain("You are signed out.");
+  });
+});
+
 describe("Login brute-force throttle", () => {
   it("blocks after repeated failed logins", async () => {
     const oidc = client();

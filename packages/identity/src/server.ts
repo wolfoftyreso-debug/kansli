@@ -188,9 +188,9 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
     params: AuthorizeParams,
   ): { client: OidcClient; redirectUri: string } | { error: string } {
     const client = params.client_id ? clientById.get(params.client_id) : undefined;
-    if (!client) return { error: "okänd client_id" };
+    if (!client) return { error: "unknown client_id" };
     const redirectUri = params.redirect_uri ?? "";
-    if (!client.redirectUris.includes(redirectUri)) return { error: "redirect_uri matchar inte" };
+    if (!client.redirectUris.includes(redirectUri)) return { error: "redirect_uri does not match" };
     return { client, redirectUri };
   }
 
@@ -474,7 +474,7 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
     }
     return reply
       .type("text/html")
-      .send(`<!doctype html><meta charset="utf-8"><p>Du är utloggad.</p>`);
+      .send(`<!doctype html><meta charset="utf-8"><p>You are signed out.</p>`);
   };
   app.route({ method: ["GET", "POST"], url: "/logout", handler: endSessionHandler });
 
