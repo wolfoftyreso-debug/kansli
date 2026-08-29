@@ -12,6 +12,7 @@ import { canRunDemoIntel, listFindings, runIntel } from "@/lib/britt/intel";
 import { createAgreement, listAgreements } from "@/lib/irma/agreements";
 import {
   createCase as createTyraCase,
+  getCaseWorkCard,
   listCases as listTyraCases,
   parseIntent,
   parseOperations,
@@ -954,6 +955,65 @@ export function buildPixdriftRegistry(): ToolRegistry {
           })),
           input,
         );
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "get_vehicle_case",
+      title: "Get vehicle case",
+      description:
+        "Returns one TYRA workshop case for the authenticated organisation. Identity fields and step status only — not advisor notes or customer contact.",
+      system: "tyra",
+      domain: "workshop",
+      inputSchema: {
+        type: "object",
+        properties: { id: { type: "string" } },
+        required: ["id"],
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: null,
+      tenantScope: "org",
+      sideEffects: "none",
+      risk: 1,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "read",
+      whenToUse: "You need one workshop case and its steps.",
+      whenNotToUse: "You want to store a case — use create_vehicle_case.",
+      rest: { method: "GET", path: "/api/tyra/cases/:id" },
+      flags: { ...readFlags(true), pii: true },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool } = needStore(ctx);
+        const id = typeof input.id === "string" ? input.id.trim() : "";
+        const card = id ? await getCaseWorkCard(pool, actor.orgRef, id) : null;
+        if (!card) return { error: "not_found" };
+        return {
+          case: {
+            caseId: card.caseId,
+            customerId: card.customerId,
+            customerName: card.customerName,
+            vehicleId: card.vehicleId,
+            registrationNumber: card.registrationNumber,
+            make: card.make,
+            model: card.model,
+            caseStatus: card.caseStatus,
+            storageCode: card.storageCode,
+            wheelSetId: card.wheelSetId,
+            headline: card.headline,
+            summary: card.summary,
+            nextBestAction: card.nextBestAction,
+            steps: card.steps.map((step) => ({
+              kind: step.kind,
+              title: step.title,
+              status: step.status,
+              required: step.required,
+            })),
+          },
+        };
       },
     }),
   );
