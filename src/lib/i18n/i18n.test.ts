@@ -180,6 +180,8 @@ describe("locale registry", () => {
     expect(t("sv", "site.catalog.documentation")).toBe("Dokumentation");
     expect(t("en", "chrome.breadcrumb")).toBe("Breadcrumb");
     expect(t("sv", "chrome.breadcrumb")).toBe("Sökväg");
+    expect(t("en", "chrome.tryAgain")).toBe("Try again");
+    expect(t("sv", "chrome.tryAgain")).toBe("Försök igen");
     expect(catalogRegion("sv", "Europe")).toBe("Europa");
     expect(catalogRegion("en", "United States")).toBe("United States");
     expect(t("sv", "site.company.spec.product")).toBe("Produkt");

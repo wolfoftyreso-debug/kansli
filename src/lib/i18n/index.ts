@@ -12,6 +12,7 @@ export {
   UI_LOCALES,
   isLocale,
   localeFromAcceptLanguage,
+  localeFromCookieHeader,
   localeTag,
   parseLocale,
   type Locale,

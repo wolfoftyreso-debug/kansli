@@ -13,6 +13,7 @@ export const NL: Record<MessageKey, string> = {
   "chrome.skipToContent": "Naar inhoud",
   "chrome.roomsMobile": "Kamers, mobiel",
   "chrome.breadcrumb": "Breadcrumb",
+  "chrome.tryAgain": "Opnieuw proberen",
 
   "runtime.production": "productie",
   "runtime.preview": "voorbeeld",

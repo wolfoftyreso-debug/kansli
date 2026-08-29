@@ -12,6 +12,7 @@ export const EN = {
   "chrome.skipToContent": "Skip to content",
   "chrome.roomsMobile": "Rooms, mobile",
   "chrome.breadcrumb": "Breadcrumb",
+  "chrome.tryAgain": "Try again",
 
   "runtime.production": "production",
   "runtime.preview": "preview",
