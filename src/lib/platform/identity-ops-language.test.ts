@@ -19,7 +19,9 @@ describe("Identity ops language", () => {
     expect(grantsSql("pixdrift_app")).toContain("grant usage on schema public to pixdrift_app");
   });
 
-  it("leaves migrate appRole throws as written", () => {
-    expect(readFileSync("packages/db/src/migrate.ts", "utf8")).toContain("ogiltigt appRole:");
+  it("uses the same English appRole throw as migrate", () => {
+    expect(readFileSync("packages/db/src/migrate.ts", "utf8")).toContain(
+      "Invalid appRole (must be a SQL identifier):",
+    );
   });
 });

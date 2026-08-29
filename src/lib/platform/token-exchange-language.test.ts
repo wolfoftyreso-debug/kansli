@@ -21,10 +21,13 @@ describe("OIDC token-exchange language", () => {
     expect(britt).not.toContain("token-utbyte");
   });
 
-  it("leaves migrate throws as written", () => {
-    const migrate = readFileSync("packages/db/src/migrate.ts", "utf8");
-    expect(migrate).toContain("ogiltigt appRole:");
-    expect(migrate).toContain("ogiltigt schemanamn:");
-    expect(migrate).toContain("delar version");
+  it("leaves leftover userinfo, TORA remedy and contracts throws as written", () => {
+    expect(readFileSync("packages/auth-client/src/index.ts", "utf8")).toContain(
+      "userinfo misslyckades:",
+    );
+    expect(readFileSync("packages/tora/src/domain/remedies.ts", "utf8")).toContain(
+      "okänt rättsmedel:",
+    );
+    expect(readFileSync("packages/contracts/src/index.ts", "utf8")).toContain("kunddata:");
   });
 });
