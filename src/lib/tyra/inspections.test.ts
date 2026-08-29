@@ -14,6 +14,6 @@ describe("parseTreadReadings", () => {
   it("refuses a partial set", () => {
     const data = new FormData();
     data.set("tread_LF", "5");
-    expect(() => parseTreadReadings(data)).toThrow(/fyra positioner/);
+    expect(() => parseTreadReadings(data)).toThrow(/All four positions/);
   });
 });
