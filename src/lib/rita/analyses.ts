@@ -136,9 +136,9 @@ async function fail(
 }
 
 export const ANALYSIS_STATUS_LABELS: Record<string, string> = {
-  requested: "Begärd",
-  completed: "Klar",
-  blocked: "Blockerad",
+  requested: "Requested",
+  completed: "Done",
+  blocked: "Blocked",
 };
 
 export async function listAnalyses(

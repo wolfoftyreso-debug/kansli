@@ -35,18 +35,18 @@ export const INTENT_LABELS: Record<TireCaseIntent, string> = {
 };
 
 export const CASE_STATUS_LABELS: Record<string, string> = {
-  OPEN: "Öppet",
-  IN_PROGRESS: "Pågår",
-  BLOCKED: "Blockerat",
-  DONE: "Klart",
-  CANCELLED: "Avbrutet",
+  OPEN: "Open",
+  IN_PROGRESS: "In progress",
+  BLOCKED: "Blocked",
+  DONE: "Done",
+  CANCELLED: "Cancelled",
 };
 
 export const STEP_STATUS_LABELS: Record<StepStatus, string> = {
-  TODO: "Att göra",
-  DOING: "Pågår",
-  DONE: "Klart",
-  BLOCKED: "Blockerat",
+  TODO: "To do",
+  DOING: "In progress",
+  DONE: "Done",
+  BLOCKED: "Blocked",
 };
 
 const CANONICAL_OPS: readonly CanonicalOperation[] = [
