@@ -7,7 +7,7 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
     const present = requireOrg(actor);
     const { id } = await context.params;
     const card = await getCaseWorkCard(pool, present.orgRef, id);
-    if (!card) throw new ApiError("not_found", "Ärendet saknas.");
+    if (!card) throw new ApiError("not_found", "The case does not exist.");
     return json({ case: card });
   });
 }

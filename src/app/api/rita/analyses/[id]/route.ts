@@ -7,7 +7,7 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
     const present = requireOrg(actor);
     const { id } = await context.params;
     const analysis = await getAnalysis(pool, present.orgRef, id);
-    if (!analysis) throw new ApiError("not_found", "Analysen finns inte.");
+    if (!analysis) throw new ApiError("not_found", "The analysis does not exist.");
     return json({ analysis });
   });
 }

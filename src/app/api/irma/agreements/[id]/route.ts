@@ -8,7 +8,7 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
     const present = requireOrg(actor);
     const { id } = await context.params;
     const agreement = await getAgreement(pool, present.orgRef, id);
-    if (!agreement) throw new ApiError("not_found", "Avtalet finns inte.");
+    if (!agreement) throw new ApiError("not_found", "The agreement does not exist.");
     return json({
       agreement,
       integrity: verifyAgreementIntegrity(agreement),
@@ -32,7 +32,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
       actorRef: present.sub,
       requestId,
     });
-    if (!agreement) throw new ApiError("not_found", "Avtalet finns inte.");
+    if (!agreement) throw new ApiError("not_found", "The agreement does not exist.");
     return json({ agreement });
   });
 }

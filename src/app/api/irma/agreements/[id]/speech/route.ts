@@ -14,7 +14,7 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
     const org = requireOrg(actor);
     const { id } = await context.params;
     const agreement = await getAgreement(pool, org.orgRef, id);
-    if (!agreement) throw new ApiError("not_found", "Avtalet finns inte.");
+    if (!agreement) throw new ApiError("not_found", "The agreement does not exist.");
     const spoken = await synthesizeSpeech({ text: agreementSpeechText(agreement) });
     if (!spoken.ok) throw new ApiError("not_ready", spoken.reason);
     return new Response(Buffer.from(spoken.audio), {
