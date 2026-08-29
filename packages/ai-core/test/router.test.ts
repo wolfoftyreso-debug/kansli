@@ -91,7 +91,7 @@ describe("model router", () => {
   it("does not fail over when a provider is chosen explicitly", async () => {
     const ai = createModelRouter({ providers: [throwing("a"), fakeProvider("b")] });
     await expect(ai.complete({ model: "m", messages: [] }, { provider: "a" })).rejects.toThrow(
-      /alla providers/,
+      /All providers failed/,
     );
   });
 

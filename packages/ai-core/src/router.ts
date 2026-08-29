@@ -61,7 +61,7 @@ export function createModelRouter(options: RouterOptions): ModelRouter {
       }
 
       const chain = chosen ? [chosen] : order;
-      if (chain.length === 0) throw new Error("inga providers konfigurerade");
+      if (chain.length === 0) throw new Error("No providers are configured.");
 
       // Without an explicit model, treat a plain alias (or empty) as "flagship".
       const wantsFlagship = explicitModel === undefined && FLAGSHIP_ALIASES.has(raw.toLowerCase());
@@ -70,7 +70,7 @@ export function createModelRouter(options: RouterOptions): ModelRouter {
       for (const name of chain) {
         const provider = byName.get(name);
         if (!provider) {
-          errors.push(`${name}: okänd provider`);
+          errors.push(`${name}: unknown provider`);
           continue;
         }
         // Per-provider heaviest model on flagship/failover; else the caller's id.
@@ -82,7 +82,7 @@ export function createModelRouter(options: RouterOptions): ModelRouter {
           errors.push(`${name}: ${(err as Error).message}`);
         }
       }
-      throw new Error(`alla providers misslyckades: ${errors.join(" | ")}`);
+      throw new Error(`All providers failed: ${errors.join(" | ")}`);
     },
   };
 }
