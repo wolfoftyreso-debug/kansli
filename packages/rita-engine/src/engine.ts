@@ -80,7 +80,7 @@ export class SubprocessAnalysisEngine implements AnalysisEngine {
       await access(this.options.binaryPath, constants.X_OK);
     } catch {
       throw new EngineError(
-        `Analysen går inte att starta: ${this.options.binaryPath}. ` + `Kör \`pnpm engine:build\`.`,
+        `The analysis cannot start: ${this.options.binaryPath}. ` + `Run \`pnpm engine:build\`.`,
         "engineMissing",
       );
     }
@@ -93,7 +93,7 @@ export class SubprocessAnalysisEngine implements AnalysisEngine {
     const match = /^skattjakt-analyze (\S+) regelverk (\S+) kontrakt (\S+)/.exec(stdout.trim());
     if (!match) {
       throw new EngineError(
-        `oväntat svar från --version: ${stdout.trim().slice(0, 200)}`,
+        `unexpected --version output: ${stdout.trim().slice(0, 200)}`,
         "engineUnreadable",
       );
     }
@@ -118,7 +118,7 @@ export class SubprocessAnalysisEngine implements AnalysisEngine {
       parsed = JSON.parse(stdout);
     } catch {
       throw new EngineError(
-        "Analysen svarade med något som inte går att läsa",
+        "The analysis returned something unreadable",
         "engineUnreadable",
         // stderr carries the engine's own Swedish diagnostics, which is the
         // useful half when stdout is unparseable.
@@ -152,7 +152,7 @@ export class SubprocessAnalysisEngine implements AnalysisEngine {
         child.kill("SIGKILL");
         reject(
           new EngineError(
-            `analysen översteg tidsgränsen på ${timeoutMs} ms`,
+            `The analysis exceeded the ${timeoutMs} ms time limit`,
             "engineTimeout",
             stderr.slice(0, 2_000),
           ),
@@ -164,7 +164,7 @@ export class SubprocessAnalysisEngine implements AnalysisEngine {
         settled = true;
         clearTimeout(timer);
         child.kill("SIGKILL");
-        reject(new EngineError("analysen avbröts", "engineFailed"));
+        reject(new EngineError("The analysis was cancelled", "engineFailed"));
       };
       signal?.addEventListener("abort", onAbort, { once: true });
 
@@ -182,7 +182,9 @@ export class SubprocessAnalysisEngine implements AnalysisEngine {
         settled = true;
         clearTimeout(timer);
         signal?.removeEventListener("abort", onAbort);
-        reject(new EngineError(`Analysen kunde inte startas: ${error.message}`, "engineMissing"));
+        reject(
+          new EngineError(`The analysis could not be started: ${error.message}`, "engineMissing"),
+        );
       });
 
       child.on("close", (code) => {
@@ -195,7 +197,7 @@ export class SubprocessAnalysisEngine implements AnalysisEngine {
             new EngineError(
               // The engine writes an actionable Swedish sentence to stderr and
               // exits 1. Surfacing it beats "exit code 1".
-              stderr.trim().split("\n").at(-1) ?? `analysen misslyckades (kod ${code})`,
+              stderr.trim().split("\n").at(-1) ?? `The analysis failed (code ${code})`,
               "engineFailed",
               stderr.slice(0, 2_000),
             ),
@@ -234,7 +236,7 @@ export function parseEnvelope(value: unknown): AnalysisEnvelope {
   if (!parsed.success) {
     const first = parsed.error.issues[0];
     throw new EngineError(
-      `motorns svar matchar inte kontraktet: ${first?.path.join(".") ?? "(rot)"} — ${first?.message ?? "okänt fel"}`,
+      `The engine response does not match the contract: ${first?.path.join(".") ?? "(root)"} — ${first?.message ?? "unknown error"}`,
       "contractMismatch",
       JSON.stringify(parsed.error.issues.slice(0, 5)),
     );
@@ -260,7 +262,7 @@ export class FakeAnalysisEngine implements AnalysisEngine {
   readonly requests: EngineRequest[] = [];
 
   constructor(envelopes: readonly unknown[]) {
-    if (envelopes.length === 0) throw new Error("FakeAnalysisEngine behöver minst ett kuvert");
+    if (envelopes.length === 0) throw new Error("FakeAnalysisEngine needs at least one envelope");
     this.envelopes = envelopes.map(parseEnvelope);
   }
 
@@ -317,8 +319,8 @@ export interface HttpEngineOptions {
  */
 export class HttpAnalysisEngine implements AnalysisEngine {
   constructor(private readonly options: HttpEngineOptions) {
-    if (!options.baseUrl) throw new EngineError("ENGINE_URL saknas", "engineMissing");
-    if (!options.token) throw new EngineError("ENGINE_TOKEN saknas", "engineMissing");
+    if (!options.baseUrl) throw new EngineError("ENGINE_URL is missing", "engineMissing");
+    if (!options.token) throw new EngineError("ENGINE_TOKEN is missing", "engineMissing");
   }
 
   async version(): Promise<EngineVersion> {
@@ -328,7 +330,7 @@ export class HttpAnalysisEngine implements AnalysisEngine {
       payload === null ||
       typeof (payload as Record<string, unknown>)["engineVersion"] !== "string"
     ) {
-      throw new EngineError("Analysen svarade inte med en version", "engineUnreadable");
+      throw new EngineError("The analysis did not return a version", "engineUnreadable");
     }
     const body = payload as Record<string, unknown>;
     return {
@@ -372,7 +374,7 @@ export class HttpAnalysisEngine implements AnalysisEngine {
       const text = await response.text();
       if (!response.ok) {
         throw new EngineError(
-          `Analysen svarade ${response.status}`,
+          `The analysis responded ${response.status}`,
           response.status === 404 ? "engineMissing" : "engineFailed",
           text.slice(0, 2_000),
         );
@@ -382,7 +384,7 @@ export class HttpAnalysisEngine implements AnalysisEngine {
         return JSON.parse(text) as unknown;
       } catch {
         throw new EngineError(
-          "Analysen svarade med något som inte går att läsa",
+          "The analysis returned something unreadable",
           "engineUnreadable",
           text.slice(0, 2_000),
         );
@@ -390,10 +392,13 @@ export class HttpAnalysisEngine implements AnalysisEngine {
     } catch (error) {
       if (error instanceof EngineError) throw error;
       if (error instanceof Error && error.name === "AbortError") {
-        throw new EngineError(`analysen översteg tidsgränsen på ${timeoutMs} ms`, "engineTimeout");
+        throw new EngineError(
+          `The analysis exceeded the ${timeoutMs} ms time limit`,
+          "engineTimeout",
+        );
       }
       throw new EngineError(
-        `Analysen kunde inte nås: ${error instanceof Error ? error.message : String(error)}`,
+        `The analysis could not be reached: ${error instanceof Error ? error.message : String(error)}`,
         "engineMissing",
       );
     } finally {
