@@ -298,7 +298,7 @@ export async function fetchWebPresence(input: {
   env?: Record<string, string | undefined>;
 }): Promise<CreditInquiry> {
   const existing = await getInquiry(input.pool, input.orgRef, input.inquiryId);
-  if (!existing) throw new Error("Förfrågan saknas.");
+  if (!existing) throw new Error("The inquiry does not exist.");
   const domain = normalizeDomain(input.domain ?? existing.subjectDomain ?? "");
   if (!domain) throw new Error("Domänen går inte att använda.");
 
@@ -369,7 +369,7 @@ export async function fetchWebPresence(input: {
   }
 
   const updated = await getInquiry(input.pool, input.orgRef, input.inquiryId);
-  if (!updated) throw new Error("Förfrågan saknas.");
+  if (!updated) throw new Error("The inquiry does not exist.");
   return updated;
 }
 
@@ -394,7 +394,7 @@ export async function recordAssessment(input: {
       returning ${INQUIRY_COLUMNS}`,
     [input.orgRef, input.inquiryId, input.assessment, notes],
   );
-  if (!updated.rows[0]) throw new Error("Förfrågan saknas.");
+  if (!updated.rows[0]) throw new Error("The inquiry does not exist.");
   const item = toInquiry(updated.rows[0]);
   await input.events.publish({
     system: "creditae",

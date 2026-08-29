@@ -260,7 +260,7 @@ export async function issueInvoice(input: {
   requestId: string;
 }): Promise<Invoice> {
   const invoice = await getInvoice(input.pool, input.orgRef, input.invoiceId);
-  if (!invoice) throw new Error("fakturan finns inte.");
+  if (!invoice) throw new Error("The invoice does not exist.");
   if (invoice.status !== "draft") throw new Error("bara utkast kan utfärdas.");
   const days = input.dueDays ?? 10;
   if (!Number.isInteger(days) || days < 1)

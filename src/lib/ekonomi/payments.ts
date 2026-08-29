@@ -71,7 +71,7 @@ export async function offerPayment(input: {
   amountOre?: number;
 }): Promise<Payment> {
   const invoice = await getInvoice(input.pool, input.orgRef, input.invoiceId);
-  if (!invoice) throw new Error("fakturan finns inte.");
+  if (!invoice) throw new Error("The invoice does not exist.");
   if (invoice.status !== "issued" && invoice.status !== "part_paid") {
     throw new Error("bara utfärdade fakturor kan få en betalning.");
   }
@@ -107,7 +107,7 @@ export async function recordReceivedPayment(input: {
   requestId: string;
 }): Promise<Payment> {
   const invoice = await getInvoice(input.pool, input.orgRef, input.invoiceId);
-  if (!invoice) throw new Error("fakturan finns inte.");
+  if (!invoice) throw new Error("The invoice does not exist.");
   if (invoice.status !== "issued" && invoice.status !== "part_paid") {
     throw new Error("fakturan tar inte emot betalning i den här statusen.");
   }

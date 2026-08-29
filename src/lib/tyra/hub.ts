@@ -46,7 +46,7 @@ export async function issueHubLink(input: {
     `select id from tyra.customers where org_ref = $1 and id = $2 limit 1`,
     [input.orgRef, input.customerId],
   );
-  if (!owned.rows[0]) throw new Error("Kunden saknas.");
+  if (!owned.rows[0]) throw new Error("The customer does not exist.");
 
   const token = generateOpaqueToken(24);
   const tokenHash = hashTyraToken(token);

@@ -72,7 +72,7 @@ export async function recordProtocolObservation(input: {
     `select id from alva.cases where org_ref = $1 and id = $2 limit 1`,
     [input.orgRef, input.caseId],
   );
-  if (!owned.rows[0]) throw new Error("Ärendet saknas.");
+  if (!owned.rows[0]) throw new Error("The case does not exist.");
   const label = input.label.trim();
   if (!label) throw new Error("Observation kräver en etikett.");
   const value = parseObservationValue(input.value);
@@ -139,7 +139,7 @@ export async function recordProtocolMeasurement(input: {
     `select id from alva.cases where org_ref = $1 and id = $2 limit 1`,
     [input.orgRef, input.caseId],
   );
-  if (!owned.rows[0]) throw new Error("Ärendet saknas.");
+  if (!owned.rows[0]) throw new Error("The case does not exist.");
   const name = input.name.trim();
   const unit = input.unit.trim();
   if (!name || !unit) throw new Error("Mätning kräver namn och enhet.");

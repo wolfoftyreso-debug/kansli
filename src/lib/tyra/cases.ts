@@ -464,7 +464,7 @@ export async function setStepStatus(input: {
         limit 1`,
       [input.orgRef, input.tireCaseId, input.stepKind],
     );
-    if (!prev.rows[0]) throw new Error("Steg saknas.");
+    if (!prev.rows[0]) throw new Error("The step does not exist.");
 
     await client.query(
       `update tyra.tire_case_steps
@@ -688,7 +688,7 @@ export async function updateCustomerContact(input: {
       input.email?.trim() || null,
     ],
   );
-  if ((updated.rowCount ?? 0) === 0) throw new Error("Kunden saknas.");
+  if ((updated.rowCount ?? 0) === 0) throw new Error("The customer does not exist.");
 }
 
 export async function setCaseNotes(input: {
@@ -703,7 +703,7 @@ export async function setCaseNotes(input: {
       where org_ref = $1 and id = $2`,
     [input.orgRef, input.tireCaseId, input.notes.trim() || null],
   );
-  if ((updated.rowCount ?? 0) === 0) throw new Error("Ärendet saknas.");
+  if ((updated.rowCount ?? 0) === 0) throw new Error("The case does not exist.");
 }
 
 export async function cancelCase(input: {
@@ -738,7 +738,7 @@ export async function assignStorageCode(input: {
       input.orgRef,
       input.tireCaseId,
     ]);
-    if (!owner.rows[0]?.vehicle_id) throw new Error("Ärendet saknar fordon.");
+    if (!owner.rows[0]?.vehicle_id) throw new Error("The case has no vehicle.");
     await upsertWheelSet(client, {
       orgRef: input.orgRef,
       customerId: owner.rows[0].customer_id,

@@ -50,8 +50,17 @@ describe("API not_found language", () => {
     }
   });
 
-  it("leaves lib throws as written", () => {
-    expect(readFileSync("src/lib/tyra/cases.ts", "utf8")).toContain("Ärendet saknas.");
-    expect(readFileSync("src/lib/ekonomi/invoices.ts", "utf8")).toContain("fakturan finns inte.");
+  it("uses the same English-canonical not_found titles in lib throws", () => {
+    expect(readFileSync("src/lib/tyra/cases.ts", "utf8")).toContain("The case does not exist.");
+    expect(readFileSync("src/lib/ekonomi/invoices.ts", "utf8")).toContain(
+      "The invoice does not exist.",
+    );
+    expect(readFileSync("src/lib/creditae/inquiries.ts", "utf8")).toContain(
+      "The inquiry does not exist.",
+    );
+    expect(readFileSync("src/lib/tyra/cases.ts", "utf8")).not.toContain("Ärendet saknas.");
+    expect(readFileSync("src/lib/ekonomi/invoices.ts", "utf8")).not.toContain(
+      "fakturan finns inte.",
+    );
   });
 });

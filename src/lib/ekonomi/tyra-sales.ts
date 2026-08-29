@@ -104,7 +104,7 @@ export async function bookTyraQuote(input: {
   requestId: string;
 }): Promise<Invoice> {
   const quoteId = input.quoteId.trim();
-  if (!quoteId) throw new Error("offerten saknas.");
+  if (!quoteId) throw new Error("The quote is missing.");
   const existing = await findInvoiceBySource(input.pool, input.orgRef, "tyra", quoteId);
   if (existing) throw new Error("offerten är redan bokad.");
 
@@ -125,9 +125,9 @@ export async function bookTyraQuote(input: {
     [input.orgRef, quoteId],
   );
   const quote = rows[0];
-  if (!quote) throw new Error("offerten finns inte.");
+  if (!quote) throw new Error("The quote does not exist.");
   const customerName = quote.customer_name?.trim();
-  if (!customerName) throw new Error("kunden saknas på ärendet.");
+  if (!customerName) throw new Error("The customer is missing on the case.");
 
   const grossOre = Number(quote.total_ore);
   const unitNetOre = netOreFromGross(grossOre, 2500, "offertens kundpris");

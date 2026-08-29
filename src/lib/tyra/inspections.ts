@@ -25,7 +25,7 @@ export async function recordVerifiedInspection(input: {
     [input.orgRef, input.tireCaseId],
   );
   const vehicleId = caseRow.rows[0]?.vehicle_id;
-  if (!vehicleId) throw new Error("Ärendet saknar fordon.");
+  if (!vehicleId) throw new Error("The case has no vehicle.");
 
   let wheelSetId = (
     await input.pool.query<{ id: string }>(
