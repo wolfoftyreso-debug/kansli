@@ -19,7 +19,7 @@ export async function bookUsage(input: {
   note?: string;
 }): Promise<void> {
   if (!Number.isInteger(input.amount) || input.amount <= 0) {
-    throw new Error("förbrukning bokförs i positiva heltal.");
+    throw new Error("Usage is booked in positive integers.");
   }
   await input.pool.query(
     `insert into maj.usage_ledger (id, org_ref, project_id, meter, amount, note)

@@ -164,7 +164,7 @@ export async function saveConnectorAction(form: FormData) {
   );
   const provider = String(form.get("provider") ?? "");
   if (!(CONNECTORS as readonly string[]).includes(provider)) {
-    throw new Error("okänd anslutning.");
+    throw new Error("Unknown connection.");
   }
   await saveConnectorSecret({
     pool,

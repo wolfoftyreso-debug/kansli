@@ -300,7 +300,7 @@ export async function fetchWebPresence(input: {
   const existing = await getInquiry(input.pool, input.orgRef, input.inquiryId);
   if (!existing) throw new Error("The inquiry does not exist.");
   const domain = normalizeDomain(input.domain ?? existing.subjectDomain ?? "");
-  if (!domain) throw new Error("Domänen går inte att använda.");
+  if (!domain) throw new Error("The domain cannot be used.");
 
   const env = input.env ?? process.env;
   const configured = webintelConfigured(env);
