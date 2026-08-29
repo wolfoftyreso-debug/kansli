@@ -531,7 +531,7 @@ export async function saveOpsSmsRoutes(input: {
   enabled: readonly OpsSmsKind[];
 }): Promise<OpsSmsRoute[]> {
   const phone = normalizeSwedishMobile(input.phone);
-  if (!phone) throw new Error("Skriv ett svenskt mobilnummer, till exempel 070-123 45 67.");
+  if (!phone) throw new Error("Enter a Swedish mobile number, for example 070-123 45 67.");
   const on = new Set(input.enabled);
   for (const kind of OPS_SMS_KINDS) {
     await input.pool.query(

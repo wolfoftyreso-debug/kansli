@@ -46,7 +46,7 @@ export async function saveSalesAlertSettings(input: {
   enabled: boolean;
 }): Promise<SalesAlertSettings> {
   const phone = normalizeSwedishMobile(input.phone);
-  if (!phone) throw new Error("Skriv ett svenskt mobilnummer, till exempel 070-123 45 67.");
+  if (!phone) throw new Error("Enter a Swedish mobile number, for example 070-123 45 67.");
   await input.pool.query(
     `insert into ekonomi.sales_alert_settings (org_ref, phone, enabled, updated_at)
      values ($1,$2,$3,now())
