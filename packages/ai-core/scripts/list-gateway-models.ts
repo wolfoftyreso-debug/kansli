@@ -14,12 +14,12 @@ async function main(): Promise<void> {
   const gateway = gatewayFromEnv();
   if (!gateway || !gateway.listModels) {
     console.error(
-      "Ingen gateway-credential hittad. Sätt AI_GATEWAY_API_KEY (eller VERCEL_OIDC_TOKEN) i miljön/Secrets.",
+      "No gateway credential found. Set AI_GATEWAY_API_KEY (or VERCEL_OIDC_TOKEN) in the environment/Secrets.",
     );
     process.exit(1);
   }
   const models = await gateway.listModels();
-  console.log(`Vercel AI Gateway: ${models.length} modeller tillgängliga\n`);
+  console.log(`Vercel AI Gateway: ${models.length} models available\n`);
   for (const id of models) console.log(`  ${id}`);
 }
 
