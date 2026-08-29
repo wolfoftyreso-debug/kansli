@@ -71,7 +71,7 @@ OpenAPI 3.1 genereras ur Capability Graph:
 Ingen publik `api.pixdrift.com/v1`. Inte alla REST-ytor sitter i grafen (se §4).
 
 **MCP — PARTIAL.**
-`POST /mcp`, protokoll `2026-07-28`, 33 verktyg i
+`POST /mcp`, protokoll `2026-07-28`, 34 verktyg i
 `src/lib/mcp/tools.ts`. Alla anropar befintliga tjänster.
 Inte alla REST-operationer har verktyg. Ingen L4-kö.
 Rate limit och idempotens är per process.
@@ -139,7 +139,7 @@ ingen syntetisk bevakning av login/MCP/docs. Hemligheter dumpas inte.
 
 ## 4. Capability Graph — frö mot full täckning
 
-Grafen i kod är **bara** de 33 MCP-verktygen.
+Grafen i kod är **bara** de 34 MCP-verktygen.
 Varje verktyg har redan `rest.method` + `rest.path`.
 Det är medvetet: ingen parallell lista.
 
@@ -153,7 +153,7 @@ REST som **finns** men **inte** sitter i grafen än:
 | Revolut connect/callback | ekonomi | OAuth-flöde, inte domänverktyg |
 | GET/POST `/api/britt/findings` | britt | Lista/kör. MCP `list_findings` / `run_operational_analysis` |
 | GET `/api/irma/agreements` | irma | Lista. MCP `list_agreements` |
-| POST `/api/irma/agreements/:id` | irma | Revoke utan MCP |
+| POST `/api/irma/agreements/:id` | irma | Revoke. MCP `revoke_agreement` |
 | GET/POST `/api/irma/l/:token` | irma | Gästlänk, medvetet utan agent |
 | GET `/api/tyra/cases` | tyra | Lista. MCP `list_vehicle_cases` |
 | POST `/api/tyra/hub/link` | tyra | Hubblänk utan MCP |

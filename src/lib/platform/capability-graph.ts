@@ -53,6 +53,7 @@ const DOMAIN_EVENTS: Record<string, string> = {
   persist_procurement_snapshot: "tora.market.evaluated",
   request_tax_analysis: "rita.analysis.requested",
   create_agreement: "irma.agreement.created",
+  revoke_agreement: "irma.agreement.cancelled",
   create_vehicle_case: "tyra.case.created",
   register_diagnostic_case: "alva.case.created",
   register_credit_inquiry: "creditae.inquiry.created",

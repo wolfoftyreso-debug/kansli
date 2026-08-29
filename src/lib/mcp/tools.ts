@@ -11,7 +11,12 @@ import { getAnalysis, listAnalyses, requestAnalysis } from "@/lib/rita/analyses"
 import { findingsFromAnalysis } from "@/lib/rita/findings";
 import { listObservations } from "@/lib/britt/observations";
 import { canRunDemoIntel, listFindings, runIntel } from "@/lib/britt/intel";
-import { createAgreement, getAgreement, listAgreements } from "@/lib/irma/agreements";
+import {
+  createAgreement,
+  getAgreement,
+  listAgreements,
+  revokeAgreement,
+} from "@/lib/irma/agreements";
 import { verifyAgreementIntegrity } from "@/lib/irma/integrity";
 import {
   createCase as createTyraCase,
@@ -1059,7 +1064,8 @@ export function buildPixdriftRegistry(): ToolRegistry {
       idempotent: true,
       rateClass: "read",
       whenToUse: "You need one existing agreement and whether its hashes still match.",
-      whenNotToUse: "You want to create or revoke an agreement.",
+      whenNotToUse:
+        "You want to create an agreement — use create_agreement. You want to cancel one — use revoke_agreement.",
       rest: { method: "GET", path: "/api/irma/agreements/:id" },
       flags: { ...readFlags(true), pii: true },
       handler: async (ctx, input) => {
@@ -1136,6 +1142,61 @@ export function buildPixdriftRegistry(): ToolRegistry {
           title: created.title,
           counterparty: created.counterparty,
           status: created.status,
+        };
+      },
+    }),
+  );
+
+  registry.registerTool(
+    base({
+      name: "revoke_agreement",
+      title: "Revoke agreement",
+      description:
+        "Cancels an unsigned IRMA agreement using revokeAgreement — the same service as POST /api/irma/agreements/:id. Does not start speech or reissue a token.",
+      system: "irma",
+      domain: "agreements",
+      inputSchema: {
+        type: "object",
+        properties: { id: { type: "string" } },
+        required: ["id"],
+        additionalProperties: false,
+      },
+      outputSchema: { type: "object" },
+      permission: "document:upload",
+      tenantScope: "org",
+      sideEffects: "write",
+      risk: 3,
+      approvalRequired: false,
+      idempotent: true,
+      rateClass: "heavy",
+      whenToUse: "An unsigned agreement should be cancelled.",
+      whenNotToUse: "You only want to inspect an agreement — use get_agreement.",
+      rest: { method: "POST", path: "/api/irma/agreements/:id" },
+      flags: { ...readFlags(false), pii: true },
+      handler: async (ctx, input) => {
+        const actor = orgOf(ctx);
+        const { pool, events } = needStore(ctx);
+        const id = typeof input.id === "string" ? input.id.trim() : "";
+        if (!id) return { error: "not_found" };
+        const agreement = await revokeAgreement({
+          pool,
+          events,
+          orgRef: actor.orgRef,
+          id,
+          actorRef: actor.sub,
+          requestId: ctx.requestId,
+        });
+        if (!agreement) return { error: "not_found" };
+        return {
+          agreement: {
+            id: agreement.id,
+            title: agreement.title,
+            counterparty: agreement.counterparty,
+            status: agreement.status,
+            createdAt: agreement.createdAt,
+            viewedAt: agreement.viewedAt,
+            signedAt: agreement.signedAt,
+          },
         };
       },
     }),
