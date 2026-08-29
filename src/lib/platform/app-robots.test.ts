@@ -2,7 +2,12 @@ import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { SYSTEM_MODULES } from "@pixdrift/systems";
 import { APP_ROBOTS_DISALLOW } from "../../app/robots.ts";
-import { APP_ROOM_ROBOTS, appRoomRobots } from "./app-robots.ts";
+import {
+  APP_ROOM_ROBOTS,
+  APP_ROOM_ROBOTS_CONTENT,
+  appRoomRobots,
+  appRoomRobotsMeta,
+} from "./app-robots.ts";
 
 const HTML_ROOMS = SYSTEM_MODULES.filter((system) => system.id !== "identity").map(
   (system) => system.basePath,
@@ -25,6 +30,12 @@ describe("leftover app-room robots lock", () => {
     expect(APP_ROBOTS_DISALLOW).toContain("/idp");
     expect(APP_ROBOTS_DISALLOW).toContain("/api/");
     expect(existsSync("src/app/idp/layout.tsx")).toBe(false);
+    expect(APP_ROOM_ROBOTS_CONTENT).toBe("noindex, nofollow");
+    expect(appRoomRobotsMeta()).toBe(`<meta name="robots" content="${APP_ROOM_ROBOTS_CONTENT}">`);
+    expect(readFileSync("packages/identity/src/server.ts", "utf8")).toContain(
+      `content="${APP_ROOM_ROBOTS_CONTENT}"`,
+    );
+    expect(readFileSync("src/app/api/auth/login/route.ts", "utf8")).toContain("appRoomRobotsMeta");
   });
 
   it("leaves leftover public site and intake form out of HTML noindex", () => {

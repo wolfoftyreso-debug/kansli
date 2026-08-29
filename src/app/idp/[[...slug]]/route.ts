@@ -6,6 +6,7 @@
  * backed by Vercel Postgres. Every `/idp/*` request is delegated to the exact
  * same Fastify server exercised by the identity test-suite, via Fastify's
  * lightweight `inject()` (no socket needed — ideal for serverless functions).
+ * Leftover HTML robots (`noindex, nofollow`) live on the Fastify pages.
  *
  * The OIDC issuer is `${origin}/idp`; discovery therefore advertises
  * `${origin}/idp/authorize`, `/idp/token`, `/idp/jwks.json`, etc. On Vercel,

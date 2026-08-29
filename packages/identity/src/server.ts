@@ -70,6 +70,8 @@ const OIDC_FIELDS: (keyof AuthorizeParams)[] = [
   "org",
 ];
 
+const IDP_HTML_ROBOTS = '<meta name="robots" content="noindex, nofollow">';
+
 function requestLocale(request: {
   cookies?: Record<string, string | undefined>;
   headers: { "accept-language"?: string | string[] };
@@ -101,6 +103,7 @@ function loginPage(
   return `<!doctype html>
 <html lang="${esc(localeTag(locale))}"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+${IDP_HTML_ROBOTS}
 <title>${esc(t(locale, "idp.title"))}</title>
 <style>
   body{font-family:Geist,ui-sans-serif,system-ui,sans-serif;margin:0;min-height:100vh;display:grid;place-items:center;background:#fbfbf9;color:#101317}
@@ -134,7 +137,7 @@ function loginPage(
 }
 
 function errorPage(locale: Locale, message: string): string {
-  return `<!doctype html><html lang="${esc(localeTag(locale))}"><head><meta charset="utf-8"><title>${esc(t(locale, "idp.errorTitle"))}</title></head>
+  return `<!doctype html><html lang="${esc(localeTag(locale))}"><head><meta charset="utf-8">${IDP_HTML_ROBOTS}<title>${esc(t(locale, "idp.errorTitle"))}</title></head>
 <body style="font-family:system-ui;margin:3rem"><h1>${esc(t(locale, "idp.errorHeading"))}</h1><p>${esc(message)}</p></body></html>`;
 }
 
@@ -474,7 +477,7 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
     }
     return reply
       .type("text/html")
-      .send(`<!doctype html><meta charset="utf-8"><p>You are signed out.</p>`);
+      .send(`<!doctype html>${IDP_HTML_ROBOTS}<meta charset="utf-8"><p>You are signed out.</p>`);
   };
   app.route({ method: ["GET", "POST"], url: "/logout", handler: endSessionHandler });
 
