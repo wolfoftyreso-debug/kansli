@@ -127,7 +127,7 @@ ingen syntetisk bevakning av login/MCP/docs. Hemligheter dumpas inte.
 
 | Lager | Betyg | Vad som finns | Vad som saknas |
 | --- | --- | --- | --- |
-| 1. Platform Core | PARTIAL | Identity, org, session, `noun:verb`-behörighet, API Core, events, request-id, `org_ref` + RLS när `app.org_ref` är satt, tunn SMS-kanal (`src/lib/platform/sms.ts`) för Ekonomi-sälj | ABAC/OPA, entitlements, billing, feature flags, notifieringskärna, hemlighetsvalv, OTel, per-tjänst SLO, sandbox-tenant |
+| 1. Platform Core | PARTIAL | Identity, org, session, `noun:verb`-behörighet, API Core, events, request-id, `org_ref` + RLS när `app.org_ref` är satt, tunn SMS-kanal (`src/lib/platform/sms.ts`) för Ekonomi-sälj, leftover Identity-HTML `Cache-Control: no-store` | ABAC/OPA, entitlements, billing, feature flags, notifieringskärna, hemlighetsvalv, OTel, per-tjänst SLO, sandbox-tenant |
 | 2. Universal Integration | PARTIAL | REST + MCP mot samma `src/lib/{produkt}`. OpenAPI ur grafen. Revolut OAuth. | Publik `api.`-host, webhooks, SDK, service accounts, OAuth-appar för tredje part |
 | 3. Developer Platform | PARTIAL | `/documentation`, MCP-docs, MCP-explorer | Sandbox, Try-it, recipes, changelog-data, status, request replay |
 | 4. App / Agent | PARTIAL | MCP + klientinstruktioner i docs | ChatGPT Apps, Apps SDK-UI, produktappar |

@@ -102,6 +102,17 @@ async function login(
   };
 }
 
+describe("leftover Identity HTML cache", () => {
+  it("does not store leftover authorize or leftover logout HTML", async () => {
+    const error = await fetch(`${issuer}/authorize`);
+    expect(error.status).toBe(400);
+    expect(error.headers.get("cache-control")).toBe("no-store");
+    const logout = await fetch(`${issuer}/logout`);
+    expect(logout.status).toBe(200);
+    expect(logout.headers.get("cache-control")).toBe("no-store");
+  });
+});
+
 describe("OIDC discovery + JWKS", () => {
   it("publishes a discovery document and a signing key", async () => {
     const disc = (await (await fetch(`${issuer}/.well-known/openid-configuration`)).json()) as {

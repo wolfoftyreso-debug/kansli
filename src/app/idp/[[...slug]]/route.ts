@@ -12,6 +12,7 @@
  * Leftover Identity HTML color-scheme stays light.
  * Leftover Identity HTML theme-color matches leftover paper token.
  * Leftover Identity HTML format-detection stays off.
+ * Leftover Identity HTML Cache-Control stays no-store.
  *
  * The OIDC issuer is `${origin}/idp`; discovery therefore advertises
  * `${origin}/idp/authorize`, `/idp/token`, `/idp/jwks.json`, etc. On Vercel,

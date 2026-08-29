@@ -10,6 +10,11 @@ describe("Identity authorize leftover-throw language", () => {
     expect(server).toContain("You are signed out.");
     expect(server).toContain("function logoutPage");
     expect(server).toContain("logoutPage(requestLocale(request))");
+    expect(server).toContain("function sendHtml");
+    expect(server).toContain('IDP_HTML_CACHE_CONTROL = "no-store"');
+    expect(readFileSync("src/app/api/auth/login/route.ts", "utf8")).toContain(
+      '"cache-control": "no-store"',
+    );
     expect(server).not.toContain("okänd client_id");
     expect(server).not.toContain("redirect_uri matchar inte");
     expect(server).not.toContain("Du är utloggad.");

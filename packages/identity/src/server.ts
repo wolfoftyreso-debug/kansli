@@ -76,6 +76,15 @@ const IDP_HTML_COLOR_SCHEME = '<meta name="color-scheme" content="light">';
 const IDP_HTML_THEME_COLOR = '<meta name="theme-color" content="#fbfbf9">';
 const IDP_HTML_FORMAT_DETECTION =
   '<meta name="format-detection" content="telephone=no, email=no, address=no">';
+const IDP_HTML_CACHE_CONTROL = "no-store";
+
+function sendHtml(reply: FastifyReply, body: string, status = 200) {
+  return reply
+    .code(status)
+    .type("text/html")
+    .header("cache-control", IDP_HTML_CACHE_CONTROL)
+    .send(body);
+}
 
 function requestLocale(request: {
   cookies?: Record<string, string | undefined>;
@@ -267,10 +276,7 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
     const params = request.query;
     const validation = validateClientRedirect(params);
     if ("error" in validation) {
-      return reply
-        .code(400)
-        .type("text/html")
-        .send(errorPage(requestLocale(request), validation.error));
+      return sendHtml(reply, errorPage(requestLocale(request), validation.error), 400);
     }
     const { client, redirectUri } = validation;
 
@@ -296,11 +302,10 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
         return reply;
       }
     }
-    return reply
-      .type("text/html")
-      .send(
-        loginPage(requestLocale(request), params, authorizeAction, undefined, config.demoLogin),
-      );
+    return sendHtml(
+      reply,
+      loginPage(requestLocale(request), params, authorizeAction, undefined, config.demoLogin),
+    );
   });
 
   app.post<{ Body: AuthorizeParams & { email?: string; password?: string } }>(
@@ -309,10 +314,7 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
       const params = request.body;
       const validation = validateClientRedirect(params);
       if ("error" in validation) {
-        return reply
-          .code(400)
-          .type("text/html")
-          .send(errorPage(requestLocale(request), validation.error));
+        return sendHtml(reply, errorPage(requestLocale(request), validation.error), 400);
       }
       const { client, redirectUri } = validation;
       const locale = requestLocale(request);
@@ -324,18 +326,17 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
       const now = Date.now();
       const failure = loginFailures.get(throttleKey);
       if (failure && failure.resetAt > now && failure.count >= MAX_LOGIN_FAILURES) {
-        return reply
-          .code(429)
-          .type("text/html")
-          .send(
-            loginPage(
-              locale,
-              params,
-              authorizeAction,
-              t(locale, "idp.tooManyAttempts"),
-              config.demoLogin,
-            ),
-          );
+        return sendHtml(
+          reply,
+          loginPage(
+            locale,
+            params,
+            authorizeAction,
+            t(locale, "idp.tooManyAttempts"),
+            config.demoLogin,
+          ),
+          429,
+        );
       }
 
       const user = await config.store.findUserByEmail(email);
@@ -346,18 +347,16 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
           failure && failure.resetAt > now ? failure : { count: 0, resetAt: now + LOGIN_WINDOW_MS };
         base.count += 1;
         loginFailures.set(throttleKey, base);
-        return reply
-          .code(200)
-          .type("text/html")
-          .send(
-            loginPage(
-              locale,
-              params,
-              authorizeAction,
-              t(locale, "idp.wrongCredentials"),
-              config.demoLogin,
-            ),
-          );
+        return sendHtml(
+          reply,
+          loginPage(
+            locale,
+            params,
+            authorizeAction,
+            t(locale, "idp.wrongCredentials"),
+            config.demoLogin,
+          ),
+        );
       }
       loginFailures.delete(throttleKey);
 
@@ -488,7 +487,7 @@ export async function createIdentityServer(config: IdentityConfig): Promise<Fast
         return reply.redirect(url.toString());
       }
     }
-    return reply.type("text/html").send(logoutPage(requestLocale(request)));
+    return sendHtml(reply, logoutPage(requestLocale(request)));
   };
   app.route({ method: ["GET", "POST"], url: "/logout", handler: endSessionHandler });
 
