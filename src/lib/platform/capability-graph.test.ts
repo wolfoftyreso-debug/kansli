@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { SYSTEM_IDS } from "@pixdrift/systems";
 import { buildPixdriftRegistry } from "@/lib/mcp/tools";
@@ -13,6 +14,27 @@ describe("capability graph seed", () => {
     );
     expect(graph.capabilities).toHaveLength(tools.length);
     expect(graph.capabilities.length).toBe(37);
+  });
+
+  it("keeps GAP §4 non-agent REST out of the graph", () => {
+    const graph = buildCapabilityGraph();
+    const gap = readFileSync("docs/PLATFORM-1.0-GAP.md", "utf8");
+    const section = gap.split("## 4.")[1]?.split("## 5.")[0] ?? "";
+    expect(gap).toMatch(new RegExp(`${graph.capabilities.length} verktyg`));
+    expect(section).toMatch(new RegExp(`${graph.capabilities.length} MCP-verktyg`));
+    const bound = new Set(
+      graph.capabilities
+        .map((capability) => capability.interfaces.rest?.path)
+        .filter((path): path is string => Boolean(path)),
+    );
+    const listed = [...section.matchAll(/`(\/api\/[^`]+)`/g)].map((match) => match[1]);
+    expect(listed.length).toBeGreaterThan(5);
+    for (const path of listed) {
+      if (path.includes("*")) continue;
+      expect(bound.has(path), path).toBe(false);
+    }
+    expect(bound.has("/api/integrations/revolut/connect")).toBe(false);
+    expect(bound.has("/api/integrations/revolut/callback")).toBe(false);
   });
 
   it("keeps REST bindings on every registered tool", () => {
