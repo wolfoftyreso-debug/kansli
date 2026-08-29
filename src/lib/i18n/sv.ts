@@ -1636,6 +1636,8 @@ export const SV: Record<MessageKey, string> = {
   "site.company.title": "{name} utvecklas av {company}.",
   "site.company.intro":
     "{company} utvecklar programvara kring praktiska problem som påverkar organisationer, infrastruktur och samhälle.",
+  "site.company.spec.product": "Produkt",
+  "site.company.spec.developedBy": "Utvecklas av",
 
   "site.catalog.identity.purpose": "En inloggning till alla system.",
   "site.catalog.identity.category": "Inloggning",

@@ -1650,6 +1650,8 @@ export const EN = {
   "site.company.title": "{name} is developed by {company}.",
   "site.company.intro":
     "{company} develops software around practical problems affecting organizations, infrastructure and society.",
+  "site.company.spec.product": "Product",
+  "site.company.spec.developedBy": "Developed by",
 
   "site.catalog.identity.purpose": "One sign-in for every system.",
   "site.catalog.identity.category": "Sign-in",

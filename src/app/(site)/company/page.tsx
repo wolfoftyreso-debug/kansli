@@ -44,8 +44,11 @@ export default async function CompanyPage() {
       <div className="mt-14 max-w-2xl">
         <SpecTable
           rows={[
-            { label: "Product", value: `${brand.name} — ${brand.tagline}` },
-            { label: "Developed by", value: brand.company.name },
+            {
+              label: t(locale, "site.company.spec.product"),
+              value: `${brand.name} — ${brand.tagline}`,
+            },
+            { label: t(locale, "site.company.spec.developedBy"), value: brand.company.name },
             ...brand.company.offices.map((o) => ({
               label: o.entity,
               value: `${o.city}, ${o.country}`,

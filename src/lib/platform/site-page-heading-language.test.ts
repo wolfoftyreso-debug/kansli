@@ -35,6 +35,14 @@ describe("leftover site page-heading language", () => {
     expect(readFileSync("src/app/(site)/company/page.tsx", "utf8")).toContain(
       't(locale, "site.company.title"',
     );
+    expect(t("en", "site.company.spec.product")).toBe("Product");
+    expect(t("sv", "site.company.spec.developedBy")).toBe("Utvecklas av");
+    expect(readFileSync("src/app/(site)/company/page.tsx", "utf8")).toContain(
+      "site.company.spec.product",
+    );
+    expect(readFileSync("src/app/(site)/company/page.tsx", "utf8")).not.toContain(
+      'label: "Product"',
+    );
   });
 
   it("leaves leftover marketing body copy as written", () => {
@@ -50,5 +58,6 @@ describe("leftover site page-heading language", () => {
     expect(readFileSync("src/lib/pixdrift/brand.ts", "utf8")).toContain(
       "The layer between systems.",
     );
+    expect(readFileSync("src/app/(site)/company/page.tsx", "utf8")).toContain("Why we build");
   });
 });

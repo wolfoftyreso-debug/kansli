@@ -182,6 +182,7 @@ describe("locale registry", () => {
     expect(t("sv", "chrome.breadcrumb")).toBe("Sökväg");
     expect(catalogRegion("sv", "Europe")).toBe("Europa");
     expect(catalogRegion("en", "United States")).toBe("United States");
+    expect(t("sv", "site.company.spec.product")).toBe("Produkt");
     expect(t("en", "site.doc.title")).toBe("Documentation is part of the product.");
     expect(t("sv", "site.doc.eyebrow")).toBe("Dokumentation");
     expect(t("sv", "site.doc.mcp.title")).toBe(
