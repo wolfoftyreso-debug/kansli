@@ -240,6 +240,11 @@ export function catalogSection(
   return key in catalogs.en ? t(locale, key, vars) : fallback;
 }
 
+export function catalogSectionTitle(locale: Locale, no: string): string {
+  const key = `site.catalog.section.${no}` as MessageKey;
+  return key in catalogs.en ? t(locale, key) : no;
+}
+
 export function catalogSteward(locale: Locale, stewardship: string): string {
   const key = `site.catalog.steward.${stewardship}` as MessageKey;
   return key in catalogs.en ? t(locale, key) : stewardship;

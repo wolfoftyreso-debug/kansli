@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/site/Container";
 import { SpecTable } from "@/components/site/SpecTable";
 import { RegionIndicator, StatusIndicator } from "@/components/site/indicators";
-import { catalogField, catalogSection, catalogSteward, t } from "@/lib/i18n";
+import { catalogField, catalogSection, catalogSectionTitle, catalogSteward, t } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
 import { toolsForSystem } from "@/lib/mcp/catalog";
 import { getSystem, systems } from "@/lib/pixdrift/systems";
@@ -56,7 +56,9 @@ export default async function SystemPage({ params }: { params: Promise<{ slug: s
       {/* Product header */}
       <section className="border-b border-line">
         <Container>
-          <p className="pd-label">System {system.index}</p>
+          <p className="pd-label">
+            {t(locale, "site.catalog.systemIndex", { index: system.index })}
+          </p>
           <h1 className="mt-2 text-2xl font-semibold tracking-tight text-ink">{system.name}</h1>
           <p className="mt-3 max-w-2xl text-sm text-ink-soft">
             {catalogField(locale, system.slug, "purpose")}
@@ -108,7 +110,7 @@ export default async function SystemPage({ params }: { params: Promise<{ slug: s
               className="grid grid-cols-1 gap-4 border-b border-line py-10 md:grid-cols-[8rem_1fr] md:gap-10"
             >
               <div className="pd-label pt-1">
-                {section.no} — {section.title}
+                {section.no} — {catalogSectionTitle(locale, section.no)}
               </div>
               <div className="flex max-w-2xl flex-col gap-4">
                 {section.body.length > 0 ? (
@@ -132,13 +134,13 @@ export default async function SystemPage({ params }: { params: Promise<{ slug: s
             href="/documentation/mcp"
             className="border border-line-strong px-5 py-3 text-sm font-medium text-ink hover:border-ink"
           >
-            MCP
+            {t(locale, "site.catalog.spec.mcp")}
           </Link>
           <Link
             href="/documentation"
             className="border border-line-strong px-5 py-3 text-sm font-medium text-ink hover:border-ink"
           >
-            Documentation
+            {t(locale, "site.catalog.documentation")}
           </Link>
           <Link
             href="/systems"

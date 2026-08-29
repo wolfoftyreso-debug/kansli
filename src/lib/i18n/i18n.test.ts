@@ -12,6 +12,7 @@ import {
   alvaOutcome,
   catalogField,
   catalogSection,
+  catalogSectionTitle,
   brittObsStatus,
   brittSource,
   ekonomiConnSlot,
@@ -173,6 +174,9 @@ describe("locale registry", () => {
     expect(catalogSection("sv", "identity", "01", "")).toBe(
       "En inloggning till alla system, så ni inte loggar in om och om igen.",
     );
+    expect(catalogSectionTitle("en", "04")).toBe("How it works");
+    expect(catalogSectionTitle("sv", "04")).toBe("Så fungerar det");
+    expect(t("sv", "site.catalog.documentation")).toBe("Dokumentation");
     expect(t("en", "tyra.case.workCard")).toBe("Work card");
     expect(t("sv", "tyra.case.next")).toBe("Nästa");
     expect(t("en", "tora.doc.whyBidDefault")).toBe(

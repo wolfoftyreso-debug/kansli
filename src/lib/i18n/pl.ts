@@ -1665,6 +1665,19 @@ export const PL: Record<MessageKey, string> = {
   "site.catalog.creditae.s10":
     "On the way. Europe. Credit report through Creditsafe when the channel is wired.",
 
+  "site.catalog.section.01": "Purpose",
+  "site.catalog.section.02": "Problem",
+  "site.catalog.section.03": "System",
+  "site.catalog.section.04": "How it works",
+  "site.catalog.section.05": "Architecture",
+  "site.catalog.section.06": "Applications",
+  "site.catalog.section.07": "Integrations",
+  "site.catalog.section.08": "Security",
+  "site.catalog.section.09": "Documentation",
+  "site.catalog.section.10": "Availability",
+  "site.catalog.systemIndex": "System {index}",
+  "site.catalog.documentation": "Documentation",
+
   "hold.paused": "Paused",
   "hold.title": "Invoice {number} is overdue",
   "hold.body":

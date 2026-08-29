@@ -21,6 +21,7 @@ export {
   alvaOutcome,
   catalogField,
   catalogSection,
+  catalogSectionTitle,
   catalogSteward,
   brittObsStatus,
   brittSource,

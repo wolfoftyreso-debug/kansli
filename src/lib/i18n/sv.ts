@@ -1660,6 +1660,19 @@ export const SV: Record<MessageKey, string> = {
   "site.catalog.creditae.s10":
     "På väg. Europa. Kreditrapport via Creditsafe när kanalen är kopplad.",
 
+  "site.catalog.section.01": "Syfte",
+  "site.catalog.section.02": "Problem",
+  "site.catalog.section.03": "System",
+  "site.catalog.section.04": "Så fungerar det",
+  "site.catalog.section.05": "Arkitektur",
+  "site.catalog.section.06": "Applikationer",
+  "site.catalog.section.07": "Integrationer",
+  "site.catalog.section.08": "Säkerhet",
+  "site.catalog.section.09": "Dokumentation",
+  "site.catalog.section.10": "Tillgänglighet",
+  "site.catalog.systemIndex": "System {index}",
+  "site.catalog.documentation": "Dokumentation",
+
   "hold.paused": "Pausat",
   "hold.title": "Fakturan {number} har förfallit",
   "hold.body":
