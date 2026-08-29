@@ -2,6 +2,7 @@ import { Container } from "@/components/site/Container";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { t } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
+import { publicCanonical } from "@/lib/platform/canonical";
 
 const sectors = [
   {
@@ -31,6 +32,7 @@ export async function generateMetadata() {
   return {
     title: t(locale, "site.applications.metaTitle"),
     description: t(locale, "site.applications.metaDescription"),
+    alternates: { canonical: publicCanonical("/applications") },
   };
 }
 

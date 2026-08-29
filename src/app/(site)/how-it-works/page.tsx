@@ -4,6 +4,7 @@ import { PixelFlow } from "@/components/site/PixelFlow";
 import { pixdriftStack } from "@/lib/pixdrift/stack";
 import { t } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
+import { publicCanonical } from "@/lib/platform/canonical";
 
 const steps = [
   {
@@ -43,6 +44,7 @@ export async function generateMetadata() {
   return {
     title: t(locale, "site.how.metaTitle"),
     description: t(locale, "site.how.metaDescription"),
+    alternates: { canonical: publicCanonical("/how-it-works") },
   };
 }
 

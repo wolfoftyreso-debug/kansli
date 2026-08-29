@@ -5,12 +5,14 @@ import { Container } from "@/components/site/Container";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { t } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
+import { publicCanonical } from "@/lib/platform/canonical";
 
 export async function generateMetadata() {
   const locale = await readLocale();
   return {
     title: t(locale, "site.doc.rest.metaTitle"),
     description: t(locale, "site.doc.rest.metaDescription"),
+    alternates: { canonical: publicCanonical("/documentation/rest") },
   };
 }
 

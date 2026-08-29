@@ -175,7 +175,7 @@ Sitemap: `src/app/sitemap.ts` (MCP-docsidor ur `MCP_DOC_LINKS` plus `/systems/{s
 `llms.txt`: rum ur `@pixdrift/systems` plus MCP-docsidor ur `MCP_DOC_LINKS`.
 Robots: tillåt `/`, blockera apprummen ur `@pixdrift/systems` plus `/platform` och `/api/`.
 Locale: `html lang` från `pd_locale` (kanonisk `en`). Inga `/en/` `/sv/` `/de/`.
-Ingen hreflang. Canonical är implicit via `metadataBase`.
+Ingen hreflang. Canonical per publik HTML-sida ur `PUBLIC_SITEMAP_PATHS` plus `/systems/{slug}`.
 
 | Produkt | Kärnentiteter | Problemkluster | Roller | Bransch | Flöden | Integrationer | Språk | Befintliga sidor | Saknade sidor (målbild) | Teknisk SEO | Länkar | Kvalitetslucka |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -249,7 +249,7 @@ MCP-health och `server/discover` är inte samma sak som
 | --- | --- | --- |
 | Crawlbar HTML | PARTIAL | App Router-sidor. Docs är serverrenderade. |
 | Indexerbar | PARTIAL | robots tillåter sajt, blockerar apprum + `/platform` + `/api/` |
-| Canonical | PARTIAL | `metadataBase` + implicit URL. Ingen per-sida canonical-policy |
+| Canonical | PARTIAL | per-sida ur `PUBLIC_SITEMAP_PATHS` plus `/systems/{slug}`. Inga locale-URL:er |
 | hreflang | MISSING | — |
 | Sitemap | PARTIAL | MCP-docsidor ur `MCP_DOC_LINKS` plus `/systems/{slug}` |
 | Robots | PASS | `src/app/robots.ts` |

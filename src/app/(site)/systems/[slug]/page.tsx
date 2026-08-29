@@ -7,6 +7,7 @@ import { RegionIndicator, StatusIndicator } from "@/components/site/indicators";
 import { catalogField, catalogSection, catalogSectionTitle, catalogSteward, t } from "@/lib/i18n";
 import { readLocale } from "@/lib/i18n/request";
 import { toolsForSystem } from "@/lib/mcp/catalog";
+import { publicCanonical } from "@/lib/platform/canonical";
 import { systemJsonLd } from "@/lib/platform/jsonld";
 import { getSystem, systems } from "@/lib/pixdrift/systems";
 
@@ -26,6 +27,7 @@ export async function generateMetadata({
   return {
     title: `${system.name} — PIXDRIFT`,
     description: catalogField(locale, slug, "summary"),
+    alternates: { canonical: publicCanonical(`/systems/${slug}`) },
   };
 }
 
