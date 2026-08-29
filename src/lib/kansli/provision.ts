@@ -107,7 +107,8 @@ export async function provisionWithPool(
       userId,
       email,
       passwordOnce: null,
-      detail: "E-posten fanns redan. Nytt bolag kopplades. Logga in med det lösen ni redan har.",
+      detail:
+        "The email already exists. The new company was linked. Sign in with the password you already have.",
     };
   }
 
@@ -131,6 +132,6 @@ export async function provisionWithPool(
     userId,
     email,
     passwordOnce,
-    detail: "Konto skapat. Lösenordet visas en gång.",
+    detail: "The account is created. The password is shown once.",
   };
 }
